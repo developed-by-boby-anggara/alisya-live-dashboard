@@ -55,7 +55,7 @@
     .sticky-header { position: sticky; top: 0; z-index: 30; }
     .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 76px); }
 
-    /* Dark Mode Overrides yang Lembut & Elegan */
+    /* Dark Mode Overrides */
     body.dark-theme { background-color: #0F172A !important; color: #F1F5F9 !important; }
     body.dark-theme .bg-slate-100 { background-color: #0F172A !important; }
     body.dark-theme .bg-white { background-color: #1E293B !important; color: #F1F5F9 !important; }
@@ -137,33 +137,14 @@
       END_TIME_OPTIONS.push("23:59");
     }
 
-    // Fungsi Suara Notifikasi Lembut (Web Audio API Chime)
-    const playNotificationChime = () => {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const playTone = (freq, startTime, duration) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, startTime);
-          gain.gain.setValueAtTime(0.15, startTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(startTime);
-          osc.stop(startTime + duration);
-        };
-        const now = ctx.currentTime;
-        playTone(587.33, now, 0.25);       // D5
-        playTone(880.00, now + 0.2, 0.45); // A5
-      } catch (e) {
-        console.log("Audio chime error:", e);
-      }
-    };
-
-    // --- KAMUS MULTI-BAHASA (6 BAHASA) ---
+    // --- KAMUS TERJEMAHAN TOTAL 3 BAHASA (ID, EN, ZH) ---
     const TRANSLATIONS = {
       id: {
+        locale: 'id-ID',
+        modeHP: "Mode HP",
+        modePC: "Mode PC",
+        lockBtn: "Kunci",
+        loginBtn: "Login",
         radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
         availableTitle: "Available Schedule (Slot Jam Kosong)",
         allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
@@ -173,6 +154,9 @@
         noSchedule: "Tidak Ada Jadwal di Tanggal Ini",
         noScheduleSub: "Alisya libur atau seluruh slot jam di tanggal ini masih kosong.",
         btnShareWA: "Share WhatsApp",
+        btnSavePNG: "Simpan PNG",
+        btnShareRekapWA: "Share Rekap Spreadsheet ke WA",
+        btnDownloadTablePNG: "Unduh Gambar Tabel (.PNG)",
         btnAddSession: "+ Tambah Sesi",
         jump: "Lompat:",
         today: "Hari Ini",
@@ -187,6 +171,9 @@
         btnAddSch: "+ Tambah Jadwal",
         statFilterTitle: "📊 Filter Rentang Waktu Statistik (00:00 - 23:59)",
         statFilterDesc: "Pilih periode dan tanggal untuk mengevaluasi jam kerja, tidur, dan me time:",
+        selectOption: "Tentukan Pilihan:",
+        weekFrom: "Minggu dari tgl:",
+        yearLabel: "Tahun",
         daily: "📅 Harian",
         weekly: "🗓️ Mingguan",
         monthly: "📆 Bulanan",
@@ -202,18 +189,98 @@
         hoursMeTime: "Jadwal Me Time & Relax",
         hoursOff: "Hari Libur Penuh",
         propTitle: "PROPORSI WAKTU ALISYA",
-        barTitle: "BEBAN AKTIVITAS PER KATEGORI"
+        barTitle: "BEBAN AKTIVITAS PER KATEGORI",
+        burnoutGuard: "🛡️ Health & Burnout Guard",
+        balanceScore: "Skor Keseimbangan Work-Life:",
+        scoreBalanced: "🟢 Seimbang & Sehat (Porsi Kerja, Tidur & Me Time Ideal)",
+        scoreWarning: "🟡 Perhatian (Kurang Waktu Tidur / Me Time Minggu Ini)",
+        scoreBurnout: "🔴 Burnout Alert! (Beban Jam Kerja Sangat Tinggi, Butuh Istirahat)",
+        shortBreakWarning: "⚠️ Jeda istirahat antar shift terlalu singkat (<5 jam)!",
+        liveNowActive: "SEDANG BERLANGSUNG:",
+        liveNowIdle: "✨ Saat ini tidak ada sesi sedang berlangsung",
+        nextUp: "Berikutnya:",
+        inMin: "dlm",
+        minLeft: "mnt lagi",
+        minUnit: "mnt",
+        progressToday: "Progres Agenda Hari Ini",
+        completed: "Selesai",
+        scheduledSessions: "Sesi Terjadwal",
+        productiveActs: "Aktivitas Produktif",
+        colDateTime: "TANGGAL & HARI \\ JAM",
+        colDayStatus: "STATUS HARI",
+        todayBadge: "HARI INI",
+        statusFree: "✨ FREE SLOT",
+        statusLow: "🟢 LOW",
+        statusMed: "⚡ MEDIUM",
+        statusFull: "🔥 FULL SCHEDULE",
+        statusOff: "☕ LIBUR / OFF",
+        allRegistered: "Semua Jadwal Terdaftar",
+        searchKeyword: "Cari Kata Kunci:",
+        searchPlaceholder: "🔍 Cari nama shift, catatan...",
+        catBrand: "Kategori / Brand:",
+        allCategories: "Semua Kategori",
+        attStatus: "Status Kehadiran:",
+        allStatuses: "Semua Status",
+        checkDate: "Pilih Cek Tanggal:",
+        checkStartHour: "Cek Jam Mulai (Digital):",
+        allHours: "Semua Jam",
+        colDay: "Hari",
+        colDate: "Tanggal",
+        colHour: "Jam Digital",
+        colTitle: "Judul Shift / Agenda",
+        colCategory: "Kategori",
+        colStatus: "Status",
+        colNotes: "Catatan",
+        colAction: "Aksi",
+        copyBtn: "📋 Salin",
+        editBtn: "Edit",
+        deleteBtn: "Hapus",
+        noMatchFilter: "Tidak ada jadwal yang cocok dengan filter pencarian ini.",
+        colorDesc: "Ubah warna visual brand, take konten video affiliate, jam tidur, dan jadwal me time dengan Color Picker.",
+        editable: "BISA DIUBAH",
+        locked: "TERKUNCI",
+        adminAccessTitle: "Akses Admin",
+        adminAccessDesc: "Masukkan PIN untuk mengelola jadwal Alisya.",
+        pinPlaceholder: "Masukkan PIN Akses",
+        pinWrong: "PIN salah! Coba lagi.",
+        cancelBtn: "Batal",
+        unlockBtn: "Buka Akses",
+        modalEditTitle: "✏️ Edit Jadwal",
+        modalAddTitle: "✨ Tambah Jadwal Baru",
+        presetMomUung: "Shift Cepat Mom Uung (1-Klik Isi):",
+        presetAquaPress: "Shift Cepat AquaPress (1-Klik Isi):",
+        formTitleLabel: "Judul Shift / Aktivitas *",
+        formStartDate: "Tanggal Mulai *",
+        formRepeat: "🔁 Ulangi Beruntun",
+        rep1: "Hanya 1 Hari Ini",
+        rep2: "2 Hari Beruntun",
+        rep3: "3 Hari Beruntun",
+        rep5: "5 Hari Beruntun",
+        rep7: "1 Minggu (7 Hari)",
+        formStartHour: "Jam Mulai (Digital) *",
+        formEndHour: "Jam Selesai (Digital) *",
+        formNotes: "Catatan / Target GMV",
+        deleteSchBtn: "🗑️ Hapus Jadwal",
+        saveCloudBtn: "Simpan ke Cloud"
       },
       en: {
+        locale: 'en-US',
+        modeHP: "Mobile Mode",
+        modePC: "PC Mode",
+        lockBtn: "Lock",
+        loginBtn: "Login",
         radarTitle: "Alisya's Schedule Radar (00:00 - 23:59)",
-        availableTitle: "Available Schedule (Empty Slots)",
+        availableTitle: "Available Schedule (Empty Time Slots)",
         allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
         slotsReady: "Slots Available",
         calendarTitle: "Date Calendar",
         sessionList: "Session List",
         noSchedule: "No Schedule for this Date",
-        noScheduleSub: "Alisya is off or all slots for this date are currently empty.",
+        noScheduleSub: "Alisya is off or all time slots for this date are currently empty.",
         btnShareWA: "Share WhatsApp",
+        btnSavePNG: "Save PNG",
+        btnShareRekapWA: "Share Spreadsheet Recap to WA",
+        btnDownloadTablePNG: "Download Table Image (.PNG)",
         btnAddSession: "+ Add Session",
         jump: "Jump:",
         today: "Today",
@@ -228,6 +295,9 @@
         btnAddSch: "+ Add Schedule",
         statFilterTitle: "📊 Statistical Time Range Filter (00:00 - 23:59)",
         statFilterDesc: "Select period and date to evaluate work, sleep, and personal time:",
+        selectOption: "Select Option:",
+        weekFrom: "Week starting:",
+        yearLabel: "Year",
         daily: "📅 Daily",
         weekly: "🗓️ Weekly",
         monthly: "📆 Monthly",
@@ -243,50 +313,86 @@
         hoursMeTime: "Me Time & Relax Schedule",
         hoursOff: "Full Days Off",
         propTitle: "ALISYA TIME PROPORTION",
-        barTitle: "ACTIVITY LOAD PER CATEGORY"
-      },
-      de: {
-        radarTitle: "Alisyas Termin-Radar (00:00 - 23:59)",
-        availableTitle: "Verfügbarer Zeitplan (Freie Zeitfenster)",
-        allSlotsFilled: "⚠️ Alle Zeitfenster an diesem Datum sind belegt!",
-        slotsReady: "Freie Zeitfenster",
-        calendarTitle: "Datumskalender",
-        sessionList: "Sitzungsliste",
-        noSchedule: "Kein Zeitplan für dieses Datum",
-        noScheduleSub: "Alisya hat frei oder alle Zeitfenster sind noch verfügbar.",
-        btnShareWA: "WhatsApp teilen",
-        btnAddSession: "+ Sitzung",
-        jump: "Sprung:",
-        today: "Heute",
-        tomorrow: "Morgen",
-        dayAfter: "Übermorgen",
-        tabAgenda: "Tagesordnung",
-        tabSpreadsheet: "Tabellenkalender",
-        tabKPI: "KPI & Diagramme",
-        tabList: "Vollständige Liste",
-        tabColors: "Farben anpassen",
-        btnExportCSV: "CSV-Export (Excel)",
-        btnAddSch: "+ Termin",
-        statFilterTitle: "📊 Statistik-Zeitbereichsfilter (00:00 - 23:59)",
-        statFilterDesc: "Wählen Sie Zeitraum und Datum zur Auswertung von Arbeit, Schlaf und Me-Time:",
-        daily: "📅 Täglich",
-        weekly: "🗓️ Wöchentlich",
-        monthly: "📆 Monatlich",
-        yearly: "📈 Jährlich",
-        totalLive: "GESAMT LIVE-SCHICHTEN",
-        takeKonten: "VIDEO-DREH",
-        sleepTime: "SCHLAF & RUHEZEIT",
-        meTime: "ME TIME",
-        offDay: "FREIER TAG / AUS",
-        hoursLive: "Streaming-Stunden",
-        hoursProd: "Produktionsstunden",
-        hoursSleep: "Ruhestunden",
-        hoursMeTime: "Me-Time & Entspannung",
-        hoursOff: "Ganze freie Tage",
-        propTitle: "ZEITVERTEILUNG ALISYA",
-        barTitle: "AKTIVITÄTSBELASTUNG NACH KATEGORIE"
+        barTitle: "ACTIVITY LOAD PER CATEGORY",
+        burnoutGuard: "🛡️ Health & Burnout Guard",
+        balanceScore: "Work-Life Balance Score:",
+        scoreBalanced: "🟢 Balanced & Healthy (Ideal Work, Sleep & Me Time)",
+        scoreWarning: "🟡 Warning (Low Sleep / Me Time This Period)",
+        scoreBurnout: "🔴 Burnout Alert! (High Work Load, Rest Needed)",
+        shortBreakWarning: "⚠️ Short break between shifts (<5 hours)!",
+        liveNowActive: "LIVE NOW:",
+        liveNowIdle: "✨ No active session at this moment",
+        nextUp: "Next Up:",
+        inMin: "in",
+        minLeft: "min left",
+        minUnit: "min",
+        progressToday: "Today's Schedule Progress",
+        completed: "Completed",
+        scheduledSessions: "Scheduled Sessions",
+        productiveActs: "Productive Activities",
+        colDateTime: "DATE & DAY \\ TIME",
+        colDayStatus: "DAY STATUS",
+        todayBadge: "TODAY",
+        statusFree: "✨ FREE SLOT",
+        statusLow: "🟢 LOW",
+        statusMed: "⚡ MEDIUM",
+        statusFull: "🔥 FULL SCHEDULE",
+        statusOff: "☕ DAY OFF",
+        allRegistered: "All Registered Schedules",
+        searchKeyword: "Search Keyword:",
+        searchPlaceholder: "🔍 Search shift title, notes...",
+        catBrand: "Category / Brand:",
+        allCategories: "All Categories",
+        attStatus: "Attendance Status:",
+        allStatuses: "All Statuses",
+        checkDate: "Filter by Date:",
+        checkStartHour: "Filter Start Hour (24H):",
+        allHours: "All Hours",
+        colDay: "Day",
+        colDate: "Date",
+        colHour: "Time (24H)",
+        colTitle: "Shift / Activity Title",
+        colCategory: "Category",
+        colStatus: "Status",
+        colNotes: "Notes",
+        colAction: "Action",
+        copyBtn: "📋 Copy",
+        editBtn: "Edit",
+        deleteBtn: "Delete",
+        noMatchFilter: "No schedules match your search filter.",
+        colorDesc: "Customize brand, affiliate video content, sleep, and me time colors with the Color Picker.",
+        editable: "EDITABLE",
+        locked: "LOCKED",
+        adminAccessTitle: "Admin Access",
+        adminAccessDesc: "Enter PIN to manage Alisya's schedule.",
+        pinPlaceholder: "Enter Access PIN",
+        pinWrong: "Incorrect PIN! Try again.",
+        cancelBtn: "Cancel",
+        unlockBtn: "Unlock",
+        modalEditTitle: "✏️ Edit Schedule",
+        modalAddTitle: "✨ Add New Schedule",
+        presetMomUung: "Mom Uung Quick Shifts (1-Click Fill):",
+        presetAquaPress: "AquaPress Quick Shifts (1-Click Fill):",
+        formTitleLabel: "Shift / Activity Title *",
+        formStartDate: "Start Date *",
+        formRepeat: "🔁 Repeat Consecutively",
+        rep1: "Only 1 Day",
+        rep2: "2 Consecutive Days",
+        rep3: "3 Consecutive Days",
+        rep5: "5 Consecutive Days",
+        rep7: "1 Full Week (7 Days)",
+        formStartHour: "Start Time (24H) *",
+        formEndHour: "End Time (24H) *",
+        formNotes: "Notes / GMV Target",
+        deleteSchBtn: "🗑️ Delete Schedule",
+        saveCloudBtn: "Save to Cloud"
       },
       zh: {
+        locale: 'zh-CN',
+        modeHP: "手机模式",
+        modePC: "电脑模式",
+        lockBtn: "锁定",
+        loginBtn: "登录",
         radarTitle: "Alisya 日程雷达 (00:00 - 23:59)",
         availableTitle: "可用时间表（空闲时段）",
         allSlotsFilled: "⚠️ 该日期的所有时间段已满！",
@@ -296,6 +402,9 @@
         noSchedule: "该日期暂无日程",
         noScheduleSub: "Alisya 休息或所有时段均可自由安排。",
         btnShareWA: "分享 WhatsApp",
+        btnSavePNG: "保存图片 PNG",
+        btnShareRekapWA: "分享表格汇总至 WA",
+        btnDownloadTablePNG: "下载表格图片 (.PNG)",
         btnAddSession: "+ 添加时段",
         jump: "跳转:",
         today: "今天",
@@ -305,11 +414,14 @@
         tabSpreadsheet: "电子表格日历",
         tabKPI: "KPI 与图表",
         tabList: "完整日程列表",
-        tabColors: "调整颜色",
-        btnExportCSV: "导出 CSV",
+        tabColors: "调整主题颜色",
+        btnExportCSV: "导出 CSV (Excel)",
         btnAddSch: "+ 新增日程",
         statFilterTitle: "📊 统计时间范围筛选 (00:00 - 23:59)",
         statFilterDesc: "选择周期和日期以评估工作、睡眠和个人独处时间：",
+        selectOption: "选择日期:",
+        weekFrom: "周起始日:",
+        yearLabel: "年份",
         daily: "📅 按日",
         weekly: "🗓️ 按周",
         monthly: "📆 按月",
@@ -319,102 +431,86 @@
         sleepTime: "睡眠与休息时间",
         meTime: "个人专属时光",
         offDay: "休息日 / 放假",
-        hoursLive: "直播时长",
-        hoursProd: "制作时长",
-        hoursSleep: "休息时长",
-        hoursMeTime: "放松安排",
+        hoursLive: "直播时长（小时）",
+        hoursProd: "制作时长（小时）",
+        hoursSleep: "休息时长（小时）",
+        hoursMeTime: "个人放松与护理安排",
         hoursOff: "完整休息天数",
         propTitle: "ALISYA 时间占比",
-        barTitle: "各分类活动负荷"
-      },
-      jv: {
-        radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
-        availableTitle: "Jadwal Suwung (Jam Sing Iso Dienggo)",
-        allSlotsFilled: "⚠️ Kabeh jam ing tanggal iki wis kebak!",
-        slotsReady: "Slot Siap Dienggo",
-        calendarTitle: "Tanggalan Tanggal",
-        sessionList: "Daftar Sesi",
-        noSchedule: "Ora Ana Jadwal Ing Tanggal Iki",
-        noScheduleSub: "Alisya prei utawa kabeh jam isih suwung bebas dipilih.",
-        btnShareWA: "Bagekna WA",
-        btnAddSession: "+ Tambah Sesi",
-        jump: "Mencolot:",
-        today: "Dino Iki",
-        tomorrow: "Sesuk",
-        dayAfter: "Mben",
-        tabAgenda: "Agenda Sedina-dina",
-        tabSpreadsheet: "Tanggalan Spreadsheet",
-        tabKPI: "KPI & Grafik",
-        tabList: "Daftar Lengkap Jadwal",
-        tabColors: "Atur Werno",
-        btnExportCSV: "Ekspor CSV",
-        btnAddSch: "+ Tambah Jadwal",
-        statFilterTitle: "📊 Saringan Wektu Statistik (00:00 - 23:59)",
-        statFilterDesc: "Pilih mangsa lan tanggal kanggo ndelok jam kerjo, turu, lan me-time:",
-        daily: "📅 Dinan",
-        weekly: "🗓️ Minggon",
-        monthly: "📆 Wulanan",
-        yearly: "📈 Tahunan",
-        totalLive: "TOTAL SHIFT LIVE",
-        takeKonten: "TAKE KONTEN VIDEO",
-        sleepTime: "WEKTU TURU / LEREN",
-        meTime: "ME TIME",
-        offDay: "DINO PREI / OFF",
-        hoursLive: "Jam Streaming",
-        hoursProd: "Jam Nggawe Konten",
-        hoursSleep: "Jam Leren / Turu",
-        hoursMeTime: "Jadwal Santai & Relax",
-        hoursOff: "Dino Prei Total",
-        propTitle: "BAGIAN WEKTU ALISYA",
-        barTitle: "BEBAN KERJO PER KATEGORI"
-      },
-      min: {
-        radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
-        availableTitle: "Jadwal Tasuo (Jam Kosong Nan Bisa Dipakai)",
-        allSlotsFilled: "⚠️ Sadonyo jam di tanggal ko lah panuah!",
-        slotsReady: "Slot Siap Pakai",
-        calendarTitle: "Kalender Tanggal",
-        sessionList: "Daftar Kagiatan",
-        noSchedule: "Indak Ado Jadwal Di Tanggal Ko",
-        noScheduleSub: "Alisya libur atau sadoalah jam masih kosong rancak dipiliah.",
-        btnShareWA: "Bagikan ka WA",
-        btnAddSession: "+ Tambah Sesi",
-        jump: "Lompek:",
-        today: "Hari Ko",
-        tomorrow: "Bisuak",
-        dayAfter: "Luso",
-        tabAgenda: "Agenda Saari-ari",
-        tabSpreadsheet: "Kalender Spreadsheet",
-        tabKPI: "KPI & Diagram Grafik",
-        tabList: "Daftar Langkok Jadwal",
-        tabColors: "Atua Wano",
-        btnExportCSV: "Ekspor CSV",
-        btnAddSch: "+ Tambah Jadwal",
-        statFilterTitle: "📊 Sariangan Wakatu Statistik (00:00 - 23:59)",
-        statFilterDesc: "Piliah periode jo tanggal untuak manilai jam karajo, lalok, jo me-time:",
-        daily: "📅 Harian",
-        weekly: "🗓️ Mingguan",
-        monthly: "📆 Bulanan",
-        yearly: "📈 Tahunan",
-        totalLive: "TOTAL SHIFT LIVE",
-        takeKonten: "BABUEK KONTEN VIDEO",
-        sleepTime: "JAM LALOK / ISTIRAHAT",
-        meTime: "ME TIME",
-        offDay: "HARI LIBUR / OFF",
-        hoursLive: "Jam Streaming",
-        hoursProd: "Jam Baproduksi",
-        hoursSleep: "Jam Lalok / Sanang",
-        hoursMeTime: "Jadwal Manjakan Diri",
-        hoursOff: "Hari Libur Panuah",
-        propTitle: "PARANDIANGAN WAKATU ALISYA",
-        barTitle: "BEBAN KAGIATAN TIOK KATEGORI"
+        barTitle: "各分类活动负荷",
+        burnoutGuard: "🛡️ 健康与防过劳守护",
+        balanceScore: "工作与生活平衡评分:",
+        scoreBalanced: "🟢 健康平衡（工作、睡眠与休息比例理想）",
+        scoreWarning: "🟡 注意（睡眠或个人休息时间较少）",
+        scoreBurnout: "🔴 过劳预警！（连续工作时间过长，需要休息）",
+        shortBreakWarning: "⚠️ 班次之间休息时间过短 (<5小时)！",
+        liveNowActive: "正在进行:",
+        liveNowIdle: "✨ 当前没有正在进行的活动",
+        nextUp: "接下来:",
+        inMin: "还有",
+        minLeft: "分钟结束",
+        minUnit: "分钟",
+        progressToday: "今日日程进度",
+        completed: "已完成",
+        scheduledSessions: "已排程活动",
+        productiveActs: "项工作活动",
+        colDateTime: "日期与星期 \\ 时间",
+        colDayStatus: "当日状态",
+        todayBadge: "今天",
+        statusFree: "✨ 空闲时段",
+        statusLow: "🟢 轻松",
+        statusMed: "⚡ 适中",
+        statusFull: "🔥 日程已满",
+        statusOff: "☕ 休息 / 放假",
+        allRegistered: "所有已登记日程",
+        searchKeyword: "搜索关键词:",
+        searchPlaceholder: "🔍 搜索班次名称、备注...",
+        catBrand: "分类 / 品牌:",
+        allCategories: "所有分类",
+        attStatus: "出勤状态:",
+        allStatuses: "所有状态",
+        checkDate: "按日期筛选:",
+        checkStartHour: "按开始时间筛选 (24H):",
+        allHours: "所有时间",
+        colDay: "星期",
+        colDate: "日期",
+        colHour: "时间 (24H)",
+        colTitle: "班次 / 活动标题",
+        colCategory: "分类",
+        colStatus: "状态",
+        colNotes: "备注",
+        colAction: "操作",
+        copyBtn: "📋 复制",
+        editBtn: "编辑",
+        deleteBtn: "删除",
+        noMatchFilter: "没有符合筛选条件的日程。",
+        colorDesc: "使用颜色选择器自定义品牌、视频拍摄、睡眠和个人时间的视觉颜色。",
+        editable: "可修改",
+        locked: "已锁定",
+        adminAccessTitle: "管理员访问",
+        adminAccessDesc: "输入 PIN 码以管理 Alisya 的日程。",
+        pinPlaceholder: "输入访问 PIN 码",
+        pinWrong: "PIN 码错误！请重试。",
+        cancelBtn: "取消",
+        unlockBtn: "解锁权限",
+        modalEditTitle: "✏️ 编辑日程",
+        modalAddTitle: "✨ 新增日程",
+        presetMomUung: "Mom Uung 快捷班次 (一键填入):",
+        presetAquaPress: "AquaPress 快捷班次 (一键填入):",
+        formTitleLabel: "班次 / 活动名称 *",
+        formStartDate: "开始日期 *",
+        formRepeat: "🔁 连续重复天数",
+        rep1: "仅限当天 (1天)",
+        rep2: "连续 2 天",
+        rep3: "连续 3 天",
+        rep5: "连续 5 天",
+        rep7: "连续 1 周 (7天)",
+        formStartHour: "开始时间 (24H) *",
+        formEndHour: "结束时间 (24H) *",
+        formNotes: "备注 / GMV 目标",
+        deleteSchBtn: "🗑️ 删除日程",
+        saveCloudBtn: "保存至云端"
       }
-    };
-
-    const getHariNama = (dateString) => {
-      if (!dateString) return '-';
-      const [y, m, d] = dateString.split('-').map(Number);
-      return new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(new Date(y, m - 1, d));
     };
 
     const calculateDurationHours = (start, end) => {
@@ -443,8 +539,31 @@
       return `${ny}-${nm}-${nd}`;
     };
 
+    // Fungsi Suara Notifikasi Lembut
+    const playNotificationChime = () => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const playTone = (freq, startTime, duration) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.15, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + duration);
+        };
+        const now = ctx.currentTime;
+        playTone(587.33, now, 0.25);
+        playTone(880.00, now + 0.2, 0.45);
+      } catch (e) {
+        console.log("Audio chime error:", e);
+      }
+    };
+
     function App() {
-      // 🌟 100% REAL-TIME TODAY & CLOCK DETECTOR
       const [nowTime, setNowTime] = useState(() => new Date());
 
       useEffect(() => {
@@ -459,15 +578,25 @@
         return `${y}-${m}-${d}`;
       }, [nowTime]);
 
-      // State Bahasa
-      const [lang, setLang] = useState(() => localStorage.getItem('alisya_lang') || 'id');
+      // State 3 Bahasa Utama (id, en, zh)
+      const [lang, setLang] = useState(() => {
+        const saved = localStorage.getItem('alisya_lang');
+        return (saved && TRANSLATIONS[saved]) ? saved : 'id';
+      });
       const handleSetLang = (newLang) => {
         setLang(newLang);
         localStorage.setItem('alisya_lang', newLang);
       };
       const t = TRANSLATIONS[lang] || TRANSLATIONS.id;
 
-      // 🌟 FITUR 3: DARK MODE / EYE-CARE THEME
+      // Helper Nama Hari sesuai Bahasa Aktif
+      const getHariNama = (dateString) => {
+        if (!dateString) return '-';
+        const [y, m, d] = dateString.split('-').map(Number);
+        return new Intl.DateTimeFormat(t.locale, { weekday: 'long' }).format(new Date(y, m - 1, d));
+      };
+
+      // Dark Mode
       const [darkMode, setDarkMode] = useState(() => localStorage.getItem('alisya_dark_mode') === 'true');
       useEffect(() => {
         if (darkMode) document.body.classList.add('dark-theme');
@@ -475,7 +604,7 @@
         localStorage.setItem('alisya_dark_mode', darkMode);
       }, [darkMode]);
 
-      // 🌟 FITUR 6: PENGINGAT SUARA & NOTIFIKASI SHIFT (15 MENIT SEBELUM MULAI)
+      // Sound Alert
       const [soundAlert, setSoundAlert] = useState(() => localStorage.getItem('alisya_sound_alert') !== 'false');
       const notifiedIdsRef = useRef(new Set());
 
@@ -488,13 +617,12 @@
           if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();
           }
-          notify('🔔 Pengingat Suara Aktif (15 Menit Sebelum Shift)');
+          notify('🔔 Pengingat Suara Aktif');
         } else {
           notify('🔕 Pengingat Suara Dinonaktifkan');
         }
       };
 
-      // Mode Tampilan (HP vs PC)
       const [displayMode, setDisplayMode] = useState(() => {
         const saved = localStorage.getItem('alisya_display_mode');
         if (saved) return saved;
@@ -518,7 +646,6 @@
       const [enteredPin, setEnteredPin] = useState('');
       const [pinError, setPinError] = useState(false);
 
-      // Default Tanggal, Bulan & Tahun Real-Time
       const [selectedDate, setSelectedDate] = useState(realTodayStr);
       const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
       const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
@@ -534,7 +661,6 @@
       const [filterDate, setFilterDate] = useState('');
       const [filterHour, setFilterHour] = useState('ALL');
 
-      // 🌟 FITUR 2: STATE BULK REPEAT (ULANGI JADWAL BEBERAPA HARI)
       const [repeatDays, setRepeatDays] = useState(1);
 
       useEffect(() => {
@@ -615,9 +741,9 @@
       const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
-      const monthName = useMemo(() => new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth]);
+      const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
-      // 🌟 FITUR 1: LIVE NOW TRACKER, COUNTDOWN & PROGRESS HARIAN REAL-TIME
+      // 🌟 Live Now Tracker
       const liveTracker = useMemo(() => {
         const todayList = schedules
           .filter(s => s.date === realTodayStr && s.status !== 'OFF')
@@ -656,261 +782,36 @@
         return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
       }, [schedules, realTodayStr, nowTime]);
 
-      // Cek Pengingat 15 Menit Sebelum Shift Dimulai
-      useEffect(() => {
-        if (!soundAlert || !liveTracker.nextItem) return;
-        const { nextItem } = liveTracker;
-        if (nextItem.startsInMin <= 15 && nextItem.startsInMin > 0) {
-          const alertKey = `${nextItem.id}_${realTodayStr}`;
-          if (!notifiedIdsRef.current.has(alertKey)) {
-            notifiedIdsRef.current.add(alertKey);
-            playNotificationChime();
-            notify(`🔔 PENGINGAT: "${nextItem.title}" dimulai dalam ${nextItem.startsInMin} menit!`);
-            if ("Notification" in window && Notification.permission === "granted") {
-              new Notification("⏰ Pengingat Jadwal Alisya", {
-                body: `${nextItem.title} (${nextItem.start_time}) dimulai dalam ${nextItem.startsInMin} menit!`
-              });
+      // 🛡️ Burnout Guard: Deteksi Jeda Singkat (<5 jam) antar shift produktif
+      const shortBreakWarnings = useMemo(() => {
+        const map = {};
+        const grouped = {};
+        schedules.forEach(s => {
+          if (s.status === 'Tidur' || s.brand_id === 'b_sleep' || s.status === 'OFF') return;
+          if (!grouped[s.date]) grouped[s.date] = [];
+          grouped[s.date].push(s);
+        });
+
+        const toM = (timeStr) => {
+          if (timeStr === '23:59') return 24 * 60;
+          const [h, m] = timeStr.split(':').map(Number);
+          return h * 60 + m;
+        };
+
+        Object.keys(grouped).forEach(date => {
+          const list = grouped[date].sort((a, b) => a.start_time.localeCompare(b.start_time));
+          for (let i = 0; i < list.length - 1; i++) {
+            const endCurr = toM(list[i].end_time);
+            const startNext = toM(list[i+1].start_time);
+            const diffMin = startNext - endCurr;
+            if (diffMin > 0 && diffMin < 300) {
+              map[date] = true;
+              break;
             }
           }
-        }
-      }, [liveTracker, soundAlert, realTodayStr]);
-
-      // 🌟 FITUR 5: TOGGLE CHECKLIST KHUSUS TAKE KONTEN VIDEO
-      const handleToggleChecklist = (e, itemId, stepKey) => {
-        e.stopPropagation();
-        if (!isAdmin) { setPinInputModal(true); return; }
-        const updated = schedules.map(s => {
-          if (s.id === itemId) {
-            const currentCheck = s.checklist || { shoot: false, edit: false, upload: false };
-            return {
-              ...s,
-              checklist: { ...currentCheck, [stepKey]: !currentCheck[stepKey] }
-            };
-          }
-          return s;
         });
-        saveSchedulesToCloud(updated);
-        notify('✅ Status progres konten diperbarui!');
-      };
-
-      // 🌟 FITUR 4: DOWNLOAD GAMBAR JADWAL (.PNG)
-      const exportElementAsPNG = async (elementId, filenameLabel) => {
-        const el = document.getElementById(elementId);
-        if (!el || typeof html2canvas === 'undefined') {
-          notify('⚠️ Gagal memuat fitur tangkapan gambar.');
-          return;
-        }
-        notify('📸 Sedang memproses gambar jadwal...');
-        try {
-          const canvas = await html2canvas(el, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: darkMode ? '#0F172A' : '#F8FAFC'
-          });
-          const link = document.createElement('a');
-          link.download = `Alisya_Schedule_${filenameLabel}.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-          notify('✨ Gambar jadwal (.PNG) berhasil diunduh!');
-        } catch (err) {
-          console.error(err);
-          notify('⚠️ Gagal mengunduh gambar.');
-        }
-      };
-
-      const handleVerifyPin = (e) => {
-        e.preventDefault();
-        if (enteredPin === adminPin) {
-          setIsAdmin(true);
-          setPinInputModal(false);
-          setEnteredPin('');
-          setPinError(false);
-          notify('🔓 Akses Admin Terbuka!');
-        } else {
-          setPinError(true);
-        }
-      };
-
-      const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        setSelectedSchedule(null);
-        setRepeatDays(1);
-        setFormData({
-          id: 'sch_' + Date.now(),
-          date: dateStr || selectedDate,
-          start_time: slotStart,
-          end_time: slotEnd,
-          title: '',
-          brand_id: brands[0]?.id || 'b_momuung',
-          status: 'LIVE',
-          color: brands[0]?.color || '#B6D7A8',
-          notes: '',
-          checklist: { shoot: false, edit: false, upload: false }
-        });
-        setModalOpen(true);
-      };
-
-      const handleOpenEdit = (sch) => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        setSelectedSchedule(sch);
-        setRepeatDays(1);
-        setFormData({
-          ...sch,
-          checklist: sch.checklist || { shoot: false, edit: false, upload: false }
-        });
-        setModalOpen(true);
-      };
-
-      const handleDuplicate = (sch) => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        const copy = { ...sch, id: 'sch_' + Date.now(), title: sch.title + ' (Copy)' };
-        saveSchedulesToCloud([...schedules, copy]);
-        notify('📋 Jadwal berhasil disalin!');
-      };
-
-      const applyMomUungPreset = (shiftNum, start, end) => {
-        const momUungBrand = brands.find(b => b.id === 'b_momuung') || { color: '#B6D7A8' };
-        setFormData(prev => ({
-          ...prev,
-          title: `Shift ${shiftNum} Mom Uung`,
-          brand_id: 'b_momuung',
-          status: 'LIVE',
-          color: momUungBrand.color,
-          start_time: start,
-          end_time: end
-        }));
-        notify(`⚡ Shift ${shiftNum} Mom Uung (${start} - ${end})`);
-      };
-
-      const applyAquaPressPreset = (shiftNum, start, end) => {
-        const aquaBrand = brands.find(b => b.id === 'b_aquapress') || { color: '#00FFFF' };
-        setFormData(prev => ({
-          ...prev,
-          title: `Shift ${shiftNum} AquaPress`,
-          brand_id: 'b_aquapress',
-          status: 'LIVE',
-          color: aquaBrand.color,
-          start_time: start,
-          end_time: end
-        }));
-        notify(`💧 Shift ${shiftNum} AquaPress (${start} - ${end})`);
-      };
-
-      // Simpan Jadwal + Dukungan Bulk Repeat Beberapa Hari
-      const handleSave = (e) => {
-        e.preventDefault();
-        const brandObj = brands.find(b => b.id === formData.brand_id);
-        const basePayload = { ...formData, color: brandObj?.color || formData.color };
-
-        if (selectedSchedule) {
-          saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
-          notify('✨ Jadwal berhasil diperbarui di Agenda & Spreadsheet!');
-        } else {
-          const newItems = [];
-          const count = Number(repeatDays) || 1;
-          for (let i = 0; i < count; i++) {
-            const targetDate = i === 0 ? basePayload.date : addDaysToDateStr(basePayload.date, i);
-            newItems.push({
-              ...basePayload,
-              id: 'sch_' + Date.now() + '_' + i,
-              date: targetDate
-            });
-          }
-          saveSchedulesToCloud([...schedules, ...newItems]);
-          notify(count > 1 ? `🚀 Jadwal berhasil dipasang untuk ${count} hari beruntun!` : '🚀 Jadwal baru berhasil disimpan!');
-        }
-        setModalOpen(false);
-      };
-
-      const handleDelete = (id) => {
-        if (confirm('Hapus jadwal ini? Jadwal akan otomatis terhapus dari Agenda Harian, Spreadsheet, dan Statistik.')) {
-          const updated = schedules.filter(s => s.id !== id);
-          saveSchedulesToCloud(updated);
-          setModalOpen(false);
-          notify('🗑️ Jadwal telah dihapus secara realtime.');
-        }
-      };
-
-      const exportCSV = () => {
-        const headers = ["Hari", "Tanggal", "Jam Mulai (Digital)", "Jam Selesai (Digital)", "Judul Shift", "Kategori/Brand", "Status", "Catatan"];
-        const rows = schedules.map(s => [
-          `"${getHariNama(s.date)}"`,
-          s.date,
-          s.start_time,
-          s.end_time,
-          `"${s.title.replace(/"/g, '""')}"`,
-          `"${(brands.find(b => b.id === s.brand_id)?.name || s.brand_id).replace(/"/g, '""')}"`,
-          `"${s.status}"`,
-          `"${(s.notes || '').replace(/"/g, '""')}"`
-        ]);
-        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Jadwal_Live_Alisya_${currentYear}_${currentMonth+1}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        notify('📥 File CSV berhasil diunduh!');
-      };
-
-      const shareToWhatsApp = () => {
-        const todayItems = schedules.filter(s => s.date === selectedDate).sort((a,b) => a.start_time.localeCompare(b.start_time));
-        const hari = getHariNama(selectedDate);
-        let text = `📢 *JADWAL HARIAN ALISYA (00:00 - 23:59)*\n🗓️ ${hari}, ${selectedDate}\n\n`;
-        if (todayItems.length === 0) {
-          text += `☕ Hari ini Alisya tidak ada agenda terjadwal.\n`;
-        } else {
-          todayItems.forEach((s, idx) => {
-            const b = brands.find(brand => brand.id === s.brand_id);
-            text += `${idx + 1}. *${s.start_time} - ${s.end_time}* : ${s.title}\n`;
-            text += `   🏷️ Kategori: ${b ? b.name : '-'}\n`;
-            text += `   📌 Status: ${s.status}\n`;
-            if (s.notes) text += `   📝 Catatan: ${s.notes}\n`;
-            text += `\n`;
-          });
-        }
-        text += `_Disinkronkan langsung dari Dashboard Alisya Schedule_ ✨`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-      };
-
-      const shareSpreadsheetToWA = () => {
-        const monthItems = schedules
-          .filter(s => {
-            const [y, m] = s.date.split('-').map(Number);
-            return y === currentYear && m === (currentMonth + 1);
-          })
-          .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
-
-        let text = `📊 *REKAP JADWAL ALISYA (00:00 - 23:59)*\n`;
-        text += `🗓️ Bulan: *${monthName} ${currentYear}*\n`;
-        text += `⏱️ Total Live: *${stats.totalLive} Shift*\n`;
-        text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
-        if (monthItems.length === 0) {
-          text += `Belum ada agenda jadwal terdaftar di bulan ini.\n`;
-        } else {
-          const grouped = {};
-          monthItems.forEach(item => {
-            if (!grouped[item.date]) grouped[item.date] = [];
-            grouped[item.date].push(item);
-          });
-
-          Object.keys(grouped).forEach(date => {
-            const hari = getHariNama(date);
-            text += `📅 *${hari}, ${date}*:\n`;
-            grouped[date].forEach(item => {
-              const b = brands.find(brand => brand.id === item.brand_id);
-              text += ` • ⏰ ${item.start_time}-${item.end_time} | ${b?.emoji || '🏷️'} *${item.title}* [${item.status}]\n`;
-              if (item.notes) text += `   └ 📝 ${item.notes}\n`;
-            });
-            text += `\n`;
-          });
-        }
-
-        text += `━━━━━━━━━━━━━━━━━━━━━━\n_Dashboard Alisya Schedule Realtime Cloud_ 🚀`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-      };
+        return map;
+      }, [schedules]);
 
       const selectedDaySchedules = useMemo(() => {
         return schedules
@@ -920,19 +821,17 @@
 
       const availableSlotsForSelectedDate = useMemo(() => {
         return TIME_SLOTS.filter(slot => {
-          const isBusy = selectedDaySchedules.some(s => {
-            return (s.start_time < slot.end && s.end_time > slot.start);
-          });
+          const isBusy = selectedDaySchedules.some(s => (s.start_time < slot.end && s.end_time > slot.start));
           return !isBusy;
         });
       }, [selectedDaySchedules]);
 
       const getDayScheduleDensity = (dateStr) => {
         const dayShifts = schedules.filter(s => s.date === dateStr);
-        if (dayShifts.length === 0) return { text: '✨ FREE SLOT', badge: 'bg-slate-100 text-slate-600 border-slate-200' };
+        if (dayShifts.length === 0) return { text: t.statusFree, badge: 'bg-slate-100 text-slate-600 border-slate-200' };
 
         const hasOff = dayShifts.some(s => s.status === 'OFF');
-        if (hasOff) return { text: '☕ LIBUR / OFF', badge: 'bg-rose-100 text-rose-800 border-rose-300' };
+        if (hasOff) return { text: t.statusOff, badge: 'bg-rose-100 text-rose-800 border-rose-300' };
 
         let productiveHours = 0;
         dayShifts.forEach(s => {
@@ -942,15 +841,15 @@
         });
 
         if (productiveHours >= 10) {
-          return { text: '🔥 FULL SCHEDULE', badge: 'bg-rose-500 text-white font-black shadow-sm' };
+          return { text: t.statusFull, badge: 'bg-rose-500 text-white font-black shadow-sm' };
         }
         if (productiveHours >= 8) {
-          return { text: '⚡ MEDIUM', badge: 'bg-amber-100 text-amber-900 border-amber-300 font-bold' };
+          return { text: t.statusMed, badge: 'bg-amber-100 text-amber-900 border-amber-300 font-bold' };
         }
         if (productiveHours > 0) {
-          return { text: '🟢 LOW', badge: 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold' };
+          return { text: t.statusLow, badge: 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold' };
         }
-        return { text: '✨ FREE SLOT', badge: 'bg-slate-100 text-slate-600 border-slate-200' };
+        return { text: t.statusFree, badge: 'bg-slate-100 text-slate-600 border-slate-200' };
       };
 
       const filteredByStatPeriod = useMemo(() => {
@@ -1029,6 +928,21 @@
         return { totalLive, totalOff, totalSick, totalMeeting, totalSleep, totalMeTime, totalKonten, totalLiveHours, totalSleepHours, totalKontenHours, totalMeTimeHours, perBrand };
       }, [filteredByStatPeriod, brands, statPeriod]);
 
+      // 🛡️ Work-Life Balance Score
+      const balanceScoreData = useMemo(() => {
+        const prodHours = stats.totalLiveHours + stats.totalKontenHours;
+        if (statPeriod === 'daily' && prodHours >= 11) {
+          return { text: t.scoreBurnout, color: 'text-rose-700 bg-rose-50 border-rose-200' };
+        }
+        if (prodHours > 85) {
+          return { text: t.scoreBurnout, color: 'text-rose-700 bg-rose-50 border-rose-200' };
+        }
+        if (stats.totalSleepHours === 0 && prodHours > 8) {
+          return { text: t.scoreWarning, color: 'text-amber-800 bg-amber-50 border-amber-200' };
+        }
+        return { text: t.scoreBalanced, color: 'text-emerald-800 bg-emerald-50 border-emerald-200' };
+      }, [stats, statPeriod, t]);
+
       const periodLabel = useMemo(() => {
         if (statPeriod === 'daily') return `${getHariNama(customStatDate)}, ${customStatDate}`;
         if (statPeriod === 'weekly') {
@@ -1038,15 +952,15 @@
           start.setDate(ref.getDate() - ref.getDay());
           const end = new Date(start);
           end.setDate(start.getDate() + 6);
-          return `${start.getDate()} - ${end.getDate()} ${new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(end)} ${end.getFullYear()}`;
+          return `${start.getDate()} - ${end.getDate()} ${new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(end)} ${end.getFullYear()}`;
         }
         if (statPeriod === 'monthly') {
-          const mLabel = new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(new Date(customStatYear, customStatMonth, 1));
+          const mLabel = new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(customStatYear, customStatMonth, 1));
           return `${mLabel} ${customStatYear}`;
         }
-        if (statPeriod === 'yearly') return `Tahun ${customStatYear}`;
+        if (statPeriod === 'yearly') return `${t.yearLabel} ${customStatYear}`;
         return '';
-      }, [statPeriod, customStatDate, customStatMonth, customStatYear]);
+      }, [statPeriod, customStatDate, customStatMonth, customStatYear, t]);
 
       const filteredSchedules = useMemo(() => {
         return schedules.filter(s => {
@@ -1093,7 +1007,7 @@
           donutInst.current = new Chart(donutCanvas.current, {
             type: 'doughnut',
             data: {
-              labels: ['🟢 LIVE', '🎬 Take Konten', '😴 Jam Tidur', '💅 Me Time', '☕ OFF', '💬 Meeting'],
+              labels: ['🟢 LIVE', '🎬 Konten', '😴 Sleep', '💅 Me Time', '☕ OFF', '💬 Meeting'],
               datasets: [{
                 data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
                 backgroundColor: ['#B6D7A8', '#8B5CF6', '#6366F1', '#EC4899', '#EF4444', '#00FFFF'],
@@ -1110,13 +1024,244 @@
             data: {
               labels: stats.perBrand.map(b => b.name),
               datasets: [
-                { label: '🟢 Jumlah Shift / Sesi Terjadwal', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#B6D7A8' }
+                { label: '🟢 Shift / Session', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#B6D7A8' }
               ]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
           });
         }
       }, [displayMode, activeTab, pcSubTab, stats]);
+
+      // Cek Pengingat Alarm 15 Menit Sebelum Mulai
+      useEffect(() => {
+        if (!soundAlert || !liveTracker.nextItem) return;
+        const { nextItem } = liveTracker;
+        if (nextItem.startsInMin <= 15 && nextItem.startsInMin > 0) {
+          const alertKey = `${nextItem.id}_${realTodayStr}`;
+          if (!notifiedIdsRef.current.has(alertKey)) {
+            notifiedIdsRef.current.add(alertKey);
+            playNotificationChime();
+            notify(`🔔 "${nextItem.title}" (${nextItem.start_time}) - ${nextItem.startsInMin} ${t.minUnit}!`);
+          }
+        }
+      }, [liveTracker, soundAlert, realTodayStr, t.minUnit]);
+
+      const handleToggleChecklist = (e, itemId, stepKey) => {
+        e.stopPropagation();
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const updated = schedules.map(s => {
+          if (s.id === itemId) {
+            const currentCheck = s.checklist || { shoot: false, edit: false, upload: false };
+            return {
+              ...s,
+              checklist: { ...currentCheck, [stepKey]: !currentCheck[stepKey] }
+            };
+          }
+          return s;
+        });
+        saveSchedulesToCloud(updated);
+        notify('✅ Progres konten diperbarui!');
+      };
+
+      const exportElementAsPNG = async (elementId, filenameLabel) => {
+        const el = document.getElementById(elementId);
+        if (!el || typeof html2canvas === 'undefined') {
+          notify('⚠️ Gagal mengekspor gambar.');
+          return;
+        }
+        notify('📸 Sedang memproses gambar...');
+        try {
+          const canvas = await html2canvas(el, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: darkMode ? '#0F172A' : '#F8FAFC'
+          });
+          const link = document.createElement('a');
+          link.download = `Alisya_Schedule_${filenameLabel}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          notify('✨ Gambar (.PNG) berhasil diunduh!');
+        } catch (err) {
+          console.error(err);
+          notify('⚠️ Gagal mengunduh gambar.');
+        }
+      };
+
+      const handleVerifyPin = (e) => {
+        e.preventDefault();
+        if (enteredPin === adminPin) {
+          setIsAdmin(true);
+          setPinInputModal(false);
+          setEnteredPin('');
+          setPinError(false);
+          notify('🔓 Admin Access Unlocked!');
+        } else {
+          setPinError(true);
+        }
+      };
+
+      const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        setSelectedSchedule(null);
+        setRepeatDays(1);
+        setFormData({
+          id: 'sch_' + Date.now(),
+          date: dateStr || selectedDate,
+          start_time: slotStart,
+          end_time: slotEnd,
+          title: '',
+          brand_id: brands[0]?.id || 'b_momuung',
+          status: 'LIVE',
+          color: brands[0]?.color || '#B6D7A8',
+          notes: '',
+          checklist: { shoot: false, edit: false, upload: false }
+        });
+        setModalOpen(true);
+      };
+
+      const handleOpenEdit = (sch) => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        setSelectedSchedule(sch);
+        setRepeatDays(1);
+        setFormData({
+          ...sch,
+          checklist: sch.checklist || { shoot: false, edit: false, upload: false }
+        });
+        setModalOpen(true);
+      };
+
+      const handleDuplicate = (sch) => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const copy = { ...sch, id: 'sch_' + Date.now(), title: sch.title + ' (Copy)' };
+        saveSchedulesToCloud([...schedules, copy]);
+        notify('📋 Disalin!');
+      };
+
+      const applyMomUungPreset = (shiftNum, start, end) => {
+        const momUungBrand = brands.find(b => b.id === 'b_momuung') || { color: '#B6D7A8' };
+        setFormData(prev => ({
+          ...prev,
+          title: `Shift ${shiftNum} Mom Uung`,
+          brand_id: 'b_momuung',
+          status: 'LIVE',
+          color: momUungBrand.color,
+          start_time: start,
+          end_time: end
+        }));
+        notify(`⚡ Shift ${shiftNum} Mom Uung (${start} - ${end})`);
+      };
+
+      const applyAquaPressPreset = (shiftNum, start, end) => {
+        const aquaBrand = brands.find(b => b.id === 'b_aquapress') || { color: '#00FFFF' };
+        setFormData(prev => ({
+          ...prev,
+          title: `Shift ${shiftNum} AquaPress`,
+          brand_id: 'b_aquapress',
+          status: 'LIVE',
+          color: aquaBrand.color,
+          start_time: start,
+          end_time: end
+        }));
+        notify(`💧 Shift ${shiftNum} AquaPress (${start} - ${end})`);
+      };
+
+      const handleSave = (e) => {
+        e.preventDefault();
+        const brandObj = brands.find(b => b.id === formData.brand_id);
+        const basePayload = { ...formData, color: brandObj?.color || formData.color };
+
+        if (selectedSchedule) {
+          saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
+          notify('✨ Berhasil diperbarui!');
+        } else {
+          const newItems = [];
+          const count = Number(repeatDays) || 1;
+          for (let i = 0; i < count; i++) {
+            const targetDate = i === 0 ? basePayload.date : addDaysToDateStr(basePayload.date, i);
+            newItems.push({
+              ...basePayload,
+              id: 'sch_' + Date.now() + '_' + i,
+              date: targetDate
+            });
+          }
+          saveSchedulesToCloud([...schedules, ...newItems]);
+          notify('🚀 Berhasil disimpan!');
+        }
+        setModalOpen(false);
+      };
+
+      const handleDelete = (id) => {
+        if (confirm('Hapus jadwal ini?')) {
+          const updated = schedules.filter(s => s.id !== id);
+          saveSchedulesToCloud(updated);
+          setModalOpen(false);
+          notify('🗑️ Dihapus.');
+        }
+      };
+
+      const exportCSV = () => {
+        const headers = [t.colDay, t.colDate, t.formStartHour, t.formEndHour, t.colTitle, t.colCategory, t.colStatus, t.colNotes];
+        const rows = schedules.map(s => [
+          `"${getHariNama(s.date)}"`,
+          s.date,
+          s.start_time,
+          s.end_time,
+          `"${s.title.replace(/"/g, '""')}"`,
+          `"${(brands.find(b => b.id === s.brand_id)?.name || s.brand_id).replace(/"/g, '""')}"`,
+          `"${s.status}"`,
+          `"${(s.notes || '').replace(/"/g, '""')}"`
+        ]);
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Alisya_Schedule_${currentYear}_${currentMonth+1}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        notify('📥 CSV Downloaded!');
+      };
+
+      const shareToWhatsApp = () => {
+        const todayItems = schedules.filter(s => s.date === selectedDate).sort((a,b) => a.start_time.localeCompare(b.start_time));
+        const hari = getHariNama(selectedDate);
+        let text = `📢 *${t.radarTitle}*\n🗓️ ${hari}, ${selectedDate}\n\n`;
+        if (todayItems.length === 0) text += `☕ ${t.noSchedule}\n`;
+        else {
+          todayItems.forEach((s, idx) => {
+            const b = brands.find(brand => brand.id === s.brand_id);
+            text += `${idx + 1}. *${s.start_time} - ${s.end_time}* : ${s.title}\n   🏷️ ${b ? b.name : '-'}\n   📌 ${s.status}\n\n`;
+          });
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      };
+
+      const shareSpreadsheetToWA = () => {
+        const monthItems = schedules
+          .filter(s => {
+            const [y, m] = s.date.split('-').map(Number);
+            return y === currentYear && m === (currentMonth + 1);
+          })
+          .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
+
+        let text = `📊 *ALISYA SCHEDULE (${monthName} ${currentYear})*\n\n`;
+        if (monthItems.length === 0) text += `${t.noSchedule}\n`;
+        else {
+          const grouped = {};
+          monthItems.forEach(item => {
+            if (!grouped[item.date]) grouped[item.date] = [];
+            grouped[item.date].push(item);
+          });
+          Object.keys(grouped).forEach(date => {
+            text += `📅 *${getHariNama(date)}, ${date}*:\n`;
+            grouped[date].forEach(item => {
+              text += ` • ⏰ ${item.start_time}-${item.end_time} | *${item.title}* [${item.status}]\n`;
+            });
+            text += `\n`;
+          });
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      };
 
       const jumpToOffset = (days) => {
         const d = new Date();
@@ -1131,7 +1276,7 @@
 
       const renderStatDateSelector = () => (
         <div className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200">
-          <span className="text-[11px] font-bold text-slate-500 uppercase">Tentukan Pilihan:</span>
+          <span className="text-[11px] font-bold text-slate-500 uppercase">{t.selectOption}</span>
           {statPeriod === 'daily' && (
             <input
               type="date"
@@ -1142,7 +1287,7 @@
           )}
           {statPeriod === 'weekly' && (
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-600 font-medium">Minggu dari tgl:</span>
+              <span className="text-xs text-slate-600 font-medium">{t.weekFrom}</span>
               <input
                 type="date"
                 value={customStatDate}
@@ -1160,7 +1305,7 @@
               >
                 {Array.from({ length: 12 }).map((_, mIdx) => (
                   <option key={mIdx} value={mIdx}>
-                    {new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(new Date(2026, mIdx, 1))}
+                    {new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(2026, mIdx, 1))}
                   </option>
                 ))}
               </select>
@@ -1182,14 +1327,13 @@
               className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 shadow-xs"
             >
               {[2024, 2025, 2026, 2027, 2028].map(yr => (
-                <option key={yr} value={yr}>Tahun {yr}</option>
+                <option key={yr} value={yr}>{t.yearLabel} {yr}</option>
               ))}
             </select>
           )}
         </div>
       );
 
-      // Komponen Banner Live Now Tracker & Progress Bar
       const renderLiveNowBanner = () => (
         <div className="bg-black/25 rounded-2xl p-3 border border-white/15 space-y-2 mt-2">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -1197,22 +1341,22 @@
               {liveTracker.activeItem ? (
                 <span className="flex items-center gap-1.5 font-black text-emerald-300">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  <span>SEDANG BERLANGSUNG: {liveTracker.activeItem.title} ({liveTracker.activeItem.remainingMin} mnt lagi)</span>
+                  <span>{t.liveNowActive} {liveTracker.activeItem.title} ({liveTracker.activeItem.remainingMin} {t.minLeft})</span>
                 </span>
               ) : (
-                <span className="text-rose-200 font-bold">✨ Saat ini tidak ada sesi sedang berlangsung</span>
+                <span className="text-rose-200 font-bold">{t.liveNowIdle}</span>
               )}
             </div>
             {liveTracker.nextItem && (
               <div className="text-[11px] font-bold bg-white/15 px-2.5 py-1 rounded-xl text-amber-200">
-                ⏳ Berikutnya: <span className="text-white font-black">{liveTracker.nextItem.title}</span> ({liveTracker.nextItem.start_time} • dlm {liveTracker.nextItem.startsInMin} mnt)
+                ⏳ {t.nextUp} <span className="text-white font-black">{liveTracker.nextItem.title}</span> ({liveTracker.nextItem.start_time} • {t.inMin} {liveTracker.nextItem.startsInMin} {t.minUnit})
               </div>
             )}
           </div>
           <div className="space-y-1">
             <div className="flex justify-between text-[10px] text-rose-200 font-bold">
-              <span>Progres Agenda Hari Ini ({realTodayStr})</span>
-              <span>{liveTracker.progressPct}% Selesai</span>
+              <span>{t.progressToday} ({realTodayStr})</span>
+              <span>{liveTracker.progressPct}% {t.completed}</span>
             </div>
             <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
               <div
@@ -1224,7 +1368,6 @@
         </div>
       );
 
-      // Komponen Checklist Produksi Video Affiliate
       const renderKontenChecklist = (item) => {
         if (item.brand_id !== 'b_konten' && item.status !== 'Konten') return null;
         const cl = item.checklist || { shoot: false, edit: false, upload: false };
@@ -1273,7 +1416,7 @@
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-extrabold text-base tracking-wide">Alisya Schedule</h1>
                   <span className="bg-white/15 text-rose-200 border border-white/25 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider">
-                    v6.0-Ultra PRO
+                    v6.1-Ultra PRO
                   </span>
                   {isAdmin ? (
                     <span className="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-md text-[10px] font-black shadow">👑 ADMIN</span>
@@ -1288,9 +1431,8 @@
               </div>
             </div>
 
-            {/* PILIHAN 6 BAHASA, TEMA MALAM, ALARM & MODE TAMPILAN */}
+            {/* 🌐 3 BAHASA, TEMA MALAM, ALARM & MODE TAMPILAN */}
             <div className="flex items-center gap-2 flex-wrap">
-              {/* 🌐 DROPDOWN 6 BAHASA */}
               <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-2xl border border-white/10 shadow-inner">
                 <span className="text-xs mr-1.5">🌐</span>
                 <select
@@ -1300,28 +1442,23 @@
                 >
                   <option value="id" className="bg-slate-900 text-white">🇮🇩 Indonesia</option>
                   <option value="en" className="bg-slate-900 text-white">🇬🇧 English</option>
-                  <option value="de" className="bg-slate-900 text-white">🇩🇪 Deutsch</option>
                   <option value="zh" className="bg-slate-900 text-white">🇨🇳 中文</option>
-                  <option value="jv" className="bg-slate-900 text-white">🌾 Basa Jawa</option>
-                  <option value="min" className="bg-slate-900 text-white">🐃 Baso Minang</option>
                 </select>
               </div>
 
-              {/* 🌙 TOMBOL DARK MODE */}
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${darkMode ? 'bg-amber-400 text-slate-900 border-amber-300 shadow' : 'bg-black/30 text-rose-100 border-white/10 hover:bg-black/40'}`}
-                title="Mode Malam / Siang"
+                title="Dark / Light Mode"
               >
                 <span>{darkMode ? '☀️' : '🌙'}</span>
                 <span className="hidden sm:inline">{darkMode ? 'Light' : 'Dark'}</span>
               </button>
 
-              {/* 🔔 TOMBOL PENGINGAT SUARA */}
               <button
                 onClick={toggleSoundAlert}
                 className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${soundAlert ? 'bg-emerald-500/30 text-emerald-200 border-emerald-400/40' : 'bg-black/30 text-rose-200/60 border-white/10'}`}
-                title="Pengingat Suara 15 Menit Sebelum Shift"
+                title="Sound Reminder"
               >
                 <span>{soundAlert ? '🔔' : '🔕'}</span>
               </button>
@@ -1331,24 +1468,23 @@
                   onClick={() => handleSetDisplayMode('mobile')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'mobile' ? 'bg-white text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
                 >
-                  <span>📱</span><span>Mode HP</span>
+                  <span>📱</span><span>{t.modeHP}</span>
                 </button>
                 <button
                   onClick={() => handleSetDisplayMode('pc')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'pc' ? 'bg-white text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
                 >
-                  <span>💻</span><span>Mode PC</span>
+                  <span>💻</span><span>{t.modePC}</span>
                 </button>
               </div>
             </div>
 
-            {/* NAVIGASI BULAN & TAHUN REAL-TIME */}
+            {/* NAVIGASI BULAN & TAHUN */}
             <div className="flex items-center gap-2">
               <div className="flex items-center bg-white/10 rounded-2xl p-1 text-xs font-bold border border-white/20 shadow-sm gap-1">
                 <button
                   onClick={() => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y-1)) : setCurrentMonth(m => m-1)}
                   className="px-2 py-1 hover:bg-white/20 rounded-xl active:scale-95 transition"
-                  title="Bulan Sebelumnya"
                 >
                   ◀
                 </button>
@@ -1360,7 +1496,7 @@
                 >
                   {Array.from({ length: 12 }).map((_, idx) => (
                     <option key={idx} value={idx} className="bg-slate-900 text-white">
-                      {new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(new Date(2026, idx, 1))}
+                      {new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(new Date(2026, idx, 1))}
                     </option>
                   ))}
                 </select>
@@ -1380,19 +1516,18 @@
                 <button
                   onClick={() => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y+1)) : setCurrentMonth(m => m+1)}
                   className="px-2 py-1 hover:bg-white/20 rounded-xl active:scale-95 transition"
-                  title="Bulan Berikutnya"
                 >
                   ▶
                 </button>
               </div>
 
               {isAdmin ? (
-                <button onClick={() => { setIsAdmin(false); notify('🔒 Mode Admin Dikunci'); }} className="bg-rose-950 hover:bg-black text-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow active:scale-95 transition" title="Kunci Akses">
-                  🔒 Kunci
+                <button onClick={() => { setIsAdmin(false); notify('🔒 Locked'); }} className="bg-rose-950 hover:bg-black text-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow active:scale-95 transition">
+                  🔒 {t.lockBtn}
                 </button>
               ) : (
                 <button onClick={() => setPinInputModal(true)} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95 transition shadow">
-                  <span>🔑</span><span>Login</span>
+                  <span>🔑</span><span>{t.loginBtn}</span>
                 </button>
               )}
             </div>
@@ -1471,7 +1606,14 @@
                             </span>
                           </div>
                           <h2 className="text-2xl font-black">{getHariNama(selectedDate)}, {selectedDate}</h2>
-                          <p className="text-xs text-rose-100">{selectedDaySchedules.length} Sesi Terjadwal • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} Aktivitas Produktif</p>
+                          <p className="text-xs text-rose-100">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs}</p>
+                          
+                          {/* 🛡️ BURNOUT GUARD WARNING */}
+                          {shortBreakWarnings[selectedDate] && (
+                            <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-200 border border-amber-300/40 px-3 py-1 rounded-xl text-xs font-bold">
+                              <span>{t.shortBreakWarning}</span>
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
@@ -1484,9 +1626,8 @@
                           <button
                             onClick={() => exportElementAsPNG('agenda-capture-area', selectedDate)}
                             className="bg-white/20 hover:bg-white/30 text-white px-3.5 py-2.5 rounded-2xl font-black shadow-md flex items-center gap-1.5 active:scale-95 transition text-xs border border-white/20"
-                            title="Unduh Gambar Jadwal Hari Ini (.PNG)"
                           >
-                            <span>📸</span><span>Simpan PNG</span>
+                            <span>📸</span><span>{t.btnSavePNG}</span>
                           </button>
                           <button
                             onClick={shareToWhatsApp}
@@ -1550,16 +1691,19 @@
                               const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                               const isSelected = selectedDate === dateStr;
                               const isToday = dateStr === realTodayStr;
-                              const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(new Date(currentYear, currentMonth, day));
+                              const dtObj = new Date(currentYear, currentMonth, day);
+                              const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
                               const dayShifts = schedules.filter(s => s.date === dateStr);
-                              const isWeekend = dayName === 'Sab' || dayName === 'Min';
+                              const isWeekend = dtObj.getDay() === 0 || dtObj.getDay() === 6;
+                              const hasShortBreak = shortBreakWarnings[dateStr];
 
                               return (
                                 <button
                                   key={day}
                                   onClick={() => setSelectedDate(dateStr)}
-                                  className={`py-2 px-1 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 border ${isSelected ? 'bg-maroon text-white shadow-md border-maroon scale-105' : isToday ? 'bg-emerald-100 text-emerald-950 border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}`}
+                                  className={`py-2 px-1 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 border relative ${isSelected ? 'bg-maroon text-white shadow-md border-maroon scale-105' : isToday ? 'bg-emerald-100 text-emerald-950 border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}`}
                                 >
+                                  {hasShortBreak && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" title={t.shortBreakWarning}></span>}
                                   <span className={`text-[9px] font-bold ${isSelected ? 'text-rose-200' : isToday ? 'text-emerald-700 font-black' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
                                   <span className="text-sm font-black">{day}</span>
                                   <div className="flex gap-0.5 mt-1 h-1">
@@ -1578,7 +1722,7 @@
                       <div className="lg:col-span-7 space-y-4">
                         <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-sm">
                           <span className="text-xs font-black uppercase text-slate-700 tracking-wider">
-                            {t.sessionList} ({selectedDate}): {selectedDaySchedules.length} Agenda
+                            {t.sessionList} ({selectedDate}): {selectedDaySchedules.length}
                           </span>
                         </div>
 
@@ -1618,18 +1762,16 @@
                                       📝 {item.notes}
                                     </div>
                                   )}
-                                  {/* CHECKLIST KHUSUS TAKE KONTEN */}
                                   {renderKontenChecklist(item)}
                                 </div>
                                 {isAdmin && (
                                   <div className="flex flex-col items-end gap-2">
-                                    <span className="text-xs text-blue-600 font-extrabold hover:underline">Edit ❯</span>
+                                    <span className="text-xs text-blue-600 font-extrabold">{t.editBtn} ❯</span>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }}
                                       className="text-xs text-slate-600 font-bold bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition"
-                                      title="Salin Jadwal"
                                     >
-                                      📋 Salin
+                                      {t.copyBtn}
                                     </button>
                                   </div>
                                 )}
@@ -1652,13 +1794,13 @@
                           className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-2xl font-black shadow-md flex items-center gap-2 active:scale-95 transition"
                         >
                           <span className="text-sm">📲</span>
-                          <span>Share Rekap Spreadsheet ke WA</span>
+                          <span>{t.btnShareRekapWA}</span>
                         </button>
                         <button
                           onClick={() => exportElementAsPNG('spreadsheet-capture-area', `${monthName}_${currentYear}`)}
                           className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-2xl font-black shadow-md flex items-center gap-1.5 active:scale-95 transition"
                         >
-                          <span>📸</span><span>Unduh Gambar Tabel (.PNG)</span>
+                          <span>📸</span><span>{t.btnDownloadTablePNG}</span>
                         </button>
                       </div>
 
@@ -1678,10 +1820,10 @@
                           <thead>
                             <tr className="bg-maroon text-white sticky-header">
                               <th className="sticky-col bg-maroon px-4 py-3 text-left font-black border-b border-r border-rose-900 min-w-[200px] shadow-sm">
-                                TANGGAL & HARI \ JAM
+                                {t.colDateTime}
                               </th>
                               <th className="bg-maroon px-2 py-3 text-center font-bold border-b border-r border-rose-900 min-w-[130px]">
-                                STATUS HARI
+                                {t.colDayStatus}
                               </th>
                               {TIME_SLOTS.map(slot => (
                                 <th key={slot.label} className="px-2 py-3 text-center font-mono font-bold border-b border-r border-rose-900 min-w-[105px]">
@@ -1694,10 +1836,12 @@
                             {Array.from({ length: daysInMonth }).map((_, i) => {
                               const day = i + 1;
                               const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                              const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(new Date(currentYear, currentMonth, day));
-                              const isWeekend = dayName === 'Sabtu' || dayName === 'Minggu';
+                              const dtObj = new Date(currentYear, currentMonth, day);
+                              const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'long' }).format(dtObj);
+                              const isWeekend = dtObj.getDay() === 0 || dtObj.getDay() === 6;
                               const isToday = dateStr === realTodayStr;
                               const density = getDayScheduleDensity(dateStr);
+                              const hasShortBreak = shortBreakWarnings[dateStr];
 
                               return (
                                 <tr key={day} className={`border-b border-slate-200 hover:bg-slate-50/70 transition ${isToday ? 'bg-emerald-50/70' : ''}`}>
@@ -1707,8 +1851,11 @@
                                       <span className="text-xs uppercase text-slate-800">{dayName}</span>
                                       {isToday && (
                                         <span className="bg-[#10b981] text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-xs tracking-wider">
-                                          HARI INI
+                                          {t.todayBadge}
                                         </span>
+                                      )}
+                                      {hasShortBreak && (
+                                        <span className="text-amber-600 text-xs font-bold" title={t.shortBreakWarning}>⚠️</span>
                                       )}
                                     </div>
                                   </td>
@@ -1808,6 +1955,20 @@
                       </div>
                     </div>
 
+                    {/* 🛡️ WORK-LIFE BALANCE SCORE CARD */}
+                    <div className={`p-5 rounded-3xl border shadow-sm flex items-center justify-between flex-wrap gap-3 ${balanceScoreData.color}`}>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🛡️</span>
+                        <div>
+                          <h4 className="font-black text-xs uppercase tracking-wider">{t.balanceScore}</h4>
+                          <p className="text-sm font-extrabold mt-0.5">{balanceScoreData.text}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold px-3 py-1 bg-white/70 rounded-xl shadow-xs">
+                        {t.burnoutGuard}
+                      </span>
+                    </div>
+
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                       <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
@@ -1877,7 +2038,7 @@
                 {pcSubTab === 'list' && (
                   <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-black text-slate-800 text-lg">Semua Jadwal Terdaftar ({filteredSchedules.length})</h3>
+                      <h3 className="font-black text-slate-800 text-lg">{t.allRegistered} ({filteredSchedules.length})</h3>
                       {isAdmin && (
                         <button onClick={() => handleOpenCreate()} className="bg-maroon hover:bg-maroon-dark text-white px-5 py-2.5 rounded-2xl text-xs font-black shadow active:scale-95 transition">
                           {t.btnAddSch}
@@ -1887,34 +2048,34 @@
 
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-semibold">
                       <div className="md:col-span-1">
-                        <label className="block text-slate-500 mb-1">Cari Kata Kunci:</label>
+                        <label className="block text-slate-500 mb-1">{t.searchKeyword}</label>
                         <input
                           type="text"
-                          placeholder="🔍 Shift, catatan..."
+                          placeholder={t.searchPlaceholder}
                           value={searchQuery}
                           onChange={e => setSearchQuery(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-maroon focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-slate-500 mb-1">Kategori / Brand:</label>
+                        <label className="block text-slate-500 mb-1">{t.catBrand}</label>
                         <select
                           value={filterBrand}
                           onChange={e => setFilterBrand(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-xs"
                         >
-                          <option value="ALL">Semua Kategori</option>
+                          <option value="ALL">{t.allCategories}</option>
                           {brands.map(b => <option key={b.id} value={b.id}>{b.emoji} {b.name}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-slate-500 mb-1">Status Kehadiran:</label>
+                        <label className="block text-slate-500 mb-1">{t.attStatus}</label>
                         <select
                           value={filterStatus}
                           onChange={e => setFilterStatus(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-xs"
                         >
-                          <option value="ALL">Semua Status</option>
+                          <option value="ALL">{t.allStatuses}</option>
                           <option value="LIVE">🟢 LIVE</option>
                           <option value="Konten">🎬 Take Konten</option>
                           <option value="Tidur">😴 Tidur</option>
@@ -1925,7 +2086,7 @@
                         </select>
                       </div>
                       <div>
-                        <label className="block text-slate-500 mb-1">Pilih Cek Tanggal:</label>
+                        <label className="block text-slate-500 mb-1">{t.checkDate}</label>
                         <input
                           type="date"
                           value={filterDate}
@@ -1935,7 +2096,7 @@
                       </div>
                       <div>
                         <div className="flex justify-between items-center mb-1">
-                          <label className="text-slate-500">Cek Jam Mulai (Digital):</label>
+                          <label className="text-slate-500">{t.checkStartHour}</label>
                           {(searchQuery || filterBrand !== 'ALL' || filterStatus !== 'ALL' || filterDate || filterHour !== 'ALL') && (
                             <button onClick={handleResetFilter} className="text-[10px] text-rose-600 font-bold hover:underline">Reset</button>
                           )}
@@ -1945,7 +2106,7 @@
                           onChange={e => setFilterHour(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-mono"
                         >
-                          <option value="ALL">Semua Jam</option>
+                          <option value="ALL">{t.allHours}</option>
                           {Array.from({ length: 24 }).map((_, h) => (
                             <option key={h} value={h}>{String(h).padStart(2, '0')}:00</option>
                           ))}
@@ -1957,29 +2118,28 @@
                       <table className="w-full text-left text-xs">
                         <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold">
                           <tr>
-                            <th className="px-4 py-3.5">Hari</th>
-                            <th className="px-4 py-3.5">Tanggal</th>
-                            <th className="px-4 py-3.5">Jam Digital</th>
-                            <th className="px-4 py-3.5">Judul Shift / Agenda</th>
-                            <th className="px-4 py-3.5">Kategori</th>
-                            <th className="px-4 py-3.5">Status</th>
-                            <th className="px-4 py-3.5">Catatan</th>
-                            {isAdmin && <th className="px-4 py-3.5 text-right">Aksi</th>}
+                            <th className="px-4 py-3.5">{t.colDay}</th>
+                            <th className="px-4 py-3.5">{t.colDate}</th>
+                            <th className="px-4 py-3.5">{t.colHour}</th>
+                            <th className="px-4 py-3.5">{t.colTitle}</th>
+                            <th className="px-4 py-3.5">{t.colCategory}</th>
+                            <th className="px-4 py-3.5">{t.colStatus}</th>
+                            <th className="px-4 py-3.5">{t.colNotes}</th>
+                            {isAdmin && <th className="px-4 py-3.5 text-right">{t.colAction}</th>}
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
                           {filteredSchedules.length === 0 ? (
-                            <tr><td colSpan="8" className="text-center py-8 text-slate-400 font-bold">Tidak ada jadwal yang cocok dengan filter pencarian ini.</td></tr>
+                            <tr><td colSpan="8" className="text-center py-8 text-slate-400 font-bold">{t.noMatchFilter}</td></tr>
                           ) : (
                             filteredSchedules.map(s => {
                               const brand = brands.find(b => b.id === s.brand_id);
                               const namaHari = getHariNama(s.date);
-                              const isWeekend = namaHari === 'Sabtu' || namaHari === 'Minggu';
 
                               return (
                                 <tr key={s.id} className="hover:bg-slate-50">
                                   <td className="px-4 py-3 font-bold">
-                                    <span className={`px-2.5 py-1 rounded-xl text-[11px] ${isWeekend ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'}`}>
+                                    <span className="px-2.5 py-1 rounded-xl text-[11px] bg-slate-100 text-slate-700">
                                       {namaHari}
                                     </span>
                                   </td>
@@ -1994,9 +2154,9 @@
                                   <td className="px-4 py-3 italic text-slate-500">{s.notes || '-'}</td>
                                   {isAdmin && (
                                     <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap font-bold">
-                                      <button onClick={() => handleDuplicate(s)} className="text-slate-600 hover:text-slate-900 bg-slate-100 px-2 py-1 rounded-lg" title="Salin Jadwal">📋 Salin</button>
-                                      <button onClick={() => handleOpenEdit(s)} className="text-blue-600 hover:underline">Edit</button>
-                                      <button onClick={() => handleDelete(s.id)} className="text-rose-600 hover:underline">Hapus</button>
+                                      <button onClick={() => handleDuplicate(s)} className="text-slate-600 hover:text-slate-900 bg-slate-100 px-2 py-1 rounded-lg">{t.copyBtn}</button>
+                                      <button onClick={() => handleOpenEdit(s)} className="text-blue-600 hover:underline">{t.editBtn}</button>
+                                      <button onClick={() => handleDelete(s.id)} className="text-rose-600 hover:underline">{t.deleteBtn}</button>
                                     </td>
                                   )}
                                 </tr>
@@ -2014,7 +2174,7 @@
                   <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4 max-w-2xl mx-auto">
                     <div>
                       <h3 className="font-black text-slate-800 text-base">🎨 {t.tabColors}</h3>
-                      <p className="text-xs text-slate-500 mt-1">Ubah warna visual brand, take konten video affiliate, jam tidur, dan jadwal me time dengan Color Picker.</p>
+                      <p className="text-xs text-slate-500 mt-1">{t.colorDesc}</p>
                     </div>
 
                     <div className="space-y-3">
@@ -2042,7 +2202,7 @@
                             </div>
                           </div>
                           <span className={`text-[10px] font-black px-2.5 py-1 rounded-xl ${isAdmin ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}`}>
-                            {isAdmin ? 'BISA DIUBAH' : 'TERKUNCI'}
+                            {isAdmin ? t.editable : t.locked}
                           </span>
                         </div>
                       ))}
@@ -2129,7 +2289,13 @@
                             {getDayScheduleDensity(selectedDate).text}
                           </span>
                         </div>
-                        <p className="text-xs text-rose-100 mt-1">{selectedDaySchedules.length} Sesi Terjadwal • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} Aktivitas Produktif</p>
+                        <p className="text-xs text-rose-100 mt-1">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs}</p>
+                        
+                        {shortBreakWarnings[selectedDate] && (
+                          <div className="mt-1 text-[10px] bg-amber-400/20 text-amber-200 px-2 py-0.5 rounded font-bold">
+                            {t.shortBreakWarning}
+                          </div>
+                        )}
                       </div>
 
                       {/* LIVE NOW TRACKER MOBILE */}
@@ -2162,7 +2328,6 @@
                               key={slot.label}
                               onClick={() => handleOpenCreate(selectedDate, slot.start, slot.end)}
                               className="flex-shrink-0 bg-white border border-emerald-300 text-emerald-950 font-mono text-[10px] font-bold px-2.5 py-1 rounded-xl shadow-xs hover:bg-emerald-100 active:scale-95"
-                              title="Klik untuk pasang jadwal di jam ini"
                             >
                               + {slot.start}-{slot.end}
                             </button>
@@ -2175,7 +2340,7 @@
                     <div className="bg-white p-3 rounded-3xl border border-slate-200 shadow-sm">
                       <div className="flex items-center justify-between mb-2 px-1">
                         <span className="text-xs font-black text-slate-700 uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
-                        <span className="text-[10px] text-slate-400 font-bold">Geser ❯</span>
+                        <span className="text-[10px] text-slate-400 font-bold">❯</span>
                       </div>
                       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                         {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -2183,16 +2348,19 @@
                           const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                           const isSelected = selectedDate === dateStr;
                           const isToday = dateStr === realTodayStr;
-                          const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(new Date(currentYear, currentMonth, day));
+                          const dtObj = new Date(currentYear, currentMonth, day);
+                          const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
                           const dayShifts = schedules.filter(s => s.date === dateStr);
-                          const isWeekend = dayName === 'Sab' || dayName === 'Min';
+                          const isWeekend = dtObj.getDay() === 0 || dtObj.getDay() === 6;
+                          const hasShortBreak = shortBreakWarnings[dateStr];
 
                           return (
                             <button
                               key={day}
                               onClick={() => setSelectedDate(dateStr)}
-                              className={`flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 ${isSelected ? 'bg-maroon text-white shadow-md scale-105' : isToday ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
+                              className={`flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 relative ${isSelected ? 'bg-maroon text-white shadow-md scale-105' : isToday ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
                             >
+                              {hasShortBreak && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
                               <span className={`text-[9px] font-bold ${isSelected ? 'text-rose-200' : isToday ? 'text-emerald-700' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
                               <span className="text-sm font-black">{day}</span>
                               <div className="flex gap-0.5 mt-1 h-1">
@@ -2251,7 +2419,7 @@
                               </div>
                               {isAdmin && (
                                 <div className="flex flex-col items-end gap-1">
-                                  <span className="text-[11px] text-blue-600 font-extrabold">Edit ❯</span>
+                                  <span className="text-[11px] text-blue-600 font-extrabold">{t.editBtn} ❯</span>
                                   <button onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }} className="text-[9px] text-slate-500 font-bold bg-slate-100 px-2 py-0.5 rounded-lg">
                                     📋
                                   </button>
@@ -2273,13 +2441,13 @@
                         onClick={shareSpreadsheetToWA}
                         className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
                       >
-                        <span>📲</span><span>Share ke WA</span>
+                        <span>📲</span><span>{t.btnShareWA}</span>
                       </button>
                       <button
                         onClick={() => exportElementAsPNG('mobile-spreadsheet-capture', `${monthName}_${currentYear}`)}
                         className="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
                       >
-                        <span>📸</span><span>Simpan PNG</span>
+                        <span>📸</span><span>{t.btnSavePNG}</span>
                       </button>
                     </div>
 
@@ -2288,8 +2456,8 @@
                         <table className="w-full border-collapse text-xs select-none">
                           <thead>
                             <tr className="bg-maroon text-white sticky-header">
-                              <th className="sticky-col bg-maroon px-3 py-2.5 text-left font-black border-b border-r border-rose-900 min-w-[150px]">TGL & HARI</th>
-                              <th className="bg-maroon px-2 py-2.5 text-center font-bold border-b border-r border-rose-900 min-w-[90px]">STATUS</th>
+                              <th className="sticky-col bg-maroon px-3 py-2.5 text-left font-black border-b border-r border-rose-900 min-w-[150px]">{t.colDate}</th>
+                              <th className="bg-maroon px-2 py-2.5 text-center font-bold border-b border-r border-rose-900 min-w-[90px]">{t.colStatus}</th>
                               {TIME_SLOTS.map(slot => (
                                 <th key={slot.label} className="px-2 py-2.5 text-center font-mono font-bold border-b border-r border-rose-900 min-w-[85px] text-[10px]">
                                   {slot.start}
@@ -2301,7 +2469,7 @@
                             {Array.from({ length: daysInMonth }).map((_, i) => {
                               const day = i + 1;
                               const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                              const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(new Date(currentYear, currentMonth, day));
+                              const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(new Date(currentYear, currentMonth, day));
                               const isToday = dateStr === realTodayStr;
                               const density = getDayScheduleDensity(dateStr);
 
@@ -2313,14 +2481,14 @@
                                       <span className="text-[11px] uppercase text-slate-800">{dayName}</span>
                                       {isToday && (
                                         <span className="bg-[#10b981] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-xs">
-                                          HARI INI
+                                          {t.todayBadge}
                                         </span>
                                       )}
                                     </div>
                                   </td>
                                   <td className="border-r border-slate-200 p-1 text-center whitespace-nowrap">
                                     <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${density.badge}`}>
-                                      {density.text.split(' ')[0]}
+                                      {density.text}
                                     </span>
                                   </td>
                                   {TIME_SLOTS.map(slot => {
@@ -2397,6 +2565,15 @@
                       </div>
                     </div>
 
+                    {/* WORK-LIFE BALANCE MOBILE */}
+                    <div className={`p-4 rounded-3xl border shadow-sm space-y-1 ${balanceScoreData.color}`}>
+                      <div className="flex items-center gap-2">
+                        <span>🛡️</span>
+                        <h4 className="font-black text-xs uppercase">{t.balanceScore}</h4>
+                      </div>
+                      <p className="text-xs font-extrabold">{balanceScoreData.text}</p>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">🟢 {t.totalLive}</div>
@@ -2436,7 +2613,7 @@
                 {activeTab === 'list' && (
                   <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-4 space-y-3">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-black text-slate-800 text-sm">Semua Jadwal ({filteredSchedules.length})</h3>
+                      <h3 className="font-black text-slate-800 text-sm">{t.allRegistered} ({filteredSchedules.length})</h3>
                       <div className="flex items-center gap-2">
                         {(searchQuery || filterBrand !== 'ALL' || filterStatus !== 'ALL' || filterDate || filterHour !== 'ALL') && (
                           <button onClick={handleResetFilter} className="text-[11px] text-rose-600 font-bold hover:underline">Reset</button>
@@ -2452,7 +2629,7 @@
                     <div className="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
                       <input
                         type="text"
-                        placeholder="🔍 Cari nama shift, catatan..."
+                        placeholder={t.searchPlaceholder}
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-maroon"
@@ -2463,7 +2640,7 @@
                           onChange={e => setFilterBrand(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 font-medium"
                         >
-                          <option value="ALL">Semua Kategori</option>
+                          <option value="ALL">{t.allCategories}</option>
                           {brands.map(b => <option key={b.id} value={b.id}>{b.emoji} {b.name}</option>)}
                         </select>
                         <select
@@ -2471,7 +2648,7 @@
                           onChange={e => setFilterStatus(e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 font-medium"
                         >
-                          <option value="ALL">Semua Status</option>
+                          <option value="ALL">{t.allStatuses}</option>
                           <option value="LIVE">🟢 LIVE</option>
                           <option value="Konten">🎬 Take Konten</option>
                           <option value="Tidur">😴 Tidur</option>
@@ -2483,7 +2660,7 @@
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                          <label className="block text-[10px] text-slate-500 font-bold mb-0.5">Cek Tanggal:</label>
+                          <label className="block text-[10px] text-slate-500 font-bold mb-0.5">{t.checkDate}</label>
                           <input
                             type="date"
                             value={filterDate}
@@ -2492,13 +2669,13 @@
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-slate-500 font-bold mb-0.5">Cek Jam Mulai (Digital):</label>
+                          <label className="block text-[10px] text-slate-500 font-bold mb-0.5">{t.checkStartHour}</label>
                           <select
                             value={filterHour}
                             onChange={e => setFilterHour(e.target.value)}
                             className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 font-medium font-mono"
                           >
-                            <option value="ALL">Semua Jam</option>
+                            <option value="ALL">{t.allHours}</option>
                             {Array.from({ length: 24 }).map((_, h) => (
                               <option key={h} value={h}>{String(h).padStart(2, '0')}:00</option>
                             ))}
@@ -2509,7 +2686,7 @@
 
                     <div className="space-y-2">
                       {filteredSchedules.length === 0 ? (
-                        <div className="text-center py-6 text-slate-400 text-xs font-bold">Tidak ada jadwal yang cocok dengan filter.</div>
+                        <div className="text-center py-6 text-slate-400 text-xs font-bold">{t.noMatchFilter}</div>
                       ) : (
                         filteredSchedules.map(s => {
                           const brand = brands.find(b => b.id === s.brand_id);
@@ -2531,9 +2708,9 @@
                                 {renderKontenChecklist(s)}
                                 {isAdmin && (
                                   <div className="flex justify-end gap-2 pt-1 border-t border-slate-200/60 mt-1">
-                                    <button onClick={() => handleDuplicate(s)} className="text-[10px] font-bold text-slate-600">📋 Salin</button>
-                                    <button onClick={() => handleOpenEdit(s)} className="text-[10px] font-bold text-blue-600">Edit</button>
-                                    <button onClick={() => handleDelete(s.id)} className="text-[10px] font-bold text-rose-600">Hapus</button>
+                                    <button onClick={() => handleDuplicate(s)} className="text-[10px] font-bold text-slate-600">{t.copyBtn}</button>
+                                    <button onClick={() => handleOpenEdit(s)} className="text-[10px] font-bold text-blue-600">{t.editBtn}</button>
+                                    <button onClick={() => handleDelete(s.id)} className="text-[10px] font-bold text-rose-600">{t.deleteBtn}</button>
                                   </div>
                                 )}
                               </div>
@@ -2581,7 +2758,6 @@
                 <button
                   onClick={() => handleOpenCreate(selectedDate)}
                   className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-maroon text-white flex items-center justify-center text-3xl shadow-2xl z-40 active:scale-90 transition border-2 border-white/50"
-                  title="Tambah Cepat"
                 >
                   +
                 </button>
@@ -2601,8 +2777,8 @@
                   🔑
                 </div>
                 <div>
-                  <h3 className="font-black text-base text-slate-800">Akses Admin</h3>
-                  <p className="text-xs text-slate-500 mt-1">Masukkan PIN untuk mengelola jadwal Alisya.</p>
+                  <h3 className="font-black text-base text-slate-800">{t.adminAccessTitle}</h3>
+                  <p className="text-xs text-slate-500 mt-1">{t.adminAccessDesc}</p>
                 </div>
                 <form onSubmit={handleVerifyPin} className="space-y-3">
                   <input
@@ -2611,16 +2787,16 @@
                     autoFocus
                     value={enteredPin}
                     onChange={e => { setEnteredPin(e.target.value); setPinError(false); }}
-                    placeholder="Masukkan PIN Akses"
+                    placeholder={t.pinPlaceholder}
                     className="w-full text-center text-xl tracking-widest font-mono font-black bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-maroon"
                   />
-                  {pinError && <div className="text-rose-600 text-xs font-bold">PIN salah! Coba lagi.</div>}
+                  {pinError && <div className="text-rose-600 text-xs font-bold">{t.pinWrong}</div>}
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setPinInputModal(false)} className="w-1/2 py-2.5 rounded-2xl bg-slate-100 text-slate-700 font-bold text-xs">
-                      Batal
+                      {t.cancelBtn}
                     </button>
                     <button type="submit" className="w-1/2 py-2.5 rounded-2xl bg-maroon text-white font-black text-xs shadow">
-                      Buka Akses
+                      {t.unlockBtn}
                     </button>
                   </div>
                 </form>
@@ -2628,90 +2804,62 @@
             </div>
           )}
 
-          {/* MODAL FORM INPUT JADWAL (1-KLIK PRESET + BULK REPEAT) */}
+          {/* MODAL FORM INPUT JADWAL */}
           {modalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
               <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
                 <div className="bg-maroon text-white p-4 flex justify-between items-center sticky top-0 z-10">
-                  <h3 className="font-extrabold text-sm">{selectedSchedule ? '✏️ Edit Jadwal' : '✨ Tambah Jadwal Baru'}</h3>
+                  <h3 className="font-extrabold text-sm">{selectedSchedule ? t.modalEditTitle : t.modalAddTitle}</h3>
                   <button onClick={() => setModalOpen(false)} className="text-rose-200 hover:text-white font-bold text-lg">✕</button>
                 </div>
                 <form onSubmit={handleSave} className="p-5 space-y-3 text-xs">
                   
-                  {/* 🍼 PANEL 1-KLIK PRESET SHIFT MOM UUNG */}
+                  {/* PRESET MOM UUNG */}
                   <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-amber-950 flex items-center gap-1.5 text-[11px]">
-                        <span>🍼</span><span>Shift Cepat Mom Uung (1-Klik Isi):</span>
+                        <span>🍼</span><span>{t.presetMomUung}</span>
                       </span>
                       <span className="text-[9px] font-bold bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full">Auto-Fill</span>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5 font-bold font-mono text-[10px]">
-                      <button
-                        type="button"
-                        onClick={() => applyMomUungPreset(1, "05:00", "13:00")}
-                        className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
-                        <span className="font-black text-emerald-800">Shift 1 (Pagi)</span>
+                      <button type="button" onClick={() => applyMomUungPreset(1, "05:00", "13:00")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
+                        <span className="font-black text-emerald-800">Shift 1</span>
                         <span className="text-[9px] text-slate-500">05:00 - 13:00</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => applyMomUungPreset(2, "11:00", "19:00")}
-                        className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
-                        <span className="font-black text-emerald-800">Shift 2 (Siang)</span>
+                      <button type="button" onClick={() => applyMomUungPreset(2, "11:00", "19:00")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
+                        <span className="font-black text-emerald-800">Shift 2</span>
                         <span className="text-[9px] text-slate-500">11:00 - 19:00</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => applyMomUungPreset(3, "16:00", "23:59")}
-                        className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
-                        <span className="font-black text-emerald-800">Shift 3 (Sore)</span>
+                      <button type="button" onClick={() => applyMomUungPreset(3, "16:00", "23:59")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
+                        <span className="font-black text-emerald-800">Shift 3</span>
                         <span className="text-[9px] text-slate-500">16:00 - 23:59</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => applyMomUungPreset(4, "00:00", "07:00")}
-                        className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
-                        <span className="font-black text-emerald-800">Shift 4 (Subuh)</span>
+                      <button type="button" onClick={() => applyMomUungPreset(4, "00:00", "07:00")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
+                        <span className="font-black text-emerald-800">Shift 4</span>
                         <span className="text-[9px] text-slate-500">00:00 - 07:00</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* 💧 PANEL 1-KLIK PRESET SHIFT AQUAPRESS */}
+                  {/* PRESET AQUAPRESS */}
                   <div className="bg-cyan-50 border border-cyan-200 p-3 rounded-2xl space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-cyan-950 flex items-center gap-1.5 text-[11px]">
-                        <span>💧</span><span>Shift Cepat AquaPress (1-Klik Isi):</span>
+                        <span>💧</span><span>{t.presetAquaPress}</span>
                       </span>
                       <span className="text-[9px] font-bold bg-cyan-200/70 text-cyan-900 px-2 py-0.5 rounded-full">Auto-Fill</span>
                     </div>
                     <div className="grid grid-cols-3 gap-1.5 font-bold font-mono text-[10px]">
-                      <button
-                        type="button"
-                        onClick={() => applyAquaPressPreset(1, "08:00", "12:00")}
-                        className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
+                      <button type="button" onClick={() => applyAquaPressPreset(1, "08:00", "12:00")} className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
                         <span className="font-black text-cyan-800">Shift 1</span>
                         <span className="text-[9px] text-slate-500">08:00 - 12:00</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => applyAquaPressPreset(2, "12:00", "16:00")}
-                        className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
+                      <button type="button" onClick={() => applyAquaPressPreset(2, "12:00", "16:00")} className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
                         <span className="font-black text-cyan-800">Shift 2</span>
                         <span className="text-[9px] text-slate-500">12:00 - 16:00</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => applyAquaPressPreset(3, "16:00", "20:00")}
-                        className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col"
-                      >
+                      <button type="button" onClick={() => applyAquaPressPreset(3, "16:00", "20:00")} className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
                         <span className="font-black text-cyan-800">Shift 3</span>
                         <span className="text-[9px] text-slate-500">16:00 - 20:00</span>
                       </button>
@@ -2719,19 +2867,19 @@
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Judul Shift / Aktivitas *</label>
+                    <label className="block font-bold text-slate-700 mb-1">{t.formTitleLabel}</label>
                     <input
                       type="text"
                       required
                       value={formData.title}
                       onChange={e => setFormData({ ...formData, title: e.target.value })}
-                      placeholder="Contoh: Shift Mom Uung / AquaPress / Me Time / Take Konten"
+                      placeholder="Shift Mom Uung / AquaPress / Me Time / Take Konten"
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold text-slate-900 focus:ring-2 focus:ring-maroon focus:outline-none"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Kategori / Brand *</label>
+                      <label className="block font-bold text-slate-700 mb-1">{t.catBrand} *</label>
                       <select
                         value={formData.brand_id}
                         onChange={e => {
@@ -2753,7 +2901,7 @@
                       </select>
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Status Kehadiran *</label>
+                      <label className="block font-bold text-slate-700 mb-1">{t.attStatus} *</label>
                       <select
                         value={formData.status}
                         onChange={e => setFormData({ ...formData, status: e.target.value })}
@@ -2772,7 +2920,7 @@
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Tanggal Mulai *</label>
+                      <label className="block font-bold text-slate-700 mb-1">{t.formStartDate}</label>
                       <input
                         type="date"
                         required
@@ -2783,77 +2931,77 @@
                     </div>
                     {!selectedSchedule ? (
                       <div>
-                        <label className="block font-bold text-slate-700 mb-1">🔁 Ulangi Beruntun</label>
+                        <label className="block font-bold text-slate-700 mb-1">{t.formRepeat}</label>
                         <select
                           value={repeatDays}
                           onChange={e => setRepeatDays(Number(e.target.value))}
                           className="w-full bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-2xl px-3 py-2.5 font-black"
                         >
-                          <option value={1}>Hanya 1 Hari Ini</option>
-                          <option value={2}>2 Hari Beruntun</option>
-                          <option value={3}>3 Hari Beruntun</option>
-                          <option value={5}>5 Hari Beruntun</option>
-                          <option value={7}>1 Minggu (7 Hari)</option>
+                          <option value={1}>{t.rep1}</option>
+                          <option value={2}>{t.rep2}</option>
+                          <option value={3}>{t.rep3}</option>
+                          <option value={5}>{t.rep5}</option>
+                          <option value={7}>{t.rep7}</option>
                         </select>
                       </div>
                     ) : (
                       <div className="flex items-end pb-2 text-[10px] text-slate-400 italic">
-                        Mode Edit 1 Jadwal
+                        {t.modalEditTitle}
                       </div>
                     )}
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Jam Mulai (Digital) *</label>
+                      <label className="block font-bold text-slate-700 mb-1">{t.formStartHour}</label>
                       <select
                         required
                         value={formData.start_time}
                         onChange={e => setFormData({ ...formData, start_time: e.target.value })}
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold font-mono text-slate-900"
                       >
-                        {START_TIME_OPTIONS.map(t => (
-                          <option key={t} value={t}>{t}</option>
+                        {START_TIME_OPTIONS.map(tm => (
+                          <option key={tm} value={tm}>{tm}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Jam Selesai (Digital) *</label>
+                      <label className="block font-bold text-slate-700 mb-1">{t.formEndHour}</label>
                       <select
                         required
                         value={formData.end_time}
                         onChange={e => setFormData({ ...formData, end_time: e.target.value })}
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold font-mono text-slate-900"
                       >
-                        {END_TIME_OPTIONS.map(t => (
-                          <option key={t} value={t}>{t}</option>
+                        {END_TIME_OPTIONS.map(tm => (
+                          <option key={tm} value={tm}>{tm}</option>
                         ))}
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Catatan / Target GMV</label>
+                    <label className="block font-bold text-slate-700 mb-1">{t.formNotes}</label>
                     <textarea
                       rows="2"
                       value={formData.notes}
                       onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                      placeholder="Target GMV, agenda me time, konsep video affiliate, atau catatan sesi..."
+                      placeholder="..."
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 font-medium"
                     ></textarea>
                   </div>
                   <div className="pt-2 flex justify-between items-center">
                     {selectedSchedule ? (
                       <button type="button" onClick={() => handleDelete(selectedSchedule.id)} className="text-rose-600 font-extrabold hover:underline">
-                        🗑️ Hapus Jadwal
+                        {t.deleteSchBtn}
                       </button>
                     ) : <div></div>}
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setModalOpen(false)} className="bg-slate-100 text-slate-700 px-4 py-2.5 rounded-2xl font-bold">
-                        Batal
+                        {t.cancelBtn}
                       </button>
                       <button type="submit" className="bg-maroon text-white px-5 py-2.5 rounded-2xl font-black shadow active:scale-95 transition">
-                        Simpan ke Cloud
+                        {t.saveCloudBtn}
                       </button>
                     </div>
                   </div>
