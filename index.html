@@ -816,7 +816,7 @@
       }, [nowTime, t]);
 
       // State Affirmation
-      const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * 35));
+      const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * TRANSLATIONS.id.affirmations.length));
       const [sparkles, setSparkles] = useState([]);
       const [wellnessOpen, setWellnessOpen] = useState(true);
 
@@ -2027,18 +2027,22 @@
 
       // 🌸 BARIS SAPAAN & AFIRMASI RINGKAS DI DALAM RADAR JADWAL
       const renderCompactGreetingStrip = () => (
-        <div className="bg-white/15 backdrop-blur-xs rounded-2xl px-3.5 py-2 border border-pink-200/30 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="text-base shrink-0 cute-float">🎀</span>
-            <span className="font-black text-pink-200 whitespace-nowrap">{cuteGreeting}</span>
-            <span className="text-rose-100/90 italic font-medium truncate">
-              — "{t.affirmations[quoteIdx % t.affirmations.length]}"
-            </span>
+        <div className="bg-white/15 backdrop-blur-xs rounded-2xl px-3.5 py-3 border border-pink-200/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs w-full min-w-0">
+          <div className="flex items-start gap-2 min-w-0 flex-1 w-full">
+            <span className="text-base shrink-0 cute-float" aria-hidden="true">🎀</span>
+            <div className="flex flex-col gap-1 min-w-0 flex-1 w-full">
+              <span className="font-black text-pink-200 whitespace-normal break-words leading-snug">
+                {cuteGreeting}
+              </span>
+              <span className="text-rose-100/90 italic font-medium whitespace-normal break-words leading-relaxed [overflow-wrap:anywhere] block w-full">
+                — "{t.affirmations[quoteIdx % t.affirmations.length]}"
+              </span>
+            </div>
           </div>
           <button
             type="button"
             onClick={handleBoostMood}
-            className="bg-pink-500/80 hover:bg-pink-500 text-white font-black text-[10px] px-2.5 py-1 rounded-xl shadow-xs active:scale-95 transition shrink-0 border border-pink-300/50"
+            className="bg-pink-500/80 hover:bg-pink-500 text-white font-black text-[10px] px-3 py-2 rounded-xl shadow-xs active:scale-95 transition self-start sm:self-auto shrink-0 border border-pink-300/50 whitespace-normal"
           >
             🎲 {t.cheerMeBtn}
           </button>
