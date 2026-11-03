@@ -189,37 +189,13 @@
       { id: 'tired', emoji: '🥺', labelId: 'Butuh Peluk / Bobo', labelEn: 'Need Rest / Hug', color: 'bg-indigo-100 text-indigo-800 border-indigo-300' }
     ];
 
-    const SELF_REWARDS_ID = [
-      "🍦 Beli Es Krim / Gelato Favorit!",
-      "🍵 Jajan Matcha Latte / Kopi Manis!",
-      "🧖‍♀️ Maskeran Wajah Sambil Nonton Drakor!",
-      "🛍️ Checkout 1 Barang Lucu di Keranjang!",
-      "🍓 Makan Buah Segar / Dessert Manis!",
-      "🛌 Tidur Siang / Rebahan Tanpa Alarm!",
-      "💅 Pijat Bahu / Creambath Salon!",
-      "🎧 Dengerin Playlist Lagu Favorit Sambil Santai!"
-    ];
-
-    const SELF_REWARDS_EN = [
-      "🍦 Treat Yourself to Ice Cream!",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🍵 Grab an Iced Matcha Latte / Sweet Drink!",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🧖‍♀️ Sheet Mask & Watch Your Favorite K-Drama!",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🍕Tahu kocek",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🍗Mam Pentung",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      " 🥓Kentang Goreng",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🍾Beli VSoya di IDM",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🛌 Cozy Nap Time Without Any Alarm!",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "💅 Relaxing Spa / Hair Salon Treatment!",
-      " 🍜Jajanin ayang baginda raja Boby Anggara kesayangan",
-      "🎧 Chill with Your Favorite Music Playlist!"
+    // 🍫 DAFTAR SELF-REWARD JAJANAN FAVORIT ALISYA
+    const FAVORITE_REWARDS = [
+      { id: 'cokelat', emoji: '🍫', labelId: 'Beli Cokelat Manis Favorit!', labelEn: 'Buy Sweet Chocolate!', shortId: '🍫 Cokelat', shortEn: '🍫 Chocolate' },
+      { id: 'pancake', emoji: '🥞', labelId: 'Jajan Pancake Lembut & Manis!', labelEn: 'Eat Fluffy Sweet Pancakes!', shortId: '🥞 Pancake', shortEn: '🥞 Pancake' },
+      { id: 'tahukocek', emoji: '🌶️', labelId: 'Beli Tahu Kocek Pedas Gurih Mantap!', labelEn: 'Buy Spicy Savory Tahu Kocek!', shortId: '🌶️ Tahu Kocek', shortEn: '🌶️ Tahu Kocek' },
+      { id: 'gorengan', emoji: '🥟', labelId: 'Jajan Gorengan Hangat Renyah!', labelEn: 'Eat Crispy Warm Fritters (Gorengan)!', shortId: '🥟 Gorengan', shortEn: '🥟 Gorengan' },
+      { id: 'minuman', emoji: '🧋', labelId: 'Beli Minuman Manis Dingin Segar!', labelEn: 'Buy Refreshing Sweet Iced Drink!', shortId: '🧋 Minuman Manis', shortEn: '🧋 Sweet Drink' }
     ];
 
     const timeToMinutes = (tStr) => {
@@ -257,7 +233,7 @@
         allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
         slotsReady: "Slot Siap Pakai",
         calendarTitle: "Kalender Tanggal",
-        sessionList: "Daftar Sesi",
+        sessionList: "Daftar Sesi Jadwal",
         noSchedule: "Tidak Ada Jadwal di Tanggal Ini 🌸",
         noScheduleSub: "Yeay! Alisya libur atau seluruh slot jam di tanggal ini masih kosong. Waktunya santai!",
         btnShareWA: "Share WhatsApp",
@@ -385,10 +361,11 @@
         greetAfternoon: "Selamat Siang, Princess Alisya! 🌤️🌷",
         greetEvening: "Selamat Sore, Queen Alisya! 🌅✨",
         greetNight: "Selamat Malam, Sweetheart! 🌙💖",
-        moodTrackerTitle: "🎀 Mood & Self-Care Alisya Hari Ini",
+        moodTrackerTitle: "🎀 Mood, Minum Air & Rumah Kucing Mekel",
+        autoResetBadge: "🔄 Auto-Reset Tiap Hari 00:00",
         waterTitle: "💧 Hidrasi & Pengingat Air Putih:",
         waterGoalDone: "🎉 Yeay! Target 8 gelas (2.000 ml) hari ini tercapai! Suara jernih & kulit glowing!",
-        waterDrinkNowBtn: "+ 1 Gelas Air Putih (250ml) 🥤",
+        waterDrinkNowBtn: "+ Minum 1 Gelas Air Putih (250ml) 🥤",
         waterResetBtn: "Reset",
         waterReminderTitle: "⏰ Pengingat Minum Air:",
         waterRemOff: "🔕 Mati",
@@ -397,30 +374,43 @@
         waterRem90: "🔔 Tiap 1.5 Jam",
         waterRem120: "🔔 Tiap 2 Jam",
         waterNextIn: "Minum lagi dlm:",
-        waterHistoryTitle: "📝 Riwayat Jam Minum Hari Ini:",
+        waterHistoryTitle: "📝 Riwayat Jam Minum Alisya Hari Ini:",
         waterEmptyLog: "🥺 Kamu belum minum air putih hari ini. Yuk klik tombol minum di atas biar nggak dehidrasi!",
         waterPopupTitle: "💧 Waktunya Minum Air Putih, Cantik! 🌸",
         waterPopupDesc: "Jangan lupa minum segelas air putih dulu ya biar tenggorokan tetap segar saat bicara, badan fit, dan wajah makin glowing!",
         waterPopupConfirm: "🥤 Aku Sudah Minum! (+1 Gelas)",
         waterPopupSnooze: "⏳ Ingatkan 10 Menit Lagi",
         petName: "🐱 Mekel (Kucing Kesayangan Alisya)",
-        petHungry: "Mekel haus nih.. kalau Alisya minum air putih, Mekel ikut senang! 🐾",
-        petHappy: "Meow! Mekel senang banget lihat Alisya rajin minum air putih hari ini! 💖🐾",
-        petFeedBtn: "🍓 Kasih Stroberi",
+        petHungry: "Meow.. Mekel belum makan & minum nih, jangan lupa kasih makan & minum Mekel ya! 🐾",
+        petHalf: "Mekel senang sudah dikasih maem/minum, tambahin lagi nanti ya Cantik! 🐾💖",
+        petHappy: "Purrr~ Mekel kenyang & segar banget hari ini! Makasih ya Princess Alisya! 😻💖",
+        petFeedFoodBtn: "🐟 Kasih Makan",
+        petFeedWaterBtn: "🥛 Kasih Minum",
+        petPatBtn: "🐾 Elus Mekel",
+        petFoodLabel: "🐟 Makan Mekel:",
+        petWaterLabel: "🥛 Minum Mekel:",
         beautyPrepTitle: "💄 Ceklis Persiapan Cantik Sebelum Live:",
-        prepMakeup: "💄 Lip Gloss & Makeup",
-        prepLight: "💡 Ringlight & Kamera",
-        prepVoice: "🔋 Baterai & Mic Aman",
+        prepAllDone: "👑 Yeay! 100% Princess Alisya Sudah Siap & Wangi Buat Live!",
+        prepMakeup: "💄 Make Up",
+        prepBath: "🚿 Mandi Segar",
         prepPerfume: "🌸 Semprot Parfum",
-        rewardTitle: "🎁 Hadiah Kecil (Self-Reward) Buat Alisya Hari Ini:",
-        rewardSpinBtn: "🎰 Acak Self-Reward Manis",
-        cheerMeBtn: "💖 Ganti Kalimat Penyemangat",
+        prepBattery: "🔋 Cek Baterai HP",
+        rewardTitle: "🎁 Jajanan Self-Reward Alisya Hari Ini:",
+        rewardSpinBtn: "🎰 Acak Jajanan",
+        rewardPickHint: "Klik pilih langsung jajanan yang kamu pengen hari ini:",
+        diaryTitle: "💌 Catatan Kecil / Hal yang Bikin Senang Hari Ini:",
+        diaryPlaceholder: "Tulis hal manis hari ini (misal: Habis jajan tahu kocek & cokelat enak banget!)...",
+        cheerMeBtn: "💖 Ganti Kalimat",
         slotOccupiedLabel: "Terisi:",
         overlapWarningTitle: "⛔ Jam Bentrok / Sudah Terisi!",
         overlapWarningDesc: "Rentang jam ini bertumpuk dengan jadwal:",
         occupiedTimelineTitle: "🔒 Daftar Jam yang Sudah Terisi di Tanggal Ini:",
         allFreeTimeline: "✨ Semua jam di tanggal ini masih kosong bebas dipilih!",
         presetBlocked: "🔒 Jam Terisi",
+        badgeFinished: "✅ SELESAI",
+        badgeUpcoming: "⏳ AKAN DATANG",
+        toggleHideWellness: "Sembunyikan Panel",
+        toggleShowWellness: "Buka Panel Mekel & Air",
         affirmations: [
           "✨ Kamu cantik, berbakat, dan rezekimu mengalir deras hari ini! Semangat live-nya ya!",
           "🌸 Jangan lupa senyum manis dulu sebelum mulai! Energi positifmu bikin penonton betah.",
@@ -433,18 +423,18 @@
           "🍒 Jangan lupa tarik napas dalam-dalam dan tersenyum, kamu pantas mendapatkan semua hal indah hari ini!",
           "🌷 Suaramu yang ramah dan ceria adalah magnet rezeki. Jaga tenggorokan dan minum yang cukup ya!",
           "💎 Setiap detik usahamu hari ini sedang membuka pintu rezeki yang lebih besar lagi. Proud of you!",
-          "🧁 Habis selesai semua shift hari ini, jangan lupa kasih self-reward yang manis buat dirimu sendiri ya!",
+          "🧁 Habis selesai semua shift hari ini, jangan lupa jajan tahu kocek, pancake, atau cokelat favoritmu ya!",
           "🦢 Kamu anggun, pintar berbicara, dan selalu memikat hati audiens. Bersinar terus ya Alisya!",
           "🌈 Apapun target hari ini, kamu pasti bisa melewatinya dengan senyuman paling manis!",
           "🍭 Mood yang bagus adalah kunci GMV meroket! Yuk mulai hari ini dengan hati yang gembira.",
           "💐 Terima kasih sudah selalu semangat dan konsisten. Diri kamu di masa depan pasti bangga banget!",
           "🦋 Seperti kupu-kupu yang indah, pesonamu hari ini bikin suasana live jadi hangat dan seru!",
           "🌟 Jangan khawatir soal angka, fokus saja jadi dirimu yang ceria, rezeki terbaik pasti mengikuti!",
-          "🍑 Wajah segar, hati senang, jadwal rapi! Hari ini semuanya berjalan lancar sesuai harapanmu.",
-          "🧸 Kalau ada jam kosong, manfaatkan buat rebahan atau dengerin lagu favoritmu ya, Cantik!",
+          "🍑 Wajah segar, sudah mandi wangi, baterai HP penuh! Hari ini semuanya berjalan lancar!",
+          "🧸 Kalau ada jam kosong, manfaatkan buat main sama Mekel atau dengerin lagu favoritmu ya!",
           "🌺 Kamu itu magnet keberuntungan! Setiap kata yang kamu ucapkan membawa berkah dan kebahagiaan.",
           "🍦 Semangat buat sesi hari ini! Ingat, kamu nggak sendirian dan kamu selalu didukung penuh!",
-          "🎀 Outfit oke, senyum manis oke, jadwal rapi! Saatnya Alisya bersinar di depan kamera!",
+          "🎀 Make up oke, parfum wangi, jadwal rapi! Saatnya Alisya bersinar di depan kamera!",
           "💌 Pesan kecil buat hari ini: Kamu berharga, kamu dicintai, dan kamu luar biasa hebat!",
           "🌼 Semoga hari ini dipenuhi pembeli yang ramah, loyal, dan borong banyak tanpa ragu!",
           "🍓 Satu langkah kecil setiap hari membawa perubahan besar. Terus melangkah dengan cantik ya!",
@@ -452,7 +442,7 @@
           "👑 Tak peduli seberapa padat jadwalnya, kamu selalu punya cara elegan untuk menaklukkannya!",
           "🌷 Senyummu itu menular lho! Sekali kamu senyum, satu ruang live ikut bahagia.",
           "✨ Percaya sama dirimu sendiri ya, kemampuan komunikasimu itu juara banget!",
-          "🍒 Hari baru, semangat baru, rezeki baru yang berlimpah ruah khusus buat Alisya!",
+          "🍒 Hari baru, semangat baru, rezeki baru yang berlimpah ruah khusus buat Alisya & Mekel!",
           "🧁 Istirahat yang cukup itu juga bagian dari produktivitas. Sayangi tubuhmu selalu ya!",
           "🦢 Tetap tenang, tetap anggun, dan biarkan pesona alamimu bekerja menarik banyak keberuntungan.",
           "🌈 Semua lelahmu hari ini akan terbayar lunas dengan hasil yang manis dan membanggakan!",
@@ -470,7 +460,7 @@
         allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
         slotsReady: "Slots Available",
         calendarTitle: "Date Calendar",
-        sessionList: "Session List",
+        sessionList: "Schedule Session List",
         noSchedule: "No Schedule for this Date 🌸",
         noScheduleSub: "Yay! Alisya is off or all time slots for this date are currently empty. Time to relax!",
         btnShareWA: "Share WhatsApp",
@@ -598,7 +588,8 @@
         greetAfternoon: "Good Afternoon, Princess Alisya! 🌤️🌷",
         greetEvening: "Good Evening, Queen Alisya! 🌅✨",
         greetNight: "Good Night, Sweetheart! 🌙💖",
-        moodTrackerTitle: "🎀 Alisya's Daily Mood & Self-Care",
+        moodTrackerTitle: "🎀 Mood, Water & Mekel's Corner",
+        autoResetBadge: "🔄 Auto-Resets Daily at 00:00",
         waterTitle: "💧 Hydration & Water Reminder:",
         waterGoalDone: "🎉 Yay! 8 glasses (2,000 ml) achieved today! Clear voice & glowing skin!",
         waterDrinkNowBtn: "+ Drink 1 Glass of Water (250ml) 🥤",
@@ -610,30 +601,43 @@
         waterRem90: "🔔 Every 1.5 Hours",
         waterRem120: "🔔 Every 2 Hours",
         waterNextIn: "Next sip in:",
-        waterHistoryTitle: "📝 Today's Drinking Log:",
+        waterHistoryTitle: "📝 Alisya's Drinking Log Today:",
         waterEmptyLog: "🥺 You haven't logged any water today. Click the button above to stay hydrated!",
         waterPopupTitle: "💧 Time to Drink Water, Pretty! 🌸",
         waterPopupDesc: "Take a refreshing sip of water now so your voice stays clear, energized, and your skin stays glowing!",
         waterPopupConfirm: "🥤 I Drank a Glass! (+1 Glass)",
         waterPopupSnooze: "⏳ Remind in 10 Mins",
-        petName: "🐱 Mekel (Alisya's Virtual Kitty)",
-        petHungry: "Mekel is thirsty.. when Alisya drinks water, Mekel gets super happy! 🐾",
-        petHappy: "Meow! Mekel is so proud of Alisya for staying hydrated today! 💖🐾",
-        petFeedBtn: "🍓 Give Strawberry",
+        petName: "🐱 Mekel (Alisya's Beloved Cat)",
+        petHungry: "Meow.. Mekel hasn't eaten or drunk yet today, don't forget to feed Mekel! 🐾",
+        petHalf: "Mekel is happy! Don't forget Mekel's next meal & water later, Pretty! 🐾💖",
+        petHappy: "Purrr~ Mekel is super full and hydrated today! Thank you Princess Alisya! 😻💖",
+        petFeedFoodBtn: "🐟 Feed Mekel",
+        petFeedWaterBtn: "🥛 Give Water",
+        petPatBtn: "🐾 Pet Mekel",
+        petFoodLabel: "🐟 Mekel's Food:",
+        petWaterLabel: "🥛 Mekel's Water:",
         beautyPrepTitle: "💄 Princess Live Prep Checklist:",
-        prepMakeup: "💄 Lip Gloss & Touch Up",
-        prepLight: "🛀 Mandi",
-        prepVoice: "🔋 Battery HP",
+        prepAllDone: "👑 Yay! 100% Princess Alisya is Fresh & Ready for Live!",
+        prepMakeup: "💄 Make Up",
+        prepBath: "🚿 Fresh Shower",
         prepPerfume: "🌸 Sweet Perfume",
-        rewardTitle: "🎁 Alisya's Sweet Self-Reward Today:",
-        rewardSpinBtn: "🎰 Spin Sweet Reward",
-        cheerMeBtn: "💖 New Daily Affirmation",
+        prepBattery: "🔋 Check Phone Battery",
+        rewardTitle: "🎁 Alisya's Favorite Treat Today:",
+        rewardSpinBtn: "🎰 Spin Treat",
+        rewardPickHint: "Or click your favorite craving for today:",
+        diaryTitle: "💌 Little Gratitude / Sweet Note Today:",
+        diaryPlaceholder: "Write a sweet moment today (e.g. Bought delicious tahu kocek & chocolate!)...",
+        cheerMeBtn: "💖 New Quote",
         slotOccupiedLabel: "Booked:",
         overlapWarningTitle: "⛔ Time Slot Conflict!",
         overlapWarningDesc: "This time range overlaps with:",
         occupiedTimelineTitle: "🔒 Booked Time Slots on This Date:",
         allFreeTimeline: "✨ All time slots on this date are completely free!",
         presetBlocked: "🔒 Booked",
+        badgeFinished: "✅ DONE",
+        badgeUpcoming: "⏳ UPCOMING",
+        toggleHideWellness: "Hide Panel",
+        toggleShowWellness: "Open Mekel & Water Panel",
         affirmations: [
           "✨ You are glowing, talented, and abundant today! Have an amazing stream!",
           "🌸 Put on your sweetest smile first! Your positive energy makes everyone stay.",
@@ -646,18 +650,18 @@
           "🍒 Take a deep breath and smile—you deserve all the wonderful blessings coming today!",
           "🌷 Your warm and cheerful voice is your superpower. Keep your throat hydrated!",
           "💎 Every minute of your effort today is opening doors to massive abundance!",
-          "🧁 After finishing today's shifts, don't forget to treat yourself to something sweet!",
+          "🧁 After finishing today's shifts, treat yourself to chocolate, pancakes, or tahu kocek!",
           "🦢 Graceful, articulate, and charming—keep shining brightly, Alisya!",
           "🌈 Whatever the target is today, you will breeze through it with your sweetest smile!",
           "🍭 Good mood equals sky-rocketing GMV! Let's start with a happy heart.",
           "💐 Thank you for being so dedicated and consistent. Your future self is so proud of you!",
           "🦋 Like a lovely butterfly, your presence makes every live session warm and exciting!",
           "🌟 Focus on having fun and being your authentic self—the best results will follow!",
-          "🍑 Fresh face, happy heart, organized schedule! Today is going to flow smoothly.",
-          "🧸 Whenever you have a free slot, cozy up and listen to your favorite songs, Pretty!",
+          "🍑 Fresh shower, pretty makeup, full phone battery! Today is going to flow smoothly.",
+          "🧸 Whenever you have a free slot, cuddle with Mekel and listen to your favorite songs!",
           "🌺 You are a magnet for miracles! Every word you speak brings joy and sales.",
           "🍦 Cheering for you today! Remember you are deeply appreciated and supported!",
-          "🎀 Cute outfit check, sweet smile check, neat schedule check! Time to shine on camera!",
+          "🎀 Cute outfit check, sweet perfume check, neat schedule check! Time to shine!",
           "💌 Little reminder for today: You are worthy, you are loved, and you are unstoppable!",
           "🌼 May your stream today be filled with kind, generous, and loyal buyers!",
           "🍓 Small consistent steps every day create magical results. Keep glowing!",
@@ -665,7 +669,7 @@
           "👑 No matter how busy the schedule looks, you always handle it with pure elegance!",
           "🌷 Your smile is contagious! When you smile, the whole live room feels happy.",
           "✨ Trust your charm and communication skills—you are truly a natural star!",
-          "🍒 New day, fresh energy, and overflowing blessings specially for Alisya!",
+          "🍒 New day, fresh energy, and overflowing blessings specially for Alisya & Mekel!",
           "🧁 Good rest is part of productivity too. Be gentle and loving to yourself!",
           "🦢 Stay calm, stay pretty, and let your natural charisma attract endless luck.",
           "🌈 All your hard work today will pay off with the sweetest, proudest results!",
@@ -700,7 +704,6 @@
       return `${ny}-${nm}-${nd}`;
     };
 
-    // Fungsi Suara Notifikasi Lembut
     const playNotificationChime = () => {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -724,7 +727,6 @@
       }
     };
 
-    // Suara Tetesan Air Segar untuk Pengingat Minum
     const playWaterBubbleChime = () => {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -746,6 +748,27 @@
         playDrop(540, 1120, now + 0.18, 0.22);
       } catch (e) {
         console.log("Water sound error:", e);
+      }
+    };
+
+    const playMekelMeowSound = () => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(860, now + 0.14);
+        osc.frequency.exponentialRampToValueAtTime(610, now + 0.38);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } catch (e) {
+        console.log("Meow sound error:", e);
       }
     };
 
@@ -792,12 +815,13 @@
         return t.greetNight;
       }, [nowTime, t]);
 
-      // State Affirmation (Acak Otomatis Saat Dibuka + Tombol Ganti)
+      // State Affirmation
       const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * 35));
       const [sparkles, setSparkles] = useState([]);
+      const [wellnessOpen, setWellnessOpen] = useState(true);
 
       const triggerCuteSparkles = () => {
-        const emojis = ['💖', '✨', '🌸', '🎀', '🌷', '👑', '🍓', '💫', '🍒', '🧁', '💧'];
+        const emojis = ['💖', '✨', '🌸', '🎀', '🌷', '👑', '🍓', '💫', '🍒', '🧁', '💧', '🐱'];
         const batch = Array.from({ length: 16 }).map((_, i) => ({
           id: Date.now() + '_' + i,
           emoji: emojis[Math.floor(Math.random() * emojis.length)],
@@ -818,7 +842,7 @@
         playNotificationChime();
       };
 
-      // State Mood, Hydration Log Jam Minum, Beauty Prep, Mekel & Self-Reward per Tanggal
+      // State Mood, Hydration Log, Mekel Makan/Minum, Beauty Prep & Self-Reward per Tanggal
       const [dailyWellness, setDailyWellness] = useState(() => {
         try {
           const saved = localStorage.getItem('alisya_wellness');
@@ -829,6 +853,18 @@
       });
 
       const [selectedDate, setSelectedDate] = useState(realTodayStr);
+      const prevRealTodayRef = useRef(realTodayStr);
+
+      // 🔄 AUTO-SWITCH & AUTO-RESET REAL-TIME SETIAP GANTI HARI (JAM 00:00 TENGAH MALAM)
+      useEffect(() => {
+        if (prevRealTodayRef.current !== realTodayStr) {
+          prevRealTodayRef.current = realTodayStr;
+          setSelectedDate(realTodayStr);
+          setCustomStatDate(realTodayStr);
+          triggerCuteSparkles();
+          notify(`🌅 Selamat Hari Baru (${realTodayStr})! Semua target minum air, makan Mekel & ceklis harian otomatis di-reset mulai dari 0! 🌸`);
+        }
+      }, [realTodayStr]);
 
       const currentDayWellness = useMemo(() => {
         const raw = dailyWellness[selectedDate] || {};
@@ -836,19 +872,29 @@
           mood: raw.mood || 'happy',
           water: typeof raw.water === 'number' ? raw.water : 0,
           waterLogs: Array.isArray(raw.waterLogs) ? raw.waterLogs : [],
-          prep: raw.prep || { makeup: false, light: false, voice: false, perfume: false },
+          mekelFood: typeof raw.mekelFood === 'number' ? raw.mekelFood : 0,
+          mekelFoodLogs: Array.isArray(raw.mekelFoodLogs) ? raw.mekelFoodLogs : [],
+          mekelWater: typeof raw.mekelWater === 'number' ? raw.mekelWater : 0,
+          mekelWaterLogs: Array.isArray(raw.mekelWaterLogs) ? raw.mekelWaterLogs : [],
+          prep: raw.prep || { makeup: false, bath: false, perfume: false, battery: false },
           reward: raw.reward || '',
-          petHearts: raw.petHearts || 0
+          diary: raw.diary || '',
+          petHearts: typeof raw.petHearts === 'number' ? raw.petHearts : 0
         };
       }, [dailyWellness, selectedDate]);
 
-      const updateDayWellness = (patch) => {
+      const updateDayWellness = (patch, withSparkles = true) => {
         const prevData = dailyWellness[selectedDate] || {
           mood: 'happy',
           water: 0,
           waterLogs: [],
-          prep: { makeup: false, light: false, voice: false, perfume: false },
+          mekelFood: 0,
+          mekelFoodLogs: [],
+          mekelWater: 0,
+          mekelWaterLogs: [],
+          prep: { makeup: false, bath: false, perfume: false, battery: false },
           reward: '',
+          diary: '',
           petHearts: 0
         };
         const updated = {
@@ -861,13 +907,13 @@
         setDailyWellness(updated);
         localStorage.setItem('alisya_wellness', JSON.stringify(updated));
         if (firebaseDb) firebaseDb.ref('alisya_wellness').set(updated);
-        triggerCuteSparkles();
+        if (withSparkles) triggerCuteSparkles();
       };
 
       // 💧 SISTEM PENGINGAT MINUM AIR PUTIH OTOMATIS + LOG JAM MINUM
       const [waterReminderInterval, setWaterReminderInterval] = useState(() => {
         const saved = localStorage.getItem('alisya_water_interval');
-        return saved !== null ? Number(saved) : 60; // Default 60 menit (1 Jam)
+        return saved !== null ? Number(saved) : 60;
       });
       const [waterSecondsLeft, setWaterSecondsLeft] = useState(() => 60 * 60);
       const [waterPopupOpen, setWaterPopupOpen] = useState(false);
@@ -885,7 +931,6 @@
         }
       };
 
-      // Detak Countdown Pengingat Air Putih Setiap Detik
       useEffect(() => {
         if (waterReminderInterval <= 0) return;
         setWaterSecondsLeft(prev => {
@@ -903,7 +948,6 @@
         });
       }, [nowTime, waterReminderInterval]);
 
-      // Fungsi Tambah Minum Air Putih + Catat Jam Real-Time
       const handleDrinkWaterGlass = (targetGlassCount = null) => {
         const hh = String(nowTime.getHours()).padStart(2, '0');
         const mm = String(nowTime.getMinutes()).padStart(2, '0');
@@ -917,7 +961,6 @@
 
         let nextLogs = [...currentLogs];
         if (nextCount > currentCount) {
-          // Tambah catatan jam untuk setiap gelas baru
           const diff = nextCount - currentCount;
           for (let i = 0; i < diff; i++) {
             nextLogs.push(timeNowStr);
@@ -928,7 +971,6 @@
           nextLogs = nextLogs.slice(0, nextCount);
         }
 
-        // Reset timer pengingat karena baru saja minum
         if (waterReminderInterval > 0) {
           setWaterSecondsLeft(waterReminderInterval * 60);
         }
@@ -946,12 +988,70 @@
         notify('💧 Catatan minum air hari ini direset ke 0.');
       };
 
+      // 🐱 FUNGSI KASIH MAKAN & MINUM MEKEL REAL-TIME
+      const handleFeedMekelFood = (targetCount = null) => {
+        const hh = String(nowTime.getHours()).padStart(2, '0');
+        const mm = String(nowTime.getMinutes()).padStart(2, '0');
+        const timeNowStr = `${hh}:${mm}`;
+
+        const curr = currentDayWellness.mekelFood || 0;
+        const logs = Array.isArray(currentDayWellness.mekelFoodLogs) ? [...currentDayWellness.mekelFoodLogs] : [];
+        let next = targetCount !== null ? targetCount : (curr >= 3 ? 0 : curr + 1);
+
+        let nextLogs = [...logs];
+        if (next > curr) {
+          for (let i = 0; i < (next - curr); i++) nextLogs.push(timeNowStr);
+          playMekelMeowSound();
+          notify(`🐟 Nyam nyam! Mekel makan ke-${next} hari ini pukul ${timeNowStr} WIB! 😻`);
+        } else {
+          nextLogs = nextLogs.slice(0, next);
+        }
+
+        updateDayWellness({
+          mekelFood: next,
+          mekelFoodLogs: nextLogs,
+          petHearts: (currentDayWellness.petHearts || 0) + 2
+        });
+      };
+
+      const handleGiveMekelWater = (targetCount = null) => {
+        const hh = String(nowTime.getHours()).padStart(2, '0');
+        const mm = String(nowTime.getMinutes()).padStart(2, '0');
+        const timeNowStr = `${hh}:${mm}`;
+
+        const curr = currentDayWellness.mekelWater || 0;
+        const logs = Array.isArray(currentDayWellness.mekelWaterLogs) ? [...currentDayWellness.mekelWaterLogs] : [];
+        let next = targetCount !== null ? targetCount : (curr >= 3 ? 0 : curr + 1);
+
+        let nextLogs = [...logs];
+        if (next > curr) {
+          for (let i = 0; i < (next - curr); i++) nextLogs.push(timeNowStr);
+          playWaterBubbleChime();
+          notify(`🥛 Slurp! Mekel minum ke-${next} hari ini pukul ${timeNowStr} WIB! 🐱💧`);
+        } else {
+          nextLogs = nextLogs.slice(0, next);
+        }
+
+        updateDayWellness({
+          mekelWater: next,
+          mekelWaterLogs: nextLogs,
+          petHearts: (currentDayWellness.petHearts || 0) + 2
+        });
+      };
+
       const handleSpinSelfReward = () => {
-        const pool = lang === 'id' ? SELF_REWARDS_ID : SELF_REWARDS_EN;
-        const pick = pool[Math.floor(Math.random() * pool.length)];
-        updateDayWellness({ reward: pick });
+        const item = FAVORITE_REWARDS[Math.floor(Math.random() * FAVORITE_REWARDS.length)];
+        const text = `${item.emoji} ${lang === 'id' ? item.labelId : item.labelEn}`;
+        updateDayWellness({ reward: text });
         playNotificationChime();
-        notify(`🎁 Self-Reward Hari Ini: ${pick}`);
+        notify(`🎁 Self-Reward Hari Ini: ${text}`);
+      };
+
+      const handleSelectSpecificReward = (item) => {
+        const text = `${item.emoji} ${lang === 'id' ? item.labelId : item.labelEn}`;
+        updateDayWellness({ reward: text });
+        playNotificationChime();
+        notify(`😋 Yeay! Self-Reward dipilih: ${text}`);
       };
 
       const getHariNama = (dateString) => {
@@ -1003,7 +1103,7 @@
 
       const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
-      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Rajin Minum Air Putih & Senyum Manis Terus! 🌸✨");
+      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Rajin Minum Air Putih & Sayang Mekel Terus! 🌸🐱✨");
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -1027,7 +1127,6 @@
 
       const [repeatDays, setRepeatDays] = useState(1);
 
-      // Modal Clone 1 Hari Penuh
       const [cloneModalOpen, setCloneModalOpen] = useState(false);
       const [cloneTargetDate, setCloneTargetDate] = useState(() => addDaysToDateStr(realTodayStr, 1));
 
@@ -1262,7 +1361,20 @@
         return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
       }, [schedules, realTodayStr, nowTime]);
 
-      // 🛡️ Burnout Guard: Deteksi Jeda Singkat (<5 jam) antar shift produktif
+      // Deteksi apakah suatu sesi jadwal sudah selesai atau akan datang
+      const getSessionTimeState = (item) => {
+        if (item.date < realTodayStr) return 'done';
+        if (item.date > realTodayStr) return 'upcoming';
+        const nowMin = nowTime.getHours() * 60 + nowTime.getMinutes();
+        const sMin = timeToMinutes(item.start_time);
+        let eMin = timeToMinutes(item.end_time);
+        if (eMin <= sMin) eMin = 24 * 60;
+        if (nowMin >= eMin) return 'done';
+        if (nowMin >= sMin && nowMin < eMin) return 'live';
+        return 'upcoming';
+      };
+
+      // 🛡️ Burnout Guard
       const shortBreakWarnings = useMemo(() => {
         const map = {};
         const grouped = {};
@@ -1512,7 +1624,6 @@
         }
       }, [displayMode, activeTab, pcSubTab, stats]);
 
-      // Cek Pengingat Alarm 15 Menit Sebelum Mulai
       useEffect(() => {
         if (!soundAlert || !liveTracker.nextItem) return;
         const { nextItem } = liveTracker;
@@ -1914,271 +2025,396 @@
         </div>
       );
 
-      // 🌸 KOMPONEN MOOD BOOSTER & 35+ AFFIRMATION CARD IMUT
-      const renderCuteGreetingCard = () => (
-        <div className="bg-gradient-to-r from-pink-100 via-rose-50 to-amber-50 border-2 border-pink-200/90 rounded-3xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
-          <div className="flex items-center gap-3.5 flex-1 min-w-[240px]">
-            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border-2 border-pink-200 flex items-center justify-center text-2xl cute-float shrink-0">
-              🎀
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-black text-sm md:text-base text-maroon">{cuteGreeting}</h3>
-                <span className="bg-pink-200/80 text-pink-950 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-pink-300">
-                  💌 Sweet Note
-                </span>
-              </div>
-              <p className="text-xs md:text-sm font-bold text-rose-900/90 italic leading-relaxed">
-                "{t.affirmations[quoteIdx % t.affirmations.length]}"
-              </p>
-            </div>
+      // 🌸 BARIS SAPAAN & AFIRMASI RINGKAS DI DALAM RADAR JADWAL
+      const renderCompactGreetingStrip = () => (
+        <div className="bg-white/15 backdrop-blur-xs rounded-2xl px-3.5 py-2 border border-pink-200/30 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="text-base shrink-0 cute-float">🎀</span>
+            <span className="font-black text-pink-200 whitespace-nowrap">{cuteGreeting}</span>
+            <span className="text-rose-100/90 italic font-medium truncate">
+              — "{t.affirmations[quoteIdx % t.affirmations.length]}"
+            </span>
           </div>
-
           <button
+            type="button"
             onClick={handleBoostMood}
-            className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-xs px-4 py-2.5 rounded-2xl shadow-md active:scale-95 transition flex items-center gap-1.5 border border-pink-300"
+            className="bg-pink-500/80 hover:bg-pink-500 text-white font-black text-[10px] px-2.5 py-1 rounded-xl shadow-xs active:scale-95 transition shrink-0 border border-pink-300/50"
           >
-            <span>🎲</span><span>{t.cheerMeBtn}</span>
+            🎲 {t.cheerMeBtn}
           </button>
         </div>
       );
 
-      // 💧🎀 KOMPONEN SELF-CARE SUPER LENGKAP: MOOD + PENGINGAT MINUM AIR + LOG JAM MINUM + Mekel PET + BEAUTY PREP
+      // 💧🐱💄🎁 KOMPONEN SELF-CARE LENGKAP (DITARUH DI BAWAH AREA JADWAL & BISA DILIPAT/BUKA)
       const renderCuteWellnessWidget = () => {
         const waterCount = currentDayWellness.water || 0;
         const waterMl = waterCount * 250;
         const waterPct = Math.min(100, Math.round((waterCount / 8) * 100));
         const waterLogs = Array.isArray(currentDayWellness.waterLogs) ? currentDayWellness.waterLogs : [];
-        const prep = currentDayWellness.prep || { makeup: false, light: false, voice: false, perfume: false };
+
+        const mekelFood = currentDayWellness.mekelFood || 0;
+        const mekelFoodLogs = Array.isArray(currentDayWellness.mekelFoodLogs) ? currentDayWellness.mekelFoodLogs : [];
+        const mekelWater = currentDayWellness.mekelWater || 0;
+        const mekelWaterLogs = Array.isArray(currentDayWellness.mekelWaterLogs) ? currentDayWellness.mekelWaterLogs : [];
+
+        const prep = currentDayWellness.prep || { makeup: false, bath: false, perfume: false, battery: false };
+        const prepDoneCount = [prep.makeup, prep.bath, prep.perfume, prep.battery].filter(Boolean).length;
+        const allPrepDone = prepDoneCount === 4;
 
         return (
           <div className="bg-white rounded-3xl border-2 border-pink-200/80 p-4 shadow-sm space-y-4">
-            {/* Header Kartu Mood & Self-Care */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-maroon uppercase tracking-wider flex items-center gap-1.5">
-                <span>{t.moodTrackerTitle}</span>
-              </span>
-              <span className="text-[10px] font-bold text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full border border-pink-200">
-                {selectedDate}
-              </span>
+            {/* Header Kartu Mood & Self-Care + Tombol Buka/Lipat agar Fokus Tetap ke Jadwal */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-black text-maroon uppercase tracking-wider flex items-center gap-1.5">
+                  <span>{t.moodTrackerTitle}</span>
+                </span>
+                <span className="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  {t.autoResetBadge}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200">
+                  💧 {waterCount}/8 • 🐱 {mekelFood}/3 • 💄 {prepDoneCount}/4
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setWellnessOpen(!wellnessOpen)}
+                  className="text-[10px] font-black text-maroon bg-pink-100 hover:bg-pink-200 px-2.5 py-1 rounded-xl border border-pink-300 transition"
+                >
+                  {wellnessOpen ? `🔼 ${t.toggleHideWellness}` : `🔽 ${t.toggleShowWellness}`}
+                </button>
+              </div>
             </div>
 
-            {/* 5 Pilihan Mood Hari Ini */}
-            <div className="grid grid-cols-5 gap-1.5">
-              {MOOD_LIST.map(m => {
-                const isSelected = currentDayWellness.mood === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => updateDayWellness({ mood: m.id })}
-                    className={`py-2 px-1 rounded-2xl border text-center transition flex flex-col items-center gap-0.5 active:scale-95 ${isSelected ? `${m.color} font-black ring-2 ring-pink-400 scale-105 shadow-xs` : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-pink-50/50'}`}
-                  >
-                    <span className="text-lg">{m.emoji}</span>
-                    <span className="text-[9px] leading-tight truncate w-full px-0.5">
-                      {lang === 'id' ? m.labelId : m.labelEn}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* 💧 PANEL HIDRASI PINTAR, PENGINGAT WAKTU & RIWAYAT JAM MINUM */}
-            <div className="bg-gradient-to-br from-pink-50 via-rose-50/70 to-sky-50/60 border-2 border-pink-200/80 rounded-2xl p-3.5 space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <div className="text-xs font-black text-rose-950 flex items-center gap-1">
-                    <span>{t.waterTitle}</span>
-                  </div>
-                  <div className="text-[10px] font-bold text-pink-700">
-                    Total Hari Ini: <span className="font-black text-maroon">{waterCount} Kali Minum</span> ({waterMl} ml / 2.000 ml)
-                  </div>
+            {wellnessOpen && (
+              <div className="space-y-4 pt-1">
+                {/* 5 Pilihan Mood Hari Ini */}
+                <div className="grid grid-cols-5 gap-1.5">
+                  {MOOD_LIST.map(m => {
+                    const isSelected = currentDayWellness.mood === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => updateDayWellness({ mood: m.id })}
+                        className={`py-2 px-1 rounded-2xl border text-center transition flex flex-col items-center gap-0.5 active:scale-95 ${isSelected ? `${m.color} font-black ring-2 ring-pink-400 scale-105 shadow-xs` : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-pink-50/50'}`}
+                      >
+                        <span className="text-lg">{m.emoji}</span>
+                        <span className="text-[9px] leading-tight truncate w-full px-0.5">
+                          {lang === 'id' ? m.labelId : m.labelEn}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-mono font-black text-xs text-pink-700 bg-white px-2.5 py-1 rounded-xl border border-pink-200 shadow-2xs">
-                    {waterCount} / 8 🥤
-                  </span>
-                  {waterCount > 0 && (
-                    <button
-                      type="button"
-                      onClick={handleResetWaterToday}
-                      className="text-[10px] font-bold text-rose-500 hover:underline px-1"
-                      title="Reset ke 0"
-                    >
-                      {t.waterResetBtn}
-                    </button>
+
+                {/* 💄 CEKLIS PERSIAPAN CANTIK SEBELUM LIVE (MAKE UP, MANDI, SEMPROT PARFUM, CEK BATERAI HP) */}
+                <div className="bg-pink-50/60 border border-pink-200 rounded-2xl p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-maroon uppercase tracking-wider">{t.beautyPrepTitle}</span>
+                    <span className="text-[10px] font-mono font-black text-pink-600">
+                      {prepDoneCount}/4 ✨
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { key: 'makeup', label: t.prepMakeup },
+                      { key: 'bath', label: t.prepBath },
+                      { key: 'perfume', label: t.prepPerfume },
+                      { key: 'battery', label: t.prepBattery }
+                    ].map(item => {
+                      const done = !!prep[item.key];
+                      return (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => updateDayWellness({ prep: { ...prep, [item.key]: !done } })}
+                          className={`p-2.5 rounded-xl border text-[11px] font-black text-left transition flex items-center justify-between active:scale-95 ${done ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white border-pink-600 shadow-xs' : 'bg-white text-slate-700 border-pink-200 hover:bg-pink-50'}`}
+                        >
+                          <span className="truncate">{item.label}</span>
+                          <span>{done ? '✅' : '⬜'}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {allPrepDone && (
+                    <div className="bg-pink-100 border border-pink-300 text-maroon text-[10px] font-black py-1.5 px-3 rounded-xl text-center animate-pulse">
+                      {t.prepAllDone}
+                    </div>
                   )}
                 </div>
-              </div>
 
-              {/* Progress Bar Air Putih */}
-              <div className="w-full h-2.5 bg-white rounded-full overflow-hidden border border-pink-200 p-0.5">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-sky-400 via-pink-400 to-rose-500 transition-all duration-500"
-                  style={{ width: `${waterPct}%` }}
-                ></div>
-              </div>
+                {/* 🐱 RUMAH KUCING "MEKEL" (KASIH MAKAN & MINUM MEKEL HARIAN REAL-TIME) */}
+                <div className="bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50/70 border-2 border-pink-200 rounded-2xl p-3.5 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-12 h-12 rounded-2xl bg-white border-2 border-pink-200 flex items-center justify-center text-2xl shadow-2xs cute-float shrink-0">
+                        {(mekelFood >= 2 && mekelWater >= 2) ? '😻' : '🐱'}
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-black text-maroon flex items-center gap-1.5 flex-wrap">
+                          <span>{t.petName}</span>
+                          <span className="bg-pink-200 text-pink-950 text-[9px] font-black px-2 py-0.5 rounded-full border border-pink-300">
+                            ❤️ {currentDayWellness.petHearts || 0}
+                          </span>
+                        </div>
+                        <p className="text-[10px] font-bold text-rose-800 leading-snug">
+                          {(mekelFood >= 2 && mekelWater >= 2)
+                            ? t.petHappy
+                            : (mekelFood > 0 || mekelWater > 0)
+                              ? t.petHalf
+                              : t.petHungry}
+                        </p>
+                      </div>
+                    </div>
 
-              {/* 8 Gelas Interaktif (Bebas Masalah Font Kotak [] di Windows) */}
-              <div className="grid grid-cols-8 gap-1.5">
-                {Array.from({ length: 8 }).map((_, idx) => {
-                  const filled = idx < waterCount;
-                  const logTime = waterLogs[idx];
-                  return (
                     <button
-                      key={idx}
                       type="button"
-                      onClick={() => handleDrinkWaterGlass(idx + 1 === waterCount ? idx : idx + 1)}
-                      className={`h-11 rounded-xl border flex flex-col items-center justify-center transition active:scale-90 relative ${filled ? 'bg-gradient-to-b from-pink-400 to-rose-500 text-white border-rose-500 shadow-sm' : 'bg-white border-pink-200 text-slate-400 hover:border-pink-400'}`}
-                      title={logTime ? `Gelas #${idx + 1} (${logTime} WIB)` : `Klik untuk minum Gelas #${idx + 1}`}
+                      onClick={() => {
+                        playMekelMeowSound();
+                        updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 });
+                        notify('🐾 Purrr~ Mekel senang banget dielus sama Alisya! 😻💖');
+                      }}
+                      className="bg-white hover:bg-pink-100 text-maroon border border-pink-300 font-black text-[10px] px-2.5 py-1.5 rounded-xl shadow-2xs active:scale-90 transition shrink-0"
                     >
-                      <span className="text-sm leading-none">{filled ? '🥤' : '🥛'}</span>
-                      <span className={`text-[8px] font-mono font-black mt-0.5 ${filled ? 'text-pink-100' : 'text-slate-400'}`}>
-                        {logTime ? logTime : `#${idx + 1}`}
-                      </span>
+                      {t.petPatBtn}
                     </button>
-                  );
-                })}
-              </div>
-
-              {/* Tombol Besar 1-Klik Minum Sekarang */}
-              <button
-                type="button"
-                onClick={() => handleDrinkWaterGlass(waterCount + 1)}
-                className="w-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-xs py-2.5 rounded-2xl shadow-md active:scale-95 transition flex items-center justify-center gap-2 border border-pink-300"
-              >
-                <span>{t.waterDrinkNowBtn}</span>
-              </button>
-
-              {/* Pengaturan Alarm Pengingat Minum Air Otomatis */}
-              <div className="bg-white/90 border border-pink-200 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-maroon">{t.waterReminderTitle}</span>
-                  <select
-                    value={waterReminderInterval}
-                    onChange={e => handleChangeWaterInterval(e.target.value)}
-                    className="bg-pink-50 border border-pink-300 text-maroon font-black rounded-lg px-2 py-1 text-[10px] focus:outline-none cursor-pointer"
-                  >
-                    <option value={0}>{t.waterRemOff}</option>
-                    <option value={30}>{t.waterRem30}</option>
-                    <option value={60}>{t.waterRem60}</option>
-                    <option value={90}>{t.waterRem90}</option>
-                    <option value={120}>{t.waterRem120}</option>
-                  </select>
-                </div>
-                {waterReminderInterval > 0 && (
-                  <div className="font-mono text-[10px] font-black text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span>
-                    <span>{t.waterNextIn} {formatSecondsToMS(waterSecondsLeft)}</span>
                   </div>
-                )}
-              </div>
 
-              {/* Daftar Riwayat Jam Minum Hari Ini */}
-              <div className="bg-white/80 border border-pink-200/70 rounded-xl p-2.5 space-y-1.5">
-                <div className="text-[10px] font-black text-maroon flex items-center justify-between">
-                  <span>{t.waterHistoryTitle}</span>
-                  <span className="text-[9px] text-pink-600 font-bold">{waterLogs.length}x tercatat</span>
-                </div>
-                {waterLogs.length === 0 ? (
-                  <div className="text-[10px] text-rose-700/80 italic font-medium leading-snug">
-                    {t.waterEmptyLog}
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-1">
-                    {waterLogs.map((tm, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-pink-100/90 border border-pink-300 text-maroon font-mono text-[9px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1"
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Mangkuk Makan Mekel */}
+                    <div className="bg-white/90 border border-pink-200 rounded-xl p-2.5 space-y-2">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-black text-amber-900">{t.petFoodLabel}</span>
+                        <span className="font-mono font-black text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                          {mekelFood}/3 🐟
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1">
+                        {Array.from({ length: 3 }).map((_, idx) => {
+                          const fed = idx < mekelFood;
+                          const fLog = mekelFoodLogs[idx];
+                          return (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => handleFeedMekelFood(idx + 1 === mekelFood ? idx : idx + 1)}
+                              className={`py-1.5 rounded-lg border text-center transition flex flex-col items-center justify-center active:scale-90 ${fed ? 'bg-amber-400 text-amber-950 border-amber-500 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-400'}`}
+                            >
+                              <span className="text-xs leading-none">{fed ? '🐟' : '🍽️'}</span>
+                              <span className="text-[8px] font-mono mt-0.5">{fLog || `#${idx + 1}`}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleFeedMekelFood(Math.min(3, mekelFood + 1))}
+                        className="w-full bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 font-black text-[10px] py-1.5 rounded-lg transition active:scale-95"
                       >
-                        <span>🥤#{idx + 1}</span>
-                        <span>{tm}</span>
+                        + {t.petFeedFoodBtn}
+                      </button>
+                    </div>
+
+                    {/* Mangkuk Minum Mekel */}
+                    <div className="bg-white/90 border border-pink-200 rounded-xl p-2.5 space-y-2">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-black text-sky-900">{t.petWaterLabel}</span>
+                        <span className="font-mono font-black text-sky-700 bg-sky-50 px-1.5 py-0.2 rounded border border-sky-200">
+                          {mekelWater}/3 🥛
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1">
+                        {Array.from({ length: 3 }).map((_, idx) => {
+                          const watered = idx < mekelWater;
+                          const wLog = mekelWaterLogs[idx];
+                          return (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => handleGiveMekelWater(idx + 1 === mekelWater ? idx : idx + 1)}
+                              className={`py-1.5 rounded-lg border text-center transition flex flex-col items-center justify-center active:scale-90 ${watered ? 'bg-sky-400 text-white border-sky-500 font-black shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-400'}`}
+                            >
+                              <span className="text-xs leading-none">{watered ? '🥛' : '🥣'}</span>
+                              <span className="text-[8px] font-mono mt-0.5">{wLog || `#${idx + 1}`}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleGiveMekelWater(Math.min(3, mekelWater + 1))}
+                        className="w-full bg-sky-100 hover:bg-sky-200 text-sky-950 border border-sky-300 font-black text-[10px] py-1.5 rounded-lg transition active:scale-95"
+                      >
+                        + {t.petFeedWaterBtn}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 💧 PANEL HIDRASI PINTAR, PENGINGAT WAKTU & RIWAYAT JAM MINUM */}
+                <div className="bg-gradient-to-br from-pink-50 via-rose-50/70 to-sky-50/60 border-2 border-pink-200/80 rounded-2xl p-3.5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <div className="text-xs font-black text-rose-950 flex items-center gap-1">
+                        <span>{t.waterTitle}</span>
+                      </div>
+                      <div className="text-[10px] font-bold text-pink-700">
+                        Total Hari Ini: <span className="font-black text-maroon">{waterCount} Kali Minum</span> ({waterMl} ml / 2.000 ml)
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-black text-xs text-pink-700 bg-white px-2.5 py-1 rounded-xl border border-pink-200 shadow-2xs">
+                        {waterCount} / 8 🥤
                       </span>
-                    ))}
+                      {waterCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleResetWaterToday}
+                          className="text-[10px] font-bold text-rose-500 hover:underline px-1"
+                        >
+                          {t.waterResetBtn}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
 
-              {waterCount >= 8 && (
-                <div className="text-[10px] font-black text-emerald-800 text-center bg-emerald-100 border border-emerald-300 py-1.5 px-2 rounded-xl animate-bounce">
-                  {t.waterGoalDone}
-                </div>
-              )}
-            </div>
-
-            {/* 🐱 Mekel SI KUCING PINK (VIRTUAL PET COMPANION) */}
-            <div className="bg-gradient-to-r from-rose-50 via-pink-50 to-purple-50 border border-pink-200 rounded-2xl p-3 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-11 h-11 rounded-2xl bg-white border border-pink-200 flex items-center justify-center text-2xl shadow-2xs cute-float">
-                  {waterCount >= 4 ? '😻' : '🐱'}
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[11px] font-black text-maroon flex items-center gap-1.5">
-                    <span>{t.petName}</span>
-                    <span className="bg-pink-200 text-pink-900 text-[9px] px-1.5 py-0.2 rounded-full">
-                      ❤️ {currentDayWellness.petHearts || 0}
-                    </span>
+                  <div className="w-full h-2.5 bg-white rounded-full overflow-hidden border border-pink-200 p-0.5">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-sky-400 via-pink-400 to-rose-500 transition-all duration-500"
+                      style={{ width: `${waterPct}%` }}
+                    ></div>
                   </div>
-                  <p className="text-[10px] font-semibold text-rose-800 leading-snug">
-                    {waterCount >= 4 ? t.petHappy : t.petHungry}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 });
-                  playNotificationChime();
-                  notify('🍓 Nyam! Mekel senang banget dikasih stroberi sama Alisya! 😻💖');
-                }}
-                className="bg-white hover:bg-pink-100 text-maroon border border-pink-300 font-black text-[10px] px-2.5 py-1.5 rounded-xl shadow-2xs active:scale-90 transition shrink-0"
-              >
-                {t.petFeedBtn}
-              </button>
-            </div>
 
-            {/* 💄 CEKLIS PERSIAPAN CANTIK SEBELUM LIVE (BEAUTY PREP) */}
-            <div className="space-y-1.5">
-              <div className="text-[10px] font-black text-maroon uppercase tracking-wider">{t.beautyPrepTitle}</div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {[
-                  { key: 'makeup', label: t.prepMakeup },
-                  { key: 'light', label: t.prepLight },
-                  { key: 'voice', label: t.prepVoice },
-                  { key: 'perfume', label: t.prepPerfume }
-                ].map(item => {
-                  const done = !!prep[item.key];
-                  return (
+                  <div className="grid grid-cols-8 gap-1.5">
+                    {Array.from({ length: 8 }).map((_, idx) => {
+                      const filled = idx < waterCount;
+                      const logTime = waterLogs[idx];
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleDrinkWaterGlass(idx + 1 === waterCount ? idx : idx + 1)}
+                          className={`h-11 rounded-xl border flex flex-col items-center justify-center transition active:scale-90 relative ${filled ? 'bg-gradient-to-b from-pink-400 to-rose-500 text-white border-rose-500 shadow-sm' : 'bg-white border-pink-200 text-slate-400 hover:border-pink-400'}`}
+                        >
+                          <span className="text-sm leading-none">{filled ? '🥤' : '🥛'}</span>
+                          <span className={`text-[8px] font-mono font-black mt-0.5 ${filled ? 'text-pink-100' : 'text-slate-400'}`}>
+                            {logTime ? logTime : `#${idx + 1}`}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDrinkWaterGlass(waterCount + 1)}
+                    className="w-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-xs py-2.5 rounded-2xl shadow-md active:scale-95 transition flex items-center justify-center gap-2 border border-pink-300"
+                  >
+                    <span>{t.waterDrinkNowBtn}</span>
+                  </button>
+
+                  <div className="bg-white/90 border border-pink-200 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-extrabold text-maroon">{t.waterReminderTitle}</span>
+                      <select
+                        value={waterReminderInterval}
+                        onChange={e => handleChangeWaterInterval(e.target.value)}
+                        className="bg-pink-50 border border-pink-300 text-maroon font-black rounded-lg px-2 py-1 text-[10px] focus:outline-none cursor-pointer"
+                      >
+                        <option value={0}>{t.waterRemOff}</option>
+                        <option value={30}>{t.waterRem30}</option>
+                        <option value={60}>{t.waterRem60}</option>
+                        <option value={90}>{t.waterRem90}</option>
+                        <option value={120}>{t.waterRem120}</option>
+                      </select>
+                    </div>
+                    {waterReminderInterval > 0 && (
+                      <div className="font-mono text-[10px] font-black text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span>
+                        <span>{t.waterNextIn} {formatSecondsToMS(waterSecondsLeft)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-white/80 border border-pink-200/70 rounded-xl p-2.5 space-y-1.5">
+                    <div className="text-[10px] font-black text-maroon flex items-center justify-between">
+                      <span>{t.waterHistoryTitle}</span>
+                      <span className="text-[9px] text-pink-600 font-bold">{waterLogs.length}x tercatat</span>
+                    </div>
+                    {waterLogs.length === 0 ? (
+                      <div className="text-[10px] text-rose-700/80 italic font-medium leading-snug">
+                        {t.waterEmptyLog}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-1">
+                        {waterLogs.map((tm, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-pink-100/90 border border-pink-300 text-maroon font-mono text-[9px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1"
+                          >
+                            <span>🥤#{idx + 1}</span>
+                            <span>{tm}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 🎁 JAJANAN SELF-REWARD FAVORIT ALISYA */}
+                <div className="bg-amber-50/90 border-2 border-amber-200 rounded-2xl p-3 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="space-y-0.5 min-w-0">
+                      <div className="text-[10px] font-black text-amber-900 uppercase">{t.rewardTitle}</div>
+                      <div className="text-xs font-extrabold text-maroon truncate">
+                        {currentDayWellness.reward || (lang === 'id' ? "Pilih atau acak jajanan favoritmu hari ini! 😋✨" : "Pick or spin your favorite treat today! 😋✨")}
+                      </div>
+                    </div>
                     <button
-                      key={item.key}
                       type="button"
-                      onClick={() => updateDayWellness({ prep: { ...prep, [item.key]: !done } })}
-                      className={`p-2 rounded-xl border text-[10px] font-black text-left transition flex items-center justify-between active:scale-95 ${done ? 'bg-pink-500 text-white border-pink-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-pink-50'}`}
+                      onClick={handleSpinSelfReward}
+                      className="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white font-black text-[10px] px-3 py-1.5 rounded-xl shadow active:scale-95 transition shrink-0"
                     >
-                      <span className="truncate">{item.label}</span>
-                      <span>{done ? '✅' : '⬜'}</span>
+                      {t.rewardSpinBtn}
                     </button>
-                  );
-                })}
-              </div>
-            </div>
+                  </div>
 
-            {/* 🎁 SELF-REWARD ROULETTE */}
-            <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-3 flex items-center justify-between gap-2">
-              <div className="space-y-0.5 min-w-0">
-                <div className="text-[10px] font-black text-amber-900">{t.rewardTitle}</div>
-                <div className="text-xs font-extrabold text-maroon truncate">
-                  {currentDayWellness.reward || (lang === 'id' ? "Klik tombol di kanan buat undi hadiahmu! ✨" : "Click spin to pick your sweet reward! ✨")}
+                  <div className="space-y-1">
+                    <div className="text-[9px] font-bold text-amber-800">{t.rewardPickHint}</div>
+                    <div className="flex flex-wrap gap-1">
+                      {FAVORITE_REWARDS.map(item => {
+                        const fullText = `${item.emoji} ${lang === 'id' ? item.labelId : item.labelEn}`;
+                        const isPicked = currentDayWellness.reward === fullText;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => handleSelectSpecificReward(item)}
+                            className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition active:scale-95 ${isPicked ? 'bg-maroon text-white border-maroon shadow-xs' : 'bg-white text-amber-950 border-amber-300 hover:bg-amber-100'}`}
+                          >
+                            {lang === 'id' ? item.shortId : item.shortEn}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 💌 CATATAN KECIL / GRATITUDE DIARY HARI INI */}
+                <div className="bg-pink-50/70 border border-pink-200 rounded-2xl p-3 space-y-1.5">
+                  <label className="block text-[10px] font-black text-maroon">{t.diaryTitle}</label>
+                  <input
+                    type="text"
+                    value={currentDayWellness.diary || ''}
+                    onChange={e => updateDayWellness({ diary: e.target.value }, false)}
+                    placeholder={t.diaryPlaceholder}
+                    className="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-bold text-rose-950 placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  />
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleSpinSelfReward}
-                className="bg-gradient-to-r from-amber-400 to-pink-500 text-white font-black text-[10px] px-3 py-1.5 rounded-xl shadow active:scale-95 transition shrink-0"
-              >
-                {t.rewardSpinBtn}
-              </button>
-            </div>
+            )}
           </div>
         );
       };
@@ -2353,7 +2589,7 @@
                     <span className="text-sm">🌸</span>
                   </h1>
                   <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider">
-                    v6.5-Princess PRO
+                    v6.7-Priority PRO
                   </span>
                   {isAdmin ? (
                     <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[10px] font-black shadow">👑 ADMIN</span>
@@ -2486,7 +2722,7 @@
           </div>
 
           {/* ========================================================= */}
-          {/* 🌟 1. TAMPILAN MODE PC / DESKTOP                          */}
+          {/* 🌟 1. TAMPILAN MODE PC / DESKTOP (FOKUS UTAMA JADWAL)     */}
           {/* ========================================================= */}
           {displayMode === 'pc' && (
             <div className="flex-1 flex flex-col">
@@ -2547,10 +2783,12 @@
                 {/* AGENDA HARIAN PC */}
                 {pcSubTab === 'agenda' && (
                   <div id="agenda-capture-area" className="space-y-6">
-                    {renderCuteGreetingCard()}
-
+                    {/* 1. RADAR JADWAL LIVE & LOMPAT HARI (PALING ATAS) */}
                     <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3 border-2 border-pink-300/30 relative overflow-hidden">
-                      <div className="flex flex-wrap items-center justify-between gap-4">
+                      {/* Baris Sapaan & Afirmasi Manis Terintegrasi */}
+                      {renderCompactGreetingStrip()}
+
+                      <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
                             <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
@@ -2563,7 +2801,7 @@
                             <span>{getHariNama(selectedDate)}, {selectedDate}</span>
                             <span className="text-xl">{MOOD_LIST.find(m => m.id === currentDayWellness.mood)?.emoji || '🌸'}</span>
                           </h2>
-                          <p className="text-xs text-rose-100">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs} • 💧 {currentDayWellness.water || 0}/8 Gelas</p>
+                          <p className="text-xs text-rose-100">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs} • 💧 {currentDayWellness.water || 0}/8 Gelas • 🐱 Mekel {currentDayWellness.mekelFood || 0}/3</p>
                           
                           {shortBreakWarnings[selectedDate] && (
                             <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-200 border border-amber-300/40 px-3 py-1 rounded-xl text-xs font-bold">
@@ -2605,10 +2843,10 @@
                       {renderLiveNowBanner()}
                     </div>
 
+                    {/* 2. AREA UTAMA JADWAL: AVAILABLE SCHEDULE + KALENDER TANGGAL (KIRI) & DAFTAR SESI JADWAL (KANAN) */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                       <div className="lg:col-span-5 space-y-4">
-                        {renderCuteWellnessWidget()}
-
+                        {/* PRIORITAS 1 KIRI: AVAILABLE SCHEDULE (SLOT JAM KOSONG) */}
                         <div className="bg-emerald-50/90 border-2 border-emerald-200 rounded-3xl p-5 space-y-3 shadow-sm">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-black text-emerald-950 flex items-center gap-2">
@@ -2638,6 +2876,7 @@
                           </div>
                         </div>
 
+                        {/* PRIORITAS 2 KIRI: KALENDER TANGGAL */}
                         <div className="bg-white rounded-3xl border-2 border-pink-200/70 p-5 shadow-sm space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-maroon uppercase tracking-wider">🗓️ {t.calendarTitle} ({monthName} {currentYear})</span>
@@ -2674,9 +2913,12 @@
                             })}
                           </div>
                         </div>
+
+                        {/* PRIORITAS 3 KIRI (DI BAWAH KALENDER): PANEL MOOD, AIR PUTIH & KUCING MEKEL */}
+                        {renderCuteWellnessWidget()}
                       </div>
 
-                      {/* FEED KARTU JADWAL HARIAN */}
+                      {/* KOLOM KANAN UTAMA: FEED KARTU JADWAL HARIAN */}
                       <div className="lg:col-span-7 space-y-4">
                         <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border-2 border-pink-200/70 shadow-sm">
                           <span className="text-xs font-black uppercase text-maroon tracking-wider flex items-center gap-1.5">
@@ -2709,12 +2951,13 @@
                           selectedDaySchedules.map(item => {
                             const brand = brands.find(b => b.id === item.brand_id);
                             const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
+                            const timeState = getSessionTimeState(item);
 
                             return (
                               <div
                                 key={item.id}
                                 onClick={() => handleOpenEdit(item)}
-                                className={`bg-white rounded-3xl p-5 border-2 shadow-sm flex items-start justify-between gap-4 active:scale-[0.99] transition cursor-pointer relative overflow-hidden hover:shadow-md ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-pink-200/60'}`}
+                                className={`bg-white rounded-3xl p-5 border-2 shadow-sm flex items-start justify-between gap-4 active:scale-[0.99] transition cursor-pointer relative overflow-hidden hover:shadow-md ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : timeState === 'done' ? 'border-slate-200 opacity-80' : 'border-pink-200/70'}`}
                               >
                                 <div className="w-2.5 absolute left-0 top-0 bottom-0" style={{ backgroundColor: item.color }}></div>
                                 <div className="space-y-2 pl-2 flex-1">
@@ -2726,6 +2969,11 @@
                                       <span className="bg-emerald-500 text-white text-[10px] font-mono font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm">
                                         <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>
                                         <span>LIVE NOW • -{liveTracker.activeItem.remainingHMS}</span>
+                                      </span>
+                                    )}
+                                    {!isCurrentlyLive && timeState === 'done' && (
+                                      <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-xl border border-slate-200">
+                                        {t.badgeFinished}
                                       </span>
                                     )}
                                     <span className="text-[10px] font-black px-2.5 py-1 rounded-xl uppercase tracking-wider" style={{ backgroundColor: item.color + '44', color: '#0F172A' }}>
@@ -3200,7 +3448,7 @@
           )}
 
           {/* ========================================================= */}
-          {/* 🌟 2. TAMPILAN MODE HP / MOBILE                          */}
+          {/* 🌟 2. TAMPILAN MODE HP / MOBILE (PRIORITAS JADWAL DI ATAS) */}
           {/* ========================================================= */}
           {displayMode === 'mobile' && (
             <div className="flex-1 flex flex-col">
@@ -3246,10 +3494,11 @@
               <div className="p-4 space-y-4 max-w-lg w-full mx-auto">
                 {activeTab === 'agenda' && (
                   <div id="mobile-agenda-capture" className="space-y-4">
-                    {renderCuteGreetingCard()}
+                    {/* 1. RADAR JADWAL LIVE & LOMPAT HARI (PALING ATAS) */}
+                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2.5 border-2 border-pink-300/30">
+                      {renderCompactGreetingStrip()}
 
-                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2 border-2 border-pink-300/30">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center pt-1">
                         <div className="flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
                           <span className="text-[10px] font-extrabold uppercase tracking-widest text-pink-200">{t.radarTitle}</span>
@@ -3279,7 +3528,7 @@
                             {getDayScheduleDensity(selectedDate).text}
                           </span>
                         </div>
-                        <p className="text-xs text-rose-100 mt-1">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs} • 💧 {currentDayWellness.water || 0}/8 Gelas</p>
+                        <p className="text-xs text-rose-100 mt-1">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs} • 💧 {currentDayWellness.water || 0}/8 • 🐱 Mekel {currentDayWellness.mekelFood || 0}/3</p>
                         
                         {shortBreakWarnings[selectedDate] && (
                           <div className="mt-1 text-[10px] bg-amber-400/20 text-amber-200 px-2 py-0.5 rounded font-bold">
@@ -3312,9 +3561,8 @@
                       </div>
                     </div>
 
-                    {renderCuteWellnessWidget()}
-
-                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-3.5 space-y-2">
+                    {/* 2. LANGSUNG DI BAWAH RADAR: AVAILABLE SCHEDULE (SLOT JAM KOSONG) */}
+                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-3.5 space-y-2 shadow-xs">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
                           <span>🟢</span><span>{t.availableTitle}</span>
@@ -3340,6 +3588,7 @@
                       </div>
                     </div>
 
+                    {/* 3. KALENDER TANGGAL HORIZONTAL */}
                     <div className="bg-white p-3 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <div className="flex items-center justify-between mb-2 px-1">
                         <span className="text-xs font-black text-maroon uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
@@ -3377,6 +3626,7 @@
                       </div>
                     </div>
 
+                    {/* 4. DAFTAR KARTU JADWAL HARIAN (BOBO, SHIFT AQUAPRESS, MOM UUNG, DLL) */}
                     <div className="space-y-3">
                       {selectedDaySchedules.length === 0 ? (
                         <div className="bg-white rounded-3xl p-7 text-center border-2 border-pink-200/70 shadow-sm space-y-2">
@@ -3393,12 +3643,13 @@
                         selectedDaySchedules.map(item => {
                           const brand = brands.find(b => b.id === item.brand_id);
                           const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
+                          const timeState = getSessionTimeState(item);
 
                           return (
                             <div
                               key={item.id}
                               onClick={() => handleOpenEdit(item)}
-                              className={`bg-white rounded-3xl p-4 border-2 shadow-sm flex items-start justify-between gap-3 active:scale-[0.98] transition cursor-pointer relative overflow-hidden ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-pink-200/70'}`}
+                              className={`bg-white rounded-3xl p-4 border-2 shadow-sm flex items-start justify-between gap-3 active:scale-[0.98] transition cursor-pointer relative overflow-hidden ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : timeState === 'done' ? 'border-slate-200 opacity-80' : 'border-pink-200/70'}`}
                             >
                               <div className="w-2 absolute left-0 top-0 bottom-0" style={{ backgroundColor: item.color }}></div>
                               <div className="space-y-1.5 pl-2 flex-1">
@@ -3410,6 +3661,11 @@
                                     <span className="bg-emerald-500 text-white text-[9px] font-mono font-black px-2 py-0.5 rounded-lg flex items-center gap-1">
                                       <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                                       <span>-{liveTracker.activeItem.remainingHMS}</span>
+                                    </span>
+                                  )}
+                                  {!isCurrentlyLive && timeState === 'done' && (
+                                    <span className="bg-slate-100 text-slate-600 text-[9px] font-black px-2 py-0.5 rounded-lg border border-slate-200">
+                                      {t.badgeFinished}
                                     </span>
                                   )}
                                   <span className="text-[9px] font-black px-2 py-0.5 rounded-lg uppercase" style={{ backgroundColor: item.color + '44', color: '#0F172A' }}>
@@ -3440,6 +3696,9 @@
                         })
                       )}
                     </div>
+
+                    {/* 5. PANEL MOOD, AIR PUTIH & RUMAH KUCING MEKEL (DITARUH RAPI DI BAWAH DAFTAR JADWAL) */}
+                    {renderCuteWellnessWidget()}
                   </div>
                 )}
 
