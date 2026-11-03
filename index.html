@@ -22,6 +22,8 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2canvas untuk Export Gambar PNG -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -32,6 +34,7 @@
 
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
@@ -51,9 +54,19 @@
     .sticky-col { position: sticky; left: 0; z-index: 20; }
     .sticky-header { position: sticky; top: 0; z-index: 30; }
     .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 76px); }
+
+    /* Dark Mode Overrides yang Lembut & Elegan */
+    body.dark-theme { background-color: #0F172A !important; color: #F1F5F9 !important; }
+    body.dark-theme .bg-slate-100 { background-color: #0F172A !important; }
+    body.dark-theme .bg-white { background-color: #1E293B !important; color: #F1F5F9 !important; }
+    body.dark-theme .bg-slate-50 { background-color: #0F172A !important; color: #E2E8F0 !important; }
+    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300 { border-color: #334155 !important; }
+    body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700 { color: #F8FAFC !important; }
+    body.dark-theme .text-slate-600, body.dark-theme .text-slate-500 { color: #94A3B8 !important; }
+    body.dark-theme .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: #334155 !important; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased font-sans select-none pb-safe md:pb-8">
+<body class="bg-slate-100 text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
 
   <script type="text/babel">
@@ -93,7 +106,7 @@
       { id: 's2', date: '2026-10-26', start_time: '10:00', end_time: '12:00', title: 'Meet Aya', brand_id: 'b_pribadi', status: 'Meeting', color: '#00FFFF', notes: 'Briefing Outfit' },
       { id: 's_sleep1', date: '2026-10-26', start_time: '23:00', end_time: '06:00', title: 'Istirahat Tidur Malam', brand_id: 'b_sleep', status: 'Tidur', color: '#6366F1', notes: 'Sleep hygiene 7 jam' },
       { id: 's3', date: '2026-10-27', start_time: '11:00', end_time: '19:00', title: 'Shift 2 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#B6D7A8', notes: 'Sesi Siang-Sore' },
-      { id: 's_konten_sample', date: '2026-10-27', start_time: '06:00', end_time: '08:00', title: 'Take Konten Video', brand_id: 'b_konten', status: 'Konten', color: '#8B5CF6', notes: 'Shopee & TikTok Affiliate' },
+      { id: 's_konten_sample', date: '2026-10-27', start_time: '06:00', end_time: '08:00', title: 'Take Konten Video', brand_id: 'b_konten', status: 'Konten', color: '#8B5CF6', notes: 'Shopee & TikTok Affiliate', checklist: { shoot: true, edit: false, upload: false } },
       { id: 's_salon1', date: '2026-10-27', start_time: '20:00', end_time: '22:00', title: 'Me Time', brand_id: 'b_lainlain', status: 'Me Time', color: '#EC4899', notes: 'Relax' }
     ];
 
@@ -123,6 +136,30 @@
     if (!END_TIME_OPTIONS.includes("23:59")) {
       END_TIME_OPTIONS.push("23:59");
     }
+
+    // Fungsi Suara Notifikasi Lembut (Web Audio API Chime)
+    const playNotificationChime = () => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const playTone = (freq, startTime, duration) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.15, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + duration);
+        };
+        const now = ctx.currentTime;
+        playTone(587.33, now, 0.25);       // D5
+        playTone(880.00, now + 0.2, 0.45); // A5
+      } catch (e) {
+        console.log("Audio chime error:", e);
+      }
+    };
 
     // --- KAMUS MULTI-BAHASA (6 BAHASA) ---
     const TRANSLATIONS = {
@@ -396,27 +433,66 @@
       return Math.round((diff / 60) * 10) / 10;
     };
 
+    const addDaysToDateStr = (dateStr, daysToAdd) => {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      dt.setDate(dt.getDate() + daysToAdd);
+      const ny = dt.getFullYear();
+      const nm = String(dt.getMonth() + 1).padStart(2, '0');
+      const nd = String(dt.getDate()).padStart(2, '0');
+      return `${ny}-${nm}-${nd}`;
+    };
+
     function App() {
-      // 🌟 100% REAL-TIME TODAY DETECTOR
-      const realTodayStr = useMemo(() => {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+      // 🌟 100% REAL-TIME TODAY & CLOCK DETECTOR
+      const [nowTime, setNowTime] = useState(() => new Date());
+
+      useEffect(() => {
+        const timer = setInterval(() => setNowTime(new Date()), 15000);
+        return () => clearInterval(timer);
       }, []);
 
-      // State Bahasa
-      const [lang, setLang] = useState(() => {
-        return localStorage.getItem('alisya_lang') || 'id';
-      });
+      const realTodayStr = useMemo(() => {
+        const y = nowTime.getFullYear();
+        const m = String(nowTime.getMonth() + 1).padStart(2, '0');
+        const d = String(nowTime.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }, [nowTime]);
 
+      // State Bahasa
+      const [lang, setLang] = useState(() => localStorage.getItem('alisya_lang') || 'id');
       const handleSetLang = (newLang) => {
         setLang(newLang);
         localStorage.setItem('alisya_lang', newLang);
       };
-
       const t = TRANSLATIONS[lang] || TRANSLATIONS.id;
+
+      // 🌟 FITUR 3: DARK MODE / EYE-CARE THEME
+      const [darkMode, setDarkMode] = useState(() => localStorage.getItem('alisya_dark_mode') === 'true');
+      useEffect(() => {
+        if (darkMode) document.body.classList.add('dark-theme');
+        else document.body.classList.remove('dark-theme');
+        localStorage.setItem('alisya_dark_mode', darkMode);
+      }, [darkMode]);
+
+      // 🌟 FITUR 6: PENGINGAT SUARA & NOTIFIKASI SHIFT (15 MENIT SEBELUM MULAI)
+      const [soundAlert, setSoundAlert] = useState(() => localStorage.getItem('alisya_sound_alert') !== 'false');
+      const notifiedIdsRef = useRef(new Set());
+
+      const toggleSoundAlert = () => {
+        const nextVal = !soundAlert;
+        setSoundAlert(nextVal);
+        localStorage.setItem('alisya_sound_alert', nextVal);
+        if (nextVal) {
+          playNotificationChime();
+          if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+          }
+          notify('🔔 Pengingat Suara Aktif (15 Menit Sebelum Shift)');
+        } else {
+          notify('🔕 Pengingat Suara Dinonaktifkan');
+        }
+      };
 
       // Mode Tampilan (HP vs PC)
       const [displayMode, setDisplayMode] = useState(() => {
@@ -442,7 +518,7 @@
       const [enteredPin, setEnteredPin] = useState('');
       const [pinError, setPinError] = useState(false);
 
-      // 🌟 DEFAULT TANGGAL, BULAN & TAHUN REAL-TIME SAAT DIBUKA
+      // Default Tanggal, Bulan & Tahun Real-Time
       const [selectedDate, setSelectedDate] = useState(realTodayStr);
       const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
       const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
@@ -458,7 +534,9 @@
       const [filterDate, setFilterDate] = useState('');
       const [filterHour, setFilterHour] = useState('ALL');
 
-      // Sinkronisasi otomatis Bulan & Tahun ketika memilih tanggal
+      // 🌟 FITUR 2: STATE BULK REPEAT (ULANGI JADWAL BEBERAPA HARI)
+      const [repeatDays, setRepeatDays] = useState(1);
+
       useEffect(() => {
         if (selectedDate) {
           const [y, m] = selectedDate.split('-').map(Number);
@@ -529,14 +607,116 @@
         brand_id: 'b_momuung',
         status: 'LIVE',
         color: '#B6D7A8',
-        notes: ''
+        notes: '',
+        checklist: { shoot: false, edit: false, upload: false }
       });
 
       const [toast, setToast] = useState('');
-      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth]);
+
+      // 🌟 FITUR 1: LIVE NOW TRACKER, COUNTDOWN & PROGRESS HARIAN REAL-TIME
+      const liveTracker = useMemo(() => {
+        const todayList = schedules
+          .filter(s => s.date === realTodayStr && s.status !== 'OFF')
+          .sort((a, b) => a.start_time.localeCompare(b.start_time));
+
+        const nowMinutes = nowTime.getHours() * 60 + nowTime.getMinutes();
+        const toMin = (tStr) => {
+          if (!tStr) return 0;
+          if (tStr === '23:59') return 24 * 60;
+          const [h, m] = tStr.split(':').map(Number);
+          return h * 60 + m;
+        };
+
+        let activeItem = null;
+        let nextItem = null;
+        let completedCount = 0;
+
+        todayList.forEach(item => {
+          const sMin = toMin(item.start_time);
+          let eMin = toMin(item.end_time);
+          if (eMin <= sMin) eMin = 24 * 60;
+
+          if (nowMinutes >= sMin && nowMinutes < eMin) {
+            activeItem = { ...item, remainingMin: eMin - nowMinutes };
+          } else if (nowMinutes >= eMin) {
+            completedCount++;
+          } else if (nowMinutes < sMin && !nextItem) {
+            nextItem = { ...item, startsInMin: sMin - nowMinutes };
+          }
+        });
+
+        const progressPct = todayList.length > 0
+          ? Math.min(100, Math.round(((completedCount + (activeItem ? 0.5 : 0)) / todayList.length) * 100))
+          : 0;
+
+        return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
+      }, [schedules, realTodayStr, nowTime]);
+
+      // Cek Pengingat 15 Menit Sebelum Shift Dimulai
+      useEffect(() => {
+        if (!soundAlert || !liveTracker.nextItem) return;
+        const { nextItem } = liveTracker;
+        if (nextItem.startsInMin <= 15 && nextItem.startsInMin > 0) {
+          const alertKey = `${nextItem.id}_${realTodayStr}`;
+          if (!notifiedIdsRef.current.has(alertKey)) {
+            notifiedIdsRef.current.add(alertKey);
+            playNotificationChime();
+            notify(`🔔 PENGINGAT: "${nextItem.title}" dimulai dalam ${nextItem.startsInMin} menit!`);
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification("⏰ Pengingat Jadwal Alisya", {
+                body: `${nextItem.title} (${nextItem.start_time}) dimulai dalam ${nextItem.startsInMin} menit!`
+              });
+            }
+          }
+        }
+      }, [liveTracker, soundAlert, realTodayStr]);
+
+      // 🌟 FITUR 5: TOGGLE CHECKLIST KHUSUS TAKE KONTEN VIDEO
+      const handleToggleChecklist = (e, itemId, stepKey) => {
+        e.stopPropagation();
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const updated = schedules.map(s => {
+          if (s.id === itemId) {
+            const currentCheck = s.checklist || { shoot: false, edit: false, upload: false };
+            return {
+              ...s,
+              checklist: { ...currentCheck, [stepKey]: !currentCheck[stepKey] }
+            };
+          }
+          return s;
+        });
+        saveSchedulesToCloud(updated);
+        notify('✅ Status progres konten diperbarui!');
+      };
+
+      // 🌟 FITUR 4: DOWNLOAD GAMBAR JADWAL (.PNG)
+      const exportElementAsPNG = async (elementId, filenameLabel) => {
+        const el = document.getElementById(elementId);
+        if (!el || typeof html2canvas === 'undefined') {
+          notify('⚠️ Gagal memuat fitur tangkapan gambar.');
+          return;
+        }
+        notify('📸 Sedang memproses gambar jadwal...');
+        try {
+          const canvas = await html2canvas(el, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: darkMode ? '#0F172A' : '#F8FAFC'
+          });
+          const link = document.createElement('a');
+          link.download = `Alisya_Schedule_${filenameLabel}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          notify('✨ Gambar jadwal (.PNG) berhasil diunduh!');
+        } catch (err) {
+          console.error(err);
+          notify('⚠️ Gagal mengunduh gambar.');
+        }
+      };
 
       const handleVerifyPin = (e) => {
         e.preventDefault();
@@ -554,6 +734,7 @@
       const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
         if (!isAdmin) { setPinInputModal(true); return; }
         setSelectedSchedule(null);
+        setRepeatDays(1);
         setFormData({
           id: 'sch_' + Date.now(),
           date: dateStr || selectedDate,
@@ -563,7 +744,8 @@
           brand_id: brands[0]?.id || 'b_momuung',
           status: 'LIVE',
           color: brands[0]?.color || '#B6D7A8',
-          notes: ''
+          notes: '',
+          checklist: { shoot: false, edit: false, upload: false }
         });
         setModalOpen(true);
       };
@@ -571,7 +753,11 @@
       const handleOpenEdit = (sch) => {
         if (!isAdmin) { setPinInputModal(true); return; }
         setSelectedSchedule(sch);
-        setFormData({ ...sch });
+        setRepeatDays(1);
+        setFormData({
+          ...sch,
+          checklist: sch.checklist || { shoot: false, edit: false, upload: false }
+        });
         setModalOpen(true);
       };
 
@@ -582,7 +768,6 @@
         notify('📋 Jadwal berhasil disalin!');
       };
 
-      // Preset 1-Klik Mom Uung
       const applyMomUungPreset = (shiftNum, start, end) => {
         const momUungBrand = brands.find(b => b.id === 'b_momuung') || { color: '#B6D7A8' };
         setFormData(prev => ({
@@ -597,7 +782,6 @@
         notify(`⚡ Shift ${shiftNum} Mom Uung (${start} - ${end})`);
       };
 
-      // Preset 1-Klik AquaPress
       const applyAquaPressPreset = (shiftNum, start, end) => {
         const aquaBrand = brands.find(b => b.id === 'b_aquapress') || { color: '#00FFFF' };
         setFormData(prev => ({
@@ -612,17 +796,28 @@
         notify(`💧 Shift ${shiftNum} AquaPress (${start} - ${end})`);
       };
 
+      // Simpan Jadwal + Dukungan Bulk Repeat Beberapa Hari
       const handleSave = (e) => {
         e.preventDefault();
         const brandObj = brands.find(b => b.id === formData.brand_id);
-        const payload = { ...formData, color: brandObj?.color || formData.color };
+        const basePayload = { ...formData, color: brandObj?.color || formData.color };
 
         if (selectedSchedule) {
-          saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? payload : s));
+          saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
           notify('✨ Jadwal berhasil diperbarui di Agenda & Spreadsheet!');
         } else {
-          saveSchedulesToCloud([...schedules, payload]);
-          notify('🚀 Jadwal baru berhasil disimpan!');
+          const newItems = [];
+          const count = Number(repeatDays) || 1;
+          for (let i = 0; i < count; i++) {
+            const targetDate = i === 0 ? basePayload.date : addDaysToDateStr(basePayload.date, i);
+            newItems.push({
+              ...basePayload,
+              id: 'sch_' + Date.now() + '_' + i,
+              date: targetDate
+            });
+          }
+          saveSchedulesToCloud([...schedules, ...newItems]);
+          notify(count > 1 ? `🚀 Jadwal berhasil dipasang untuk ${count} hari beruntun!` : '🚀 Jadwal baru berhasil disimpan!');
         }
         setModalOpen(false);
       };
@@ -923,7 +1118,6 @@
         }
       }, [displayMode, activeTab, pcSubTab, stats]);
 
-      // Fungsi Lompat Cepat (Hari Ini, Besok, Lusa) + Auto-Sync Bulan & Tahun
       const jumpToOffset = (days) => {
         const d = new Date();
         d.setDate(d.getDate() + days);
@@ -995,6 +1189,72 @@
         </div>
       );
 
+      // Komponen Banner Live Now Tracker & Progress Bar
+      const renderLiveNowBanner = () => (
+        <div className="bg-black/25 rounded-2xl p-3 border border-white/15 space-y-2 mt-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              {liveTracker.activeItem ? (
+                <span className="flex items-center gap-1.5 font-black text-emerald-300">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span>SEDANG BERLANGSUNG: {liveTracker.activeItem.title} ({liveTracker.activeItem.remainingMin} mnt lagi)</span>
+                </span>
+              ) : (
+                <span className="text-rose-200 font-bold">✨ Saat ini tidak ada sesi sedang berlangsung</span>
+              )}
+            </div>
+            {liveTracker.nextItem && (
+              <div className="text-[11px] font-bold bg-white/15 px-2.5 py-1 rounded-xl text-amber-200">
+                ⏳ Berikutnya: <span className="text-white font-black">{liveTracker.nextItem.title}</span> ({liveTracker.nextItem.start_time} • dlm {liveTracker.nextItem.startsInMin} mnt)
+              </div>
+            )}
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] text-rose-200 font-bold">
+              <span>Progres Agenda Hari Ini ({realTodayStr})</span>
+              <span>{liveTracker.progressPct}% Selesai</span>
+            </div>
+            <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 transition-all duration-500"
+                style={{ width: `${liveTracker.progressPct}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      );
+
+      // Komponen Checklist Produksi Video Affiliate
+      const renderKontenChecklist = (item) => {
+        if (item.brand_id !== 'b_konten' && item.status !== 'Konten') return null;
+        const cl = item.checklist || { shoot: false, edit: false, upload: false };
+        return (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1.5" onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={(e) => handleToggleChecklist(e, item.id, 'shoot')}
+              className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition flex items-center gap-1 ${cl.shoot ? 'bg-emerald-500 text-white border-emerald-600 shadow-xs' : 'bg-slate-100 text-slate-600 border-slate-300'}`}
+            >
+              <span>{cl.shoot ? '✅' : '⬜'}</span><span>1. Take Video</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleToggleChecklist(e, item.id, 'edit')}
+              className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition flex items-center gap-1 ${cl.edit ? 'bg-amber-500 text-white border-amber-600 shadow-xs' : 'bg-slate-100 text-slate-600 border-slate-300'}`}
+            >
+              <span>{cl.edit ? '✅' : '⬜'}</span><span>2. Editing</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleToggleChecklist(e, item.id, 'upload')}
+              className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition flex items-center gap-1 ${cl.upload ? 'bg-purple-600 text-white border-purple-700 shadow-xs' : 'bg-slate-100 text-slate-600 border-slate-300'}`}
+            >
+              <span>{cl.upload ? '🚀' : '⬜'}</span><span>3. Done Upload</span>
+            </button>
+          </div>
+        );
+      };
+
       return (
         <div className="min-h-screen flex flex-col bg-slate-100">
           {toast && (
@@ -1013,7 +1273,7 @@
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-extrabold text-base tracking-wide">Alisya Schedule</h1>
                   <span className="bg-white/15 text-rose-200 border border-white/25 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider">
-                    v5.8-Ultra PRO
+                    v6.0-Ultra PRO
                   </span>
                   {isAdmin ? (
                     <span className="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-md text-[10px] font-black shadow">👑 ADMIN</span>
@@ -1028,7 +1288,7 @@
               </div>
             </div>
 
-            {/* PILIHAN 6 BAHASA & MODE TAMPILAN (HP vs PC) */}
+            {/* PILIHAN 6 BAHASA, TEMA MALAM, ALARM & MODE TAMPILAN */}
             <div className="flex items-center gap-2 flex-wrap">
               {/* 🌐 DROPDOWN 6 BAHASA */}
               <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-2xl border border-white/10 shadow-inner">
@@ -1046,6 +1306,25 @@
                   <option value="min" className="bg-slate-900 text-white">🐃 Baso Minang</option>
                 </select>
               </div>
+
+              {/* 🌙 TOMBOL DARK MODE */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${darkMode ? 'bg-amber-400 text-slate-900 border-amber-300 shadow' : 'bg-black/30 text-rose-100 border-white/10 hover:bg-black/40'}`}
+                title="Mode Malam / Siang"
+              >
+                <span>{darkMode ? '☀️' : '🌙'}</span>
+                <span className="hidden sm:inline">{darkMode ? 'Light' : 'Dark'}</span>
+              </button>
+
+              {/* 🔔 TOMBOL PENGINGAT SUARA */}
+              <button
+                onClick={toggleSoundAlert}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${soundAlert ? 'bg-emerald-500/30 text-emerald-200 border-emerald-400/40' : 'bg-black/30 text-rose-200/60 border-white/10'}`}
+                title="Pengingat Suara 15 Menit Sebelum Shift"
+              >
+                <span>{soundAlert ? '🔔' : '🔕'}</span>
+              </button>
 
               <div className="flex items-center bg-black/30 p-1 rounded-2xl border border-white/10 shadow-inner">
                 <button
@@ -1180,42 +1459,54 @@
                 
                 {/* AGENDA HARIAN PC */}
                 {pcSubTab === 'agenda' && (
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-maroon to-rose-900 text-white rounded-3xl p-6 shadow-lg flex flex-wrap items-center justify-between gap-4">
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
-                          <span className="text-xs font-extrabold uppercase tracking-widest text-rose-200">{t.radarTitle}</span>
-                          <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${getDayScheduleDensity(selectedDate).badge}`}>
-                            {getDayScheduleDensity(selectedDate).text}
-                          </span>
+                  <div id="agenda-capture-area" className="space-y-6">
+                    <div className="bg-gradient-to-r from-maroon to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span className="text-xs font-extrabold uppercase tracking-widest text-rose-200">{t.radarTitle}</span>
+                            <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${getDayScheduleDensity(selectedDate).badge}`}>
+                              {getDayScheduleDensity(selectedDate).text}
+                            </span>
+                          </div>
+                          <h2 className="text-2xl font-black">{getHariNama(selectedDate)}, {selectedDate}</h2>
+                          <p className="text-xs text-rose-100">{selectedDaySchedules.length} Sesi Terjadwal • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} Aktivitas Produktif</p>
                         </div>
-                        <h2 className="text-2xl font-black">{getHariNama(selectedDate)}, {selectedDate}</h2>
-                        <p className="text-xs text-rose-100">{selectedDaySchedules.length} Sesi Terjadwal • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} Aktivitas Produktif</p>
+
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 bg-black/20 p-1.5 rounded-2xl border border-white/10">
+                            <span className="text-xs text-rose-200 font-bold px-2">{t.jump}</span>
+                            <button onClick={() => jumpToOffset(0)} className="bg-white/20 hover:bg-white/30 text-white text-xs font-black px-3 py-1.5 rounded-xl">{t.today}</button>
+                            <button onClick={() => jumpToOffset(1)} className="bg-white/20 hover:bg-white/30 text-white text-xs font-black px-3 py-1.5 rounded-xl">{t.tomorrow}</button>
+                            <button onClick={() => jumpToOffset(2)} className="bg-white/20 hover:bg-white/30 text-white text-xs font-black px-3 py-1.5 rounded-xl">{t.dayAfter}</button>
+                          </div>
+                          <button
+                            onClick={() => exportElementAsPNG('agenda-capture-area', selectedDate)}
+                            className="bg-white/20 hover:bg-white/30 text-white px-3.5 py-2.5 rounded-2xl font-black shadow-md flex items-center gap-1.5 active:scale-95 transition text-xs border border-white/20"
+                            title="Unduh Gambar Jadwal Hari Ini (.PNG)"
+                          >
+                            <span>📸</span><span>Simpan PNG</span>
+                          </button>
+                          <button
+                            onClick={shareToWhatsApp}
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-2xl font-black shadow-md flex items-center gap-2 active:scale-95 transition text-xs"
+                          >
+                            <span className="text-sm">📲</span><span>{t.btnShareWA}</span>
+                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleOpenCreate(selectedDate)}
+                              className="bg-white text-maroon px-4 py-2.5 rounded-2xl font-black shadow-md active:scale-95 transition text-xs"
+                            >
+                              {t.btnAddSession}
+                            </button>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/10">
-                          <span className="text-xs text-rose-200 font-bold px-2">{t.jump}</span>
-                          <button onClick={() => jumpToOffset(0)} className="bg-white/20 hover:bg-white/30 text-white text-xs font-black px-3 py-1.5 rounded-xl">{t.today}</button>
-                          <button onClick={() => jumpToOffset(1)} className="bg-white/20 hover:bg-white/30 text-white text-xs font-black px-3 py-1.5 rounded-xl">{t.tomorrow}</button>
-                          <button onClick={() => jumpToOffset(2)} className="bg-white/20 hover:bg-white/30 text-white text-xs font-black px-3 py-1.5 rounded-xl">{t.dayAfter}</button>
-                        </div>
-                        <button
-                          onClick={shareToWhatsApp}
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-2xl font-black shadow-md flex items-center gap-2 active:scale-95 transition text-xs"
-                        >
-                          <span className="text-sm">📲</span><span>{t.btnShareWA}</span>
-                        </button>
-                        {isAdmin && (
-                          <button
-                            onClick={() => handleOpenCreate(selectedDate)}
-                            className="bg-white text-maroon px-4 py-2.5 rounded-2xl font-black shadow-md active:scale-95 transition text-xs"
-                          >
-                            {t.btnAddSession}
-                          </button>
-                        )}
-                      </div>
+                      {/* LIVE NOW TRACKER & PROGRESS BAR */}
+                      {renderLiveNowBanner()}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -1327,6 +1618,8 @@
                                       📝 {item.notes}
                                     </div>
                                   )}
+                                  {/* CHECKLIST KHUSUS TAKE KONTEN */}
+                                  {renderKontenChecklist(item)}
                                 </div>
                                 {isAdmin && (
                                   <div className="flex flex-col items-end gap-2">
@@ -1353,13 +1646,19 @@
                 {pcSubTab === 'calendar' && (
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={shareSpreadsheetToWA}
                           className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-2xl font-black shadow-md flex items-center gap-2 active:scale-95 transition"
                         >
                           <span className="text-sm">📲</span>
                           <span>Share Rekap Spreadsheet ke WA</span>
+                        </button>
+                        <button
+                          onClick={() => exportElementAsPNG('spreadsheet-capture-area', `${monthName}_${currentYear}`)}
+                          className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-2xl font-black shadow-md flex items-center gap-1.5 active:scale-95 transition"
+                        >
+                          <span>📸</span><span>Unduh Gambar Tabel (.PNG)</span>
                         </button>
                       </div>
 
@@ -1373,7 +1672,7 @@
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div id="spreadsheet-capture-area" className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                       <div className="overflow-x-auto relative" style={{ maxHeight: '75vh' }}>
                         <table className="w-full border-collapse text-xs select-none">
                           <thead>
@@ -1800,7 +2099,7 @@
 
               <div className="p-4 space-y-4 max-w-lg w-full mx-auto">
                 {activeTab === 'agenda' && (
-                  <div className="space-y-4">
+                  <div id="mobile-agenda-capture" className="space-y-4">
                     {/* RADAR LIVE STREAM */}
                     <div className="bg-gradient-to-r from-maroon to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2">
                       <div className="flex justify-between items-center">
@@ -1808,12 +2107,20 @@
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
                           <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-200">{t.radarTitle}</span>
                         </div>
-                        <button
-                          onClick={shareToWhatsApp}
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-black shadow flex items-center gap-1 active:scale-95 transition"
-                        >
-                          <span>📲</span><span>{t.btnShareWA}</span>
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => exportElementAsPNG('mobile-agenda-capture', selectedDate)}
+                            className="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-xl text-[10px] font-black shadow flex items-center gap-1 active:scale-95 transition"
+                          >
+                            <span>📸</span><span>PNG</span>
+                          </button>
+                          <button
+                            onClick={shareToWhatsApp}
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-xl text-[11px] font-black shadow flex items-center gap-1 active:scale-95 transition"
+                          >
+                            <span>📲</span><span>{t.btnShareWA}</span>
+                          </button>
+                        </div>
                       </div>
                       <div>
                         <div className="flex items-center justify-between">
@@ -1824,6 +2131,9 @@
                         </div>
                         <p className="text-xs text-rose-100 mt-1">{selectedDaySchedules.length} Sesi Terjadwal • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} Aktivitas Produktif</p>
                       </div>
+
+                      {/* LIVE NOW TRACKER MOBILE */}
+                      {renderLiveNowBanner()}
 
                       <div className="flex items-center gap-2 pt-2 border-t border-white/20">
                         <span className="text-[10px] text-rose-200 font-bold">{t.jump}</span>
@@ -1937,6 +2247,7 @@
                                     📝 {item.notes}
                                   </div>
                                 )}
+                                {renderKontenChecklist(item)}
                               </div>
                               {isAdmin && (
                                 <div className="flex flex-col items-end gap-1">
@@ -1957,14 +2268,22 @@
                 {/* SPREADSHEET MODE HP */}
                 {activeTab === 'calendar' && (
                   <div className="space-y-3">
-                    <button
-                      onClick={shareSpreadsheetToWA}
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
-                    >
-                      <span>📲</span><span>Share Spreadsheet ke WA</span>
-                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={shareSpreadsheetToWA}
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
+                      >
+                        <span>📲</span><span>Share ke WA</span>
+                      </button>
+                      <button
+                        onClick={() => exportElementAsPNG('mobile-spreadsheet-capture', `${monthName}_${currentYear}`)}
+                        className="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
+                      >
+                        <span>📸</span><span>Simpan PNG</span>
+                      </button>
+                    </div>
 
-                    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div id="mobile-spreadsheet-capture" className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                       <div className="overflow-x-auto relative" style={{ maxHeight: '70vh' }}>
                         <table className="w-full border-collapse text-xs select-none">
                           <thead>
@@ -2209,6 +2528,7 @@
                                   <span className="font-bold text-slate-700">[{s.status}]</span>
                                 </div>
                                 {s.notes && <div className="text-[10px] text-amber-900 italic bg-amber-50 p-1.5 rounded-lg mt-1">📝 {s.notes}</div>}
+                                {renderKontenChecklist(s)}
                                 {isAdmin && (
                                   <div className="flex justify-end gap-2 pt-1 border-t border-slate-200/60 mt-1">
                                     <button onClick={() => handleDuplicate(s)} className="text-[10px] font-bold text-slate-600">📋 Salin</button>
@@ -2308,7 +2628,7 @@
             </div>
           )}
 
-          {/* MODAL FORM INPUT JADWAL (1-KLIK PRESET MOM UUNG & AQUAPRESS) */}
+          {/* MODAL FORM INPUT JADWAL (1-KLIK PRESET + BULK REPEAT) */}
           {modalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
               <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
@@ -2449,15 +2769,38 @@
                       </select>
                     </div>
                   </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Tanggal *</label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.date}
-                      onChange={e => setFormData({ ...formData, date: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold"
-                    />
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Tanggal Mulai *</label>
+                      <input
+                        type="date"
+                        required
+                        value={formData.date}
+                        onChange={e => setFormData({ ...formData, date: e.target.value })}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold"
+                      />
+                    </div>
+                    {!selectedSchedule ? (
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">🔁 Ulangi Beruntun</label>
+                        <select
+                          value={repeatDays}
+                          onChange={e => setRepeatDays(Number(e.target.value))}
+                          className="w-full bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-2xl px-3 py-2.5 font-black"
+                        >
+                          <option value={1}>Hanya 1 Hari Ini</option>
+                          <option value={2}>2 Hari Beruntun</option>
+                          <option value={3}>3 Hari Beruntun</option>
+                          <option value={5}>5 Hari Beruntun</option>
+                          <option value={7}>1 Minggu (7 Hari)</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <div className="flex items-end pb-2 text-[10px] text-slate-400 italic">
+                        Mode Edit 1 Jadwal
+                      </div>
+                    )}
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2">
