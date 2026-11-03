@@ -64,6 +64,14 @@
     body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700 { color: #F8FAFC !important; }
     body.dark-theme .text-slate-600, body.dark-theme .text-slate-500 { color: #94A3B8 !important; }
     body.dark-theme .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: #334155 !important; }
+
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    }
+    .live-card-glow {
+      animation: pulse-border 2s infinite;
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
@@ -137,6 +145,15 @@
       END_TIME_OPTIONS.push("23:59");
     }
 
+    // Format Detik ke Jam Digital HH:MM:SS
+    const formatSecondsToHMS = (totalSeconds) => {
+      const sec = Math.max(0, Math.floor(totalSeconds));
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    };
+
     // --- KAMUS TERJEMAHAN TOTAL 3 BAHASA (ID, EN, ZH) ---
     const TRANSLATIONS = {
       id: {
@@ -158,6 +175,7 @@
         btnShareRekapWA: "Share Rekap Spreadsheet ke WA",
         btnDownloadTablePNG: "Unduh Gambar Tabel (.PNG)",
         btnAddSession: "+ Tambah Sesi",
+        btnCloneDay: "📋 Salin 1 Hari",
         jump: "Lompat:",
         today: "Hari Ini",
         tomorrow: "Besok",
@@ -197,12 +215,17 @@
         scoreBurnout: "🔴 Burnout Alert! (Beban Jam Kerja Sangat Tinggi, Butuh Istirahat)",
         shortBreakWarning: "⚠️ Jeda istirahat antar shift terlalu singkat (<5 jam)!",
         liveNowActive: "SEDANG BERLANGSUNG:",
-        liveNowIdle: "✨ Saat ini tidak ada sesi sedang berlangsung",
-        nextUp: "Berikutnya:",
+        liveNowIdle: "✨ Saat ini tidak ada sesi yang sedang berlangsung",
+        endsAt: "Habis Pukul",
+        startsAt: "Mulai Pukul",
+        timeLeft: "Sisa Waktu Mundur:",
+        startsInCountdown: "Mulai Dalam:",
+        sessionProgress: "Progres Sesi Berjalan",
+        nextUp: "Sesi Berikutnya:",
         inMin: "dlm",
         minLeft: "mnt lagi",
         minUnit: "mnt",
-        progressToday: "Progres Agenda Hari Ini",
+        progressToday: "Progres Total Agenda Hari Ini",
         completed: "Selesai",
         scheduledSessions: "Sesi Terjadwal",
         productiveActs: "Aktivitas Produktif",
@@ -261,7 +284,13 @@
         formEndHour: "Jam Selesai (Digital) *",
         formNotes: "Catatan / Target GMV",
         deleteSchBtn: "🗑️ Hapus Jadwal",
-        saveCloudBtn: "Simpan ke Cloud"
+        saveCloudBtn: "Simpan ke Cloud",
+        stickyNoteLabel: "📌 Catatan Fokus:",
+        editNoteBtn: "✏️ Ubah Catatan",
+        cloneModalTitle: "📋 Salin Semua Jadwal Hari Ini",
+        cloneModalDesc: "Salin seluruh daftar sesi dari tanggal",
+        cloneTargetLabel: "Pilih Tanggal Tujuan:",
+        cloneConfirmBtn: "🚀 Salin Sekarang"
       },
       en: {
         locale: 'en-US',
@@ -282,6 +311,7 @@
         btnShareRekapWA: "Share Spreadsheet Recap to WA",
         btnDownloadTablePNG: "Download Table Image (.PNG)",
         btnAddSession: "+ Add Session",
+        btnCloneDay: "📋 Clone Full Day",
         jump: "Jump:",
         today: "Today",
         tomorrow: "Tomorrow",
@@ -322,11 +352,16 @@
         shortBreakWarning: "⚠️ Short break between shifts (<5 hours)!",
         liveNowActive: "LIVE NOW:",
         liveNowIdle: "✨ No active session at this moment",
-        nextUp: "Next Up:",
+        endsAt: "Ends At",
+        startsAt: "Starts At",
+        timeLeft: "Countdown:",
+        startsInCountdown: "Starts In:",
+        sessionProgress: "Current Session Progress",
+        nextUp: "Next Session:",
         inMin: "in",
         minLeft: "min left",
         minUnit: "min",
-        progressToday: "Today's Schedule Progress",
+        progressToday: "Today's Total Agenda Progress",
         completed: "Completed",
         scheduledSessions: "Scheduled Sessions",
         productiveActs: "Productive Activities",
@@ -385,7 +420,13 @@
         formEndHour: "End Time (24H) *",
         formNotes: "Notes / GMV Target",
         deleteSchBtn: "🗑️ Delete Schedule",
-        saveCloudBtn: "Save to Cloud"
+        saveCloudBtn: "Save to Cloud",
+        stickyNoteLabel: "📌 Weekly Focus:",
+        editNoteBtn: "✏️ Edit Note",
+        cloneModalTitle: "📋 Clone Full Day Schedule",
+        cloneModalDesc: "Copy all sessions from date",
+        cloneTargetLabel: "Select Target Date:",
+        cloneConfirmBtn: "🚀 Clone Now"
       },
       zh: {
         locale: 'zh-CN',
@@ -406,6 +447,7 @@
         btnShareRekapWA: "分享表格汇总至 WA",
         btnDownloadTablePNG: "下载表格图片 (.PNG)",
         btnAddSession: "+ 添加时段",
+        btnCloneDay: "📋 复制整天日程",
         jump: "跳转:",
         today: "今天",
         tomorrow: "明天",
@@ -446,11 +488,16 @@
         shortBreakWarning: "⚠️ 班次之间休息时间过短 (<5小时)！",
         liveNowActive: "正在进行:",
         liveNowIdle: "✨ 当前没有正在进行的活动",
+        endsAt: "结束时间",
+        startsAt: "开始时间",
+        timeLeft: "剩余倒计时:",
+        startsInCountdown: "距离开始:",
+        sessionProgress: "当前活动进度",
         nextUp: "接下来:",
         inMin: "还有",
         minLeft: "分钟结束",
         minUnit: "分钟",
-        progressToday: "今日日程进度",
+        progressToday: "今日总日程进度",
         completed: "已完成",
         scheduledSessions: "已排程活动",
         productiveActs: "项工作活动",
@@ -509,7 +556,13 @@
         formEndHour: "结束时间 (24H) *",
         formNotes: "备注 / GMV 目标",
         deleteSchBtn: "🗑️ 删除日程",
-        saveCloudBtn: "保存至云端"
+        saveCloudBtn: "保存至云端",
+        stickyNoteLabel: "📌 本周重点:",
+        editNoteBtn: "✏️ 修改重点",
+        cloneModalTitle: "📋 复制整天日程",
+        cloneModalDesc: "复制该日期的所有日程",
+        cloneTargetLabel: "选择目标日期:",
+        cloneConfirmBtn: "🚀 立即复制"
       }
     };
 
@@ -564,10 +617,11 @@
     };
 
     function App() {
+      // 🌟 MESIN WAKTU DETIK REAL-TIME (BERDETAK SETIAP 1 DETIK / 1000ms)
       const [nowTime, setNowTime] = useState(() => new Date());
 
       useEffect(() => {
-        const timer = setInterval(() => setNowTime(new Date()), 15000);
+        const timer = setInterval(() => setNowTime(new Date()), 1000);
         return () => clearInterval(timer);
       }, []);
 
@@ -576,6 +630,13 @@
         const m = String(nowTime.getMonth() + 1).padStart(2, '0');
         const d = String(nowTime.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
+      }, [nowTime]);
+
+      const liveClockString = useMemo(() => {
+        const hh = String(nowTime.getHours()).padStart(2, '0');
+        const mm = String(nowTime.getMinutes()).padStart(2, '0');
+        const ss = String(nowTime.getSeconds()).padStart(2, '0');
+        return `${hh}:${mm}:${ss}`;
       }, [nowTime]);
 
       // State 3 Bahasa Utama (id, en, zh)
@@ -639,6 +700,7 @@
 
       const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
+      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Jaga Kesehatan & Tidur Cukup! ✨");
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -662,6 +724,10 @@
       const [filterHour, setFilterHour] = useState('ALL');
 
       const [repeatDays, setRepeatDays] = useState(1);
+
+      // Modal Clone 1 Hari Penuh
+      const [cloneModalOpen, setCloneModalOpen] = useState(false);
+      const [cloneTargetDate, setCloneTargetDate] = useState(() => addDaysToDateStr(realTodayStr, 1));
 
       useEffect(() => {
         if (selectedDate) {
@@ -709,7 +775,13 @@
           }
         });
 
-        return () => { refSch.off(); refBrands.off(); };
+        const refNote = firebaseDb.ref('alisya_sticky_note');
+        refNote.on('value', snap => {
+          const val = snap.val();
+          if (val) setStickyNote(val);
+        });
+
+        return () => { refSch.off(); refBrands.off(); refNote.off(); };
       }, []);
 
       const saveSchedulesToCloud = (newList) => {
@@ -720,6 +792,16 @@
       const saveBrandsToCloud = (newBrands) => {
         setBrands(newBrands);
         if (firebaseDb) firebaseDb.ref('alisya_brands').set(newBrands);
+      };
+
+      const handleEditStickyNote = () => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const nextText = prompt("📌 Masukkan Catatan Fokus / Pengumuman Baru:", stickyNote);
+        if (nextText !== null && nextText.trim() !== "") {
+          setStickyNote(nextText.trim());
+          if (firebaseDb) firebaseDb.ref('alisya_sticky_note').set(nextText.trim());
+          notify('📌 Catatan Fokus berhasil diperbarui!');
+        }
       };
 
       const [modalOpen, setModalOpen] = useState(false);
@@ -743,18 +825,18 @@
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
-      // 🌟 Live Now Tracker
+      // 🌟 MESIN COUNTDOWN TIMER REAL-TIME PER DETIK (HH:MM:SS)
       const liveTracker = useMemo(() => {
         const todayList = schedules
           .filter(s => s.date === realTodayStr && s.status !== 'OFF')
           .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
-        const nowMinutes = nowTime.getHours() * 60 + nowTime.getMinutes();
-        const toMin = (tStr) => {
+        const nowTotalSeconds = nowTime.getHours() * 3600 + nowTime.getMinutes() * 60 + nowTime.getSeconds();
+        const toSec = (tStr) => {
           if (!tStr) return 0;
-          if (tStr === '23:59') return 24 * 60;
+          if (tStr === '23:59') return 24 * 3600;
           const [h, m] = tStr.split(':').map(Number);
-          return h * 60 + m;
+          return h * 3600 + m * 60;
         };
 
         let activeItem = null;
@@ -762,21 +844,42 @@
         let completedCount = 0;
 
         todayList.forEach(item => {
-          const sMin = toMin(item.start_time);
-          let eMin = toMin(item.end_time);
-          if (eMin <= sMin) eMin = 24 * 60;
+          const sSec = toSec(item.start_time);
+          let eSec = toSec(item.end_time);
+          if (eSec <= sSec) eSec = 24 * 3600;
 
-          if (nowMinutes >= sMin && nowMinutes < eMin) {
-            activeItem = { ...item, remainingMin: eMin - nowMinutes };
-          } else if (nowMinutes >= eMin) {
+          if (nowTotalSeconds >= sSec && nowTotalSeconds < eSec) {
+            const remSec = eSec - nowTotalSeconds;
+            const totalDurSec = Math.max(1, eSec - sSec);
+            const elapsedSec = nowTotalSeconds - sSec;
+            const sessionPct = Math.min(100, Math.max(0, ((elapsedSec / totalDurSec) * 100).toFixed(1)));
+            activeItem = {
+              ...item,
+              remainingSec: remSec,
+              remainingHMS: formatSecondsToHMS(remSec),
+              remainingMin: Math.ceil(remSec / 60),
+              sessionPct
+            };
+          } else if (nowTotalSeconds >= eSec) {
             completedCount++;
-          } else if (nowMinutes < sMin && !nextItem) {
-            nextItem = { ...item, startsInMin: sMin - nowMinutes };
+          } else if (nowTotalSeconds < sSec && !nextItem) {
+            const diffSec = sSec - nowTotalSeconds;
+            nextItem = {
+              ...item,
+              startsInSec: diffSec,
+              startsInHMS: formatSecondsToHMS(diffSec),
+              startsInMin: Math.ceil(diffSec / 60)
+            };
           }
         });
 
+        let activeFraction = 0;
+        if (activeItem) {
+          activeFraction = Number(activeItem.sessionPct) / 100;
+        }
+
         const progressPct = todayList.length > 0
-          ? Math.min(100, Math.round(((completedCount + (activeItem ? 0.5 : 0)) / todayList.length) * 100))
+          ? Math.min(100, Math.round(((completedCount + activeFraction) / todayList.length) * 100))
           : 0;
 
         return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
@@ -1063,6 +1166,26 @@
         notify('✅ Progres konten diperbarui!');
       };
 
+      // Fitur Salin 1 Hari Penuh ke Tanggal Lain
+      const handleCloneFullDay = (e) => {
+        e.preventDefault();
+        if (!isAdmin) { setPinInputModal(true); return; }
+        if (selectedDaySchedules.length === 0) {
+          notify('⚠️ Tidak ada jadwal di tanggal ini untuk disalin.');
+          setCloneModalOpen(false);
+          return;
+        }
+        const clonedList = selectedDaySchedules.map((item, idx) => ({
+          ...item,
+          id: 'sch_' + Date.now() + '_clone_' + idx,
+          date: cloneTargetDate
+        }));
+        saveSchedulesToCloud([...schedules, ...clonedList]);
+        setCloneModalOpen(false);
+        setSelectedDate(cloneTargetDate);
+        notify(`📋 ${clonedList.length} sesi berhasil disalin ke tanggal ${cloneTargetDate}!`);
+      };
+
       const exportElementAsPNG = async (elementId, filenameLabel) => {
         const el = document.getElementById(elementId);
         if (!el || typeof html2canvas === 'undefined') {
@@ -1334,29 +1457,63 @@
         </div>
       );
 
+      // 🌟 KOMPONEN BANNER LIVE NOW DENGAN COUNTDOWN DETIK REAL-TIME & INFO JAM HABIS
       const renderLiveNowBanner = () => (
-        <div className="bg-black/25 rounded-2xl p-3 border border-white/15 space-y-2 mt-2">
+        <div className="bg-black/30 rounded-2xl p-3.5 border border-white/15 space-y-3 mt-2 shadow-inner">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {liveTracker.activeItem ? (
-                <span className="flex items-center gap-1.5 font-black text-emerald-300">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  <span>{t.liveNowActive} {liveTracker.activeItem.title} ({liveTracker.activeItem.remainingMin} {t.minLeft})</span>
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="flex items-center gap-1.5 font-black text-emerald-300 text-xs sm:text-sm">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>{t.liveNowActive} {liveTracker.activeItem.title}</span>
+                  </span>
+                  <span className="bg-white/15 text-rose-100 font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-white/15">
+                    ⏰ {liveTracker.activeItem.start_time} - {liveTracker.activeItem.end_time} ({t.endsAt} {liveTracker.activeItem.end_time})
+                  </span>
+                  <span className="bg-emerald-500 text-slate-950 font-mono font-black text-xs px-2.5 py-1 rounded-xl shadow flex items-center gap-1">
+                    <span>⏳ {t.timeLeft}</span>
+                    <span className="tracking-wider">{liveTracker.activeItem.remainingHMS}</span>
+                  </span>
+                </div>
               ) : (
                 <span className="text-rose-200 font-bold">{t.liveNowIdle}</span>
               )}
             </div>
+
             {liveTracker.nextItem && (
-              <div className="text-[11px] font-bold bg-white/15 px-2.5 py-1 rounded-xl text-amber-200">
-                ⏳ {t.nextUp} <span className="text-white font-black">{liveTracker.nextItem.title}</span> ({liveTracker.nextItem.start_time} • {t.inMin} {liveTracker.nextItem.startsInMin} {t.minUnit})
+              <div className="text-[11px] font-bold bg-amber-400/20 border border-amber-300/30 px-3 py-1 rounded-xl text-amber-200 flex items-center gap-1.5">
+                <span>⏭️ {t.nextUp}</span>
+                <span className="text-white font-black">{liveTracker.nextItem.title}</span>
+                <span className="font-mono text-amber-300">({liveTracker.nextItem.start_time})</span>
+                <span className="bg-black/40 text-amber-300 font-mono font-black px-2 py-0.5 rounded-lg">
+                  -{liveTracker.nextItem.startsInHMS}
+                </span>
               </div>
             )}
           </div>
+
+          {/* Progress Bar Sesi Saat Ini (Jika Ada yang Sedang Berlangsung) */}
+          {liveTracker.activeItem && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-[10px] text-emerald-200 font-bold">
+                <span>⚡ {t.sessionProgress}: {liveTracker.activeItem.title}</span>
+                <span className="font-mono">{liveTracker.activeItem.sessionPct}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-300 to-emerald-400 transition-all duration-300"
+                  style={{ width: `${liveTracker.activeItem.sessionPct}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          {/* Progress Bar Total Agenda Hari Ini */}
           <div className="space-y-1">
             <div className="flex justify-between text-[10px] text-rose-200 font-bold">
-              <span>{t.progressToday} ({realTodayStr})</span>
-              <span>{liveTracker.progressPct}% {t.completed}</span>
+              <span>📅 {t.progressToday} ({realTodayStr})</span>
+              <span className="font-mono">{liveTracker.progressPct}% {t.completed}</span>
             </div>
             <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
               <div
@@ -1416,16 +1573,16 @@
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-extrabold text-base tracking-wide">Alisya Schedule</h1>
                   <span className="bg-white/15 text-rose-200 border border-white/25 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider">
-                    v6.1-Ultra PRO
+                    v6.2-Ultra PRO
                   </span>
                   {isAdmin ? (
                     <span className="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-md text-[10px] font-black shadow">👑 ADMIN</span>
                   ) : (
                     <span className="bg-white/20 text-rose-100 px-2 py-0.5 rounded-md text-[10px] font-semibold">👀 VIEWER</span>
                   )}
-                  <span className="flex items-center gap-1 text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full font-bold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Live Cloud</span>
+                  <span className="flex items-center gap-1 text-[10px] bg-black/30 text-emerald-300 border border-emerald-400/30 px-2.5 py-0.5 rounded-full font-mono font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>{liveClockString} WIB</span>
                   </span>
                 </div>
               </div>
@@ -1532,6 +1689,22 @@
               )}
             </div>
           </header>
+
+          {/* 📌 STICKY CLOUD FOCUS BANNER */}
+          <div className="bg-amber-50 border-b border-amber-200/80 px-4 md:px-6 py-2 flex items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 truncate">
+              <span className="font-black text-amber-900 uppercase whitespace-nowrap">{t.stickyNoteLabel}</span>
+              <span className="font-bold text-amber-800 truncate">{stickyNote}</span>
+            </div>
+            {isAdmin && (
+              <button
+                onClick={handleEditStickyNote}
+                className="text-[11px] font-extrabold text-maroon bg-amber-200/70 hover:bg-amber-300/70 px-2.5 py-0.5 rounded-lg whitespace-nowrap transition"
+              >
+                {t.editNoteBtn}
+              </button>
+            )}
+          </div>
 
           {/* ========================================================= */}
           {/* 🌟 1. TAMPILAN MODE PC / DESKTOP                          */}
@@ -1724,6 +1897,18 @@
                           <span className="text-xs font-black uppercase text-slate-700 tracking-wider">
                             {t.sessionList} ({selectedDate}): {selectedDaySchedules.length}
                           </span>
+                          {selectedDaySchedules.length > 0 && (
+                            <button
+                              onClick={() => {
+                                if (!isAdmin) { setPinInputModal(true); return; }
+                                setCloneTargetDate(addDaysToDateStr(selectedDate, 1));
+                                setCloneModalOpen(true);
+                              }}
+                              className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1 rounded-xl text-xs font-extrabold border border-slate-300 transition active:scale-95"
+                            >
+                              {t.btnCloneDay}
+                            </button>
+                          )}
                         </div>
 
                         {selectedDaySchedules.length === 0 ? (
@@ -1737,11 +1922,13 @@
                         ) : (
                           selectedDaySchedules.map(item => {
                             const brand = brands.find(b => b.id === item.brand_id);
+                            const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
+
                             return (
                               <div
                                 key={item.id}
                                 onClick={() => handleOpenEdit(item)}
-                                className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-start justify-between gap-4 active:scale-[0.99] transition cursor-pointer relative overflow-hidden hover:shadow-md"
+                                className={`bg-white rounded-3xl p-5 border shadow-sm flex items-start justify-between gap-4 active:scale-[0.99] transition cursor-pointer relative overflow-hidden hover:shadow-md ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-slate-200'}`}
                               >
                                 <div className="w-2.5 absolute left-0 top-0 bottom-0" style={{ backgroundColor: item.color }}></div>
                                 <div className="space-y-2 pl-2 flex-1">
@@ -1749,6 +1936,12 @@
                                     <span className="font-mono text-xs font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-xl">
                                       ⏰ {item.start_time} - {item.end_time}
                                     </span>
+                                    {isCurrentlyLive && (
+                                      <span className="bg-emerald-500 text-white text-[10px] font-mono font-black px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm">
+                                        <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                                        <span>LIVE NOW • -{liveTracker.activeItem.remainingHMS}</span>
+                                      </span>
+                                    )}
                                     <span className="text-[10px] font-black px-2.5 py-1 rounded-xl uppercase tracking-wider" style={{ backgroundColor: item.color + '44', color: '#0F172A' }}>
                                       {item.status}
                                     </span>
@@ -2301,11 +2494,25 @@
                       {/* LIVE NOW TRACKER MOBILE */}
                       {renderLiveNowBanner()}
 
-                      <div className="flex items-center gap-2 pt-2 border-t border-white/20">
-                        <span className="text-[10px] text-rose-200 font-bold">{t.jump}</span>
-                        <button onClick={() => jumpToOffset(0)} className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2.5 py-1 rounded-lg">{t.today}</button>
-                        <button onClick={() => jumpToOffset(1)} className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2.5 py-1 rounded-lg">{t.tomorrow}</button>
-                        <button onClick={() => jumpToOffset(2)} className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2.5 py-1 rounded-lg">{t.dayAfter}</button>
+                      <div className="flex items-center justify-between pt-2 border-t border-white/20">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-rose-200 font-bold">{t.jump}</span>
+                          <button onClick={() => jumpToOffset(0)} className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2.5 py-1 rounded-lg">{t.today}</button>
+                          <button onClick={() => jumpToOffset(1)} className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2.5 py-1 rounded-lg">{t.tomorrow}</button>
+                          <button onClick={() => jumpToOffset(2)} className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2.5 py-1 rounded-lg">{t.dayAfter}</button>
+                        </div>
+                        {selectedDaySchedules.length > 0 && (
+                          <button
+                            onClick={() => {
+                              if (!isAdmin) { setPinInputModal(true); return; }
+                              setCloneTargetDate(addDaysToDateStr(selectedDate, 1));
+                              setCloneModalOpen(true);
+                            }}
+                            className="bg-amber-400 text-slate-900 text-[10px] font-black px-2.5 py-1 rounded-lg shadow"
+                          >
+                            {t.btnCloneDay}
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -2390,11 +2597,13 @@
                       ) : (
                         selectedDaySchedules.map(item => {
                           const brand = brands.find(b => b.id === item.brand_id);
+                          const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
+
                           return (
                             <div
                               key={item.id}
                               onClick={() => handleOpenEdit(item)}
-                              className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm flex items-start justify-between gap-3 active:scale-[0.98] transition cursor-pointer relative overflow-hidden"
+                              className={`bg-white rounded-3xl p-4 border shadow-sm flex items-start justify-between gap-3 active:scale-[0.98] transition cursor-pointer relative overflow-hidden ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-slate-200'}`}
                             >
                               <div className="w-2 absolute left-0 top-0 bottom-0" style={{ backgroundColor: item.color }}></div>
                               <div className="space-y-1.5 pl-2 flex-1">
@@ -2402,6 +2611,12 @@
                                   <span className="font-mono text-[11px] font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg">
                                     ⏰ {item.start_time} - {item.end_time}
                                   </span>
+                                  {isCurrentlyLive && (
+                                    <span className="bg-emerald-500 text-white text-[9px] font-mono font-black px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                      <span>-{liveTracker.activeItem.remainingHMS}</span>
+                                    </span>
+                                  )}
                                   <span className="text-[9px] font-black px-2 py-0.5 rounded-lg uppercase" style={{ backgroundColor: item.color + '44', color: '#0F172A' }}>
                                     {item.status}
                                   </span>
@@ -2766,8 +2981,40 @@
           )}
 
           {/* ========================================================= */}
-          {/* 🌟 3. MODAL POPUP PIN & FORM INPUT / EDIT JADWAL          */}
+          {/* 🌟 3. MODAL POPUP PIN, CLONE DAY & FORM INPUT JADWAL      */}
           {/* ========================================================= */}
+
+          {/* MODAL SALIN 1 HARI PENUH (CLONE DAY) */}
+          {cloneModalOpen && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in duration-150">
+                <h3 className="font-black text-base text-slate-800">{t.cloneModalTitle}</h3>
+                <p className="text-xs text-slate-500">
+                  {t.cloneModalDesc} <span className="font-black text-maroon">{selectedDate}</span> ({selectedDaySchedules.length} sesi):
+                </p>
+                <form onSubmit={handleCloneFullDay} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">{t.cloneTargetLabel}</label>
+                    <input
+                      type="date"
+                      required
+                      value={cloneTargetDate}
+                      onChange={e => setCloneTargetDate(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs font-bold"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setCloneModalOpen(false)} className="w-1/2 py-2.5 rounded-2xl bg-slate-100 text-slate-700 font-bold text-xs">
+                      {t.cancelBtn}
+                    </button>
+                    <button type="submit" className="w-1/2 py-2.5 rounded-2xl bg-maroon text-white font-black text-xs shadow">
+                      {t.cloneConfirmBtn}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
           {/* MODAL PIN ADMIN */}
           {pinInputModal && (
