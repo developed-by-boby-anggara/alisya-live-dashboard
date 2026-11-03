@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Alisya Schedule Dashboard</title>
 
-  <!-- PWA & Mobile Web Capabilities -->
+  <!-- PWA & Mobile Web Capabilities (URL-Encoded Valid Manifest) -->
   <meta name="theme-color" content="#7B1113">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Alisya Schedule">
   
- <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alisya%20Schedule%22%2C%22short_name%22%3A%22Alisya%20Schedule%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230F172A%22%2C%22theme_color%22%3A%22%237B1113%22%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alisya%20Schedule%20Dashboard%22%2C%22short_name%22%3A%22Alisya%20Schedule%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230F172A%22%2C%22theme_color%22%3A%22%237B1113%22%7D">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -112,285 +112,6 @@
       { label: "22:00 - 23:59", start: "22:00", end: "23:59" }
     ];
 
-    // --- DICTIONARY MULTI-BAHASA ---
-const TRANSLATIONS = {
-  id: {
-    radarTitle: "Radar Jadwal Alisya",
-    availableTitle: "Available Schedule (Slot Jam Kosong)",
-    allSlotsFilled: "Semua slot jam di tanggal ini sudah terisi penuh!",
-    slotsReady: "Slot Siap Pakai",
-    calendarTitle: "Kalender Tanggal",
-    sessionList: "Daftar Sesi",
-    noSchedule: "Tidak Ada Jadwal di Tanggal Ini",
-    noScheduleSub: "Alisya libur atau seluruh slot jam di tanggal ini masih kosong.",
-    btnShareWA: "Share WhatsApp",
-    btnAddSession: "Tambah Sesi",
-    jump: "Lompat:",
-    today: "Hari Ini",
-    tomorrow: "Besok",
-    dayAfter: "Lusa",
-    tabAgenda: "Agenda Harian",
-    tabSpreadsheet: "Kalender Spreadsheet",
-    tabKPI: "KPI & Diagram Grafik",
-    tabList: "Daftar Lengkap",
-    tabColors: "Atur Warna",
-    btnExportCSV: "Ekspor CSV (Excel)",
-    btnAddSch: "Tambah Jadwal",
-    statFilterTitle: "Filter Rentang Waktu Statistik",
-    statFilterDesc: "Pilih periode dan tanggal untuk mengevaluasi jam kerja, tidur, dan me time:",
-    daily: "Harian",
-    weekly: "Mingguan",
-    monthly: "Bulanan",
-    yearly: "Tahunan",
-    totalLive: "TOTAL SHIFT LIVE",
-    takeKonten: "TAKE KONTEN VIDEO",
-    sleepTime: "JAM TIDUR / ISTIRAHAT",
-    meTime: "ME TIME",
-    offDay: "HARI LIBUR / OFF",
-    hoursLive: "Jam Streaming",
-    hoursProd: "Jam Produksi",
-    hoursSleep: "Jam Istirahat",
-    hoursMeTime: "Jadwal Me Time & Relax",
-    hoursOff: "Hari Libur Penuh",
-    propTitle: "PROPORSI WAKTU ALISYA",
-    barTitle: "BEBAN AKTIVITAS PER KATEGORI",
-    statusFree: "FREE SLOT",
-    statusLow: "LOW",
-    statusMed: "MEDIUM",
-    statusFull: "FULL SCHEDULE",
-    statusOff: "LIBUR / OFF"
-  },
-  en: {
-    radarTitle: "Alisya's Schedule Radar",
-    availableTitle: "Available Schedule (Empty Slots)",
-    allSlotsFilled: "All time slots for this date are fully booked!",
-    slotsReady: "Slots Available",
-    calendarTitle: "Date Calendar",
-    sessionList: "Session List",
-    noSchedule: "No Schedule for this Date",
-    noScheduleSub: "Alisya is off or all slots for this date are currently empty.",
-    btnShareWA: "Share to WhatsApp",
-    btnAddSession: "Add Session",
-    jump: "Quick Jump:",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    dayAfter: "Day After",
-    tabAgenda: "Daily Agenda",
-    tabSpreadsheet: "Spreadsheet Calendar",
-    tabKPI: "KPI & Charts",
-    tabList: "Complete List",
-    tabColors: "Theme Colors",
-    btnExportCSV: "Export CSV (Excel)",
-    btnAddSch: "New Schedule",
-    statFilterTitle: "Statistical Time Range Filter",
-    statFilterDesc: "Select period and date to evaluate work, sleep, and personal time:",
-    daily: "Daily",
-    weekly: "Weekly",
-    monthly: "Monthly",
-    yearly: "Yearly",
-    totalLive: "TOTAL LIVE SHIFTS",
-    takeKonten: "VIDEO CONTENT SHOOT",
-    sleepTime: "SLEEP & REST TIME",
-    meTime: "ME TIME",
-    offDay: "DAY OFF",
-    hoursLive: "Streaming Hours",
-    hoursProd: "Production Hours",
-    hoursSleep: "Rest Hours",
-    hoursMeTime: "Me Time & Relax Schedule",
-    hoursOff: "Full Days Off",
-    propTitle: "ALISYA TIME PROPORTION",
-    barTitle: "ACTIVITY LOAD PER CATEGORY",
-    statusFree: "FREE SLOT",
-    statusLow: "LOW",
-    statusMed: "MEDIUM",
-    statusFull: "FULL SCHEDULE",
-    statusOff: "DAY OFF"
-  },
-  de: {
-    radarTitle: "Alisyas Termin-Radar",
-    availableTitle: "Verfügbarer Zeitplan (Freie Zeitfenster)",
-    allSlotsFilled: "Alle Zeitfenster an diesem Datum sind belegt!",
-    slotsReady: "Freie Zeitfenster",
-    calendarTitle: "Datumskalender",
-    sessionList: "Sitzungsliste",
-    noSchedule: "Kein Zeitplan für dieses Datum",
-    noScheduleSub: "Alisya hat frei oder alle Zeitfenster sind noch verfügbar.",
-    btnShareWA: "Auf WhatsApp teilen",
-    btnAddSession: "Sitzung hinzufügen",
-    jump: "Schnellsprung:",
-    today: "Heute",
-    tomorrow: "Morgen",
-    dayAfter: "Übermorgen",
-    tabAgenda: "Tagesordnung",
-    tabSpreadsheet: "Tabellenkalender",
-    tabKPI: "KPI & Diagramme",
-    tabList: "Vollständige Liste",
-    tabColors: "Farben anpassen",
-    btnExportCSV: "CSV-Export (Excel)",
-    btnAddSch: "Termin hinzufügen",
-    statFilterTitle: "Statistik-Zeitbereichsfilter",
-    statFilterDesc: "Wählen Sie Zeitraum und Datum zur Auswertung von Arbeit, Schlaf und Me-Time:",
-    daily: "Täglich",
-    weekly: "Wöchentlich",
-    monthly: "Monatlich",
-    yearly: "Jährlich",
-    totalLive: "GESAMT LIVE-SCHICHTEN",
-    takeKonten: "VIDEO-DREH",
-    sleepTime: "SCHLAF & RUHEZEIT",
-    meTime: "ME TIME",
-    offDay: "FREIER TAG / AUS",
-    hoursLive: "Streaming-Stunden",
-    hoursProd: "Produktionsstunden",
-    hoursSleep: "Ruhestunden",
-    hoursMeTime: "Me-Time & Entspannung",
-    hoursOff: "Ganze freie Tage",
-    propTitle: "ZEITVERTEILUNG ALISYA",
-    barTitle: "AKTIVITÄTSBELASTUNG NACH KATEGORIE",
-    statusFree: "FREIER SLOT",
-    statusLow: "GERING",
-    statusMed: "MITTEL",
-    statusFull: "VOLL BELEGT",
-    statusOff: "FREI / AUS"
-  },
-  zh: {
-    radarTitle: "Alisya 日程雷达",
-    availableTitle: "可用时间表（空闲时段）",
-    allSlotsFilled: "该日期的所有时间段已满！",
-    slotsReady: "可用时段",
-    calendarTitle: "日期日历",
-    sessionList: "活动列表",
-    noSchedule: "该日期暂无日程",
-    noScheduleSub: "Alisya 休息或所有时段均可自由安排。",
-    btnShareWA: "分享至 WhatsApp",
-    btnAddSession: "添加时段",
-    jump: "快速跳转:",
-    today: "今天",
-    tomorrow: "明天",
-    dayAfter: "后天",
-    tabAgenda: "每日议程",
-    tabSpreadsheet: "电子表格日历",
-    tabKPI: "KPI 与图表",
-    tabList: "完整列表",
-    tabColors: "调整颜色",
-    btnExportCSV: "导出 CSV (Excel)",
-    btnAddSch: "新增日程",
-    statFilterTitle: "统计时间范围筛选",
-    statFilterDesc: "选择周期和日期以评估工作、睡眠和个人独处时间：",
-    daily: "按日",
-    weekly: "按周",
-    monthly: "按月",
-    yearly: "按年",
-    totalLive: "直播总班次",
-    takeKonten: "视频内容拍摄",
-    sleepTime: "睡眠与休息时间",
-    meTime: "个人专属时光",
-    offDay: "休息日 / 放假",
-    hoursLive: "直播时长（小时）",
-    hoursProd: "制作时长（小时）",
-    hoursSleep: "休息时长（小时）",
-    hoursMeTime: "放松安排",
-    hoursOff: "完整休息天数",
-    propTitle: "ALISYA 时间占比",
-    barTitle: "各分类活动负荷",
-    statusFree: "空闲时段",
-    statusLow: "较少",
-    statusMed: "中等",
-    statusFull: "已排满",
-    statusOff: "放假 / 休息"
-  },
-  jv: {
-    radarTitle: "Radar Jadwal Alisya",
-    availableTitle: "Jadwal Suwung (Jam Sing Iso Dienggo)",
-    allSlotsFilled: "Kabeh jam ing tanggal iki wis kebak!",
-    slotsReady: "Slot Siap Dienggo",
-    calendarTitle: "Tanggalan Tanggal",
-    sessionList: "Daftar Sesi",
-    noSchedule: "Ora Ana Jadwal Ing Tanggal Iki",
-    noScheduleSub: "Alisya prei utawa kabeh jam isih suwung bebas dipilih.",
-    btnShareWA: "Bagekna ning WA",
-    btnAddSession: "Tambah Sesi",
-    jump: "Mencolot:",
-    today: "Dino Iki",
-    tomorrow: "Sesuk",
-    dayAfter: "Mben",
-    tabAgenda: "Agenda Sedina-dina",
-    tabSpreadsheet: "Tanggalan Spreadsheet",
-    tabKPI: "KPI & Grafik",
-    tabList: "Daftar Lengkap",
-    tabColors: "Atur Werno",
-    btnExportCSV: "Ekspor CSV (Excel)",
-    btnAddSch: "Tambah Jadwal",
-    statFilterTitle: "Saringan Wektu Statistik",
-    statFilterDesc: "Pilih mangsa lan tanggal kanggo ndelok jam kerjo, turu, lan me-time:",
-    daily: "Dinan",
-    weekly: "Minggon",
-    monthly: "Wulanan",
-    yearly: "Tahunan",
-    totalLive: "TOTAL SHIFT LIVE",
-    takeKonten: "TAKE KONTEN VIDEO",
-    sleepTime: "WEKTU TURU / LEREN",
-    meTime: "ME TIME",
-    offDay: "DINO PREI / OFF",
-    hoursLive: "Jam Streaming",
-    hoursProd: "Jam Nggawe Konten",
-    hoursSleep: "Jam Leren / Turu",
-    hoursMeTime: "Jadwal Santai & Relax",
-    hoursOff: "Dino Prei Total",
-    propTitle: "BAGIAN WEKTU ALISYA",
-    barTitle: "BEBAN KERJO PER KATEGORI",
-    statusFree: "SLOT SUWUNG",
-    statusLow: "ENTENG",
-    statusMed: "SEDENGAN",
-    statusFull: "KEBAK BANGET",
-    statusOff: "PREI / OFF"
-  },
-  min: {
-    radarTitle: "Alisya Paniang",
-    availableTitle: "Jadwal Tasuo (Jam Kosong Nan Bisa Dipakai)",
-    allSlotsFilled: "Sadonyo jam di tanggal ko lah panuah Kampang!",
-    slotsReady: "Siap Bana koa",
-    calendarTitle: "Daftar Tanggal KO",
-    sessionList: "Daftar Bakuwe",
-    noSchedule: "Indak Ado Jadwal Di Tanggal Ko do",
-    noScheduleSub: "Alisya libur atau sadoalah jam masih kosong rancak dipiliah.",
-    btnShareWA: "Agia Ka WA",
-    btnAddSession: "Tambah Stek",
-    jump: "Lompek:",
-    today: "Hari Ko",
-    tomorrow: "Bisuak",
-    dayAfter: "Luso",
-    tabAgenda: "Agenda Saari-ari",
-    tabSpreadsheet: "Jadwal Bakureh",
-    tabKPI: "Malang la ko a",
-    tabList: "Langkok siko",
-    tabColors: "Atua Warno Karambia",
-    btnExportCSV: "Ekspor CSV (Excel)",
-    btnAddSch: "Tambah Paniang",
-    statFilterTitle: "Sariangan Wakatu",
-    statFilterDesc: "Piliah periode jo tanggal untuak manilai jam karajo, lalok, jo me-time:",
-    daily: "Sahari-hari",
-    weekly: "Minggu Ko",
-    monthly: "Bulan ko",
-    yearly: "Tahun ko",
-    totalLive: "TOTAL SHIFT LIVE DEN",
-    takeKonten: "MAMBUEK KONTEN VIDEO",
-    sleepTime: "JAM LALOK",
-    meTime: "ME TIME",
-    offDay: "HARI LIBUR / OFF",
-    hoursLive: "Jam Streaming",
-    hoursProd: "Jam Baproduksi",
-    hoursSleep: "Jam Lalok / Sanang",
-    hoursMeTime: "Jadwal Manjakan Diri",
-    hoursOff: "Hari Libur Panuah",
-    propTitle: "PARANDIANGAN WAKATU ALISYA",
-    barTitle: "BABAN KARAJO TIOK KATEGORI",
-    statusFree: "SLOT KOSONG",
-    statusLow: "RINGAN",
-    statusMed: "SEDANG",
-    statusFull: "PANUAH BANA Koa",
-    statusOff: "LIBUR / OFF"
-  }
-};
     const START_TIME_OPTIONS = [];
     for (let h = 0; h < 24; h++) {
       const hh = String(h).padStart(2, '0');
@@ -402,6 +123,256 @@ const TRANSLATIONS = {
     if (!END_TIME_OPTIONS.includes("23:59")) {
       END_TIME_OPTIONS.push("23:59");
     }
+
+    // --- KAMUS MULTI-BAHASA (6 BAHASA) ---
+    const TRANSLATIONS = {
+      id: {
+        radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
+        availableTitle: "Available Schedule (Slot Jam Kosong)",
+        allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
+        slotsReady: "Slot Siap Pakai",
+        calendarTitle: "Kalender Tanggal",
+        sessionList: "Daftar Sesi",
+        noSchedule: "Tidak Ada Jadwal di Tanggal Ini",
+        noScheduleSub: "Alisya libur atau seluruh slot jam di tanggal ini masih kosong.",
+        btnShareWA: "Share WhatsApp",
+        btnAddSession: "+ Tambah Sesi",
+        jump: "Lompat:",
+        today: "Hari Ini",
+        tomorrow: "Besok",
+        dayAfter: "Lusa",
+        tabAgenda: "Agenda Harian",
+        tabSpreadsheet: "Kalender Spreadsheet",
+        tabKPI: "KPI & Diagram Grafik",
+        tabList: "Daftar Lengkap Semua Jadwal",
+        tabColors: "Atur Warna Brand & Agenda",
+        btnExportCSV: "Ekspor CSV (Excel)",
+        btnAddSch: "+ Tambah Jadwal",
+        statFilterTitle: "📊 Filter Rentang Waktu Statistik (00:00 - 23:59)",
+        statFilterDesc: "Pilih periode dan tanggal untuk mengevaluasi jam kerja, tidur, dan me time:",
+        daily: "📅 Harian",
+        weekly: "🗓️ Mingguan",
+        monthly: "📆 Bulanan",
+        yearly: "📈 Tahunan",
+        totalLive: "TOTAL SHIFT LIVE",
+        takeKonten: "TAKE KONTEN VIDEO",
+        sleepTime: "JAM TIDUR / ISTIRAHAT",
+        meTime: "ME TIME",
+        offDay: "HARI LIBUR / OFF",
+        hoursLive: "Jam Streaming",
+        hoursProd: "Jam Produksi",
+        hoursSleep: "Jam Istirahat",
+        hoursMeTime: "Jadwal Me Time & Relax",
+        hoursOff: "Hari Libur Penuh",
+        propTitle: "PROPORSI WAKTU ALISYA",
+        barTitle: "BEBAN AKTIVITAS PER KATEGORI"
+      },
+      en: {
+        radarTitle: "Alisya's Schedule Radar (00:00 - 23:59)",
+        availableTitle: "Available Schedule (Empty Slots)",
+        allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
+        slotsReady: "Slots Available",
+        calendarTitle: "Date Calendar",
+        sessionList: "Session List",
+        noSchedule: "No Schedule for this Date",
+        noScheduleSub: "Alisya is off or all slots for this date are currently empty.",
+        btnShareWA: "Share WhatsApp",
+        btnAddSession: "+ Add Session",
+        jump: "Jump:",
+        today: "Today",
+        tomorrow: "Tomorrow",
+        dayAfter: "Day After",
+        tabAgenda: "Daily Agenda",
+        tabSpreadsheet: "Spreadsheet Calendar",
+        tabKPI: "KPI & Charts",
+        tabList: "Complete Schedule List",
+        tabColors: "Theme Colors",
+        btnExportCSV: "Export CSV (Excel)",
+        btnAddSch: "+ Add Schedule",
+        statFilterTitle: "📊 Statistical Time Range Filter (00:00 - 23:59)",
+        statFilterDesc: "Select period and date to evaluate work, sleep, and personal time:",
+        daily: "📅 Daily",
+        weekly: "🗓️ Weekly",
+        monthly: "📆 Monthly",
+        yearly: "📈 Yearly",
+        totalLive: "TOTAL LIVE SHIFTS",
+        takeKonten: "VIDEO CONTENT SHOOT",
+        sleepTime: "SLEEP & REST TIME",
+        meTime: "ME TIME",
+        offDay: "DAY OFF",
+        hoursLive: "Streaming Hours",
+        hoursProd: "Production Hours",
+        hoursSleep: "Rest Hours",
+        hoursMeTime: "Me Time & Relax Schedule",
+        hoursOff: "Full Days Off",
+        propTitle: "ALISYA TIME PROPORTION",
+        barTitle: "ACTIVITY LOAD PER CATEGORY"
+      },
+      de: {
+        radarTitle: "Alisyas Termin-Radar (00:00 - 23:59)",
+        availableTitle: "Verfügbarer Zeitplan (Freie Zeitfenster)",
+        allSlotsFilled: "⚠️ Alle Zeitfenster an diesem Datum sind belegt!",
+        slotsReady: "Freie Zeitfenster",
+        calendarTitle: "Datumskalender",
+        sessionList: "Sitzungsliste",
+        noSchedule: "Kein Zeitplan für dieses Datum",
+        noScheduleSub: "Alisya hat frei oder alle Zeitfenster sind noch verfügbar.",
+        btnShareWA: "WhatsApp teilen",
+        btnAddSession: "+ Sitzung",
+        jump: "Sprung:",
+        today: "Heute",
+        tomorrow: "Morgen",
+        dayAfter: "Übermorgen",
+        tabAgenda: "Tagesordnung",
+        tabSpreadsheet: "Tabellenkalender",
+        tabKPI: "KPI & Diagramme",
+        tabList: "Vollständige Liste",
+        tabColors: "Farben anpassen",
+        btnExportCSV: "CSV-Export (Excel)",
+        btnAddSch: "+ Termin",
+        statFilterTitle: "📊 Statistik-Zeitbereichsfilter (00:00 - 23:59)",
+        statFilterDesc: "Wählen Sie Zeitraum und Datum zur Auswertung von Arbeit, Schlaf und Me-Time:",
+        daily: "📅 Täglich",
+        weekly: "🗓️ Wöchentlich",
+        monthly: "📆 Monatlich",
+        yearly: "📈 Jährlich",
+        totalLive: "GESAMT LIVE-SCHICHTEN",
+        takeKonten: "VIDEO-DREH",
+        sleepTime: "SCHLAF & RUHEZEIT",
+        meTime: "ME TIME",
+        offDay: "FREIER TAG / AUS",
+        hoursLive: "Streaming-Stunden",
+        hoursProd: "Produktionsstunden",
+        hoursSleep: "Ruhestunden",
+        hoursMeTime: "Me-Time & Entspannung",
+        hoursOff: "Ganze freie Tage",
+        propTitle: "ZEITVERTEILUNG ALISYA",
+        barTitle: "AKTIVITÄTSBELASTUNG NACH KATEGORIE"
+      },
+      zh: {
+        radarTitle: "Alisya 日程雷达 (00:00 - 23:59)",
+        availableTitle: "可用时间表（空闲时段）",
+        allSlotsFilled: "⚠️ 该日期的所有时间段已满！",
+        slotsReady: "可用时段",
+        calendarTitle: "日期日历",
+        sessionList: "活动列表",
+        noSchedule: "该日期暂无日程",
+        noScheduleSub: "Alisya 休息或所有时段均可自由安排。",
+        btnShareWA: "分享 WhatsApp",
+        btnAddSession: "+ 添加时段",
+        jump: "跳转:",
+        today: "今天",
+        tomorrow: "明天",
+        dayAfter: "后天",
+        tabAgenda: "每日议程",
+        tabSpreadsheet: "电子表格日历",
+        tabKPI: "KPI 与图表",
+        tabList: "完整日程列表",
+        tabColors: "调整颜色",
+        btnExportCSV: "导出 CSV",
+        btnAddSch: "+ 新增日程",
+        statFilterTitle: "📊 统计时间范围筛选 (00:00 - 23:59)",
+        statFilterDesc: "选择周期和日期以评估工作、睡眠和个人独处时间：",
+        daily: "📅 按日",
+        weekly: "🗓️ 按周",
+        monthly: "📆 按月",
+        yearly: "📈 按年",
+        totalLive: "直播总班次",
+        takeKonten: "视频内容拍摄",
+        sleepTime: "睡眠与休息时间",
+        meTime: "个人专属时光",
+        offDay: "休息日 / 放假",
+        hoursLive: "直播时长",
+        hoursProd: "制作时长",
+        hoursSleep: "休息时长",
+        hoursMeTime: "放松安排",
+        hoursOff: "完整休息天数",
+        propTitle: "ALISYA 时间占比",
+        barTitle: "各分类活动负荷"
+      },
+      jv: {
+        radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
+        availableTitle: "Jadwal Suwung (Jam Sing Iso Dienggo)",
+        allSlotsFilled: "⚠️ Kabeh jam ing tanggal iki wis kebak!",
+        slotsReady: "Slot Siap Dienggo",
+        calendarTitle: "Tanggalan Tanggal",
+        sessionList: "Daftar Sesi",
+        noSchedule: "Ora Ana Jadwal Ing Tanggal Iki",
+        noScheduleSub: "Alisya prei utawa kabeh jam isih suwung bebas dipilih.",
+        btnShareWA: "Bagekna WA",
+        btnAddSession: "+ Tambah Sesi",
+        jump: "Mencolot:",
+        today: "Dino Iki",
+        tomorrow: "Sesuk",
+        dayAfter: "Mben",
+        tabAgenda: "Agenda Sedina-dina",
+        tabSpreadsheet: "Tanggalan Spreadsheet",
+        tabKPI: "KPI & Grafik",
+        tabList: "Daftar Lengkap Jadwal",
+        tabColors: "Atur Werno",
+        btnExportCSV: "Ekspor CSV",
+        btnAddSch: "+ Tambah Jadwal",
+        statFilterTitle: "📊 Saringan Wektu Statistik (00:00 - 23:59)",
+        statFilterDesc: "Pilih mangsa lan tanggal kanggo ndelok jam kerjo, turu, lan me-time:",
+        daily: "📅 Dinan",
+        weekly: "🗓️ Minggon",
+        monthly: "📆 Wulanan",
+        yearly: "📈 Tahunan",
+        totalLive: "TOTAL SHIFT LIVE",
+        takeKonten: "TAKE KONTEN VIDEO",
+        sleepTime: "WEKTU TURU / LEREN",
+        meTime: "ME TIME",
+        offDay: "DINO PREI / OFF",
+        hoursLive: "Jam Streaming",
+        hoursProd: "Jam Nggawe Konten",
+        hoursSleep: "Jam Leren / Turu",
+        hoursMeTime: "Jadwal Santai & Relax",
+        hoursOff: "Dino Prei Total",
+        propTitle: "BAGIAN WEKTU ALISYA",
+        barTitle: "BEBAN KERJO PER KATEGORI"
+      },
+      min: {
+        radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
+        availableTitle: "Jadwal Tasuo (Jam Kosong Nan Bisa Dipakai)",
+        allSlotsFilled: "⚠️ Sadonyo jam di tanggal ko lah panuah!",
+        slotsReady: "Slot Siap Pakai",
+        calendarTitle: "Kalender Tanggal",
+        sessionList: "Daftar Kagiatan",
+        noSchedule: "Indak Ado Jadwal Di Tanggal Ko",
+        noScheduleSub: "Alisya libur atau sadoalah jam masih kosong rancak dipiliah.",
+        btnShareWA: "Bagikan ka WA",
+        btnAddSession: "+ Tambah Sesi",
+        jump: "Lompek:",
+        today: "Hari Ko",
+        tomorrow: "Bisuak",
+        dayAfter: "Luso",
+        tabAgenda: "Agenda Saari-ari",
+        tabSpreadsheet: "Kalender Spreadsheet",
+        tabKPI: "KPI & Diagram Grafik",
+        tabList: "Daftar Langkok Jadwal",
+        tabColors: "Atua Wano",
+        btnExportCSV: "Ekspor CSV",
+        btnAddSch: "+ Tambah Jadwal",
+        statFilterTitle: "📊 Sariangan Wakatu Statistik (00:00 - 23:59)",
+        statFilterDesc: "Piliah periode jo tanggal untuak manilai jam karajo, lalok, jo me-time:",
+        daily: "📅 Harian",
+        weekly: "🗓️ Mingguan",
+        monthly: "📆 Bulanan",
+        yearly: "📈 Tahunan",
+        totalLive: "TOTAL SHIFT LIVE",
+        takeKonten: "BABUEK KONTEN VIDEO",
+        sleepTime: "JAM LALOK / ISTIRAHAT",
+        meTime: "ME TIME",
+        offDay: "HARI LIBUR / OFF",
+        hoursLive: "Jam Streaming",
+        hoursProd: "Jam Baproduksi",
+        hoursSleep: "Jam Lalok / Sanang",
+        hoursMeTime: "Jadwal Manjakan Diri",
+        hoursOff: "Hari Libur Panuah",
+        propTitle: "PARANDIANGAN WAKATU ALISYA",
+        barTitle: "BEBAN KAGIATAN TIOK KATEGORI"
+      }
+    };
 
     const getHariNama = (dateString) => {
       if (!dateString) return '-';
@@ -425,9 +396,8 @@ const TRANSLATIONS = {
       return Math.round((diff / 60) * 10) / 10;
     };
 
-    
-
     function App() {
+      // 🌟 100% REAL-TIME TODAY DETECTOR
       const realTodayStr = useMemo(() => {
         const now = new Date();
         const y = now.getFullYear();
@@ -436,6 +406,19 @@ const TRANSLATIONS = {
         return `${y}-${m}-${d}`;
       }, []);
 
+      // State Bahasa
+      const [lang, setLang] = useState(() => {
+        return localStorage.getItem('alisya_lang') || 'id';
+      });
+
+      const handleSetLang = (newLang) => {
+        setLang(newLang);
+        localStorage.setItem('alisya_lang', newLang);
+      };
+
+      const t = TRANSLATIONS[lang] || TRANSLATIONS.id;
+
+      // Mode Tampilan (HP vs PC)
       const [displayMode, setDisplayMode] = useState(() => {
         const saved = localStorage.getItem('alisya_display_mode');
         if (saved) return saved;
@@ -446,18 +429,6 @@ const TRANSLATIONS = {
         setDisplayMode(mode);
         localStorage.setItem('alisya_display_mode', mode);
       };
-
-// 🌟 Deklarasi State Bahasa (Memperbaiki error 'lang is not defined')
-      const [lang, setLang] = useState(() => {
-        return localStorage.getItem('alisya_lang') || 'id';
-      });
-
-      const handleSetLang = (newLang) => {
-        setLang(newLang);
-        localStorage.setItem('alisya_lang', newLang);
-      };
-
-      const t = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS[lang]) ? TRANSLATIONS[lang] : (typeof TRANSLATIONS !== 'undefined' ? TRANSLATIONS.id : {});
 
       const [activeTab, setActiveTab] = useState('agenda');
       const [pcSubTab, setPcSubTab] = useState('agenda');
@@ -471,18 +442,32 @@ const TRANSLATIONS = {
       const [enteredPin, setEnteredPin] = useState('');
       const [pinError, setPinError] = useState(false);
 
-     const [selectedDate, setSelectedDate] = useState(realTodayStr);
+      // 🌟 DEFAULT TANGGAL, BULAN & TAHUN REAL-TIME SAAT DIBUKA
+      const [selectedDate, setSelectedDate] = useState(realTodayStr);
+      const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+      const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
 
-const [statPeriod, setStatPeriod] = useState('daily');
-const [customStatDate, setCustomStatDate] = useState(realTodayStr);
-const [customStatMonth, setCustomStatMonth] = useState(() => new Date().getMonth());
-const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYear());
+      const [statPeriod, setStatPeriod] = useState('daily');
+      const [customStatDate, setCustomStatDate] = useState(realTodayStr);
+      const [customStatMonth, setCustomStatMonth] = useState(() => new Date().getMonth());
+      const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYear());
 
       const [searchQuery, setSearchQuery] = useState('');
       const [filterBrand, setFilterBrand] = useState('ALL');
       const [filterStatus, setFilterStatus] = useState('ALL');
       const [filterDate, setFilterDate] = useState('');
       const [filterHour, setFilterHour] = useState('ALL');
+
+      // Sinkronisasi otomatis Bulan & Tahun ketika memilih tanggal
+      useEffect(() => {
+        if (selectedDate) {
+          const [y, m] = selectedDate.split('-').map(Number);
+          if (y && m) {
+            setCurrentYear(y);
+            setCurrentMonth(m - 1);
+          }
+        }
+      }, [selectedDate]);
 
       // Firebase Realtime Listener
       useEffect(() => {
@@ -533,14 +518,11 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
         if (firebaseDb) firebaseDb.ref('alisya_brands').set(newBrands);
       };
 
-      const [currentYear, setCurrentYear] = useState(2026);
-      const [currentMonth, setCurrentMonth] = useState(9);
-
       const [modalOpen, setModalOpen] = useState(false);
       const [selectedSchedule, setSelectedSchedule] = useState(null);
       const [formData, setFormData] = useState({
         id: '',
-        date: '2026-10-27',
+        date: realTodayStr,
         start_time: '10:00',
         end_time: '12:00',
         title: '',
@@ -600,7 +582,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
         notify('📋 Jadwal berhasil disalin!');
       };
 
-      // ⚡ PRESET SHIFT MOM UUNG
+      // Preset 1-Klik Mom Uung
       const applyMomUungPreset = (shiftNum, start, end) => {
         const momUungBrand = brands.find(b => b.id === 'b_momuung') || { color: '#B6D7A8' };
         setFormData(prev => ({
@@ -612,10 +594,10 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
           start_time: start,
           end_time: end
         }));
-        notify(`⚡ Berhasil memilih Shift ${shiftNum} Mom Uung (${start} - ${end})`);
+        notify(`⚡ Shift ${shiftNum} Mom Uung (${start} - ${end})`);
       };
 
-      // ⚡ PRESET SHIFT AQUAPRESS
+      // Preset 1-Klik AquaPress
       const applyAquaPressPreset = (shiftNum, start, end) => {
         const aquaBrand = brands.find(b => b.id === 'b_aquapress') || { color: '#00FFFF' };
         setFormData(prev => ({
@@ -627,7 +609,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
           start_time: start,
           end_time: end
         }));
-        notify(`💧 Berhasil memilih Shift ${shiftNum} AquaPress (${start} - ${end})`);
+        notify(`💧 Shift ${shiftNum} AquaPress (${start} - ${end})`);
       };
 
       const handleSave = (e) => {
@@ -933,7 +915,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
             data: {
               labels: stats.perBrand.map(b => b.name),
               datasets: [
-                { label: '🟢 Sesi Terjadwal', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#B6D7A8' }
+                { label: '🟢 Jumlah Shift / Sesi Terjadwal', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#B6D7A8' }
               ]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
@@ -941,6 +923,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
         }
       }, [displayMode, activeTab, pcSubTab, stats]);
 
+      // Fungsi Lompat Cepat (Hari Ini, Besok, Lusa) + Auto-Sync Bulan & Tahun
       const jumpToOffset = (days) => {
         const d = new Date();
         d.setDate(d.getDate() + days);
@@ -948,11 +931,13 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
         const mStr = String(d.getMonth() + 1).padStart(2, '0');
         const dStr = String(d.getDate()).padStart(2, '0');
         setSelectedDate(`${yStr}-${mStr}-${dStr}`);
+        setCurrentMonth(d.getMonth());
+        setCurrentYear(d.getFullYear());
       };
 
       const renderStatDateSelector = () => (
         <div className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200">
-          <span className="text-[11px] font-bold text-slate-500 uppercase">Pilih:</span>
+          <span className="text-[11px] font-bold text-slate-500 uppercase">Tentukan Pilihan:</span>
           {statPeriod === 'daily' && (
             <input
               type="date"
@@ -963,7 +948,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
           )}
           {statPeriod === 'weekly' && (
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-600 font-medium">Minggu dari:</span>
+              <span className="text-xs text-slate-600 font-medium">Minggu dari tgl:</span>
               <input
                 type="date"
                 value={customStatDate}
@@ -1028,7 +1013,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-extrabold text-base tracking-wide">Alisya Schedule</h1>
                   <span className="bg-white/15 text-rose-200 border border-white/25 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider">
-                    v5.7-Ultra PRO
+                    v5.8-Ultra PRO
                   </span>
                   {isAdmin ? (
                     <span className="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-md text-[10px] font-black shadow">👑 ADMIN</span>
@@ -1043,15 +1028,15 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
               </div>
             </div>
 
-            {/* SWITCHER MODE & MULTI-BAHASA */}
+            {/* PILIHAN 6 BAHASA & MODE TAMPILAN (HP vs PC) */}
             <div className="flex items-center gap-2 flex-wrap">
-              {/* DROPDOWN 6 BAHASA */}
-              <div className="flex items-center bg-black/30 px-2.5 py-1 rounded-2xl border border-white/10 shadow-inner">
-                <span className="text-xs mr-1">🌐</span>
+              {/* 🌐 DROPDOWN 6 BAHASA */}
+              <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-2xl border border-white/10 shadow-inner">
+                <span className="text-xs mr-1.5">🌐</span>
                 <select
                   value={lang}
                   onChange={(e) => handleSetLang(e.target.value)}
-                  className="bg-transparent text-white font-black text-xs border-none focus:outline-none cursor-pointer"
+                  className="bg-transparent text-white font-extrabold text-xs border-none focus:outline-none cursor-pointer"
                 >
                   <option value="id" className="bg-slate-900 text-white">🇮🇩 Indonesia</option>
                   <option value="en" className="bg-slate-900 text-white">🇬🇧 English</option>
@@ -1062,7 +1047,6 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                 </select>
               </div>
 
-              {/* DUAL-MODE TOGGLE */}
               <div className="flex items-center bg-black/30 p-1 rounded-2xl border border-white/10 shadow-inner">
                 <button
                   onClick={() => handleSetDisplayMode('mobile')}
@@ -1079,7 +1063,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
               </div>
             </div>
 
-            {/* NAVIGASI BULAN & TAHUN */}
+            {/* NAVIGASI BULAN & TAHUN REAL-TIME */}
             <div className="flex items-center gap-2">
               <div className="flex items-center bg-white/10 rounded-2xl p-1 text-xs font-bold border border-white/20 shadow-sm gap-1">
                 <button
@@ -1186,13 +1170,14 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                       onClick={() => handleOpenCreate()}
                       className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-black shadow flex items-center gap-1.5 active:scale-95 transition"
                     >
-                      <span>+</span><span>{t.btnAddSch}</span>
+                      <span>{t.btnAddSch}</span>
                     </button>
                   )}
                 </div>
               </div>
 
               <div className="p-6 max-w-[1600px] w-full mx-auto space-y-6">
+                
                 {/* AGENDA HARIAN PC */}
                 {pcSubTab === 'agenda' && (
                   <div className="space-y-6">
@@ -1247,7 +1232,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                           <div className="grid grid-cols-2 gap-2">
                             {availableSlotsForSelectedDate.length === 0 ? (
                               <div className="col-span-2 text-xs text-rose-600 font-bold py-2 text-center bg-rose-50 rounded-xl border border-rose-200">
-                                ⚠️ {t.allSlotsFilled}
+                                {t.allSlotsFilled}
                               </div>
                             ) : (
                               availableSlotsForSelectedDate.map(slot => (
@@ -1298,6 +1283,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                         </div>
                       </div>
 
+                      {/* FEED KARTU JADWAL HARIAN */}
                       <div className="lg:col-span-7 space-y-4">
                         <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-sm">
                           <span className="text-xs font-black uppercase text-slate-700 tracking-wider">
@@ -1309,7 +1295,9 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                           <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-3">
                             <div className="text-5xl">☕</div>
                             <div className="font-extrabold text-base text-slate-800">{t.noSchedule}</div>
-                            <p className="text-xs text-slate-400 max-w-sm mx-auto">{t.noScheduleSub}</p>
+                            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                              {t.noScheduleSub}
+                            </p>
                           </div>
                         ) : (
                           selectedDaySchedules.map(item => {
@@ -1485,7 +1473,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                   <div className="space-y-6">
                     <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
                       <div className="space-y-1">
-                        <h3 className="font-black text-sm text-slate-800">📊 {t.statFilterTitle}</h3>
+                        <h3 className="font-black text-sm text-slate-800">{t.statFilterTitle}</h3>
                         <p className="text-xs text-slate-500">{t.statFilterDesc}</p>
                       </div>
 
@@ -1495,25 +1483,25 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                             onClick={() => setStatPeriod('daily')}
                             className={`px-4 py-2 rounded-xl text-xs font-black transition ${statPeriod === 'daily' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:text-slate-900'}`}
                           >
-                            📅 {t.daily}
+                            {t.daily}
                           </button>
                           <button
                             onClick={() => setStatPeriod('weekly')}
                             className={`px-4 py-2 rounded-xl text-xs font-black transition ${statPeriod === 'weekly' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:text-slate-900'}`}
                           >
-                            🗓️ {t.weekly}
+                            {t.weekly}
                           </button>
                           <button
                             onClick={() => setStatPeriod('monthly')}
                             className={`px-4 py-2 rounded-xl text-xs font-black transition ${statPeriod === 'monthly' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:text-slate-900'}`}
                           >
-                            📆 {t.monthly}
+                            {t.monthly}
                           </button>
                           <button
                             onClick={() => setStatPeriod('yearly')}
                             className={`px-4 py-2 rounded-xl text-xs font-black transition ${statPeriod === 'yearly' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:text-slate-900'}`}
                           >
-                            📈 {t.yearly}
+                            {t.yearly}
                           </button>
                         </div>
 
@@ -1593,7 +1581,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                       <h3 className="font-black text-slate-800 text-lg">Semua Jadwal Terdaftar ({filteredSchedules.length})</h3>
                       {isAdmin && (
                         <button onClick={() => handleOpenCreate()} className="bg-maroon hover:bg-maroon-dark text-white px-5 py-2.5 rounded-2xl text-xs font-black shadow active:scale-95 transition">
-                          + Tambah Shift Baru
+                          {t.btnAddSch}
                         </button>
                       )}
                     </div>
@@ -1726,7 +1714,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                 {pcSubTab === 'colors' && (
                   <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4 max-w-2xl mx-auto">
                     <div>
-                      <h3 className="font-black text-slate-800 text-base">🎨 Pengaturan Warna Dinamis</h3>
+                      <h3 className="font-black text-slate-800 text-base">🎨 {t.tabColors}</h3>
                       <p className="text-xs text-slate-500 mt-1">Ubah warna visual brand, take konten video affiliate, jam tidur, dan jadwal me time dengan Color Picker.</p>
                     </div>
 
@@ -1813,6 +1801,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
               <div className="p-4 space-y-4 max-w-lg w-full mx-auto">
                 {activeTab === 'agenda' && (
                   <div className="space-y-4">
+                    {/* RADAR LIVE STREAM */}
                     <div className="bg-gradient-to-r from-maroon to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-1.5">
@@ -1844,6 +1833,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                       </div>
                     </div>
 
+                    {/* AVAILABLE SCHEDULE CARD */}
                     <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-3.5 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
@@ -1855,7 +1845,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                       </div>
                       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                         {availableSlotsForSelectedDate.length === 0 ? (
-                          <span className="text-xs text-rose-600 font-bold py-1">⚠️ {t.allSlotsFilled}</span>
+                          <span className="text-xs text-rose-600 font-bold py-1">{t.allSlotsFilled}</span>
                         ) : (
                           availableSlotsForSelectedDate.map(slot => (
                             <button
@@ -1871,6 +1861,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                       </div>
                     </div>
 
+                    {/* HORIZONTAL DATE PICKER BAR */}
                     <div className="bg-white p-3 rounded-3xl border border-slate-200 shadow-sm">
                       <div className="flex items-center justify-between mb-2 px-1">
                         <span className="text-xs font-black text-slate-700 uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
@@ -1905,6 +1896,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                       </div>
                     </div>
 
+                    {/* KARTU JADWAL HARIAN */}
                     <div className="space-y-3">
                       {selectedDaySchedules.length === 0 ? (
                         <div className="bg-white rounded-3xl p-7 text-center border border-slate-200 shadow-sm space-y-2">
@@ -2051,7 +2043,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                   <div className="space-y-4">
                     <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="font-black text-slate-800">📊 {t.statFilterTitle}</span>
+                        <span className="font-black text-slate-800">{t.statFilterTitle}</span>
                         <span className="font-bold text-maroon text-[11px] truncate">{periodLabel}</span>
                       </div>
                       <div className="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-xl">
@@ -2236,7 +2228,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                 {/* WARNA HP */}
                 {activeTab === 'colors' && (
                   <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-4 space-y-3">
-                    <h3 className="font-black text-sm text-slate-800">🎨 Warna Brand & Kategori</h3>
+                    <h3 className="font-black text-sm text-slate-800">🎨 {t.tabColors}</h3>
                     <div className="space-y-2">
                       {brands.map(b => (
                         <div key={b.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
@@ -2316,7 +2308,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
             </div>
           )}
 
-          {/* 🌟 MODAL FORM INPUT JADWAL: DILENGKAPI TOMBOL 1-KLIK PRESET MOM UUNG & AQUAPRESS */}
+          {/* MODAL FORM INPUT JADWAL (1-KLIK PRESET MOM UUNG & AQUAPRESS) */}
           {modalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
               <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
@@ -2326,7 +2318,7 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
                 </div>
                 <form onSubmit={handleSave} className="p-5 space-y-3 text-xs">
                   
-                  {/* ⚡ PANEL 1-KLIK PRESET SHIFT MOM UUNG */}
+                  {/* 🍼 PANEL 1-KLIK PRESET SHIFT MOM UUNG */}
                   <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-amber-950 flex items-center gap-1.5 text-[11px]">
@@ -2535,4 +2527,3 @@ const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYea
   </script>
 </body>
 </html>
-
