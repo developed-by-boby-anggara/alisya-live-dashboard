@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Alisya Schedule Dashboard</title>
+  <title>Alisya Schedule Dashboard 🌸</title>
 
   <!-- PWA & Mobile Web Capabilities (URL-Encoded Valid Manifest) -->
   <meta name="theme-color" content="#7B1113">
@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Alisya Schedule">
   
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alisya%20Schedule%20Dashboard%22%2C%22short_name%22%3A%22Alisya%20Schedule%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230F172A%22%2C%22theme_color%22%3A%22%237B1113%22%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Alisya%20Schedule%20Dashboard%22%2C%22short_name%22%3A%22Alisya%20Schedule%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FFF5F7%22%2C%22theme_color%22%3A%22%237B1113%22%7D">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -47,20 +47,31 @@
   </script>
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #F1F5F9; }
-    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+    ::-webkit-scrollbar-track { background: #FFF0F3; }
+    ::-webkit-scrollbar-thumb { background: #F4ACB7; border-radius: 999px; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     .sticky-col { position: sticky; left: 0; z-index: 20; }
     .sticky-header { position: sticky; top: 0; z-index: 30; }
     .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 76px); }
 
+    /* Cute Pastel Polka Background */
+    body.cute-bg {
+      background-color: #FFF5F7;
+      background-image: radial-gradient(#FFD6E0 1.25px, transparent 1.25px);
+      background-size: 22px 22px;
+    }
+
     /* Dark Mode Overrides */
-    body.dark-theme { background-color: #0F172A !important; color: #F1F5F9 !important; }
-    body.dark-theme .bg-slate-100 { background-color: #0F172A !important; }
+    body.dark-theme {
+      background-color: #0F172A !important;
+      background-image: radial-gradient(#1E293B 1.25px, transparent 1.25px) !important;
+      color: #F1F5F9 !important;
+    }
+    body.dark-theme .bg-slate-100 { background-color: transparent !important; }
     body.dark-theme .bg-white { background-color: #1E293B !important; color: #F1F5F9 !important; }
     body.dark-theme .bg-slate-50 { background-color: #0F172A !important; color: #E2E8F0 !important; }
-    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300 { border-color: #334155 !important; }
+    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300, body.dark-theme .border-pink-200 { border-color: #334155 !important; }
     body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700 { color: #F8FAFC !important; }
     body.dark-theme .text-slate-600, body.dark-theme .text-slate-500 { color: #94A3B8 !important; }
     body.dark-theme .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: #334155 !important; }
@@ -72,9 +83,25 @@
     .live-card-glow {
       animation: pulse-border 2s infinite;
     }
+
+    @keyframes float-up-sparkle {
+      0% { transform: translateY(0) scale(0.7) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-130px) scale(1.35) rotate(20deg); opacity: 0; }
+    }
+    .sparkle-anim {
+      animation: float-up-sparkle 1.6s ease-out forwards;
+    }
+
+    @keyframes gentle-bob {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+    .cute-float {
+      animation: gentle-bob 3s ease-in-out infinite;
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
+<body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
 
   <script type="text/babel">
@@ -145,7 +172,14 @@
       END_TIME_OPTIONS.push("23:59");
     }
 
-    // Format Detik ke Jam Digital HH:MM:SS
+    const MOOD_LIST = [
+      { id: 'happy', emoji: '🥰', labelId: 'Happy Banget', labelEn: 'Super Happy', color: 'bg-pink-100 text-pink-800 border-pink-300' },
+      { id: 'slay', emoji: '💅', labelId: 'Mode Slay!', labelEn: 'Slay Mode!', color: 'bg-purple-100 text-purple-800 border-purple-300' },
+      { id: 'fire', emoji: '🔥', labelId: 'Full Semangat', labelEn: 'On Fire', color: 'bg-amber-100 text-amber-800 border-amber-300' },
+      { id: 'calm', emoji: '🌸', labelId: 'Kalem & Cantik', labelEn: 'Soft & Pretty', color: 'bg-rose-100 text-rose-800 border-rose-300' },
+      { id: 'tired', emoji: '🥺', labelId: 'Butuh Peluk / Bobo', labelEn: 'Need Rest / Hug', color: 'bg-indigo-100 text-indigo-800 border-indigo-300' }
+    ];
+
     const formatSecondsToHMS = (totalSeconds) => {
       const sec = Math.max(0, Math.floor(totalSeconds));
       const h = Math.floor(sec / 3600);
@@ -154,7 +188,7 @@
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     };
 
-    // --- KAMUS TERJEMAHAN TOTAL 3 BAHASA (ID, EN, ZH) ---
+    // --- KAMUS TERJEMAHAN 2 BAHASA (ID & EN) ---
     const TRANSLATIONS = {
       id: {
         locale: 'id-ID',
@@ -168,8 +202,8 @@
         slotsReady: "Slot Siap Pakai",
         calendarTitle: "Kalender Tanggal",
         sessionList: "Daftar Sesi",
-        noSchedule: "Tidak Ada Jadwal di Tanggal Ini",
-        noScheduleSub: "Alisya libur atau seluruh slot jam di tanggal ini masih kosong.",
+        noSchedule: "Tidak Ada Jadwal di Tanggal Ini 🌸",
+        noScheduleSub: "Yeay! Alisya libur atau seluruh slot jam di tanggal ini masih kosong. Waktunya santai!",
         btnShareWA: "Share WhatsApp",
         btnSavePNG: "Simpan PNG",
         btnShareRekapWA: "Share Rekap Spreadsheet ke WA",
@@ -290,7 +324,22 @@
         cloneModalTitle: "📋 Salin Semua Jadwal Hari Ini",
         cloneModalDesc: "Salin seluruh daftar sesi dari tanggal",
         cloneTargetLabel: "Pilih Tanggal Tujuan:",
-        cloneConfirmBtn: "🚀 Salin Sekarang"
+        cloneConfirmBtn: "🚀 Salin Sekarang",
+        greetMorning: "Selamat Pagi, Alisya Cantik! ☀️🌸",
+        greetAfternoon: "Selamat Siang, Princess Alisya! 🌤️🌷",
+        greetEvening: "Selamat Sore, Queen Alisya! 🌅✨",
+        greetNight: "Selamat Malam, Sweetheart! 🌙💖",
+        moodTrackerTitle: "🎀 Mood & Self-Care Alisya Hari Ini",
+        waterTitle: "💧 Hidrasi & Suara Jernih:",
+        waterGoalDone: "🎉 Yeay! Target minum air hari ini tercapai!",
+        cheerMeBtn: "💖 Klik Mood Booster",
+        affirmations: [
+          "✨ Kamu cantik, berbakat, dan rezekimu mengalir deras hari ini! Semangat live-nya ya!",
+          "🌸 Jangan lupa senyum manis dulu sebelum mulai! Energi positifmu bikin penonton betah.",
+          "💖 Satu per satu jadwal selesai, kamu hebat banget hari ini! Jangan lupa minum air putih ya.",
+          "👑 Queen Alisya siap pecah telor GMV hari ini! Tetap rileks dan happy terus ya!",
+          "🌷 Kalau capek, istirahat sebentar ya. Kesehatan dan kebahagiaanmu selalu nomor satu!"
+        ]
       },
       en: {
         locale: 'en-US',
@@ -304,8 +353,8 @@
         slotsReady: "Slots Available",
         calendarTitle: "Date Calendar",
         sessionList: "Session List",
-        noSchedule: "No Schedule for this Date",
-        noScheduleSub: "Alisya is off or all time slots for this date are currently empty.",
+        noSchedule: "No Schedule for this Date 🌸",
+        noScheduleSub: "Yay! Alisya is off or all time slots for this date are currently empty. Time to relax!",
         btnShareWA: "Share WhatsApp",
         btnSavePNG: "Save PNG",
         btnShareRekapWA: "Share Spreadsheet Recap to WA",
@@ -426,143 +475,22 @@
         cloneModalTitle: "📋 Clone Full Day Schedule",
         cloneModalDesc: "Copy all sessions from date",
         cloneTargetLabel: "Select Target Date:",
-        cloneConfirmBtn: "🚀 Clone Now"
-      },
-      zh: {
-        locale: 'zh-CN',
-        modeHP: "手机模式",
-        modePC: "电脑模式",
-        lockBtn: "锁定",
-        loginBtn: "登录",
-        radarTitle: "Alisya 日程雷达 (00:00 - 23:59)",
-        availableTitle: "可用时间表（空闲时段）",
-        allSlotsFilled: "⚠️ 该日期的所有时间段已满！",
-        slotsReady: "可用时段",
-        calendarTitle: "日期日历",
-        sessionList: "活动列表",
-        noSchedule: "该日期暂无日程",
-        noScheduleSub: "Alisya 休息或所有时段均可自由安排。",
-        btnShareWA: "分享 WhatsApp",
-        btnSavePNG: "保存图片 PNG",
-        btnShareRekapWA: "分享表格汇总至 WA",
-        btnDownloadTablePNG: "下载表格图片 (.PNG)",
-        btnAddSession: "+ 添加时段",
-        btnCloneDay: "📋 复制整天日程",
-        jump: "跳转:",
-        today: "今天",
-        tomorrow: "明天",
-        dayAfter: "后天",
-        tabAgenda: "每日议程",
-        tabSpreadsheet: "电子表格日历",
-        tabKPI: "KPI 与图表",
-        tabList: "完整日程列表",
-        tabColors: "调整主题颜色",
-        btnExportCSV: "导出 CSV (Excel)",
-        btnAddSch: "+ 新增日程",
-        statFilterTitle: "📊 统计时间范围筛选 (00:00 - 23:59)",
-        statFilterDesc: "选择周期和日期以评估工作、睡眠和个人独处时间：",
-        selectOption: "选择日期:",
-        weekFrom: "周起始日:",
-        yearLabel: "年份",
-        daily: "📅 按日",
-        weekly: "🗓️ 按周",
-        monthly: "📆 按月",
-        yearly: "📈 按年",
-        totalLive: "直播总班次",
-        takeKonten: "视频内容拍摄",
-        sleepTime: "睡眠与休息时间",
-        meTime: "个人专属时光",
-        offDay: "休息日 / 放假",
-        hoursLive: "直播时长（小时）",
-        hoursProd: "制作时长（小时）",
-        hoursSleep: "休息时长（小时）",
-        hoursMeTime: "个人放松与护理安排",
-        hoursOff: "完整休息天数",
-        propTitle: "ALISYA 时间占比",
-        barTitle: "各分类活动负荷",
-        burnoutGuard: "🛡️ 健康与防过劳守护",
-        balanceScore: "工作与生活平衡评分:",
-        scoreBalanced: "🟢 健康平衡（工作、睡眠与休息比例理想）",
-        scoreWarning: "🟡 注意（睡眠或个人休息时间较少）",
-        scoreBurnout: "🔴 过劳预警！（连续工作时间过长，需要休息）",
-        shortBreakWarning: "⚠️ 班次之间休息时间过短 (<5小时)！",
-        liveNowActive: "正在进行:",
-        liveNowIdle: "✨ 当前没有正在进行的活动",
-        endsAt: "结束时间",
-        startsAt: "开始时间",
-        timeLeft: "剩余倒计时:",
-        startsInCountdown: "距离开始:",
-        sessionProgress: "当前活动进度",
-        nextUp: "接下来:",
-        inMin: "还有",
-        minLeft: "分钟结束",
-        minUnit: "分钟",
-        progressToday: "今日总日程进度",
-        completed: "已完成",
-        scheduledSessions: "已排程活动",
-        productiveActs: "项工作活动",
-        colDateTime: "日期与星期 \\ 时间",
-        colDayStatus: "当日状态",
-        todayBadge: "今天",
-        statusFree: "✨ 空闲时段",
-        statusLow: "🟢 轻松",
-        statusMed: "⚡ 适中",
-        statusFull: "🔥 日程已满",
-        statusOff: "☕ 休息 / 放假",
-        allRegistered: "所有已登记日程",
-        searchKeyword: "搜索关键词:",
-        searchPlaceholder: "🔍 搜索班次名称、备注...",
-        catBrand: "分类 / 品牌:",
-        allCategories: "所有分类",
-        attStatus: "出勤状态:",
-        allStatuses: "所有状态",
-        checkDate: "按日期筛选:",
-        checkStartHour: "按开始时间筛选 (24H):",
-        allHours: "所有时间",
-        colDay: "星期",
-        colDate: "日期",
-        colHour: "时间 (24H)",
-        colTitle: "班次 / 活动标题",
-        colCategory: "分类",
-        colStatus: "状态",
-        colNotes: "备注",
-        colAction: "操作",
-        copyBtn: "📋 复制",
-        editBtn: "编辑",
-        deleteBtn: "删除",
-        noMatchFilter: "没有符合筛选条件的日程。",
-        colorDesc: "使用颜色选择器自定义品牌、视频拍摄、睡眠和个人时间的视觉颜色。",
-        editable: "可修改",
-        locked: "已锁定",
-        adminAccessTitle: "管理员访问",
-        adminAccessDesc: "输入 PIN 码以管理 Alisya 的日程。",
-        pinPlaceholder: "输入访问 PIN 码",
-        pinWrong: "PIN 码错误！请重试。",
-        cancelBtn: "取消",
-        unlockBtn: "解锁权限",
-        modalEditTitle: "✏️ 编辑日程",
-        modalAddTitle: "✨ 新增日程",
-        presetMomUung: "Mom Uung 快捷班次 (一键填入):",
-        presetAquaPress: "AquaPress 快捷班次 (一键填入):",
-        formTitleLabel: "班次 / 活动名称 *",
-        formStartDate: "开始日期 *",
-        formRepeat: "🔁 连续重复天数",
-        rep1: "仅限当天 (1天)",
-        rep2: "连续 2 天",
-        rep3: "连续 3 天",
-        rep5: "连续 5 天",
-        rep7: "连续 1 周 (7天)",
-        formStartHour: "开始时间 (24H) *",
-        formEndHour: "结束时间 (24H) *",
-        formNotes: "备注 / GMV 目标",
-        deleteSchBtn: "🗑️ 删除日程",
-        saveCloudBtn: "保存至云端",
-        stickyNoteLabel: "📌 本周重点:",
-        editNoteBtn: "✏️ 修改重点",
-        cloneModalTitle: "📋 复制整天日程",
-        cloneModalDesc: "复制该日期的所有日程",
-        cloneTargetLabel: "选择目标日期:",
-        cloneConfirmBtn: "🚀 立即复制"
+        cloneConfirmBtn: "🚀 Clone Now",
+        greetMorning: "Good Morning, Pretty Alisya! ☀️🌸",
+        greetAfternoon: "Good Afternoon, Princess Alisya! 🌤️🌷",
+        greetEvening: "Good Evening, Queen Alisya! 🌅✨",
+        greetNight: "Good Night, Sweetheart! 🌙💖",
+        moodTrackerTitle: "🎀 Alisya's Daily Mood & Self-Care",
+        waterTitle: "💧 Hydration & Voice Care:",
+        waterGoalDone: "🎉 Yay! Daily hydration goal achieved!",
+        cheerMeBtn: "💖 Click for Mood Booster",
+        affirmations: [
+          "✨ You are glowing, talented, and abundant today! Have an amazing stream!",
+          "🌸 Put on your sweetest smile first! Your positive energy makes everyone stay.",
+          "💖 Step by step, you're doing so well today! Don't forget to stay hydrated.",
+          "👑 Queen Alisya is ready to crush all GMV targets today with joy and grace!",
+          "🌷 Take a gentle breath whenever you feel tired. Your happiness always comes first!"
+        ]
       }
     };
 
@@ -639,16 +567,75 @@
         return `${hh}:${mm}:${ss}`;
       }, [nowTime]);
 
-      // State 3 Bahasa Utama (id, en, zh)
+      // State 2 Bahasa Utama (id & en)
       const [lang, setLang] = useState(() => {
         const saved = localStorage.getItem('alisya_lang');
-        return (saved && TRANSLATIONS[saved]) ? saved : 'id';
+        return (saved === 'en' || saved === 'id') ? saved : 'id';
       });
       const handleSetLang = (newLang) => {
         setLang(newLang);
         localStorage.setItem('alisya_lang', newLang);
       };
       const t = TRANSLATIONS[lang] || TRANSLATIONS.id;
+
+      // Sapaan Waktu Otomatis Imut
+      const cuteGreeting = useMemo(() => {
+        const hr = nowTime.getHours();
+        if (hr >= 4 && hr < 11) return t.greetMorning;
+        if (hr >= 11 && hr < 15) return t.greetAfternoon;
+        if (hr >= 15 && hr < 18) return t.greetEvening;
+        return t.greetNight;
+      }, [nowTime, t]);
+
+      // State Affirmation & Sparkle Burst
+      const [quoteIdx, setQuoteIdx] = useState(0);
+      const [sparkles, setSparkles] = useState([]);
+
+      const triggerCuteSparkles = () => {
+        const emojis = ['💖', '✨', '🌸', '🎀', '🌷', '👑', '🍓', '💫'];
+        const batch = Array.from({ length: 14 }).map((_, i) => ({
+          id: Date.now() + '_' + i,
+          emoji: emojis[Math.floor(Math.random() * emojis.length)],
+          left: Math.floor(Math.random() * 84) + 8,
+          top: Math.floor(Math.random() * 55) + 25
+        }));
+        setSparkles(batch);
+        setTimeout(() => setSparkles([]), 1650);
+      };
+
+      const handleBoostMood = () => {
+        setQuoteIdx(prev => (prev + 1) % t.affirmations.length);
+        triggerCuteSparkles();
+        playNotificationChime();
+      };
+
+      // State Mood & Hydration per Tanggal (Tersimpan di Cloud & LocalStorage)
+      const [dailyWellness, setDailyWellness] = useState(() => {
+        try {
+          const saved = localStorage.getItem('alisya_wellness');
+          return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+          return {};
+        }
+      });
+
+      const currentDayWellness = useMemo(() => {
+        return dailyWellness[selectedDate] || { mood: 'happy', water: 4 };
+      }, [dailyWellness, selectedDate]);
+
+      const updateDayWellness = (patch) => {
+        const updated = {
+          ...dailyWellness,
+          [selectedDate]: {
+            ...(dailyWellness[selectedDate] || { mood: 'happy', water: 4 }),
+            ...patch
+          }
+        };
+        setDailyWellness(updated);
+        localStorage.setItem('alisya_wellness', JSON.stringify(updated));
+        if (firebaseDb) firebaseDb.ref('alisya_wellness').set(updated);
+        triggerCuteSparkles();
+      };
 
       // Helper Nama Hari sesuai Bahasa Aktif
       const getHariNama = (dateString) => {
@@ -700,7 +687,7 @@
 
       const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
-      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Jaga Kesehatan & Tidur Cukup! ✨");
+      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Jaga Kesehatan & Senyum Manis Terus! 🌸✨");
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -781,7 +768,16 @@
           if (val) setStickyNote(val);
         });
 
-        return () => { refSch.off(); refBrands.off(); refNote.off(); };
+        const refWell = firebaseDb.ref('alisya_wellness');
+        refWell.on('value', snap => {
+          const val = snap.val();
+          if (val && typeof val === 'object') {
+            setDailyWellness(val);
+            localStorage.setItem('alisya_wellness', JSON.stringify(val));
+          }
+        });
+
+        return () => { refSch.off(); refBrands.off(); refNote.off(); refWell.off(); };
       }, []);
 
       const saveSchedulesToCloud = (newList) => {
@@ -931,7 +927,7 @@
 
       const getDayScheduleDensity = (dateStr) => {
         const dayShifts = schedules.filter(s => s.date === dateStr);
-        if (dayShifts.length === 0) return { text: t.statusFree, badge: 'bg-slate-100 text-slate-600 border-slate-200' };
+        if (dayShifts.length === 0) return { text: t.statusFree, badge: 'bg-pink-50 text-pink-700 border-pink-200' };
 
         const hasOff = dayShifts.some(s => s.status === 'OFF');
         if (hasOff) return { text: t.statusOff, badge: 'bg-rose-100 text-rose-800 border-rose-300' };
@@ -952,7 +948,7 @@
         if (productiveHours > 0) {
           return { text: t.statusLow, badge: 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold' };
         }
-        return { text: t.statusFree, badge: 'bg-slate-100 text-slate-600 border-slate-200' };
+        return { text: t.statusFree, badge: 'bg-pink-50 text-pink-700 border-pink-200' };
       };
 
       const filteredByStatPeriod = useMemo(() => {
@@ -1163,10 +1159,10 @@
           return s;
         });
         saveSchedulesToCloud(updated);
-        notify('✅ Progres konten diperbarui!');
+        triggerCuteSparkles();
+        notify('🌸 Progres konten diperbarui!');
       };
 
-      // Fitur Salin 1 Hari Penuh ke Tanggal Lain
       const handleCloneFullDay = (e) => {
         e.preventDefault();
         if (!isAdmin) { setPinInputModal(true); return; }
@@ -1183,7 +1179,8 @@
         saveSchedulesToCloud([...schedules, ...clonedList]);
         setCloneModalOpen(false);
         setSelectedDate(cloneTargetDate);
-        notify(`📋 ${clonedList.length} sesi berhasil disalin ke tanggal ${cloneTargetDate}!`);
+        triggerCuteSparkles();
+        notify(`🎀 ${clonedList.length} sesi berhasil disalin ke tanggal ${cloneTargetDate}!`);
       };
 
       const exportElementAsPNG = async (elementId, filenameLabel) => {
@@ -1197,7 +1194,7 @@
           const canvas = await html2canvas(el, {
             scale: 2,
             useCORS: true,
-            backgroundColor: darkMode ? '#0F172A' : '#F8FAFC'
+            backgroundColor: darkMode ? '#0F172A' : '#FFF5F7'
           });
           const link = document.createElement('a');
           link.download = `Alisya_Schedule_${filenameLabel}.png`;
@@ -1217,7 +1214,8 @@
           setPinInputModal(false);
           setEnteredPin('');
           setPinError(false);
-          notify('🔓 Admin Access Unlocked!');
+          triggerCuteSparkles();
+          notify('🔓 Admin Access Unlocked! 🌸');
         } else {
           setPinError(true);
         }
@@ -1257,7 +1255,8 @@
         if (!isAdmin) { setPinInputModal(true); return; }
         const copy = { ...sch, id: 'sch_' + Date.now(), title: sch.title + ' (Copy)' };
         saveSchedulesToCloud([...schedules, copy]);
-        notify('📋 Disalin!');
+        triggerCuteSparkles();
+        notify('🎀 Jadwal berhasil disalin!');
       };
 
       const applyMomUungPreset = (shiftNum, start, end) => {
@@ -1271,7 +1270,7 @@
           start_time: start,
           end_time: end
         }));
-        notify(`⚡ Shift ${shiftNum} Mom Uung (${start} - ${end})`);
+        notify(`🍼 Shift ${shiftNum} Mom Uung (${start} - ${end})`);
       };
 
       const applyAquaPressPreset = (shiftNum, start, end) => {
@@ -1295,7 +1294,7 @@
 
         if (selectedSchedule) {
           saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
-          notify('✨ Berhasil diperbarui!');
+          notify('✨ Jadwal berhasil diperbarui!');
         } else {
           const newItems = [];
           const count = Number(repeatDays) || 1;
@@ -1308,8 +1307,9 @@
             });
           }
           saveSchedulesToCloud([...schedules, ...newItems]);
-          notify('🚀 Berhasil disimpan!');
+          notify('💖 Jadwal baru berhasil disimpan!');
         }
+        triggerCuteSparkles();
         setModalOpen(false);
       };
 
@@ -1348,7 +1348,7 @@
       const shareToWhatsApp = () => {
         const todayItems = schedules.filter(s => s.date === selectedDate).sort((a,b) => a.start_time.localeCompare(b.start_time));
         const hari = getHariNama(selectedDate);
-        let text = `📢 *${t.radarTitle}*\n🗓️ ${hari}, ${selectedDate}\n\n`;
+        let text = `🌸 *${t.radarTitle}* 🌸\n🗓️ ${hari}, ${selectedDate}\n\n`;
         if (todayItems.length === 0) text += `☕ ${t.noSchedule}\n`;
         else {
           todayItems.forEach((s, idx) => {
@@ -1367,7 +1367,7 @@
           })
           .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
 
-        let text = `📊 *ALISYA SCHEDULE (${monthName} ${currentYear})*\n\n`;
+        let text = `🌸 *ALISYA SCHEDULE (${monthName} ${currentYear})* 🌸\n\n`;
         if (monthItems.length === 0) text += `${t.noSchedule}\n`;
         else {
           const grouped = {};
@@ -1457,6 +1457,100 @@
         </div>
       );
 
+      // 🌸 KOMPONEN MOOD BOOSTER & AFFIRMATION CARD IMUT
+      const renderCuteGreetingCard = () => (
+        <div className="bg-gradient-to-r from-pink-100 via-rose-50 to-amber-50 border-2 border-pink-200/80 rounded-3xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-pink-200 flex items-center justify-center text-2xl cute-float">
+              🎀
+            </div>
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-black text-sm md:text-base text-maroon">{cuteGreeting}</h3>
+                <span className="bg-pink-200/80 text-pink-900 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                  ✨ Princess Mode ON
+                </span>
+              </div>
+              <p className="text-xs font-bold text-rose-800/90 italic">
+                "{t.affirmations[quoteIdx % t.affirmations.length]}"
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleBoostMood}
+            className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-xs px-4 py-2 rounded-2xl shadow-md active:scale-95 transition flex items-center gap-1.5"
+          >
+            <span>{t.cheerMeBtn}</span>
+          </button>
+        </div>
+      );
+
+      // 🧋 KOMPONEN SELF-CARE: MOOD CHECK-IN & HYDRATION TRACKER
+      const renderCuteWellnessWidget = () => (
+        <div className="bg-white rounded-3xl border-2 border-pink-200/70 p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black text-maroon uppercase tracking-wider flex items-center gap-1.5">
+              <span>{t.moodTrackerTitle}</span>
+            </span>
+            <span className="text-[10px] font-bold text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-full border border-pink-200">
+              {selectedDate}
+            </span>
+          </div>
+
+          {/* Pilihan Mood Hari Ini */}
+          <div className="grid grid-cols-5 gap-1.5">
+            {MOOD_LIST.map(m => {
+              const isSelected = currentDayWellness.mood === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => updateDayWellness({ mood: m.id })}
+                  className={`py-2 px-1 rounded-2xl border text-center transition flex flex-col items-center gap-0.5 active:scale-95 ${isSelected ? `${m.color} font-black ring-2 ring-pink-400 scale-105 shadow-xs` : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-pink-50/50'}`}
+                >
+                  <span className="text-lg">{m.emoji}</span>
+                  <span className="text-[9px] leading-tight truncate w-full px-0.5">
+                    {lang === 'id' ? m.labelId : m.labelEn}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tracker Minum Air / Boba 8 Gelas */}
+          <div className="bg-pink-50/70 border border-pink-200/60 rounded-2xl p-3 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-extrabold text-rose-900">{t.waterTitle}</span>
+              <span className="font-mono font-black text-pink-700 bg-white px-2 py-0.5 rounded-lg border border-pink-200">
+                {currentDayWellness.water || 0} / 8 🥤
+              </span>
+            </div>
+            <div className="grid grid-cols-8 gap-1">
+              {Array.from({ length: 8 }).map((_, idx) => {
+                const filled = idx < (currentDayWellness.water || 0);
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => updateDayWellness({ water: idx + 1 === currentDayWellness.water ? idx : idx + 1 })}
+                    className={`h-8 rounded-xl border flex items-center justify-center text-sm transition active:scale-90 ${filled ? 'bg-gradient-to-b from-pink-400 to-rose-500 text-white border-rose-500 shadow-xs' : 'bg-white border-pink-200 opacity-50 hover:opacity-90'}`}
+                    title={`Gelas ke-${idx + 1}`}
+                  >
+                    {filled ? '🧋' : '🥛'}
+                  </button>
+                );
+              })}
+            </div>
+            {(currentDayWellness.water || 0) >= 8 && (
+              <div className="text-[10px] font-black text-emerald-700 text-center bg-emerald-100/80 py-1 rounded-xl">
+                {t.waterGoalDone}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+
       // 🌟 KOMPONEN BANNER LIVE NOW DENGAN COUNTDOWN DETIK REAL-TIME & INFO JAM HABIS
       const renderLiveNowBanner = () => (
         <div className="bg-black/30 rounded-2xl p-3.5 border border-white/15 space-y-3 mt-2 shadow-inner">
@@ -1493,7 +1587,6 @@
             )}
           </div>
 
-          {/* Progress Bar Sesi Saat Ini (Jika Ada yang Sedang Berlangsung) */}
           {liveTracker.activeItem && (
             <div className="space-y-1">
               <div className="flex justify-between text-[10px] text-emerald-200 font-bold">
@@ -1502,14 +1595,13 @@
               </div>
               <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-300 to-emerald-400 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-pink-300 via-amber-300 to-emerald-400 transition-all duration-300"
                   style={{ width: `${liveTracker.activeItem.sessionPct}%` }}
                 ></div>
               </div>
             </div>
           )}
 
-          {/* Progress Bar Total Agenda Hari Ini */}
           <div className="space-y-1">
             <div className="flex justify-between text-[10px] text-rose-200 font-bold">
               <span>📅 {t.progressToday} ({realTodayStr})</span>
@@ -1517,7 +1609,7 @@
             </div>
             <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 transition-all duration-500"
+                className="h-full bg-gradient-to-r from-pink-400 via-rose-300 to-emerald-300 transition-all duration-500"
                 style={{ width: `${liveTracker.progressPct}%` }}
               ></div>
             </div>
@@ -1556,29 +1648,45 @@
       };
 
       return (
-        <div className="min-h-screen flex flex-col bg-slate-100">
+        <div className="min-h-screen flex flex-col relative">
+          {/* ANIMASI TABURAN HATI & BINTANG IMUT */}
+          <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+            {sparkles.map(sp => (
+              <div
+                key={sp.id}
+                style={{ left: `${sp.left}%`, top: `${sp.top}%` }}
+                className="absolute text-2xl md:text-3xl sparkle-anim select-none"
+              >
+                {sp.emoji}
+              </div>
+            ))}
+          </div>
+
           {toast && (
-            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 backdrop-blur text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-bold animate-bounce border border-slate-700">
-              <span>{toast}</span>
+            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-maroon/95 backdrop-blur text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-bold animate-bounce border-2 border-pink-300">
+              <span>🌸</span><span>{toast}</span>
             </div>
           )}
 
           {/* HEADER UTAMA */}
-          <header className="bg-maroon text-white px-4 md:px-6 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg sticky top-0 z-40">
+          <header className="bg-gradient-to-r from-maroon via-[#8B1538] to-maroon text-white px-4 md:px-6 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg sticky top-0 z-40 border-b-2 border-pink-300/30">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center font-black text-rose-300 text-xl border border-white/20 shadow-inner">
-                ✨
+              <div className="w-10 h-10 rounded-2xl bg-pink-200/20 flex items-center justify-center font-black text-rose-200 text-xl border border-pink-200/40 shadow-inner cute-float">
+                🎀
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="font-extrabold text-base tracking-wide">Alisya Schedule</h1>
-                  <span className="bg-white/15 text-rose-200 border border-white/25 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider">
-                    v6.2-Ultra PRO
+                  <h1 className="font-extrabold text-base tracking-wide flex items-center gap-1.5">
+                    <span>Alisya Schedule</span>
+                    <span className="text-sm">🌸</span>
+                  </h1>
+                  <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider">
+                    v6.3-Cute PRO
                   </span>
                   {isAdmin ? (
-                    <span className="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-md text-[10px] font-black shadow">👑 ADMIN</span>
+                    <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[10px] font-black shadow">👑 ADMIN</span>
                   ) : (
-                    <span className="bg-white/20 text-rose-100 px-2 py-0.5 rounded-md text-[10px] font-semibold">👀 VIEWER</span>
+                    <span className="bg-white/20 text-rose-100 px-2 py-0.5 rounded-full text-[10px] font-semibold">👀 VIEWER</span>
                   )}
                   <span className="flex items-center gap-1 text-[10px] bg-black/30 text-emerald-300 border border-emerald-400/30 px-2.5 py-0.5 rounded-full font-mono font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -1588,9 +1696,9 @@
               </div>
             </div>
 
-            {/* 🌐 3 BAHASA, TEMA MALAM, ALARM & MODE TAMPILAN */}
+            {/* 🌐 2 BAHASA (ID & EN), TEMA MALAM, ALARM & MODE TAMPILAN */}
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-2xl border border-white/10 shadow-inner">
+              <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-2xl border border-white/15 shadow-inner">
                 <span className="text-xs mr-1.5">🌐</span>
                 <select
                   value={lang}
@@ -1599,13 +1707,12 @@
                 >
                   <option value="id" className="bg-slate-900 text-white">🇮🇩 Indonesia</option>
                   <option value="en" className="bg-slate-900 text-white">🇬🇧 English</option>
-                  <option value="zh" className="bg-slate-900 text-white">🇨🇳 中文</option>
                 </select>
               </div>
 
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${darkMode ? 'bg-amber-400 text-slate-900 border-amber-300 shadow' : 'bg-black/30 text-rose-100 border-white/10 hover:bg-black/40'}`}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${darkMode ? 'bg-amber-300 text-slate-900 border-amber-200 shadow' : 'bg-black/30 text-rose-100 border-white/15 hover:bg-black/40'}`}
                 title="Dark / Light Mode"
               >
                 <span>{darkMode ? '☀️' : '🌙'}</span>
@@ -1614,22 +1721,22 @@
 
               <button
                 onClick={toggleSoundAlert}
-                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${soundAlert ? 'bg-emerald-500/30 text-emerald-200 border-emerald-400/40' : 'bg-black/30 text-rose-200/60 border-white/10'}`}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${soundAlert ? 'bg-emerald-500/30 text-emerald-200 border-emerald-400/40' : 'bg-black/30 text-rose-200/60 border-white/15'}`}
                 title="Sound Reminder"
               >
                 <span>{soundAlert ? '🔔' : '🔕'}</span>
               </button>
 
-              <div className="flex items-center bg-black/30 p-1 rounded-2xl border border-white/10 shadow-inner">
+              <div className="flex items-center bg-black/30 p-1 rounded-2xl border border-white/15 shadow-inner">
                 <button
                   onClick={() => handleSetDisplayMode('mobile')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'mobile' ? 'bg-white text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'mobile' ? 'bg-pink-100 text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
                 >
                   <span>📱</span><span>{t.modeHP}</span>
                 </button>
                 <button
                   onClick={() => handleSetDisplayMode('pc')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'pc' ? 'bg-white text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'pc' ? 'bg-pink-100 text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
                 >
                   <span>💻</span><span>{t.modePC}</span>
                 </button>
@@ -1683,7 +1790,7 @@
                   🔒 {t.lockBtn}
                 </button>
               ) : (
-                <button onClick={() => setPinInputModal(true)} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95 transition shadow">
+                <button onClick={() => setPinInputModal(true)} className="bg-pink-400/30 hover:bg-pink-400/40 border border-pink-200/40 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95 transition shadow">
                   <span>🔑</span><span>{t.loginBtn}</span>
                 </button>
               )}
@@ -1691,15 +1798,15 @@
           </header>
 
           {/* 📌 STICKY CLOUD FOCUS BANNER */}
-          <div className="bg-amber-50 border-b border-amber-200/80 px-4 md:px-6 py-2 flex items-center justify-between gap-2 text-xs">
+          <div className="bg-gradient-to-r from-pink-100 via-rose-100 to-amber-100 border-b border-pink-200 px-4 md:px-6 py-2 flex items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2 truncate">
-              <span className="font-black text-amber-900 uppercase whitespace-nowrap">{t.stickyNoteLabel}</span>
-              <span className="font-bold text-amber-800 truncate">{stickyNote}</span>
+              <span className="font-black text-maroon uppercase whitespace-nowrap">{t.stickyNoteLabel}</span>
+              <span className="font-bold text-rose-900 truncate">{stickyNote}</span>
             </div>
             {isAdmin && (
               <button
                 onClick={handleEditStickyNote}
-                className="text-[11px] font-extrabold text-maroon bg-amber-200/70 hover:bg-amber-300/70 px-2.5 py-0.5 rounded-lg whitespace-nowrap transition"
+                className="text-[11px] font-extrabold text-maroon bg-white/80 hover:bg-white px-2.5 py-0.5 rounded-lg border border-pink-300 whitespace-nowrap transition shadow-xs"
               >
                 {t.editNoteBtn}
               </button>
@@ -1711,35 +1818,35 @@
           {/* ========================================================= */}
           {displayMode === 'pc' && (
             <div className="flex-1 flex flex-col">
-              <div className="bg-white border-b border-slate-200 px-6 py-2.5 flex items-center justify-between shadow-sm sticky top-[60px] z-30">
+              <div className="bg-white/90 backdrop-blur border-b border-pink-200 px-6 py-2.5 flex items-center justify-between shadow-sm sticky top-[60px] z-30">
                 <div className="flex items-center gap-2 text-xs font-extrabold">
                   <button
                     onClick={() => setPcSubTab('agenda')}
-                    className={`px-4 py-2 rounded-xl transition flex items-center gap-2 ${pcSubTab === 'agenda' ? 'bg-maroon text-white shadow' : 'text-slate-600 hover:bg-slate-100'}`}
+                    className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'agenda' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
-                    <span>📱</span><span>{t.tabAgenda}</span>
+                    <span>🎀</span><span>{t.tabAgenda}</span>
                   </button>
                   <button
                     onClick={() => setPcSubTab('calendar')}
-                    className={`px-4 py-2 rounded-xl transition flex items-center gap-2 ${pcSubTab === 'calendar' ? 'bg-maroon text-white shadow' : 'text-slate-600 hover:bg-slate-100'}`}
+                    className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'calendar' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
                     <span>📅</span><span>{t.tabSpreadsheet}</span>
                   </button>
                   <button
                     onClick={() => setPcSubTab('dashboard')}
-                    className={`px-4 py-2 rounded-xl transition flex items-center gap-2 ${pcSubTab === 'dashboard' ? 'bg-maroon text-white shadow' : 'text-slate-600 hover:bg-slate-100'}`}
+                    className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'dashboard' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
                     <span>📊</span><span>{t.tabKPI}</span>
                   </button>
                   <button
                     onClick={() => setPcSubTab('list')}
-                    className={`px-4 py-2 rounded-xl transition flex items-center gap-2 ${pcSubTab === 'list' ? 'bg-maroon text-white shadow' : 'text-slate-600 hover:bg-slate-100'}`}
+                    className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'list' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
                     <span>📋</span><span>{t.tabList}</span>
                   </button>
                   <button
                     onClick={() => setPcSubTab('colors')}
-                    className={`px-4 py-2 rounded-xl transition flex items-center gap-2 ${pcSubTab === 'colors' ? 'bg-maroon text-white shadow' : 'text-slate-600 hover:bg-slate-100'}`}
+                    className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'colors' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
                     <span>🎨</span><span>{t.tabColors}</span>
                   </button>
@@ -1748,14 +1855,14 @@
                 <div className="flex items-center gap-2">
                   <button
                     onClick={exportCSV}
-                    className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95"
+                    className="bg-pink-50 hover:bg-pink-100 text-maroon border border-pink-200 px-3.5 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95"
                   >
                     <span>📥</span><span>{t.btnExportCSV}</span>
                   </button>
                   {isAdmin && (
                     <button
                       onClick={() => handleOpenCreate()}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-black shadow flex items-center gap-1.5 active:scale-95 transition"
+                      className="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white px-4 py-2 rounded-2xl text-xs font-black shadow flex items-center gap-1.5 active:scale-95 transition"
                     >
                       <span>{t.btnAddSch}</span>
                     </button>
@@ -1768,17 +1875,23 @@
                 {/* AGENDA HARIAN PC */}
                 {pcSubTab === 'agenda' && (
                   <div id="agenda-capture-area" className="space-y-6">
-                    <div className="bg-gradient-to-r from-maroon to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3">
+                    {/* CUTE GREETING & AFFIRMATION BANNER */}
+                    {renderCuteGreetingCard()}
+
+                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3 border-2 border-pink-300/30 relative overflow-hidden">
                       <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
                             <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span className="text-xs font-extrabold uppercase tracking-widest text-rose-200">{t.radarTitle}</span>
-                            <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${getDayScheduleDensity(selectedDate).badge}`}>
+                            <span className="text-xs font-extrabold uppercase tracking-widest text-pink-200">{t.radarTitle}</span>
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getDayScheduleDensity(selectedDate).badge}`}>
                               {getDayScheduleDensity(selectedDate).text}
                             </span>
                           </div>
-                          <h2 className="text-2xl font-black">{getHariNama(selectedDate)}, {selectedDate}</h2>
+                          <h2 className="text-2xl font-black flex items-center gap-2">
+                            <span>{getHariNama(selectedDate)}, {selectedDate}</span>
+                            <span className="text-xl">{MOOD_LIST.find(m => m.id === currentDayWellness.mood)?.emoji || '🌸'}</span>
+                          </h2>
                           <p className="text-xs text-rose-100">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs}</p>
                           
                           {/* 🛡️ BURNOUT GUARD WARNING */}
@@ -1811,7 +1924,7 @@
                           {isAdmin && (
                             <button
                               onClick={() => handleOpenCreate(selectedDate)}
-                              className="bg-white text-maroon px-4 py-2.5 rounded-2xl font-black shadow-md active:scale-95 transition text-xs"
+                              className="bg-pink-100 hover:bg-white text-maroon px-4 py-2.5 rounded-2xl font-black shadow-md active:scale-95 transition text-xs"
                             >
                               {t.btnAddSession}
                             </button>
@@ -1825,7 +1938,10 @@
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                       <div className="lg:col-span-5 space-y-4">
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-5 space-y-3 shadow-sm">
+                        {/* CUTE MOOD & WATER TRACKER WIDGET */}
+                        {renderCuteWellnessWidget()}
+
+                        <div className="bg-emerald-50/90 border-2 border-emerald-200 rounded-3xl p-5 space-y-3 shadow-sm">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-black text-emerald-950 flex items-center gap-2">
                               <span>🟢</span><span>{t.availableTitle}</span>
@@ -1854,9 +1970,10 @@
                           </div>
                         </div>
 
-                        <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-3">
+                        <div className="bg-white rounded-3xl border-2 border-pink-200/70 p-5 shadow-sm space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-black text-slate-700 uppercase tracking-wider">🗓️ {t.calendarTitle} ({monthName} {currentYear})</span>
+                            <span className="text-xs font-black text-maroon uppercase tracking-wider">🗓️ {t.calendarTitle} ({monthName} {currentYear})</span>
+                            <span className="text-sm">🌸</span>
                           </div>
                           <div className="grid grid-cols-7 gap-2">
                             {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -1874,10 +1991,10 @@
                                 <button
                                   key={day}
                                   onClick={() => setSelectedDate(dateStr)}
-                                  className={`py-2 px-1 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 border relative ${isSelected ? 'bg-maroon text-white shadow-md border-maroon scale-105' : isToday ? 'bg-emerald-100 text-emerald-950 border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}`}
+                                  className={`py-2 px-1 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 border relative ${isSelected ? 'bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md border-maroon scale-105' : isToday ? 'bg-pink-100 text-maroon border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-pink-50'}`}
                                 >
                                   {hasShortBreak && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" title={t.shortBreakWarning}></span>}
-                                  <span className={`text-[9px] font-bold ${isSelected ? 'text-rose-200' : isToday ? 'text-emerald-700 font-black' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
+                                  <span className={`text-[9px] font-bold ${isSelected ? 'text-pink-200' : isToday ? 'text-maroon font-black' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
                                   <span className="text-sm font-black">{day}</span>
                                   <div className="flex gap-0.5 mt-1 h-1">
                                     {dayShifts.slice(0, 3).map((s, idx) => (
@@ -1893,9 +2010,10 @@
 
                       {/* FEED KARTU JADWAL HARIAN */}
                       <div className="lg:col-span-7 space-y-4">
-                        <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-sm">
-                          <span className="text-xs font-black uppercase text-slate-700 tracking-wider">
-                            {t.sessionList} ({selectedDate}): {selectedDaySchedules.length}
+                        <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border-2 border-pink-200/70 shadow-sm">
+                          <span className="text-xs font-black uppercase text-maroon tracking-wider flex items-center gap-1.5">
+                            <span>🎀</span>
+                            <span>{t.sessionList} ({selectedDate}): {selectedDaySchedules.length}</span>
                           </span>
                           {selectedDaySchedules.length > 0 && (
                             <button
@@ -1904,7 +2022,7 @@
                                 setCloneTargetDate(addDaysToDateStr(selectedDate, 1));
                                 setCloneModalOpen(true);
                               }}
-                              className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1 rounded-xl text-xs font-extrabold border border-slate-300 transition active:scale-95"
+                              className="bg-pink-50 hover:bg-pink-100 text-maroon px-3 py-1 rounded-xl text-xs font-extrabold border border-pink-200 transition active:scale-95"
                             >
                               {t.btnCloneDay}
                             </button>
@@ -1912,8 +2030,8 @@
                         </div>
 
                         {selectedDaySchedules.length === 0 ? (
-                          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-3">
-                            <div className="text-5xl">☕</div>
+                          <div className="bg-white rounded-3xl p-12 text-center border-2 border-pink-200/70 shadow-sm space-y-3">
+                            <div className="text-5xl cute-float">🌷</div>
                             <div className="font-extrabold text-base text-slate-800">{t.noSchedule}</div>
                             <p className="text-xs text-slate-400 max-w-sm mx-auto">
                               {t.noScheduleSub}
@@ -1928,12 +2046,12 @@
                               <div
                                 key={item.id}
                                 onClick={() => handleOpenEdit(item)}
-                                className={`bg-white rounded-3xl p-5 border shadow-sm flex items-start justify-between gap-4 active:scale-[0.99] transition cursor-pointer relative overflow-hidden hover:shadow-md ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-slate-200'}`}
+                                className={`bg-white rounded-3xl p-5 border-2 shadow-sm flex items-start justify-between gap-4 active:scale-[0.99] transition cursor-pointer relative overflow-hidden hover:shadow-md ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-pink-200/60'}`}
                               >
                                 <div className="w-2.5 absolute left-0 top-0 bottom-0" style={{ backgroundColor: item.color }}></div>
                                 <div className="space-y-2 pl-2 flex-1">
                                   <div className="flex flex-wrap items-center gap-2">
-                                    <span className="font-mono text-xs font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-xl">
+                                    <span className="font-mono text-xs font-black text-slate-900 bg-pink-50 border border-pink-200 px-3 py-1 rounded-xl">
                                       ⏰ {item.start_time} - {item.end_time}
                                     </span>
                                     {isCurrentlyLive && (
@@ -1951,18 +2069,18 @@
                                   </div>
                                   <div className="font-black text-base text-slate-900">{item.title}</div>
                                   {item.notes && (
-                                    <div className="bg-amber-50 border border-amber-200/70 p-2.5 rounded-2xl text-xs text-amber-900 italic">
-                                      📝 {item.notes}
+                                    <div className="bg-pink-50/70 border border-pink-200/80 p-2.5 rounded-2xl text-xs text-rose-900 italic">
+                                      💌 {item.notes}
                                     </div>
                                   )}
                                   {renderKontenChecklist(item)}
                                 </div>
                                 {isAdmin && (
                                   <div className="flex flex-col items-end gap-2">
-                                    <span className="text-xs text-blue-600 font-extrabold">{t.editBtn} ❯</span>
+                                    <span className="text-xs text-pink-600 font-extrabold">{t.editBtn} ❯</span>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }}
-                                      className="text-xs text-slate-600 font-bold bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition"
+                                      className="text-xs text-slate-600 font-bold bg-pink-50 hover:bg-pink-100 px-2.5 py-1 rounded-xl transition"
                                     >
                                       {t.copyBtn}
                                     </button>
@@ -1980,7 +2098,7 @@
                 {/* SPREADSHEET PC */}
                 {pcSubTab === 'calendar' && (
                   <div className="space-y-4">
-                    <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={shareSpreadsheetToWA}
@@ -1991,7 +2109,7 @@
                         </button>
                         <button
                           onClick={() => exportElementAsPNG('spreadsheet-capture-area', `${monthName}_${currentYear}`)}
-                          className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-2xl font-black shadow-md flex items-center gap-1.5 active:scale-95 transition"
+                          className="bg-maroon hover:bg-maroon-dark text-white px-4 py-2 rounded-2xl font-black shadow-md flex items-center gap-1.5 active:scale-95 transition"
                         >
                           <span>📸</span><span>{t.btnDownloadTablePNG}</span>
                         </button>
@@ -1999,7 +2117,7 @@
 
                       <div className="flex items-center gap-3 font-bold flex-wrap">
                         {brands.map(b => (
-                          <span key={b.id} className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200 text-[11px]">
+                          <span key={b.id} className="flex items-center gap-1.5 bg-pink-50/60 px-2.5 py-1 rounded-xl border border-pink-200 text-[11px]">
                             <span className="w-3 h-3 rounded-full border border-black/10 shadow-sm" style={{ backgroundColor: b.color }}></span>
                             <span>{b.emoji} {b.name}</span>
                           </span>
@@ -2007,13 +2125,13 @@
                       </div>
                     </div>
 
-                    <div id="spreadsheet-capture-area" className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div id="spreadsheet-capture-area" className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm overflow-hidden flex flex-col">
                       <div className="overflow-x-auto relative" style={{ maxHeight: '75vh' }}>
                         <table className="w-full border-collapse text-xs select-none">
                           <thead>
                             <tr className="bg-maroon text-white sticky-header">
                               <th className="sticky-col bg-maroon px-4 py-3 text-left font-black border-b border-r border-rose-900 min-w-[200px] shadow-sm">
-                                {t.colDateTime}
+                                🌸 {t.colDateTime}
                               </th>
                               <th className="bg-maroon px-2 py-3 text-center font-bold border-b border-r border-rose-900 min-w-[130px]">
                                 {t.colDayStatus}
@@ -2037,14 +2155,14 @@
                               const hasShortBreak = shortBreakWarnings[dateStr];
 
                               return (
-                                <tr key={day} className={`border-b border-slate-200 hover:bg-slate-50/70 transition ${isToday ? 'bg-emerald-50/70' : ''}`}>
-                                  <td className={`sticky-col px-4 py-2.5 border-r border-slate-200 whitespace-nowrap shadow-sm ${isToday ? 'bg-[#d1fae5] text-slate-900 font-black' : isWeekend ? 'bg-rose-50/80 text-rose-900 font-bold' : 'bg-slate-50 font-bold'}`}>
+                                <tr key={day} className={`border-b border-slate-200 hover:bg-pink-50/40 transition ${isToday ? 'bg-pink-50/80' : ''}`}>
+                                  <td className={`sticky-col px-4 py-2.5 border-r border-slate-200 whitespace-nowrap shadow-sm ${isToday ? 'bg-pink-100 text-maroon font-black' : isWeekend ? 'bg-rose-50/80 text-rose-900 font-bold' : 'bg-slate-50 font-bold'}`}>
                                     <div className="flex items-center gap-2.5">
                                       <span className="text-base font-black text-slate-900">{day}</span>
                                       <span className="text-xs uppercase text-slate-800">{dayName}</span>
                                       {isToday && (
-                                        <span className="bg-[#10b981] text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-xs tracking-wider">
-                                          {t.todayBadge}
+                                        <span className="bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-xs tracking-wider">
+                                          🎀 {t.todayBadge}
                                         </span>
                                       )}
                                       {hasShortBreak && (
@@ -2110,14 +2228,14 @@
                 {/* KPI & DASHBOARD PC */}
                 {pcSubTab === 'dashboard' && (
                   <div className="space-y-6">
-                    <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                    <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm flex flex-wrap items-center justify-between gap-4">
                       <div className="space-y-1">
                         <h3 className="font-black text-sm text-slate-800">{t.statFilterTitle}</h3>
                         <p className="text-xs text-slate-500">{t.statFilterDesc}</p>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                        <div className="flex items-center gap-1.5 bg-pink-50 p-1.5 rounded-2xl border border-pink-200">
                           <button
                             onClick={() => setStatPeriod('daily')}
                             className={`px-4 py-2 rounded-xl text-xs font-black transition ${statPeriod === 'daily' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:text-slate-900'}`}
@@ -2149,7 +2267,7 @@
                     </div>
 
                     {/* 🛡️ WORK-LIFE BALANCE SCORE CARD */}
-                    <div className={`p-5 rounded-3xl border shadow-sm flex items-center justify-between flex-wrap gap-3 ${balanceScoreData.color}`}>
+                    <div className={`p-5 rounded-3xl border-2 shadow-sm flex items-center justify-between flex-wrap gap-3 ${balanceScoreData.color}`}>
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🛡️</span>
                         <div>
@@ -2163,35 +2281,35 @@
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
                           <span>🟢</span><span>{t.totalLive}</span>
                         </div>
                         <div className="text-3xl font-black text-emerald-600 mt-2">{stats.totalLive}</div>
                         <div className="text-xs text-slate-500 mt-2 font-bold">≈ {stats.totalLiveHours} {t.hoursLive}</div>
                       </div>
-                      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
                           <span>🎬</span><span>{t.takeKonten}</span>
                         </div>
                         <div className="text-3xl font-black text-purple-600 mt-2">{stats.totalKonten}</div>
                         <div className="text-xs text-slate-500 mt-2 font-bold">≈ {stats.totalKontenHours} {t.hoursProd}</div>
                       </div>
-                      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
                           <span>😴</span><span>{t.sleepTime}</span>
                         </div>
                         <div className="text-3xl font-black text-indigo-600 mt-2">{stats.totalSleep}</div>
                         <div className="text-xs text-slate-500 mt-2 font-bold">≈ {stats.totalSleepHours} {t.hoursSleep}</div>
                       </div>
-                      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
                           <span>💅</span><span>{t.meTime}</span>
                         </div>
                         <div className="text-3xl font-black text-pink-600 mt-2">{stats.totalMeTime}</div>
                         <div className="text-xs text-slate-500 mt-2">{t.hoursMeTime}</div>
                       </div>
-                      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
                           <span>☕</span><span>{t.offDay}</span>
                         </div>
@@ -2201,7 +2319,7 @@
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
-                      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-6 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                           <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
                             <span>🍩</span><span>{t.propTitle}</span>
@@ -2212,7 +2330,7 @@
                         </div>
                         <div className="h-72 relative"><canvas ref={donutCanvas}></canvas></div>
                       </div>
-                      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-6 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                           <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
                             <span>📊</span><span>{t.barTitle}</span>
@@ -2229,9 +2347,9 @@
 
                 {/* DAFTAR SEMUA JADWAL PC */}
                 {pcSubTab === 'list' && (
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                  <div className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm p-6 space-y-4">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-black text-slate-800 text-lg">{t.allRegistered} ({filteredSchedules.length})</h3>
+                      <h3 className="font-black text-slate-800 text-lg">🎀 {t.allRegistered} ({filteredSchedules.length})</h3>
                       {isAdmin && (
                         <button onClick={() => handleOpenCreate()} className="bg-maroon hover:bg-maroon-dark text-white px-5 py-2.5 rounded-2xl text-xs font-black shadow active:scale-95 transition">
                           {t.btnAddSch}
@@ -2239,7 +2357,7 @@
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs font-semibold">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-pink-50/50 rounded-2xl border border-pink-200 text-xs font-semibold">
                       <div className="md:col-span-1">
                         <label className="block text-slate-500 mb-1">{t.searchKeyword}</label>
                         <input
@@ -2309,7 +2427,7 @@
 
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold">
+                        <thead className="bg-pink-50/70 border-b border-pink-200 text-maroon uppercase font-bold">
                           <tr>
                             <th className="px-4 py-3.5">{t.colDay}</th>
                             <th className="px-4 py-3.5">{t.colDate}</th>
@@ -2330,9 +2448,9 @@
                               const namaHari = getHariNama(s.date);
 
                               return (
-                                <tr key={s.id} className="hover:bg-slate-50">
+                                <tr key={s.id} className="hover:bg-pink-50/30">
                                   <td className="px-4 py-3 font-bold">
-                                    <span className="px-2.5 py-1 rounded-xl text-[11px] bg-slate-100 text-slate-700">
+                                    <span className="px-2.5 py-1 rounded-xl text-[11px] bg-pink-50 text-maroon border border-pink-200">
                                       {namaHari}
                                     </span>
                                   </td>
@@ -2348,7 +2466,7 @@
                                   {isAdmin && (
                                     <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap font-bold">
                                       <button onClick={() => handleDuplicate(s)} className="text-slate-600 hover:text-slate-900 bg-slate-100 px-2 py-1 rounded-lg">{t.copyBtn}</button>
-                                      <button onClick={() => handleOpenEdit(s)} className="text-blue-600 hover:underline">{t.editBtn}</button>
+                                      <button onClick={() => handleOpenEdit(s)} className="text-pink-600 hover:underline">{t.editBtn}</button>
                                       <button onClick={() => handleDelete(s.id)} className="text-rose-600 hover:underline">{t.deleteBtn}</button>
                                     </td>
                                   )}
@@ -2364,7 +2482,7 @@
 
                 {/* WARNA BRAND PC */}
                 {pcSubTab === 'colors' && (
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4 max-w-2xl mx-auto">
+                  <div className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm p-6 space-y-4 max-w-2xl mx-auto">
                     <div>
                       <h3 className="font-black text-slate-800 text-base">🎨 {t.tabColors}</h3>
                       <p className="text-xs text-slate-500 mt-1">{t.colorDesc}</p>
@@ -2372,7 +2490,7 @@
 
                     <div className="space-y-3">
                       {brands.map(b => (
-                        <div key={b.id} className="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+                        <div key={b.id} className="flex items-center justify-between p-3.5 bg-pink-50/40 rounded-2xl border border-pink-200">
                           <div className="flex items-center gap-3">
                             <input
                               type="color"
@@ -2411,40 +2529,40 @@
           {/* ========================================================= */}
           {displayMode === 'mobile' && (
             <div className="flex-1 flex flex-col">
-              <nav className="bg-white border-b border-slate-200 px-3 py-2 overflow-x-auto scrollbar-none flex items-center gap-2 sticky top-[58px] z-30 shadow-sm">
+              <nav className="bg-white/95 backdrop-blur border-b border-pink-200 px-3 py-2 overflow-x-auto scrollbar-none flex items-center gap-2 sticky top-[58px] z-30 shadow-sm">
                 <button
                   onClick={() => setActiveTab('agenda')}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'agenda' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'agenda' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                 >
-                  <span>📱</span><span>{t.tabAgenda}</span>
+                  <span>🎀</span><span>{t.tabAgenda}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('calendar')}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'calendar' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'calendar' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                 >
                   <span>📅</span><span>{t.tabSpreadsheet}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('kpi')}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'kpi' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'kpi' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                 >
                   <span>📊</span><span>{t.tabKPI}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('list')}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'list' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'list' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                 >
                   <span>📋</span><span>{t.tabList}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('colors')}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'colors' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'colors' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                 >
                   <span>🎨</span><span>{t.tabColors}</span>
                 </button>
                 <button
                   onClick={exportCSV}
-                  className="flex-shrink-0 ml-auto bg-slate-100 text-slate-800 border border-slate-300 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1"
+                  className="flex-shrink-0 ml-auto bg-pink-50 text-maroon border border-pink-200 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1"
                 >
                   <span>📥</span><span>CSV</span>
                 </button>
@@ -2453,12 +2571,15 @@
               <div className="p-4 space-y-4 max-w-lg w-full mx-auto">
                 {activeTab === 'agenda' && (
                   <div id="mobile-agenda-capture" className="space-y-4">
+                    {/* CUTE GREETING & AFFIRMATION MOBILE */}
+                    {renderCuteGreetingCard()}
+
                     {/* RADAR LIVE STREAM */}
-                    <div className="bg-gradient-to-r from-maroon to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2">
+                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2 border-2 border-pink-300/30">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-200">{t.radarTitle}</span>
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-pink-200">{t.radarTitle}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <button
@@ -2477,8 +2598,11 @@
                       </div>
                       <div>
                         <div className="flex items-center justify-between">
-                          <h2 className="text-base font-black">{getHariNama(selectedDate)}, {selectedDate}</h2>
-                          <span className={`px-2 py-0.5 rounded-lg text-[10px] border ${getDayScheduleDensity(selectedDate).badge}`}>
+                          <h2 className="text-base font-black flex items-center gap-1.5">
+                            <span>{getHariNama(selectedDate)}, {selectedDate}</span>
+                            <span>{MOOD_LIST.find(m => m.id === currentDayWellness.mood)?.emoji || '🌸'}</span>
+                          </h2>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] border ${getDayScheduleDensity(selectedDate).badge}`}>
                             {getDayScheduleDensity(selectedDate).text}
                           </span>
                         </div>
@@ -2508,7 +2632,7 @@
                               setCloneTargetDate(addDaysToDateStr(selectedDate, 1));
                               setCloneModalOpen(true);
                             }}
-                            className="bg-amber-400 text-slate-900 text-[10px] font-black px-2.5 py-1 rounded-lg shadow"
+                            className="bg-pink-200 text-maroon text-[10px] font-black px-2.5 py-1 rounded-lg shadow"
                           >
                             {t.btnCloneDay}
                           </button>
@@ -2516,8 +2640,11 @@
                       </div>
                     </div>
 
+                    {/* MOOD & HYDRATION WIDGET MOBILE */}
+                    {renderCuteWellnessWidget()}
+
                     {/* AVAILABLE SCHEDULE CARD */}
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-3.5 space-y-2">
+                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-3.5 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
                           <span>🟢</span><span>{t.availableTitle}</span>
@@ -2544,10 +2671,10 @@
                     </div>
 
                     {/* HORIZONTAL DATE PICKER BAR */}
-                    <div className="bg-white p-3 rounded-3xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-3 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <div className="flex items-center justify-between mb-2 px-1">
-                        <span className="text-xs font-black text-slate-700 uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
-                        <span className="text-[10px] text-slate-400 font-bold">❯</span>
+                        <span className="text-xs font-black text-maroon uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
+                        <span className="text-[10px] text-pink-400 font-bold">🌸 ❯</span>
                       </div>
                       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                         {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -2565,10 +2692,10 @@
                             <button
                               key={day}
                               onClick={() => setSelectedDate(dateStr)}
-                              className={`flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 relative ${isSelected ? 'bg-maroon text-white shadow-md scale-105' : isToday ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
+                              className={`flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 relative ${isSelected ? 'bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md scale-105' : isToday ? 'bg-pink-100 text-maroon border border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
                             >
                               {hasShortBreak && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
-                              <span className={`text-[9px] font-bold ${isSelected ? 'text-rose-200' : isToday ? 'text-emerald-700' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
+                              <span className={`text-[9px] font-bold ${isSelected ? 'text-pink-200' : isToday ? 'text-maroon' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
                               <span className="text-sm font-black">{day}</span>
                               <div className="flex gap-0.5 mt-1 h-1">
                                 {dayShifts.slice(0, 3).map((s, idx) => (
@@ -2584,8 +2711,8 @@
                     {/* KARTU JADWAL HARIAN */}
                     <div className="space-y-3">
                       {selectedDaySchedules.length === 0 ? (
-                        <div className="bg-white rounded-3xl p-7 text-center border border-slate-200 shadow-sm space-y-2">
-                          <div className="text-4xl">☕</div>
+                        <div className="bg-white rounded-3xl p-7 text-center border-2 border-pink-200/70 shadow-sm space-y-2">
+                          <div className="text-4xl cute-float">🌷</div>
                           <div className="font-extrabold text-sm text-slate-800">{t.noSchedule}</div>
                           <p className="text-xs text-slate-400">{t.noScheduleSub}</p>
                           {isAdmin && (
@@ -2603,12 +2730,12 @@
                             <div
                               key={item.id}
                               onClick={() => handleOpenEdit(item)}
-                              className={`bg-white rounded-3xl p-4 border shadow-sm flex items-start justify-between gap-3 active:scale-[0.98] transition cursor-pointer relative overflow-hidden ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-slate-200'}`}
+                              className={`bg-white rounded-3xl p-4 border-2 shadow-sm flex items-start justify-between gap-3 active:scale-[0.98] transition cursor-pointer relative overflow-hidden ${isCurrentlyLive ? 'border-emerald-500 ring-2 ring-emerald-400/50 live-card-glow' : 'border-pink-200/70'}`}
                             >
                               <div className="w-2 absolute left-0 top-0 bottom-0" style={{ backgroundColor: item.color }}></div>
                               <div className="space-y-1.5 pl-2 flex-1">
                                 <div className="flex flex-wrap items-center gap-1.5">
-                                  <span className="font-mono text-[11px] font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg">
+                                  <span className="font-mono text-[11px] font-black text-slate-900 bg-pink-50 border border-pink-200 px-2 py-0.5 rounded-lg">
                                     ⏰ {item.start_time} - {item.end_time}
                                   </span>
                                   {isCurrentlyLive && (
@@ -2626,16 +2753,16 @@
                                 </div>
                                 <div className="font-black text-sm text-slate-900 leading-snug">{item.title}</div>
                                 {item.notes && (
-                                  <div className="bg-amber-50 border border-amber-200 p-2 rounded-xl text-[10px] text-amber-900 italic">
-                                    📝 {item.notes}
+                                  <div className="bg-pink-50/70 border border-pink-200 p-2 rounded-xl text-[10px] text-rose-900 italic">
+                                    💌 {item.notes}
                                   </div>
                                 )}
                                 {renderKontenChecklist(item)}
                               </div>
                               {isAdmin && (
                                 <div className="flex flex-col items-end gap-1">
-                                  <span className="text-[11px] text-blue-600 font-extrabold">{t.editBtn} ❯</span>
-                                  <button onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }} className="text-[9px] text-slate-500 font-bold bg-slate-100 px-2 py-0.5 rounded-lg">
+                                  <span className="text-[11px] text-pink-600 font-extrabold">{t.editBtn} ❯</span>
+                                  <button onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }} className="text-[9px] text-slate-500 font-bold bg-pink-50 px-2 py-0.5 rounded-lg">
                                     📋
                                   </button>
                                 </div>
@@ -2660,18 +2787,18 @@
                       </button>
                       <button
                         onClick={() => exportElementAsPNG('mobile-spreadsheet-capture', `${monthName}_${currentYear}`)}
-                        className="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
+                        className="bg-maroon hover:bg-maroon-dark text-white px-3 py-2 rounded-2xl text-xs font-black shadow flex items-center justify-center gap-1.5 active:scale-95 transition"
                       >
                         <span>📸</span><span>{t.btnSavePNG}</span>
                       </button>
                     </div>
 
-                    <div id="mobile-spreadsheet-capture" className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div id="mobile-spreadsheet-capture" className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm overflow-hidden flex flex-col">
                       <div className="overflow-x-auto relative" style={{ maxHeight: '70vh' }}>
                         <table className="w-full border-collapse text-xs select-none">
                           <thead>
                             <tr className="bg-maroon text-white sticky-header">
-                              <th className="sticky-col bg-maroon px-3 py-2.5 text-left font-black border-b border-r border-rose-900 min-w-[150px]">{t.colDate}</th>
+                              <th className="sticky-col bg-maroon px-3 py-2.5 text-left font-black border-b border-r border-rose-900 min-w-[150px]">🌸 {t.colDate}</th>
                               <th className="bg-maroon px-2 py-2.5 text-center font-bold border-b border-r border-rose-900 min-w-[90px]">{t.colStatus}</th>
                               {TIME_SLOTS.map(slot => (
                                 <th key={slot.label} className="px-2 py-2.5 text-center font-mono font-bold border-b border-r border-rose-900 min-w-[85px] text-[10px]">
@@ -2689,14 +2816,14 @@
                               const density = getDayScheduleDensity(dateStr);
 
                               return (
-                                <tr key={day} className={`border-b border-slate-200 ${isToday ? 'bg-emerald-50/70' : ''}`}>
-                                  <td className={`sticky-col px-3 py-2 border-r border-slate-200 whitespace-nowrap shadow-sm ${isToday ? 'bg-[#d1fae5] text-slate-900 font-black' : 'bg-slate-50 font-bold'}`}>
+                                <tr key={day} className={`border-b border-slate-200 ${isToday ? 'bg-pink-50/70' : ''}`}>
+                                  <td className={`sticky-col px-3 py-2 border-r border-slate-200 whitespace-nowrap shadow-sm ${isToday ? 'bg-pink-100 text-maroon font-black' : 'bg-slate-50 font-bold'}`}>
                                     <div className="flex items-center gap-2">
                                       <span className="text-sm font-black text-slate-900">{day}</span>
                                       <span className="text-[11px] uppercase text-slate-800">{dayName}</span>
                                       {isToday && (
-                                        <span className="bg-[#10b981] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-xs">
-                                          {t.todayBadge}
+                                        <span className="bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
+                                          🎀 {t.todayBadge}
                                         </span>
                                       )}
                                     </div>
@@ -2743,12 +2870,12 @@
                 {/* STATISTIK MODE HP */}
                 {activeTab === 'kpi' && (
                   <div className="space-y-4">
-                    <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                    <div className="bg-white p-3 rounded-2xl border-2 border-pink-200/70 shadow-sm space-y-2">
                       <div className="flex justify-between items-center text-xs">
                         <span className="font-black text-slate-800">{t.statFilterTitle}</span>
                         <span className="font-bold text-maroon text-[11px] truncate">{periodLabel}</span>
                       </div>
-                      <div className="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-xl">
+                      <div className="grid grid-cols-4 gap-1 bg-pink-50 p-1 rounded-xl">
                         <button
                           onClick={() => setStatPeriod('daily')}
                           className={`py-1.5 rounded-lg text-[11px] font-bold transition ${statPeriod === 'daily' ? 'bg-maroon text-white shadow' : 'text-slate-600'}`}
@@ -2781,7 +2908,7 @@
                     </div>
 
                     {/* WORK-LIFE BALANCE MOBILE */}
-                    <div className={`p-4 rounded-3xl border shadow-sm space-y-1 ${balanceScoreData.color}`}>
+                    <div className={`p-4 rounded-3xl border-2 shadow-sm space-y-1 ${balanceScoreData.color}`}>
                       <div className="flex items-center gap-2">
                         <span>🛡️</span>
                         <h4 className="font-black text-xs uppercase">{t.balanceScore}</h4>
@@ -2790,34 +2917,34 @@
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">🟢 {t.totalLive}</div>
                         <div className="text-3xl font-black text-emerald-600 mt-1">{stats.totalLive}</div>
                         <div className="text-[10px] text-slate-400 mt-1 font-bold">≈ {stats.totalLiveHours} {t.hoursLive}</div>
                       </div>
-                      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">🎬 {t.takeKonten}</div>
                         <div className="text-3xl font-black text-purple-600 mt-1">{stats.totalKonten}</div>
                         <div className="text-[10px] text-slate-400 mt-1 font-bold">≈ {stats.totalKontenHours} {t.hoursProd}</div>
                       </div>
-                      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">😴 {t.sleepTime}</div>
                         <div className="text-3xl font-black text-indigo-600 mt-1">{stats.totalSleep}</div>
                         <div className="text-[10px] text-slate-400 mt-1 font-bold">≈ {stats.totalSleepHours} {t.hoursSleep}</div>
                       </div>
-                      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+                      <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">💅 {t.meTime}</div>
                         <div className="text-3xl font-black text-pink-600 mt-1">{stats.totalMeTime}</div>
                         <div className="text-[10px] text-slate-400 mt-1">{t.hoursMeTime}</div>
                       </div>
                     </div>
 
-                    <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <h3 className="text-xs font-black text-slate-700 uppercase mb-2">🍩 {t.propTitle}</h3>
                       <div className="h-52 relative"><canvas ref={donutCanvas}></canvas></div>
                     </div>
 
-                    <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <h3 className="text-xs font-black text-slate-700 uppercase mb-2">📊 {t.barTitle}</h3>
                       <div className="h-52 relative"><canvas ref={barCanvas}></canvas></div>
                     </div>
@@ -2826,9 +2953,9 @@
 
                 {/* DAFTAR HP */}
                 {activeTab === 'list' && (
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-4 space-y-3">
+                  <div className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm p-4 space-y-3">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-black text-slate-800 text-sm">{t.allRegistered} ({filteredSchedules.length})</h3>
+                      <h3 className="font-black text-slate-800 text-sm">🎀 {t.allRegistered} ({filteredSchedules.length})</h3>
                       <div className="flex items-center gap-2">
                         {(searchQuery || filterBrand !== 'ALL' || filterStatus !== 'ALL' || filterDate || filterHour !== 'ALL') && (
                           <button onClick={handleResetFilter} className="text-[11px] text-rose-600 font-bold hover:underline">Reset</button>
@@ -2841,7 +2968,7 @@
                       </div>
                     </div>
 
-                    <div className="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                    <div className="space-y-2 bg-pink-50/50 p-3 rounded-2xl border border-pink-200">
                       <input
                         type="text"
                         placeholder={t.searchPlaceholder}
@@ -2906,7 +3033,7 @@
                         filteredSchedules.map(s => {
                           const brand = brands.find(b => b.id === s.brand_id);
                           return (
-                            <div key={s.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1 relative overflow-hidden">
+                            <div key={s.id} className="p-3 bg-pink-50/30 rounded-2xl border border-pink-200 space-y-1 relative overflow-hidden">
                               <div className="w-1.5 absolute left-0 top-0 bottom-0" style={{ backgroundColor: s.color }}></div>
                               <div className="pl-1">
                                 <div className="flex justify-between items-center">
@@ -2919,12 +3046,12 @@
                                   <span>•</span>
                                   <span className="font-bold text-slate-700">[{s.status}]</span>
                                 </div>
-                                {s.notes && <div className="text-[10px] text-amber-900 italic bg-amber-50 p-1.5 rounded-lg mt-1">📝 {s.notes}</div>}
+                                {s.notes && <div className="text-[10px] text-rose-900 italic bg-pink-50 p-1.5 rounded-lg mt-1">💌 {s.notes}</div>}
                                 {renderKontenChecklist(s)}
                                 {isAdmin && (
-                                  <div className="flex justify-end gap-2 pt-1 border-t border-slate-200/60 mt-1">
+                                  <div className="flex justify-end gap-2 pt-1 border-t border-pink-200/60 mt-1">
                                     <button onClick={() => handleDuplicate(s)} className="text-[10px] font-bold text-slate-600">{t.copyBtn}</button>
-                                    <button onClick={() => handleOpenEdit(s)} className="text-[10px] font-bold text-blue-600">{t.editBtn}</button>
+                                    <button onClick={() => handleOpenEdit(s)} className="text-[10px] font-bold text-pink-600">{t.editBtn}</button>
                                     <button onClick={() => handleDelete(s.id)} className="text-[10px] font-bold text-rose-600">{t.deleteBtn}</button>
                                   </div>
                                 )}
@@ -2939,11 +3066,11 @@
 
                 {/* WARNA HP */}
                 {activeTab === 'colors' && (
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-4 space-y-3">
+                  <div className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm p-4 space-y-3">
                     <h3 className="font-black text-sm text-slate-800">🎨 {t.tabColors}</h3>
                     <div className="space-y-2">
                       {brands.map(b => (
-                        <div key={b.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                        <div key={b.id} className="flex items-center justify-between p-3 bg-pink-50/40 rounded-2xl border border-pink-200">
                           <div className="flex items-center gap-3">
                             <input
                               type="color"
@@ -2972,7 +3099,7 @@
               {isAdmin && (
                 <button
                   onClick={() => handleOpenCreate(selectedDate)}
-                  className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-maroon text-white flex items-center justify-center text-3xl shadow-2xl z-40 active:scale-90 transition border-2 border-white/50"
+                  className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-maroon to-rose-600 text-white flex items-center justify-center text-3xl shadow-2xl z-40 active:scale-90 transition border-2 border-pink-200"
                 >
                   +
                 </button>
@@ -2987,7 +3114,7 @@
           {/* MODAL SALIN 1 HARI PENUH (CLONE DAY) */}
           {cloneModalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 space-y-4 animate-in zoom-in duration-150">
+              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 space-y-4 border-2 border-pink-200 animate-in zoom-in duration-150">
                 <h3 className="font-black text-base text-slate-800">{t.cloneModalTitle}</h3>
                 <p className="text-xs text-slate-500">
                   {t.cloneModalDesc} <span className="font-black text-maroon">{selectedDate}</span> ({selectedDaySchedules.length} sesi):
@@ -3000,7 +3127,7 @@
                       required
                       value={cloneTargetDate}
                       onChange={e => setCloneTargetDate(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-2.5 text-xs font-bold"
+                      className="w-full bg-pink-50/50 border border-pink-300 rounded-2xl px-3.5 py-2.5 text-xs font-bold"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -3019,9 +3146,9 @@
           {/* MODAL PIN ADMIN */}
           {pinInputModal && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-6 text-center space-y-4 animate-in zoom-in duration-150">
-                <div className="w-12 h-12 rounded-2xl bg-rose-100 text-maroon flex items-center justify-center text-2xl mx-auto font-black shadow-inner">
-                  🔑
+              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-6 text-center space-y-4 border-2 border-pink-200 animate-in zoom-in duration-150">
+                <div className="w-12 h-12 rounded-2xl bg-pink-100 text-maroon flex items-center justify-center text-2xl mx-auto font-black shadow-inner">
+                  🎀
                 </div>
                 <div>
                   <h3 className="font-black text-base text-slate-800">{t.adminAccessTitle}</h3>
@@ -3035,7 +3162,7 @@
                     value={enteredPin}
                     onChange={e => { setEnteredPin(e.target.value); setPinError(false); }}
                     placeholder={t.pinPlaceholder}
-                    className="w-full text-center text-xl tracking-widest font-mono font-black bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-maroon"
+                    className="w-full text-center text-xl tracking-widest font-mono font-black bg-pink-50/50 border border-pink-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-maroon"
                   />
                   {pinError && <div className="text-rose-600 text-xs font-bold">{t.pinWrong}</div>}
                   <div className="flex gap-2">
@@ -3054,9 +3181,12 @@
           {/* MODAL FORM INPUT JADWAL */}
           {modalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-              <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
-                <div className="bg-maroon text-white p-4 flex justify-between items-center sticky top-0 z-10">
-                  <h3 className="font-extrabold text-sm">{selectedSchedule ? t.modalEditTitle : t.modalAddTitle}</h3>
+              <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto border-2 border-pink-200 animate-in slide-in-from-bottom duration-200">
+                <div className="bg-gradient-to-r from-maroon to-rose-800 text-white p-4 flex justify-between items-center sticky top-0 z-10">
+                  <h3 className="font-extrabold text-sm flex items-center gap-1.5">
+                    <span>🎀</span>
+                    <span>{selectedSchedule ? t.modalEditTitle : t.modalAddTitle}</span>
+                  </h3>
                   <button onClick={() => setModalOpen(false)} className="text-rose-200 hover:text-white font-bold text-lg">✕</button>
                 </div>
                 <form onSubmit={handleSave} className="p-5 space-y-3 text-xs">
@@ -3182,7 +3312,7 @@
                         <select
                           value={repeatDays}
                           onChange={e => setRepeatDays(Number(e.target.value))}
-                          className="w-full bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-2xl px-3 py-2.5 font-black"
+                          className="w-full bg-pink-50 border border-pink-300 text-maroon rounded-2xl px-3 py-2.5 font-black"
                         >
                           <option value={1}>{t.rep1}</option>
                           <option value={2}>{t.rep2}</option>
@@ -3247,8 +3377,8 @@
                       <button type="button" onClick={() => setModalOpen(false)} className="bg-slate-100 text-slate-700 px-4 py-2.5 rounded-2xl font-bold">
                         {t.cancelBtn}
                       </button>
-                      <button type="submit" className="bg-maroon text-white px-5 py-2.5 rounded-2xl font-black shadow active:scale-95 transition">
-                        {t.saveCloudBtn}
+                      <button type="submit" className="bg-gradient-to-r from-maroon to-rose-700 text-white px-5 py-2.5 rounded-2xl font-black shadow active:scale-95 transition">
+                        💖 {t.saveCloudBtn}
                       </button>
                     </div>
                   </div>
