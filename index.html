@@ -58,8 +58,9 @@
     /* Cute Pastel Polka Background */
     body.cute-bg {
       background-color: #FFF5F7;
-      background-image: radial-gradient(#FFD6E0 1.25px, transparent 1.25px);
-      background-size: 22px 22px;
+      background-image: radial-gradient(#FFD6E0 1.35px, transparent 1.35px), radial-gradient(#FFE5EC 1.35px, #FFF5F7 1.35px);
+      background-size: 28px 28px;
+      background-position: 0 0, 14px 14px;
     }
 
     /* Dark Mode Overrides */
@@ -86,15 +87,15 @@
 
     @keyframes float-up-sparkle {
       0% { transform: translateY(0) scale(0.7) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(-130px) scale(1.35) rotate(20deg); opacity: 0; }
+      100% { transform: translateY(-140px) scale(1.4) rotate(25deg); opacity: 0; }
     }
     .sparkle-anim {
       animation: float-up-sparkle 1.6s ease-out forwards;
     }
 
     @keyframes gentle-bob {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-3px); }
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-3px) rotate(4deg); }
     }
     .cute-float {
       animation: gentle-bob 3s ease-in-out infinite;
@@ -180,6 +181,13 @@
       { id: 'tired', emoji: '🥺', labelId: 'Butuh Peluk / Bobo', labelEn: 'Need Rest / Hug', color: 'bg-indigo-100 text-indigo-800 border-indigo-300' }
     ];
 
+    const timeToMinutes = (tStr) => {
+      if (!tStr) return 0;
+      if (tStr === '23:59') return 24 * 60;
+      const [h, m] = tStr.split(':').map(Number);
+      return h * 60 + m;
+    };
+
     const formatSecondsToHMS = (totalSeconds) => {
       const sec = Math.max(0, Math.floor(totalSeconds));
       const h = Math.floor(sec / 3600);
@@ -188,7 +196,7 @@
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     };
 
-    // --- KAMUS TERJEMAHAN 2 BAHASA (ID & EN) ---
+    // --- KAMUS TERJEMAHAN 2 BAHASA (ID & EN) + 35 AFIRMASI ---
     const TRANSLATIONS = {
       id: {
         locale: 'id-ID',
@@ -332,13 +340,49 @@
         moodTrackerTitle: "🎀 Mood & Self-Care Alisya Hari Ini",
         waterTitle: "💧 Hidrasi & Suara Jernih:",
         waterGoalDone: "🎉 Yeay! Target minum air hari ini tercapai!",
-        cheerMeBtn: "💖 Klik Mood Booster",
+        cheerMeBtn: "💖Kalimat Penyemangat",
+        slotOccupiedLabel: "Terisi:",
+        overlapWarningTitle: "⛔ Jam Bentrok / Sudah Terisi!",
+        overlapWarningDesc: "Rentang jam ini bertumpuk dengan jadwal:",
+        occupiedTimelineTitle: "🔒 Daftar Jam yang Sudah Terisi di Tanggal Ini:",
+        allFreeTimeline: "✨ Semua jam di tanggal ini masih kosong bebas dipilih!",
+        presetBlocked: "🔒 Jam Terisi",
         affirmations: [
           "✨ Kamu cantik, berbakat, dan rezekimu mengalir deras hari ini! Semangat live-nya ya!",
           "🌸 Jangan lupa senyum manis dulu sebelum mulai! Energi positifmu bikin penonton betah.",
           "💖 Satu per satu jadwal selesai, kamu hebat banget hari ini! Jangan lupa minum air putih ya.",
           "👑 Queen Alisya siap pecah telor GMV hari ini! Tetap rileks dan happy terus ya!",
-          "🌷 Kalau capek, istirahat sebentar ya. Kesehatan dan kebahagiaanmu selalu nomor satu!"
+          "🌷 Kalau capek, istirahat sebentar ya. Kesehatan dan kebahagiaanmu selalu nomor satu!",
+          "🍓 Hari ini adalah hari keberuntunganmu! Semua produk yang kamu pegang pasti laris manis.",
+          "🎀 Aura positifmu hari ini luar biasa cantik, siapa pun yang lihat live kamu pasti langsung checkout!",
+          "💫 Pelan-pelan saja, nikmati setiap sesinya. Kamu sudah bekerja sangat keras dan keren banget!",
+          "🍒 Jangan lupa tarik napas dalam-dalam dan tersenyum, kamu pantas mendapatkan semua hal indah hari ini!",
+          "🌷 Suaramu yang ramah dan ceria adalah magnet rezeki. Jaga tenggorokan dan minum yang cukup ya!",
+          "💎 Setiap detik usahamu hari ini sedang membuka pintu rezeki yang lebih besar lagi. Proud of you!",
+          "🧁 Habis selesai semua shift hari ini, jangan lupa kasih self-reward yang manis buat dirimu sendiri ya!",
+          "🦢 Kamu anggun, pintar berbicara, dan selalu memikat hati audiens. Bersinar terus ya Alisya!",
+          "🌈 Apapun target hari ini, kamu pasti bisa melewatinya dengan senyuman paling manis!",
+          "🍭 Mood yang bagus adalah kunci GMV meroket! Yuk mulai hari ini dengan hati yang gembira.",
+          "💐 Terima kasih sudah selalu semangat dan konsisten. Diri kamu di masa depan pasti bangga banget!",
+          "🦋 Seperti kupu-kupu yang indah, pesonamu hari ini bikin suasana live jadi hangat dan seru!",
+          "🌟 Jangan khawatir soal angka, fokus saja jadi dirimu yang ceria, rezeki terbaik pasti mengikuti!",
+          "🍑 Wajah segar, hati senang, jadwal rapi! Hari ini semuanya berjalan lancar sesuai harapanmu.",
+          "🧸 Kalau ada jam kosong, manfaatkan buat rebahan atau dengerin lagu favoritmu ya, Cantik!",
+          "🌺 Kamu itu magnet keberuntungan! Setiap kata yang kamu ucapkan membawa berkah dan kebahagiaan.",
+          "🍦 Сеmangat buat sesi hari ini! Ingat, kamu nggak sendirian dan kamu selalu didukung penuh!",
+          "🎀 Outfit oke, senyum manis oke, jadwal rapi! Saatnya Alisya bersinar di depan kamera!",
+          "💌 Pesan kecil buat hari ini: Kamu berharga, kamu dicintai, dan kamu luar biasa hebat!",
+          "🌼 Semoga hari ini dipenuhi pembeli yang ramah, loyal, dan borong banyak tanpa ragu!",
+          "🍓 Satu langkah kecil setiap hari membawa perubahan besar. Terus melangkah dengan cantik ya!",
+          "💖 Jangan lupa stretching ringan di sela-sela shift supaya badanmu tetap segar dan nyaman!",
+          "👑 Tak peduli seberapa padat jadwalnya, kamu selalu punya cara elegan untuk menaklukkannya!",
+          "🌷 Senyummu itu menular lho! Sekali kamu senyum, satu ruang live ikut bahagia.",
+          "✨ Percaya sama dirimu sendiri ya, kemampuan komunikasimu itu juara banget!",
+          "🍒 Hari baru, semangat baru, rezeki baru yang berlimpah ruah khusus buat Alisya!",
+          "🧁 Istirahat yang cukup itu juga bagian dari produktivitas. Sayangi tubuhmu selalu ya!",
+          "🦢 Tetap tenang, tetap anggun, dan biarkan pesona alamu bekerja menarik banyak keberuntungan.",
+          "🌈 Semua lelahmu hari ini akan terbayar lunas dengan hasil yang manis dan membanggakan!",
+          "💝 Kamu sudah melakukan yang terbaik! Apresiasi dirimu sendiri karena sudah sejauh ini."
         ]
       },
       en: {
@@ -483,13 +527,49 @@
         moodTrackerTitle: "🎀 Alisya's Daily Mood & Self-Care",
         waterTitle: "💧 Hydration & Voice Care:",
         waterGoalDone: "🎉 Yay! Daily hydration goal achieved!",
-        cheerMeBtn: "💖 Click for Mood Booster",
+        cheerMeBtn: "💖Affirmation",
+        slotOccupiedLabel: "Booked:",
+        overlapWarningTitle: "⛔ Time Slot Conflict!",
+        overlapWarningDesc: "This time range overlaps with:",
+        occupiedTimelineTitle: "🔒 Booked Time Slots on This Date:",
+        allFreeTimeline: "✨ All time slots on this date are completely free!",
+        presetBlocked: "🔒 Booked",
         affirmations: [
           "✨ You are glowing, talented, and abundant today! Have an amazing stream!",
           "🌸 Put on your sweetest smile first! Your positive energy makes everyone stay.",
           "💖 Step by step, you're doing so well today! Don't forget to stay hydrated.",
           "👑 Queen Alisya is ready to crush all GMV targets today with joy and grace!",
-          "🌷 Take a gentle breath whenever you feel tired. Your happiness always comes first!"
+          "🌷 Take a gentle breath whenever you feel tired. Your happiness always comes first!",
+          "🍓 Today is your lucky day! Everything you showcase will sell out effortlessly.",
+          "🎀 Your radiant aura is magnetic today—viewers will love every second of your live!",
+          "💫 Take it one session at a time. You are working so hard and doing fenomenally!",
+          "🍒 Take a deep breath and smile—you deserve all the wonderful blessings coming today!",
+          "🌷 Your warm and cheerful voice is your superpower. Keep your throat hydrated!",
+          "💎 Every minute of your effort today is opening doors to massive abundance!",
+          "🧁 After finishing today's shifts, don't forget to treat yourself to something sweet!",
+          "🦢 Graceful, articulate, and charming—keep shining brightly, Alisya!",
+          "🌈 Whatever the target is today, you will breeze through it with your sweetest smile!",
+          "🍭 Good mood equals sky-rocketing GMV! Let's start with a happy heart.",
+          "💐 Thank you for being so dedicated and consistent. Your future self is so proud of you!",
+          "🦋 Like a lovely butterfly, your presence makes every live session warm and exciting!",
+          "🌟 Focus on having fun and being your authentic self—the best results will follow!",
+          "🍑 Fresh face, happy heart, organized schedule! Today is going to flow smoothly.",
+          "🧸 Whenever you have a free slot, cozy up and listen to your favorite songs, Pretty!",
+          "🌺 You are a magnet for miracles! Every word you speak brings joy and sales.",
+          "🍦 Cheering for you today! Remember you are deeply appreciated and supported!",
+          "🎀 Cute outfit check, sweet smile check, neat schedule check! Time to shine on camera!",
+          "💌 Little reminder for today: You are worthy, you are loved, and you are unstoppable!",
+          "🌼 May your stream today be filled with kind, generous, and loyal buyers!",
+          "🍓 Small consistent steps every day create magical results. Keep glowing!",
+          "💖 Do a quick gentle stretch between shifts so your body stays comfy and fresh!",
+          "👑 No matter how busy the schedule looks, you always handle it with pure elegance!",
+          "🌷 Your smile is contagious! When you smile, the whole live room feels happy.",
+          "✨ Trust your charm and communication skills—you are truly a natural star!",
+          "🍒 New day, fresh energy, and overflowing blessings specially for Alisya!",
+          "🧁 Good rest is part of productivity too. Be gentle and loving to yourself!",
+          "🦢 Stay calm, stay pretty, and let your natural charisma attract endless luck.",
+          "🌈 All your hard work today will pay off with the sweetest, proudest results!",
+          "💝 You're doing your absolute best! Give yourself a warm hug for coming this far."
         ]
       }
     };
@@ -587,16 +667,16 @@
         return t.greetNight;
       }, [nowTime, t]);
 
-      // State Affirmation & Sparkle Burst
-      const [quoteIdx, setQuoteIdx] = useState(0);
+      // State Affirmation (Acak Otomatis Saat Dibuka + Tombol Ganti)
+      const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * 35));
       const [sparkles, setSparkles] = useState([]);
 
       const triggerCuteSparkles = () => {
-        const emojis = ['💖', '✨', '🌸', '🎀', '🌷', '👑', '🍓', '💫'];
-        const batch = Array.from({ length: 14 }).map((_, i) => ({
+        const emojis = ['💖', '✨', '🌸', '🎀', '🌷', '👑', '🍓', '💫', '🍒', '🧁'];
+        const batch = Array.from({ length: 16 }).map((_, i) => ({
           id: Date.now() + '_' + i,
           emoji: emojis[Math.floor(Math.random() * emojis.length)],
-          left: Math.floor(Math.random() * 84) + 8,
+          left: Math.floor(Math.random() * 86) + 7,
           top: Math.floor(Math.random() * 55) + 25
         }));
         setSparkles(batch);
@@ -604,12 +684,16 @@
       };
 
       const handleBoostMood = () => {
-        setQuoteIdx(prev => (prev + 1) % t.affirmations.length);
+        setQuoteIdx(prev => {
+          let next = Math.floor(Math.random() * t.affirmations.length);
+          if (next === prev) next = (prev + 1) % t.affirmations.length;
+          return next;
+        });
         triggerCuteSparkles();
         playNotificationChime();
       };
 
-      // State Mood & Hydration per Tanggal (Tersimpan di Cloud & LocalStorage)
+      // State Mood & Hydration per Tanggal
       const [dailyWellness, setDailyWellness] = useState(() => {
         try {
           const saved = localStorage.getItem('alisya_wellness');
@@ -637,7 +721,6 @@
         triggerCuteSparkles();
       };
 
-      // Helper Nama Hari sesuai Bahasa Aktif
       const getHariNama = (dateString) => {
         if (!dateString) return '-';
         const [y, m, d] = dateString.split('-').map(Number);
@@ -816,10 +899,80 @@
       });
 
       const [toast, setToast] = useState('');
-      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
+      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3800); };
 
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
+
+      // =========================================================================
+      // 🔒 SISTEM ANTI-TUMPUK (SMART TIME SLOT BLOCKER) UNTUK MODAL INPUT JADWAL
+      // =========================================================================
+      const existingSchedulesOnFormDate = useMemo(() => {
+        return schedules
+          .filter(s => s.date === formData.date && (!selectedSchedule || s.id !== selectedSchedule.id))
+          .sort((a, b) => a.start_time.localeCompare(b.start_time));
+      }, [schedules, formData.date, selectedSchedule]);
+
+      // Cek apakah opsi Jam Mulai (start_time) jatuh di tengah jadwal lain yang sudah terisi
+      const getStartTimeConflict = (timeCandidate) => {
+        const candMin = timeToMinutes(timeCandidate);
+        return existingSchedulesOnFormDate.find(s => {
+          const sStart = timeToMinutes(s.start_time);
+          let sEnd = timeToMinutes(s.end_time);
+          if (sEnd <= sStart) sEnd = 24 * 60;
+          return candMin >= sStart && candMin < sEnd;
+        });
+      };
+
+      // Cek apakah opsi Jam Selesai (end_time) menyebabkan tabrakan dengan jadwal lain
+      const getEndTimeConflict = (endCandidate) => {
+        const startMin = timeToMinutes(formData.start_time);
+        let endMin = timeToMinutes(endCandidate);
+        if (endMin <= startMin) return { title: '≤ ' + formData.start_time, isInvalidOrder: true };
+        return existingSchedulesOnFormDate.find(s => {
+          const sStart = timeToMinutes(s.start_time);
+          let sEnd = timeToMinutes(s.end_time);
+          if (sEnd <= sStart) sEnd = 24 * 60;
+          return startMin < sEnd && endMin > sStart;
+        });
+      };
+
+      // Cek apakah rentang waktu [startStr, endStr] berbenturan dengan jadwal yang sudah ada
+      const getRangeConflictOnFormDate = (startStr, endStr) => {
+        const sMin = timeToMinutes(startStr);
+        let eMin = timeToMinutes(endStr);
+        if (eMin <= sMin) eMin = 24 * 60;
+        return existingSchedulesOnFormDate.find(s => {
+          const exStart = timeToMinutes(s.start_time);
+          let exEnd = timeToMinutes(s.end_time);
+          if (exEnd <= exStart) exEnd = 24 * 60;
+          return sMin < exEnd && eMin > exStart;
+        });
+      };
+
+      const currentFormConflict = useMemo(() => {
+        return getRangeConflictOnFormDate(formData.start_time, formData.end_time);
+      }, [formData.start_time, formData.end_time, existingSchedulesOnFormDate]);
+
+      // Cari slot 2 jam kosong pertama di suatu tanggal agar saat tambah jadwal baru otomatis memilih jam kosong
+      const findFirstFreeSlotOnDate = (dateStr, preferredStart = '10:00', preferredEnd = '12:00') => {
+        const dayList = schedules.filter(s => s.date === dateStr);
+        const isFree = (st, en) => {
+          const sM = timeToMinutes(st);
+          const eM = timeToMinutes(en);
+          return !dayList.some(item => {
+            const iS = timeToMinutes(item.start_time);
+            let iE = timeToMinutes(item.end_time);
+            if (iE <= iS) iE = 24 * 60;
+            return sM < iE && eM > iS;
+          });
+        };
+        if (isFree(preferredStart, preferredEnd)) return { start: preferredStart, end: preferredEnd };
+        for (const slot of TIME_SLOTS) {
+          if (isFree(slot.start, slot.end)) return { start: slot.start, end: slot.end };
+        }
+        return { start: preferredStart, end: preferredEnd };
+      };
 
       // 🌟 MESIN COUNTDOWN TIMER REAL-TIME PER DETIK (HH:MM:SS)
       const liveTracker = useMemo(() => {
@@ -891,17 +1044,11 @@
           grouped[s.date].push(s);
         });
 
-        const toM = (timeStr) => {
-          if (timeStr === '23:59') return 24 * 60;
-          const [h, m] = timeStr.split(':').map(Number);
-          return h * 60 + m;
-        };
-
         Object.keys(grouped).forEach(date => {
           const list = grouped[date].sort((a, b) => a.start_time.localeCompare(b.start_time));
           for (let i = 0; i < list.length - 1; i++) {
-            const endCurr = toM(list[i].end_time);
-            const startNext = toM(list[i+1].start_time);
+            const endCurr = timeToMinutes(list[i].end_time);
+            const startNext = timeToMinutes(list[i+1].start_time);
             const diffMin = startNext - endCurr;
             if (diffMin > 0 && diffMin < 300) {
               map[date] = true;
@@ -920,7 +1067,14 @@
 
       const availableSlotsForSelectedDate = useMemo(() => {
         return TIME_SLOTS.filter(slot => {
-          const isBusy = selectedDaySchedules.some(s => (s.start_time < slot.end && s.end_time > slot.start));
+          const sM = timeToMinutes(slot.start);
+          const eM = timeToMinutes(slot.end);
+          const isBusy = selectedDaySchedules.some(s => {
+            const st = timeToMinutes(s.start_time);
+            let en = timeToMinutes(s.end_time);
+            if (en <= st) en = 24 * 60;
+            return st < eM && en > sM;
+          });
           return !isBusy;
         });
       }, [selectedDaySchedules]);
@@ -1027,7 +1181,6 @@
         return { totalLive, totalOff, totalSick, totalMeeting, totalSleep, totalMeTime, totalKonten, totalLiveHours, totalSleepHours, totalKontenHours, totalMeTimeHours, perBrand };
       }, [filteredByStatPeriod, brands, statPeriod]);
 
-      // 🛡️ Work-Life Balance Score
       const balanceScoreData = useMemo(() => {
         const prodHours = stats.totalLiveHours + stats.totalKontenHours;
         if (statPeriod === 'daily' && prodHours >= 11) {
@@ -1171,7 +1324,26 @@
           setCloneModalOpen(false);
           return;
         }
-        const clonedList = selectedDaySchedules.map((item, idx) => ({
+        // Hanya salin jadwal yang tidak bertumpuk di tanggal tujuan
+        const existingOnTarget = schedules.filter(s => s.date === cloneTargetDate);
+        const nonConflicting = selectedDaySchedules.filter(item => {
+          const sM = timeToMinutes(item.start_time);
+          let eM = timeToMinutes(item.end_time);
+          if (eM <= sM) eM = 24 * 60;
+          return !existingOnTarget.some(ex => {
+            const exS = timeToMinutes(ex.start_time);
+            let exE = timeToMinutes(ex.end_time);
+            if (exE <= exS) exE = 24 * 60;
+            return sM < exE && eM > exS;
+          });
+        });
+
+        if (nonConflicting.length === 0) {
+          notify('⛔ Semua jam di tanggal tujuan sudah terisi! Tidak bisa menumpuk jadwal.');
+          return;
+        }
+
+        const clonedList = nonConflicting.map((item, idx) => ({
           ...item,
           id: 'sch_' + Date.now() + '_clone_' + idx,
           date: cloneTargetDate
@@ -1223,13 +1395,16 @@
 
       const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
         if (!isAdmin) { setPinInputModal(true); return; }
+        const targetDate = dateStr || selectedDate;
+        const smartSlot = findFirstFreeSlotOnDate(targetDate, slotStart, slotEnd);
+
         setSelectedSchedule(null);
         setRepeatDays(1);
         setFormData({
           id: 'sch_' + Date.now(),
-          date: dateStr || selectedDate,
-          start_time: slotStart,
-          end_time: slotEnd,
+          date: targetDate,
+          start_time: smartSlot.start,
+          end_time: smartSlot.end,
           title: '',
           brand_id: brands[0]?.id || 'b_momuung',
           status: 'LIVE',
@@ -1251,15 +1426,29 @@
         setModalOpen(true);
       };
 
+      // Jika duplikasi di hari yang sama, arahkan ke modal edit agar bisa pilih jam kosong dan tidak menumpuk
       const handleDuplicate = (sch) => {
         if (!isAdmin) { setPinInputModal(true); return; }
-        const copy = { ...sch, id: 'sch_' + Date.now(), title: sch.title + ' (Copy)' };
-        saveSchedulesToCloud([...schedules, copy]);
-        triggerCuteSparkles();
-        notify('🎀 Jadwal berhasil disalin!');
+        const freeSlot = findFirstFreeSlotOnDate(sch.date, sch.start_time, sch.end_time);
+        setSelectedSchedule(null);
+        setRepeatDays(1);
+        setFormData({
+          ...sch,
+          id: 'sch_' + Date.now(),
+          title: sch.title + ' (Copy)',
+          start_time: freeSlot.start,
+          end_time: freeSlot.end
+        });
+        setModalOpen(true);
+        notify('🎀 Pilih jam kosong untuk jadwal salinan ini agar tidak menumpuk!');
       };
 
       const applyMomUungPreset = (shiftNum, start, end) => {
+        const conflict = getRangeConflictOnFormDate(start, end);
+        if (conflict) {
+          notify(`⛔ Jam ${start}-${end} sudah terisi oleh "${conflict.title}" (${conflict.start_time}-${conflict.end_time})!`);
+          return;
+        }
         const momUungBrand = brands.find(b => b.id === 'b_momuung') || { color: '#B6D7A8' };
         setFormData(prev => ({
           ...prev,
@@ -1274,6 +1463,11 @@
       };
 
       const applyAquaPressPreset = (shiftNum, start, end) => {
+        const conflict = getRangeConflictOnFormDate(start, end);
+        if (conflict) {
+          notify(`⛔ Jam ${start}-${end} sudah terisi oleh "${conflict.title}" (${conflict.start_time}-${conflict.end_time})!`);
+          return;
+        }
         const aquaBrand = brands.find(b => b.id === 'b_aquapress') || { color: '#00FFFF' };
         setFormData(prev => ({
           ...prev,
@@ -1287,27 +1481,65 @@
         notify(`💧 Shift ${shiftNum} AquaPress (${start} - ${end})`);
       };
 
+      // Validasi Ketat Anti-Tumpuk Saat Simpan
       const handleSave = (e) => {
         e.preventDefault();
+        const sMin = timeToMinutes(formData.start_time);
+        const eMin = timeToMinutes(formData.end_time);
+
+        if (eMin <= sMin) {
+          notify('⛔ Jam Selesai harus lebih besar dari Jam Mulai!');
+          return;
+        }
+
         const brandObj = brands.find(b => b.id === formData.brand_id);
         const basePayload = { ...formData, color: brandObj?.color || formData.color };
 
         if (selectedSchedule) {
+          const conflict = getRangeConflictOnFormDate(basePayload.start_time, basePayload.end_time);
+          if (conflict) {
+            notify(`⛔ Tidak bisa disimpan! Bentrok dengan "${conflict.title}" (${conflict.start_time}-${conflict.end_time}).`);
+            return;
+          }
           saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
           notify('✨ Jadwal berhasil diperbarui!');
         } else {
           const newItems = [];
+          const skippedDates = [];
           const count = Number(repeatDays) || 1;
+
           for (let i = 0; i < count; i++) {
             const targetDate = i === 0 ? basePayload.date : addDaysToDateStr(basePayload.date, i);
-            newItems.push({
-              ...basePayload,
-              id: 'sch_' + Date.now() + '_' + i,
-              date: targetDate
+            const daySchedules = schedules.filter(s => s.date === targetDate);
+            const hasConflict = daySchedules.some(ex => {
+              const exS = timeToMinutes(ex.start_time);
+              let exE = timeToMinutes(ex.end_time);
+              if (exE <= exS) exE = 24 * 60;
+              return sMin < exE && eMin > exS;
             });
+
+            if (hasConflict) {
+              skippedDates.push(targetDate);
+            } else {
+              newItems.push({
+                ...basePayload,
+                id: 'sch_' + Date.now() + '_' + i,
+                date: targetDate
+              });
+            }
           }
+
+          if (newItems.length === 0) {
+            notify(`⛔ Gagal menyimpan! Jam ${basePayload.start_time}-${basePayload.end_time} sudah terisi di tanggal tersebut.`);
+            return;
+          }
+
           saveSchedulesToCloud([...schedules, ...newItems]);
-          notify('💖 Jadwal baru berhasil disimpan!');
+          if (skippedDates.length > 0) {
+            notify(`💖 Tersimpan ${newItems.length} hari! (${skippedDates.length} tanggal dilewati karena jam sudah terisi)`);
+          } else {
+            notify('💖 Jadwal baru berhasil disimpan tanpa bertumpuk!');
+          }
         }
         triggerCuteSparkles();
         setModalOpen(false);
@@ -1457,21 +1689,21 @@
         </div>
       );
 
-      // 🌸 KOMPONEN MOOD BOOSTER & AFFIRMATION CARD IMUT
+      // 🌸 KOMPONEN MOOD BOOSTER & 35+ AFFIRMATION CARD IMUT
       const renderCuteGreetingCard = () => (
-        <div className="bg-gradient-to-r from-pink-100 via-rose-50 to-amber-50 border-2 border-pink-200/80 rounded-3xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-pink-200 flex items-center justify-center text-2xl cute-float">
+        <div className="bg-gradient-to-r from-pink-100 via-rose-50 to-amber-50 border-2 border-pink-200/90 rounded-3xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
+          <div className="flex items-center gap-3.5 flex-1 min-w-[240px]">
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border-2 border-pink-200 flex items-center justify-center text-2xl cute-float shrink-0">
               🎀
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-black text-sm md:text-base text-maroon">{cuteGreeting}</h3>
-                <span className="bg-pink-200/80 text-pink-900 text-[10px] font-black px-2.5 py-0.5 rounded-full">
-                  ✨ Princess Mode ON
+                <span className="bg-pink-200/80 text-pink-950 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-pink-300">
+                  💌 Sweet Note #{quoteIdx + 1}/{t.affirmations.length}
                 </span>
               </div>
-              <p className="text-xs font-bold text-rose-800/90 italic">
+              <p className="text-xs md:text-sm font-bold text-rose-900/90 italic leading-relaxed">
                 "{t.affirmations[quoteIdx % t.affirmations.length]}"
               </p>
             </div>
@@ -1479,9 +1711,9 @@
 
           <button
             onClick={handleBoostMood}
-            className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-xs px-4 py-2 rounded-2xl shadow-md active:scale-95 transition flex items-center gap-1.5"
+            className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 hover:from-pink-600 hover:to-rose-600 text-white font-black text-xs px-4 py-2.5 rounded-2xl shadow-md active:scale-95 transition flex items-center gap-1.5 border border-pink-300"
           >
-            <span>{t.cheerMeBtn}</span>
+            <span>🎲</span><span>{t.cheerMeBtn}</span>
           </button>
         </div>
       );
@@ -1498,7 +1730,6 @@
             </span>
           </div>
 
-          {/* Pilihan Mood Hari Ini */}
           <div className="grid grid-cols-5 gap-1.5">
             {MOOD_LIST.map(m => {
               const isSelected = currentDayWellness.mood === m.id;
@@ -1518,7 +1749,6 @@
             })}
           </div>
 
-          {/* Tracker Minum Air / Boba 8 Gelas */}
           <div className="bg-pink-50/70 border border-pink-200/60 rounded-2xl p-3 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-extrabold text-rose-900">{t.waterTitle}</span>
@@ -1681,7 +1911,7 @@
                     <span className="text-sm">🌸</span>
                   </h1>
                   <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider">
-                    v6.3-Cute PRO
+                    v6.4-Sweetheart PRO
                   </span>
                   {isAdmin ? (
                     <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[10px] font-black shadow">👑 ADMIN</span>
@@ -1894,7 +2124,6 @@
                           </h2>
                           <p className="text-xs text-rose-100">{selectedDaySchedules.length} {t.scheduledSessions} • {selectedDaySchedules.filter(s=>s.status!=='Tidur').length} {t.productiveActs}</p>
                           
-                          {/* 🛡️ BURNOUT GUARD WARNING */}
                           {shortBreakWarnings[selectedDate] && (
                             <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-200 border border-amber-300/40 px-3 py-1 rounded-xl text-xs font-bold">
                               <span>{t.shortBreakWarning}</span>
@@ -1932,13 +2161,11 @@
                         </div>
                       </div>
 
-                      {/* LIVE NOW TRACKER & PROGRESS BAR */}
                       {renderLiveNowBanner()}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                       <div className="lg:col-span-5 space-y-4">
-                        {/* CUTE MOOD & WATER TRACKER WIDGET */}
                         {renderCuteWellnessWidget()}
 
                         <div className="bg-emerald-50/90 border-2 border-emerald-200 rounded-3xl p-5 space-y-3 shadow-sm">
@@ -2178,15 +2405,24 @@
                                   </td>
 
                                   {TIME_SLOTS.map(slot => {
+                                    const sM = timeToMinutes(slot.start);
+                                    const eM = timeToMinutes(slot.end);
                                     const slotItems = schedules.filter(s => {
                                       if (s.date !== dateStr) return false;
-                                      return (s.start_time < slot.end && s.end_time > slot.start);
+                                      const st = timeToMinutes(s.start_time);
+                                      let en = timeToMinutes(s.end_time);
+                                      if (en <= st) en = 24 * 60;
+                                      return st < eM && en > sM;
                                     });
 
                                     return (
                                       <td
                                         key={slot.label}
-                                        onClick={() => handleOpenCreate(dateStr, slot.start, slot.end)}
+                                        onClick={() => {
+                                          // Jika sel sudah ada isinya, klik langsung membuka Edit (mencegah tumpuk jadwal baru)
+                                          if (slotItems.length > 0) handleOpenEdit(slotItems[0]);
+                                          else handleOpenCreate(dateStr, slot.start, slot.end);
+                                        }}
                                         className={`border-r border-slate-200 p-1 align-top h-14 relative transition ${isAdmin ? 'hover:bg-rose-50/50 cursor-pointer' : ''}`}
                                       >
                                         {slotItems.map(item => {
@@ -2266,7 +2502,6 @@
                       </div>
                     </div>
 
-                    {/* 🛡️ WORK-LIFE BALANCE SCORE CARD */}
                     <div className={`p-5 rounded-3xl border-2 shadow-sm flex items-center justify-between flex-wrap gap-3 ${balanceScoreData.color}`}>
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🛡️</span>
@@ -2571,10 +2806,8 @@
               <div className="p-4 space-y-4 max-w-lg w-full mx-auto">
                 {activeTab === 'agenda' && (
                   <div id="mobile-agenda-capture" className="space-y-4">
-                    {/* CUTE GREETING & AFFIRMATION MOBILE */}
                     {renderCuteGreetingCard()}
 
-                    {/* RADAR LIVE STREAM */}
                     <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2 border-2 border-pink-300/30">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-1.5">
@@ -2615,7 +2848,6 @@
                         )}
                       </div>
 
-                      {/* LIVE NOW TRACKER MOBILE */}
                       {renderLiveNowBanner()}
 
                       <div className="flex items-center justify-between pt-2 border-t border-white/20">
@@ -2640,10 +2872,8 @@
                       </div>
                     </div>
 
-                    {/* MOOD & HYDRATION WIDGET MOBILE */}
                     {renderCuteWellnessWidget()}
 
-                    {/* AVAILABLE SCHEDULE CARD */}
                     <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-3.5 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
@@ -2670,7 +2900,6 @@
                       </div>
                     </div>
 
-                    {/* HORIZONTAL DATE PICKER BAR */}
                     <div className="bg-white p-3 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <div className="flex items-center justify-between mb-2 px-1">
                         <span className="text-xs font-black text-maroon uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
@@ -2708,7 +2937,6 @@
                       </div>
                     </div>
 
-                    {/* KARTU JADWAL HARIAN */}
                     <div className="space-y-3">
                       {selectedDaySchedules.length === 0 ? (
                         <div className="bg-white rounded-3xl p-7 text-center border-2 border-pink-200/70 shadow-sm space-y-2">
@@ -2834,13 +3062,25 @@
                                     </span>
                                   </td>
                                   {TIME_SLOTS.map(slot => {
+                                    const sM = timeToMinutes(slot.start);
+                                    const eM = timeToMinutes(slot.end);
                                     const slotItems = schedules.filter(s => {
                                       if (s.date !== dateStr) return false;
-                                      return (s.start_time < slot.end && s.end_time > slot.start);
+                                      const st = timeToMinutes(s.start_time);
+                                      let en = timeToMinutes(s.end_time);
+                                      if (en <= st) en = 24 * 60;
+                                      return st < eM && en > sM;
                                     });
 
                                     return (
-                                      <td key={slot.label} onClick={() => handleOpenCreate(dateStr, slot.start, slot.end)} className="border-r border-slate-200 p-0.5 align-top h-10 relative">
+                                      <td
+                                        key={slot.label}
+                                        onClick={() => {
+                                          if (slotItems.length > 0) handleOpenEdit(slotItems[0]);
+                                          else handleOpenCreate(dateStr, slot.start, slot.end);
+                                        }}
+                                        className="border-r border-slate-200 p-0.5 align-top h-10 relative"
+                                      >
                                         {slotItems.map(item => {
                                           const isStartSlot = (item.start_time >= slot.start && item.start_time < slot.end) || (slot.start === '00:00' && item.start_time === '00:00');
                                           return (
@@ -2907,7 +3147,6 @@
                       </div>
                     </div>
 
-                    {/* WORK-LIFE BALANCE MOBILE */}
                     <div className={`p-4 rounded-3xl border-2 shadow-sm space-y-1 ${balanceScoreData.color}`}>
                       <div className="flex items-center gap-2">
                         <span>🛡️</span>
@@ -3178,7 +3417,7 @@
             </div>
           )}
 
-          {/* MODAL FORM INPUT JADWAL */}
+          {/* MODAL FORM INPUT JADWAL DENGAN PROTEKSI JAM TERISI (ANTI-TUMPUK) */}
           {modalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
               <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto border-2 border-pink-200 animate-in slide-in-from-bottom duration-200">
@@ -3191,7 +3430,7 @@
                 </div>
                 <form onSubmit={handleSave} className="p-5 space-y-3 text-xs">
                   
-                  {/* PRESET MOM UUNG */}
+                  {/* 🍼 PRESET MOM UUNG DENGAN DETEKSI BENTROK OTOMATIS */}
                   <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-amber-950 flex items-center gap-1.5 text-[11px]">
@@ -3200,26 +3439,33 @@
                       <span className="text-[9px] font-bold bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full">Auto-Fill</span>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5 font-bold font-mono text-[10px]">
-                      <button type="button" onClick={() => applyMomUungPreset(1, "05:00", "13:00")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-emerald-800">Shift 1</span>
-                        <span className="text-[9px] text-slate-500">05:00 - 13:00</span>
-                      </button>
-                      <button type="button" onClick={() => applyMomUungPreset(2, "11:00", "19:00")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-emerald-800">Shift 2</span>
-                        <span className="text-[9px] text-slate-500">11:00 - 19:00</span>
-                      </button>
-                      <button type="button" onClick={() => applyMomUungPreset(3, "16:00", "23:59")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-emerald-800">Shift 3</span>
-                        <span className="text-[9px] text-slate-500">16:00 - 23:59</span>
-                      </button>
-                      <button type="button" onClick={() => applyMomUungPreset(4, "00:00", "07:00")} className="bg-white border border-amber-300 hover:bg-amber-100 text-amber-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-emerald-800">Shift 4</span>
-                        <span className="text-[9px] text-slate-500">00:00 - 07:00</span>
-                      </button>
+                      {[
+                        { num: 1, st: "05:00", en: "13:00" },
+                        { num: 2, st: "11:00", en: "19:00" },
+                        { num: 3, st: "16:00", en: "23:59" },
+                        { num: 4, st: "00:00", en: "07:00" }
+                      ].map(p => {
+                        const conflict = getRangeConflictOnFormDate(p.st, p.en);
+                        return (
+                          <button
+                            key={p.num}
+                            type="button"
+                            disabled={!!conflict}
+                            onClick={() => applyMomUungPreset(p.num, p.st, p.en)}
+                            className={`p-2 rounded-xl text-left shadow-xs transition flex flex-col border ${conflict ? 'bg-slate-100 border-slate-300 opacity-50 cursor-not-allowed' : 'bg-white border-amber-300 hover:bg-amber-100 text-amber-950 active:scale-95'}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className={`font-black ${conflict ? 'text-slate-500 line-through' : 'text-emerald-800'}`}>Shift {p.num}</span>
+                              {conflict && <span className="text-[8px] bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded font-sans font-black">{t.presetBlocked}</span>}
+                            </div>
+                            <span className="text-[9px] text-slate-500">{p.st} - {p.en}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  {/* PRESET AQUAPRESS */}
+                  {/* 💧 PRESET AQUAPRESS DENGAN DETEKSI BENTROK OTOMATIS */}
                   <div className="bg-cyan-50 border border-cyan-200 p-3 rounded-2xl space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-cyan-950 flex items-center gap-1.5 text-[11px]">
@@ -3228,19 +3474,45 @@
                       <span className="text-[9px] font-bold bg-cyan-200/70 text-cyan-900 px-2 py-0.5 rounded-full">Auto-Fill</span>
                     </div>
                     <div className="grid grid-cols-3 gap-1.5 font-bold font-mono text-[10px]">
-                      <button type="button" onClick={() => applyAquaPressPreset(1, "08:00", "12:00")} className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-cyan-800">Shift 1</span>
-                        <span className="text-[9px] text-slate-500">08:00 - 12:00</span>
-                      </button>
-                      <button type="button" onClick={() => applyAquaPressPreset(2, "12:00", "16:00")} className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-cyan-800">Shift 2</span>
-                        <span className="text-[9px] text-slate-500">12:00 - 16:00</span>
-                      </button>
-                      <button type="button" onClick={() => applyAquaPressPreset(3, "16:00", "20:00")} className="bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-950 p-2 rounded-xl text-left shadow-xs transition active:scale-95 flex flex-col">
-                        <span className="font-black text-cyan-800">Shift 3</span>
-                        <span className="text-[9px] text-slate-500">16:00 - 20:00</span>
-                      </button>
+                      {[
+                        { num: 1, st: "08:00", en: "12:00" },
+                        { num: 2, st: "12:00", en: "16:00" },
+                        { num: 3, st: "16:00", en: "20:00" }
+                      ].map(p => {
+                        const conflict = getRangeConflictOnFormDate(p.st, p.en);
+                        return (
+                          <button
+                            key={p.num}
+                            type="button"
+                            disabled={!!conflict}
+                            onClick={() => applyAquaPressPreset(p.num, p.st, p.en)}
+                            className={`p-2 rounded-xl text-left shadow-xs transition flex flex-col border ${conflict ? 'bg-slate-100 border-slate-300 opacity-50 cursor-not-allowed' : 'bg-white border-cyan-300 hover:bg-cyan-100 text-cyan-950 active:scale-95'}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className={`font-black ${conflict ? 'text-slate-500 line-through' : 'text-cyan-800'}`}>Shift {p.num}</span>
+                              {conflict && <span className="text-[8px] text-rose-600">🔒</span>}
+                            </div>
+                            <span className="text-[9px] text-slate-500">{p.st} - {p.en}</span>
+                          </button>
+                        );
+                      })}
                     </div>
+                  </div>
+
+                  {/* 🔒 DAFTAR JAM YANG SUDAH TERISI DI TANGGAL INI */}
+                  <div className="bg-pink-50/80 border border-pink-200 rounded-2xl p-2.5 space-y-1.5">
+                    <div className="text-[10px] font-black text-maroon">{t.occupiedTimelineTitle}</div>
+                    {existingSchedulesOnFormDate.length === 0 ? (
+                      <div className="text-[10px] text-emerald-700 font-bold">{t.allFreeTimeline}</div>
+                    ) : (
+                      <div className="flex flex-wrap gap-1">
+                        {existingSchedulesOnFormDate.map(s => (
+                          <span key={s.id} className="bg-white border border-rose-200 text-rose-800 font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-2xs">
+                            🔒 {s.start_time}-{s.end_time} ({s.title})
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -3328,18 +3600,37 @@
                     )}
                   </div>
                   
+                  {/* 🔒 DROPDOWN JAM MULAI & SELESAI YANG OTOMATIS MENGUNCI JAM TERISI */}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block font-bold text-slate-700 mb-1">{t.formStartHour}</label>
                       <select
                         required
                         value={formData.start_time}
-                        onChange={e => setFormData({ ...formData, start_time: e.target.value })}
+                        onChange={e => {
+                          const newStart = e.target.value;
+                          let newEnd = formData.end_time;
+                          if (timeToMinutes(newEnd) <= timeToMinutes(newStart)) {
+                            const nextIdx = END_TIME_OPTIONS.findIndex(tm => timeToMinutes(tm) > timeToMinutes(newStart));
+                            if (nextIdx !== -1) newEnd = END_TIME_OPTIONS[nextIdx];
+                          }
+                          setFormData({ ...formData, start_time: newStart, end_time: newEnd });
+                        }}
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold font-mono text-slate-900"
                       >
-                        {START_TIME_OPTIONS.map(tm => (
-                          <option key={tm} value={tm}>{tm}</option>
-                        ))}
+                        {START_TIME_OPTIONS.map(tm => {
+                          const conflict = getStartTimeConflict(tm);
+                          return (
+                            <option
+                              key={tm}
+                              value={tm}
+                              disabled={!!conflict}
+                              className={conflict ? 'text-rose-400 bg-rose-50' : ''}
+                            >
+                              {conflict ? `🔒 ${tm} (${t.slotOccupiedLabel} ${conflict.title.slice(0, 12)})` : tm}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                     <div>
@@ -3350,12 +3641,37 @@
                         onChange={e => setFormData({ ...formData, end_time: e.target.value })}
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold font-mono text-slate-900"
                       >
-                        {END_TIME_OPTIONS.map(tm => (
-                          <option key={tm} value={tm}>{tm}</option>
-                        ))}
+                        {END_TIME_OPTIONS.map(tm => {
+                          const conflict = getEndTimeConflict(tm);
+                          return (
+                            <option
+                              key={tm}
+                              value={tm}
+                              disabled={!!conflict}
+                              className={conflict ? 'text-rose-400 bg-rose-50' : ''}
+                            >
+                              {conflict
+                                ? (conflict.isInvalidOrder ? `${tm}` : `🔒 ${tm} (${t.slotOccupiedLabel} ${conflict.title.slice(0, 12)})`)
+                                : tm}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                   </div>
+
+                  {/* PERINGATAN JIKA RENTANG WAKTU MASIH BENTROK */}
+                  {currentFormConflict && (
+                    <div className="bg-rose-100 border-2 border-rose-400 text-rose-900 p-3 rounded-2xl text-xs font-extrabold flex items-center gap-2 animate-pulse">
+                      <span className="text-lg">⛔</span>
+                      <div>
+                        <div>{t.overlapWarningTitle}</div>
+                        <div className="text-[10px] font-bold">
+                          {t.overlapWarningDesc} "{currentFormConflict.title}" ({currentFormConflict.start_time} - {currentFormConflict.end_time})
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">{t.formNotes}</label>
@@ -3377,8 +3693,12 @@
                       <button type="button" onClick={() => setModalOpen(false)} className="bg-slate-100 text-slate-700 px-4 py-2.5 rounded-2xl font-bold">
                         {t.cancelBtn}
                       </button>
-                      <button type="submit" className="bg-gradient-to-r from-maroon to-rose-700 text-white px-5 py-2.5 rounded-2xl font-black shadow active:scale-95 transition">
-                        💖 {t.saveCloudBtn}
+                      <button
+                        type="submit"
+                        disabled={!!currentFormConflict}
+                        className={`px-5 py-2.5 rounded-2xl font-black shadow transition ${currentFormConflict ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-gradient-to-r from-maroon to-rose-700 text-white active:scale-95'}`}
+                      >
+                        {currentFormConflict ? '⛔ Jam Terisi' : `💖 ${t.saveCloudBtn}`}
                       </button>
                     </div>
                   </div>
