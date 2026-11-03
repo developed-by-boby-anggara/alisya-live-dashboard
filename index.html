@@ -109,6 +109,258 @@
       animation: water-wave 2s ease-in-out infinite;
     }
   </style>
+
+
+  <!-- VISUAL REFRESH 2026: styling-only layer; application logic remains unchanged -->
+  <style id="alisya-visual-refresh">
+    :root {
+      --candy-rose: #e879a8;
+      --candy-pink: #f5a9c7;
+      --candy-lilac: #b8a4ed;
+      --candy-peach: #ffc9ad;
+      --candy-ink: #49364f;
+      --candy-muted: #8b7891;
+      --candy-paper: rgba(255,255,255,.88);
+      --candy-line: rgba(232,121,168,.20);
+      --candy-shadow: 0 12px 34px rgba(155,91,131,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+    body.cute-bg {
+      color: var(--candy-ink);
+      background-color: #fff8fc;
+      background-image:
+        radial-gradient(circle at 8% 8%, rgba(255,194,218,.28), transparent 25rem),
+        radial-gradient(circle at 92% 22%, rgba(198,184,255,.22), transparent 28rem),
+        radial-gradient(circle at 50% 100%, rgba(255,220,196,.22), transparent 30rem),
+        radial-gradient(rgba(235,174,207,.30) .8px, transparent .8px);
+      background-size: auto, auto, auto, 24px 24px;
+      background-position: center, center, center, 0 0;
+      background-attachment: fixed;
+    }
+
+    body, button, input, select, textarea { font-family: "Plus Jakarta Sans", sans-serif; }
+    ::selection { background: #f8c4dc; color: #57334d; }
+    ::-webkit-scrollbar-track { background: #fff2f8; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#f3b1d0,#c7b7f3); }
+
+    /* Header and navigation */
+    header.sticky {
+      background: linear-gradient(112deg, #8d456f 0%, #b65f91 48%, #9276c6 100%) !important;
+      border-bottom: 1px solid rgba(255,255,255,.32) !important;
+      box-shadow: 0 8px 28px rgba(113,65,112,.20) !important;
+      backdrop-filter: blur(18px);
+    }
+    header button, header select {
+      transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+    }
+    header button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    header button:active { transform: scale(.97); }
+
+    /* Main content surfaces */
+    #root .bg-white,
+    #root .bg-white\/90,
+    #root .bg-white\/95 {
+      border-color: rgba(232,121,168,.18);
+    }
+    #root .rounded-2xl,
+    #root .rounded-3xl {
+      border-radius: 1.15rem;
+    }
+    #root .shadow,
+    #root .shadow-md,
+    #root .shadow-lg,
+    #root .shadow-xl,
+    #root .shadow-2xl {
+      box-shadow: var(--candy-shadow);
+    }
+    #root .border-pink-200,
+    #root .border-pink-300 { border-color: var(--candy-line) !important; }
+
+    /* Buttons: keep their original colors/actions, refine their feel */
+    #root button {
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    #root button:not(:disabled):hover {
+      filter: saturate(1.08);
+    }
+    #root button:not(:disabled):active { transform: scale(.975); }
+    #root button:focus-visible,
+    #root input:focus-visible,
+    #root select:focus-visible,
+    #root textarea:focus-visible {
+      outline: 3px solid rgba(213,142,194,.35);
+      outline-offset: 2px;
+    }
+
+    /* Inputs */
+    #root input:not([type="checkbox"]):not([type="radio"]),
+    #root select,
+    #root textarea {
+      border-radius: 14px;
+      border-color: rgba(203,160,194,.42);
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    #root input:focus,
+    #root select:focus,
+    #root textarea:focus {
+      border-color: #d88bb8;
+      box-shadow: 0 0 0 4px rgba(232,121,168,.10);
+    }
+
+    /* Friendly card hover for desktop; no layout or interaction changes */
+    @media (hover:hover) and (pointer:fine) {
+      #root .bg-white.rounded-2xl,
+      #root .bg-white.rounded-3xl,
+      #root .bg-white\/90.rounded-2xl,
+      #root .bg-white\/90.rounded-3xl {
+        transition: box-shadow .22s ease, border-color .22s ease;
+      }
+      #root .bg-white.rounded-2xl:hover,
+      #root .bg-white.rounded-3xl:hover,
+      #root .bg-white\/90.rounded-2xl:hover,
+      #root .bg-white\/90.rounded-3xl:hover {
+        box-shadow: 0 16px 38px rgba(155,91,131,.14);
+        border-color: rgba(232,121,168,.30);
+      }
+    }
+
+    /* Tables and dense schedule views */
+    #root table { border-collapse: separate; border-spacing: 0; }
+    #root th { letter-spacing: .045em; }
+    #root td, #root th { border-color: rgba(222,190,215,.38); }
+    #root tr:hover td { background-color: rgba(255,239,247,.52); }
+
+    /* Cute accent details */
+    #root .cute-float { filter: drop-shadow(0 5px 8px rgba(255,205,226,.30)); }
+    #root .live-card-glow { border-radius: 1.25rem; }
+    #root .sparkle-anim { filter: drop-shadow(0 2px 5px rgba(216,132,190,.25)); }
+
+    /* Preserve the existing dark theme while softening its surfaces */
+    body.dark-theme {
+      background-color: #171426 !important;
+      background-image:
+        radial-gradient(circle at 10% 8%, rgba(120,75,126,.16), transparent 25rem),
+        radial-gradient(circle at 90% 18%, rgba(92,78,151,.15), transparent 28rem),
+        radial-gradient(#30263f 1px, transparent 1px) !important;
+      background-size: auto, auto, 26px 26px !important;
+      color: #f6edf8 !important;
+    }
+    body.dark-theme #root .bg-white,
+    body.dark-theme #root .bg-white\/90,
+    body.dark-theme #root .bg-white\/95 {
+      background-color: rgba(39,32,54,.96) !important;
+      border-color: rgba(194,145,190,.18) !important;
+      color: #f6edf8 !important;
+    }
+    body.dark-theme #root tr:hover td { background-color: rgba(117,79,123,.16) !important; }
+    body.dark-theme #root input,
+    body.dark-theme #root select,
+    body.dark-theme #root textarea {
+      background-color: #211b30;
+      color: #f6edf8;
+      border-color: #51405e;
+    }
+    body.dark-theme header.sticky {
+      background: linear-gradient(112deg,#35233f 0%,#533451 50%,#40365f 100%) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+    @media (max-width: 640px) {
+      body.cute-bg { background-attachment: scroll; }
+      #root .rounded-3xl { border-radius: 1.15rem; }
+    }
+  </style>
+
+
+<style id="alisya-cute-calendar-update">
+  /* Calendar-only visual refresh: all original React state and handlers remain intact. */
+  .cute-calendar-panel {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,244,250,.96)) !important;
+    border: 1px solid rgba(244,174,207,.72) !important;
+    border-radius: 26px !important;
+    box-shadow: 0 12px 32px rgba(153, 75, 111, .09), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  }
+  .cute-calendar-panel::before {
+    content: "✿";
+    position: absolute; z-index: -1; right: 13px; top: -19px;
+    color: rgba(235,151,190,.13); font-size: 88px; line-height: 1;
+    transform: rotate(14deg); pointer-events: none;
+  }
+  .cute-calendar-heading { position: relative; z-index: 1; min-height: 30px; }
+  .cute-calendar-heading > span:first-child {
+    letter-spacing: .11em !important;
+    color: #98506f !important;
+  }
+  .cute-calendar-grid { position: relative; z-index: 1; gap: 8px !important; }
+  .cute-calendar-day {
+    min-height: 66px;
+    border-radius: 17px !important;
+    border: 1px solid #f3dce7 !important;
+    background: rgba(255,255,255,.82) !important;
+    color: #705b68 !important;
+    box-shadow: 0 3px 9px rgba(147,91,119,.045);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease !important;
+  }
+  .cute-calendar-day:hover {
+    transform: translateY(-2px);
+    border-color: #e9a9c6 !important;
+    background: #fff0f6 !important;
+    box-shadow: 0 7px 15px rgba(185,103,145,.13);
+  }
+  .cute-calendar-day.is-today {
+    border: 1.5px solid #e9a0c0 !important;
+    background: linear-gradient(145deg,#fff0f6,#fce4f0) !important;
+    color: #a34d75 !important;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.8), 0 4px 11px rgba(203,119,159,.1);
+  }
+  .cute-calendar-day.is-selected {
+    border: 1px solid #a94f79 !important;
+    background: linear-gradient(145deg,#bd7095,#914365) !important;
+    color: #fff !important;
+    box-shadow: 0 7px 17px rgba(145,67,101,.25), inset 0 1px 0 rgba(255,255,255,.2) !important;
+    transform: translateY(-2px) scale(1.025);
+  }
+  .cute-calendar-day.is-selected:hover { background: linear-gradient(145deg,#c47da0,#9b4c70) !important; }
+  .cute-calendar-day > span:first-of-type { font-size: 10px !important; letter-spacing: .035em; }
+  .cute-calendar-day > span:nth-of-type(2) { font-size: 17px !important; line-height: 1.25; }
+  .cute-calendar-day.is-selected > span:first-of-type { color: #ffe0ed !important; }
+  .cute-calendar-day.is-today > span:first-of-type { color: #a34d75 !important; }
+  .cute-calendar-day > div { min-height: 5px; gap: 3px !important; }
+  .cute-calendar-day > div > span { width: 5px !important; height: 5px !important; box-shadow: 0 0 0 1px rgba(255,255,255,.55); }
+  .cute-calendar-strip { gap: 9px !important; padding: 5px 3px 9px; scroll-snap-type: x proximity; }
+  .cute-calendar-strip-day { min-width: 54px; min-height: 68px; scroll-snap-align: start; }
+  .cute-calendar-mobile { border-radius: 22px !important; }
+  .cute-calendar-mobile .cute-calendar-day { border-radius: 16px !important; }
+  @media (max-width: 640px) {
+    .cute-calendar-grid { gap: 6px !important; }
+    .cute-calendar-grid .cute-calendar-day { min-height: 59px; border-radius: 14px !important; }
+    .cute-calendar-grid .cute-calendar-day > span:nth-of-type(2) { font-size: 15px !important; }
+    .cute-calendar-panel { padding: 14px !important; }
+  }
+  html.dark .cute-calendar-panel, .dark .cute-calendar-panel {
+    background: linear-gradient(145deg,rgba(45,31,43,.98),rgba(57,35,53,.98)) !important;
+    border-color: rgba(171,105,142,.5) !important;
+    box-shadow: 0 12px 30px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  }
+  html.dark .cute-calendar-heading > span:first-child, .dark .cute-calendar-heading > span:first-child { color: #f2c2d8 !important; }
+  html.dark .cute-calendar-day:not(.is-selected):not(.is-today), .dark .cute-calendar-day:not(.is-selected):not(.is-today) {
+    background: rgba(255,255,255,.045) !important; color: #f0dce7 !important; border-color: rgba(208,151,180,.2) !important;
+  }
+  html.dark .cute-calendar-day.is-today, .dark .cute-calendar-day.is-today { background: rgba(183,103,145,.2) !important; color: #ffd7e8 !important; border-color: #c77fa2 !important; }
+  @media (prefers-reduced-motion: reduce) { .cute-calendar-day { transition: none !important; } }
+</style>
+
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
@@ -186,7 +438,7 @@
       { id: 'slay', emoji: '💅', labelId: 'Mode Slay!', labelEn: 'Slay Mode!', color: 'bg-purple-100 text-purple-800 border-purple-300' },
       { id: 'fire', emoji: '🔥', labelId: 'Full Semangat', labelEn: 'On Fire', color: 'bg-amber-100 text-amber-800 border-amber-300' },
       { id: 'calm', emoji: '🌸', labelId: 'Kalem & Cantik', labelEn: 'Soft & Pretty', color: 'bg-rose-100 text-rose-800 border-rose-300' },
-      { id: 'tired', emoji: '🥺', labelId: 'Ngantuk Brutal', labelEn: 'Need Rest / Hug', color: 'bg-indigo-100 text-indigo-800 border-indigo-300' }
+      { id: 'tired', emoji: '🥺', labelId: 'Ngbrut', labelEn: 'Need Rest', color: 'bg-indigo-100 text-indigo-800 border-indigo-300' }
     ];
 
     // 🍫 DAFTAR SELF-REWARD JAJANAN FAVORIT ALISYA
@@ -400,7 +652,7 @@
         rewardPickHint: "Klik pilih langsung jajanan yang kamu pengen hari ini:",
         diaryTitle: "💌 Catatan Kecil / Hal yang Bikin Senang Hari Ini:",
         diaryPlaceholder: "Tulis hal manis hari ini (misal: Habis jajan tahu kocek & cokelat enak banget!)...",
-        cheerMeBtn: "💖 Ganti Kalimat",
+        cheerMeBtn: "💖 Mood Booster",
         slotOccupiedLabel: "Terisi:",
         overlapWarningTitle: "⛔ Jam Bentrok / Sudah Terisi!",
         overlapWarningDesc: "Rentang jam ini bertumpuk dengan jadwal:",
@@ -2881,12 +3133,12 @@
                         </div>
 
                         {/* PRIORITAS 2 KIRI: KALENDER TANGGAL */}
-                        <div className="bg-white rounded-3xl border-2 border-pink-200/70 p-5 shadow-sm space-y-3">
-                          <div className="flex items-center justify-between">
+                        <div className="cute-calendar-panel bg-white rounded-3xl border-2 border-pink-200/70 p-5 shadow-sm space-y-3">
+                          <div className="cute-calendar-heading flex items-center justify-between">
                             <span className="text-xs font-black text-maroon uppercase tracking-wider">🗓️ {t.calendarTitle} ({monthName} {currentYear})</span>
                             <span className="text-sm">🌸</span>
                           </div>
-                          <div className="grid grid-cols-7 gap-2">
+                          <div className="cute-calendar-grid grid grid-cols-7 gap-2">
                             {Array.from({ length: daysInMonth }).map((_, i) => {
                               const day = i + 1;
                               const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -2902,7 +3154,7 @@
                                 <button
                                   key={day}
                                   onClick={() => setSelectedDate(dateStr)}
-                                  className={`py-2 px-1 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 border relative ${isSelected ? 'bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md border-maroon scale-105' : isToday ? 'bg-pink-100 text-maroon border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-pink-50'}`}
+                                  className={`cute-calendar-day py-2 px-1 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 border relative ${isSelected ? 'is-selected bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md border-maroon scale-105' : isToday ? 'is-today bg-pink-100 text-maroon border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-pink-50'}`}
                                 >
                                   {hasShortBreak && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" title={t.shortBreakWarning}></span>}
                                   <span className={`text-[9px] font-bold ${isSelected ? 'text-pink-200' : isToday ? 'text-maroon font-black' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
@@ -3593,12 +3845,12 @@
                     </div>
 
                     {/* 3. KALENDER TANGGAL HORIZONTAL */}
-                    <div className="bg-white p-3 rounded-3xl border-2 border-pink-200/70 shadow-sm">
-                      <div className="flex items-center justify-between mb-2 px-1">
+                    <div className="cute-calendar-panel cute-calendar-mobile bg-white p-3 rounded-3xl border-2 border-pink-200/70 shadow-sm">
+                      <div className="cute-calendar-heading flex items-center justify-between mb-2 px-1">
                         <span className="text-xs font-black text-maroon uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
                         <span className="text-[10px] text-pink-400 font-bold">🌸 ❯</span>
                       </div>
-                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                      <div className="cute-calendar-strip flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                         {Array.from({ length: daysInMonth }).map((_, i) => {
                           const day = i + 1;
                           const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -3614,7 +3866,7 @@
                             <button
                               key={day}
                               onClick={() => setSelectedDate(dateStr)}
-                              className={`flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 relative ${isSelected ? 'bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md scale-105' : isToday ? 'bg-pink-100 text-maroon border border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
+                              className={`cute-calendar-day cute-calendar-strip-day flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 relative ${isSelected ? 'is-selected bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md scale-105' : isToday ? 'is-today bg-pink-100 text-maroon border border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
                             >
                               {hasShortBreak && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
                               <span className={`text-[9px] font-bold ${isSelected ? 'text-pink-200' : isToday ? 'text-maroon' : isWeekend ? 'text-rose-600' : 'text-slate-400'}`}>{dayName}</span>
