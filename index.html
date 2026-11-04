@@ -3052,10 +3052,10 @@
                 </button>
 
                 <select
-                  value={currentMonth}
-                  onChange={e => setCurrentMonth(Number(e.target.value))}
-                  className="bg-black/30 text-pink font-extrabold text-xs px-2 py-1 rounded-xl border border-white/20 focus:outline-none focus:ring-1 focus:ring-rose-300 cursor-pointer"
-                >
+  value={currentMonth}
+  onChange={e => setCurrentMonth(Number(e.target.value))}
+  className="bg-black/40 text-white font-extrabold text-xs px-2.5 py-1 rounded-xl border border-white/20 focus:outline-none cursor-pointer"
+>
                   {Array.from({ length: 12 }).map((_, idx) => (
                     <option key={idx} value={idx} className="bg-slate-900 text-white">
                       {new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(new Date(2026, idx, 1))}
@@ -3063,11 +3063,11 @@
                   ))}
                 </select>
 
-                <select
-                  value={currentYear}
-                  onChange={e => setCurrentYear(Number(e.target.value))}
-                  className="bg-black/30 text-pink font-mono font-extrabold text-xs px-2 py-1 rounded-xl border border-white/20 focus:outline-none focus:ring-1 focus:ring-rose-300 cursor-pointer"
-                >
+            <select
+  value={currentYear}
+  onChange={e => setCurrentYear(Number(e.target.value))}
+  className="bg-black/40 text-white font-mono font-extrabold text-xs px-2.5 py-1 rounded-xl border border-white/20 focus:outline-none cursor-pointer"
+>
                   {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(yr => (
                     <option key={yr} value={yr} className="bg-slate-900 text-white">
                       {yr}
