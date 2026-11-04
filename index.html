@@ -361,6 +361,132 @@
   @media (prefers-reduced-motion: reduce) { .cute-calendar-day { transition: none !important; } }
 </style>
 
+
+<style id="alisya-dreamy-princess-refresh">
+  :root {
+    --dream-rose: #d978a6;
+    --dream-pink: #f4b8d2;
+    --dream-lilac: #b9a5e8;
+    --dream-cream: #fff9fc;
+    --dream-ink: #58445b;
+    --dream-shadow: 0 14px 38px rgba(157, 93, 139, .12);
+  }
+  body.cute-bg {
+    background-color: var(--dream-cream);
+    background-image:
+      radial-gradient(ellipse at 12% 5%, rgba(255,190,220,.30), transparent 28rem),
+      radial-gradient(ellipse at 90% 18%, rgba(198,181,255,.23), transparent 30rem),
+      radial-gradient(ellipse at 45% 95%, rgba(255,220,195,.24), transparent 32rem),
+      radial-gradient(rgba(226,155,195,.22) .8px, transparent .8px);
+    background-size: auto, auto, auto, 25px 25px;
+    background-attachment: fixed;
+  }
+  header.sticky {
+    background-image: linear-gradient(112deg,#98547d 0%,#c477a2 52%,#9c89cf 100%) !important;
+    box-shadow: 0 10px 30px rgba(125,72,115,.22) !important;
+    backdrop-filter: blur(18px) saturate(1.15);
+  }
+  #root .bg-white,
+  #root .bg-white\/90,
+  #root .bg-white\/95 {
+    border-color: rgba(225,158,194,.27);
+  }
+  #root .rounded-2xl, #root .rounded-3xl { border-radius: 1.3rem; }
+  #root .shadow, #root .shadow-sm, #root .shadow-md,
+  #root .shadow-lg, #root .shadow-xl, #root .shadow-2xl {
+    box-shadow: var(--dream-shadow);
+  }
+  #root button {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .18s ease, box-shadow .2s ease, filter .2s ease, background-color .2s ease;
+  }
+  #root button:not(:disabled):hover { filter: saturate(1.08) brightness(1.015); }
+  #root button:not(:disabled):active { transform: scale(.965); }
+  #root button:focus-visible, #root input:focus-visible,
+  #root select:focus-visible, #root textarea:focus-visible {
+    outline: 3px solid rgba(217,120,166,.38);
+    outline-offset: 3px;
+  }
+  #root input:not([type="checkbox"]):not([type="radio"]),
+  #root select, #root textarea {
+    border-radius: 15px;
+    border-color: rgba(205,151,185,.42);
+    background-color: rgba(255,255,255,.82);
+  }
+  #root input:focus, #root select:focus, #root textarea:focus {
+    border-color: #d978a6;
+    box-shadow: 0 0 0 4px rgba(217,120,166,.12);
+  }
+  #root .cute-calendar-panel {
+    border-radius: 27px !important;
+    box-shadow: 0 15px 36px rgba(157,93,139,.12), inset 0 1px 0 white !important;
+  }
+  #root .cute-calendar-day { min-height: 66px; }
+  #root .cute-calendar-day.is-selected {
+    box-shadow: 0 9px 20px rgba(145,67,101,.27), inset 0 1px 0 rgba(255,255,255,.25) !important;
+  }
+  #root .cute-calendar-day:not(.is-selected):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 18px rgba(185,103,145,.16);
+  }
+  #root .live-card-glow { border-radius: 25px; }
+  #root .cute-float { filter: drop-shadow(0 7px 10px rgba(239,163,199,.32)); }
+  #root .sparkle-anim { pointer-events: none; }
+  #root table thead th { background: linear-gradient(180deg,#fff6fb,#fcecf5); }
+  #root table tbody tr:nth-child(even) td { background-color: rgba(255,246,251,.48); }
+  #root .bg-emerald-50, #root .bg-emerald-50\/90 {
+    border-radius: 22px;
+    box-shadow: 0 9px 24px rgba(91,166,130,.07);
+  }
+  .flower-next-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 42px;
+    min-height: 36px;
+    padding: 5px 10px;
+    border: 1px solid rgba(255,255,255,.46);
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg,rgba(255,255,255,.25),rgba(255,220,239,.24));
+    box-shadow: 0 5px 14px rgba(104,53,91,.15);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .flower-next-day:hover { transform: translateY(-2px) rotate(-5deg); }
+  .flower-next-day:focus-visible { outline: 3px solid #f5b6d4; outline-offset: 3px; }
+  .flower-next-day .flower-arrow { font-size: 10px; opacity: .95; }
+  .flower-next-day.calendar-flower {
+    color: #a85c83;
+    border-color: rgba(224,153,190,.45);
+    background: linear-gradient(135deg,#fff,#ffeaf4);
+    box-shadow: 0 5px 14px rgba(176,102,145,.12);
+  }
+  body.dark-theme.cute-bg {
+    background-color: #191426 !important;
+    background-image:
+      radial-gradient(ellipse at 12% 5%, rgba(136,78,123,.20), transparent 28rem),
+      radial-gradient(ellipse at 90% 18%, rgba(91,75,145,.20), transparent 30rem),
+      radial-gradient(#30263f 1px, transparent 1px) !important;
+    background-size: auto, auto, 25px 25px !important;
+  }
+  body.dark-theme #root table thead th { background: #35283e !important; }
+  body.dark-theme .flower-next-day.calendar-flower {
+    color: #ffd8e9; background: linear-gradient(135deg,#49344b,#60405d);
+    border-color: rgba(220,157,195,.3);
+  }
+  @media (max-width: 640px) {
+    body.cute-bg { background-attachment: scroll; }
+    #root .cute-calendar-panel { border-radius: 23px !important; }
+    .flower-next-day { min-width: 40px; min-height: 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #root button, .flower-next-day { transition: none !important; }
+  }
+</style>
+
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
@@ -2842,7 +2968,15 @@
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-extrabold text-base tracking-wide flex items-center gap-1.5">
                     <span>Alisya Schedule</span>
-                    <span className="text-sm">🌸</span>
+                    <button
+                            type="button"
+                            className="flower-next-day calendar-flower"
+                            title="Geser ke tanggal berikutnya"
+                            aria-label="Pilih tanggal berikutnya"
+                            onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
+                          >
+                            <span>🌸</span><span className="flower-arrow">❯</span>
+                          </button>
                   </h1>
                   <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider">
                     v6.7-Priority PRO
@@ -2920,7 +3054,7 @@
                 <select
                   value={currentMonth}
                   onChange={e => setCurrentMonth(Number(e.target.value))}
-                  className="bg-black/30 text-white font-extrabold text-xs px-2 py-1 rounded-xl border border-white/20 focus:outline-none focus:ring-1 focus:ring-rose-300 cursor-pointer"
+                  className="bg-black/30 text-pink font-extrabold text-xs px-2 py-1 rounded-xl border border-white/20 focus:outline-none focus:ring-1 focus:ring-rose-300 cursor-pointer"
                 >
                   {Array.from({ length: 12 }).map((_, idx) => (
                     <option key={idx} value={idx} className="bg-slate-900 text-white">
@@ -2932,7 +3066,7 @@
                 <select
                   value={currentYear}
                   onChange={e => setCurrentYear(Number(e.target.value))}
-                  className="bg-black/30 text-white font-mono font-extrabold text-xs px-2 py-1 rounded-xl border border-white/20 focus:outline-none focus:ring-1 focus:ring-rose-300 cursor-pointer"
+                  className="bg-black/30 text-pink font-mono font-extrabold text-xs px-2 py-1 rounded-xl border border-white/20 focus:outline-none focus:ring-1 focus:ring-rose-300 cursor-pointer"
                 >
                   {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(yr => (
                     <option key={yr} value={yr} className="bg-slate-900 text-white">
@@ -3848,7 +3982,15 @@
                     <div className="cute-calendar-panel cute-calendar-mobile bg-white p-3 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <div className="cute-calendar-heading flex items-center justify-between mb-2 px-1">
                         <span className="text-xs font-black text-maroon uppercase">🗓️ {t.calendarTitle} ({monthName})</span>
-                        <span className="text-[10px] text-pink-400 font-bold">🌸 ❯</span>
+                        <button
+                          type="button"
+                          className="flower-next-day calendar-flower"
+                          title="Geser ke tanggal berikutnya"
+                          aria-label="Pilih tanggal berikutnya"
+                          onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
+                        >
+                          <span>🌸</span><span className="flower-arrow">❯</span>
+                        </button>
                       </div>
                       <div className="cute-calendar-strip flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                         {Array.from({ length: daysInMonth }).map((_, i) => {
