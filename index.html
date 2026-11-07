@@ -1923,7 +1923,185 @@
 
       const [toast, setToast] = useState('');
       const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3800); };
+      // =========================================================================
+      // 🌸 SLIDESHOW FOTO TRANSPARAN ACAK (5 DETIK) DI DALAM RADAR JADWAL
+      // =========================================================================
+      const DEFAULT_RADAR_PHOTOS = [
+        // Kamu juga bisa menaruh link foto Google Drive default di dalam daftar ini
+      ];
 
+      const [radarPhotos, setRadarPhotos] = useState(() => {
+        try {
+          const saved = localStorage.getItem('alisya_radar_photos');
+          return saved ? JSON.parse(saved) : DEFAULT_RADAR_PHOTOS;
+        } catch (e) { return DEFAULT_RADAR_PHOTOS; }
+      });
+      const [currentRadarPhotoIdx, setCurrentRadarPhotoIdx] = useState(0);
+      const [radarPhotoModal, setRadarPhotoModal] = useState(false);
+      const [radarPhotoInput, setRadarPhotoInput] = useState('');
+
+      // Sinkronisasi daftar foto Radar dengan Firebase
+      useEffect(() => {
+        if (!firebaseDb) return;
+        const refRadarPics = firebaseDb.ref('alisya_radar_photos');
+        refRadarPics.on('value', snap => {
+          const val = snap.val();
+          if (val && Array.isArray(val)) {
+            setRadarPhotos(val);
+            localStorage.setItem('alisya_radar_photos', JSON.stringify(val));
+          }
+        });
+        return () => refRadarPics.off();
+      }, []);
+
+      // Konversi otomatis Link Share Google Drive ke Direct Image
+     // Konversi otomatis Link Google Drive atau Direct Link (Foto & Video)
+      const toDirectMediaUrl = (rawUrl) => {
+        if (!rawUrl) return { url: '', type: 'image' };
+        const trimUrl = rawUrl.trim();
+        if (trimUrl.includes('/folders/')) return { url: '', type: 'image' };
+
+        const fileMatch = trimUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || trimUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || trimUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        
+        // Deteksi ekstensi video (.mp4, .webm, dll)
+        const isVideoExt = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(trimUrl);
+        const type = isVideoExt ? 'video' : 'image';
+
+        if (fileMatch && fileMatch[1]) {
+          // Jika dari Google Drive, tentukan berdasarkan ekstensi atau asumsikan file umum
+          if (isVideoExt) {
+            return { url: `https://drive.google.com/uc?export=download&id=${fileMatch[1]}`, type: 'video' };
+          }
+          return { url: `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1200`, type: 'image' };
+        }
+        return { url: trimUrl, type };
+      };
+
+      // State Media Radar (Menyimpan objek { url, type })
+      const [radarMedia, setRadarMedia] = useState(() => {
+        try {
+          const saved = localStorage.getItem('alisya_radar_media');
+          if (saved) return JSON.parse(saved);
+          // Fallback dari foto lama jika ada
+          const oldPhotos = localStorage.getItem('alisya_radar_photos');
+          if (oldPhotos) {
+            return JSON.parse(oldPhotos).map(u => ({ url: u, type: 'image' }));
+          }
+          return [];
+        } catch (e) { return []; }
+      });
+      const [currentRadarMediaIdx, setCurrentRadarMediaIdx] = useState(0);
+      const [radarMediaModal, setRadarMediaModal] = useState(false);
+      const [radarMediaInput, setRadarMediaInput] = useState('');
+
+      // Sinkronisasi Media Radar dengan Firebase
+      useEffect(() => {
+        if (!firebaseDb) return;
+        const refRadarMedia = firebaseDb.ref('alisya_radar_media');
+        refRadarMedia.on('value', snap => {
+          const val = snap.val();
+          if (val && Array.isArray(val)) {
+            setRadarMedia(val);
+            localStorage.setItem('alisya_radar_media', JSON.stringify(val));
+          }
+        });
+        return () => refRadarMedia.off();
+      }, []);
+
+      // Timer Otomatis Ganti Media (Foto/Video) Secara Random Setiap 7 Detik
+      useEffect(() => {
+        if (!radarMedia || radarMedia.length <= 1) return;
+        const interval = setInterval(() => {
+          setCurrentRadarMediaIdx(prevIdx => {
+            let nextIdx = Math.floor(Math.random() * radarMedia.length);
+            if (nextIdx === prevIdx) {
+              nextIdx = (prevIdx + 1) % radarMedia.length;
+            }
+            return nextIdx;
+          });
+        }, 7000); // Durasi ganti media 7 detik
+        return () => clearInterval(interval);
+      }, [radarMedia]);
+
+      // Simpan daftar media dari Modal ke Cloud
+      const handleSaveRadarMedia = (e) => {
+        e.preventDefault();
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const rawLines = radarMediaInput
+          .split(/[\n,]+/)
+          .map(s => s.trim())
+          .filter(Boolean);
+
+        if (rawLines.some(line => line.includes('/folders/'))) {
+          alert('⚠️ Jangan masukkan Link Folder! Masukkan link file foto atau video satuan.');
+          return;
+        }
+
+        const converted = rawLines.map(toDirectMediaUrl).filter(m => m.url);
+        setRadarMedia(converted);
+        localStorage.setItem('alisya_radar_media', JSON.stringify(converted));
+        if (firebaseDb) firebaseDb.ref('alisya_radar_media').set(converted);
+        setCurrentRadarMediaIdx(0);
+        setRadarMediaModal(false);
+        triggerCuteSparkles();
+        notify(`🌸 ${converted.length} Media (Foto/Video) Radar berhasil disimpan!`);
+      };
+
+      const openRadarMediaSettings = () => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        setRadarMediaInput(radarMedia.map(m => m.url).join('\n'));
+        setRadarMediaModal(true);
+      };
+
+      // Komponen Lapisan Background Media Transparan (Foto & Video) di Dalam Kartu Radar
+      const renderRadarBgSlideshow = () => (
+        <React.Fragment>
+          {radarMedia.length > 0 && (
+            <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden rounded-3xl">
+              {radarMedia.map((media, idx) => {
+                const isActive = idx === (currentRadarMediaIdx % radarMedia.length);
+                return media.type === 'video' ? (
+                  <video
+                    key={media.url + '_' + idx}
+                    src={media.url}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${isActive ? 'opacity-30 scale-100' : 'opacity-0 scale-105'}`}
+                  />
+                ) : (
+                  <img
+                    key={media.url + '_' + idx}
+                    src={media.url}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${isActive ? 'opacity-30 scale-100' : 'opacity-0 scale-105'}`}
+                  />
+                );
+              })}
+              {/* Layer gradasi tipis agar teks jadwal tetap 100% tajam & mudah dibaca */}
+              <div className="absolute inset-0 bg-gradient-to-r from-maroon/65 via-[#8A1432]/50 to-rose-900/65"></div>
+            </div>
+          )}
+
+          {/* Tombol Pengaturan Media Admin */}
+          {isAdmin && (
+            <div className="flex justify-end -mb-1">
+              <button
+                type="button"
+                onClick={openRadarMediaSettings}
+                className="bg-white/15 hover:bg-white/25 text-pink-100 border border-pink-200/30 px-2.5 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1 transition active:scale-95"
+                title="Atur Slideshow Foto & Video Radar"
+              >
+                <span>🎬</span>
+                <span>Foto/Video Radar ({radarMedia.length})</span>
+              </button>
+            </div>
+          )}
+        </React.Fragment>
+      );
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
@@ -3516,9 +3694,10 @@
                 
                 {/* AGENDA HARIAN PC */}
                 {pcSubTab === 'agenda' && (
-                  <div id="agenda-capture-area" className="space-y-6">
+                 <div id="agenda-capture-area" className="space-y-6">
                     {/* 1. RADAR JADWAL LIVE & LOMPAT HARI (PALING ATAS) */}
-                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3 border-2 border-pink-300/30 relative overflow-hidden">
+                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3 border-2 border-pink-300/30 relative overflow-hidden isolate">
+                      {renderRadarBgSlideshow()}
                       {/* Baris Sapaan & Afirmasi Manis Terintegrasi */}
                       {renderCompactGreetingStrip()}
 
@@ -4256,7 +4435,8 @@
                 {activeTab === 'agenda' && (
                   <div id="mobile-agenda-capture" className="space-y-4">
                     {/* 1. RADAR JADWAL LIVE & LOMPAT HARI (PALING ATAS) */}
-                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2.5 border-2 border-pink-300/30">
+                    <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2.5 border-2 border-pink-300/30 relative overflow-hidden isolate">
+                      {renderRadarBgSlideshow()}
                       {renderCompactGreetingStrip()}
 
                       <div className="flex justify-between items-center pt-1">
@@ -4836,7 +5016,43 @@
           {/* ========================================================= */}
           {/* 🌟 3. MODAL POPUP PIN, CLONE DAY & FORM INPUT JADWAL      */}
           {/* ========================================================= */}
-
+{/* MODAL PENGATURAN SLIDESHOW FOTO & VIDEO RADAR */}
+          {radarMediaModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border-2 border-pink-300 animate-in zoom-in duration-150">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-black text-base text-[#6D2E46] flex items-center gap-2">
+                    <span>🎬</span><span>Slideshow Foto & Video Radar</span>
+                  </h3>
+                  <button type="button" onClick={() => setRadarMediaModal(false)} className="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Tempelkan link foto atau video (format <b>.mp4</b>) di sini (1 baris = 1 link). Media akan tampil transparan secara bergantian setiap <b>7 detik</b>! 🌸
+                </p>
+                <form onSubmit={handleSaveRadarMedia} className="space-y-3 text-xs">
+                  <textarea
+                    rows="6"
+                    value={radarMediaInput}
+                    onChange={e => setRadarMediaInput(e.target.value)}
+                    placeholder={"https://drive.google.com/file/d/xxxx/view?usp=sharing\nhttps://example.com/video-aesthetic.mp4"}
+                    className="w-full bg-pink-50/50 border border-pink-300 rounded-2xl p-3 font-mono text-[11px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-maroon"
+                  ></textarea>
+                  <div className="flex justify-between text-[10px] text-slate-500">
+                    <span>Mendukung Foto & Video MP4 🎥</span>
+                    <span>Berganti tiap 7 detik ✨</span>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button type="button" onClick={() => setRadarMediaModal(false)} className="w-1/2 py-2.5 rounded-2xl bg-slate-100 text-slate-700 font-bold">
+                      Batal
+                    </button>
+                    <button type="submit" className="w-1/2 py-2.5 rounded-2xl bg-maroon text-white font-black shadow">
+                      💖 Simpan Media
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
           {/* MODAL SALIN 1 HARI PENUH (CLONE DAY) */}
           {cloneModalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
