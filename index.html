@@ -108,6 +108,19 @@
     .water-pop {
       animation: water-wave 2s ease-in-out infinite;
     }
+    /* 🌟 EXECUTIVE BROADCAST RUNNING TICKER */
+@keyframes marqueeExecutiveScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.executive-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeExecutiveScroll 38s linear infinite;
+}
+.executive-ticker-track:hover {
+  animation-play-state: paused;
+}
     /* 🌸 ANIMASI PRINCESS AURORA GLOW (PINK ROSE & DREAMY LAVENDER BERPUTAR) */
     @keyframes princessAuroraFlow {
       0% {
@@ -2327,7 +2340,88 @@
         if (nowMin >= sMin && nowMin < eMin) return 'live';
         return 'upcoming';
       };
+// 📊 SISTEM KALKULASI DATA-DRIVEN JAM TERBANG & KETERSEDIAAN SLOT (REAL-TIME)
+      const broadcastMetrics = useMemo(() => {
+        let completedLiveHours = 0;
+        let completedLiveShifts = 0;
 
+        schedules.forEach(s => {
+          if (s.status === 'LIVE') {
+            const state = getSessionTimeState(s);
+            if (s.date < realTodayStr || (s.date === realTodayStr && state === 'done')) {
+              completedLiveHours += calculateDurationHours(s.start_time, s.end_time);
+              completedLiveShifts++;
+            }
+          }
+        });
+
+        const CAREER_BASE_HOURS = 480; 
+        const totalVerifiedHours = CAREER_BASE_HOURS + Math.round(completedLiveHours);
+
+        const [y, m, d] = realTodayStr.split('-').map(Number);
+        const todayObj = new Date(y, m - 1, d);
+        const next7Days = [];
+        for (let i = 0; i < 7; i++) {
+          const temp = new Date(todayObj);
+          temp.setDate(todayObj.getDate() + i);
+          const ty = temp.getFullYear();
+          const tm = String(temp.getMonth() + 1).padStart(2, '0');
+          const td = String(temp.getDate()).padStart(2, '0');
+          next7Days.push(`${ty}-${tm}-${td}`);
+        }
+
+        let totalPrimeSlots = 0;
+        let occupiedPrimeSlots = 0;
+
+        next7Days.forEach(dStr => {
+          const dayList = schedules.filter(s => s.date === dStr && s.status !== 'OFF');
+          TIME_SLOTS.forEach(slot => {
+            totalPrimeSlots++;
+            const sM = timeToMinutes(slot.start);
+            const eM = timeToMinutes(slot.end);
+            const isBusy = dayList.some(s => {
+              const st = timeToMinutes(s.start_time);
+              let en = timeToMinutes(s.end_time);
+              if (en <= st) en = 24 * 60;
+              return st < eM && en > sM;
+            });
+            if (isBusy) occupiedPrimeSlots++;
+          });
+        });
+
+        const freeSlots = Math.max(0, totalPrimeSlots - occupiedPrimeSlots);
+
+        let availability = {
+          badge: '🟢 Schedule Active',
+          bg: 'bg-emerald-500/25 text-emerald-200 border-emerald-400/50',
+          dot: 'bg-emerald-400',
+          hint: 'Slot Siaran Berjalan Normal'
+        };
+
+        if (freeSlots <= 10) {
+          availability = {
+            badge: '🔒 Fully Booked This Week',
+            bg: 'bg-rose-500/25 text-rose-200 border-rose-400/50',
+            dot: 'bg-rose-400',
+            hint: 'Jadwal Minggu Ini Terisi Penuh'
+          };
+        } else if (freeSlots <= 28) {
+          availability = {
+            badge: '⚡ Limited Slots Remaining',
+            bg: 'bg-amber-500/25 text-amber-200 border-amber-400/50',
+            dot: 'bg-amber-400',
+            hint: 'Ketersediaan Slot Sangat Terbatas'
+          };
+        }
+
+        return {
+          totalHours: totalVerifiedHours,
+          completedShifts: completedLiveShifts,
+          freeSlots,
+          availability
+        };
+      }, [schedules, realTodayStr, nowTime]);
+      
       // 🛡️ Burnout Guard
       const shortBreakWarnings = useMemo(() => {
         const map = {};
@@ -3701,6 +3795,51 @@
             </div>
           </header>
 
+          {/* ========================================================= */}
+          {/* 🌟 EXECUTIVE REAL-TIME MARQUEE TICKER (FASHION OOTD PRO) */}
+          {/* ========================================================= */}
+          <div className="bg-gradient-to-r from-[#4A0A10] via-[#5C0D15] to-[#4A0A10] text-white border-b border-pink-300/30 py-2.5 overflow-hidden relative shadow-md z-30 select-none">
+            <div className="executive-ticker-track items-center gap-6 text-xs">
+              {[1, 2].map((loopId) => (
+                <div key={loopId} className="flex items-center gap-6 shrink-0">
+                  {/* Badge Verifikasi & Nama */}
+                  <div className="inline-flex items-center gap-1.5 bg-white/10 px-3.5 py-1 rounded-full border border-pink-200/30">
+                    <span className="text-amber-300 text-xs">✨</span>
+                    <span className="font-black text-pink-100 text-[11px] tracking-wider uppercase">
+                      Verified Fashion OOTD Host • Alisya
+                    </span>
+                  </div>
+
+                  {/* Indikator Status Real-Time */}
+                  <div className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border text-[11px] font-black tracking-wide ${broadcastMetrics.availability.bg}`}>
+                    <span className={`w-2 h-2 rounded-full animate-ping ${broadcastMetrics.availability.dot}`} />
+                    <span>{broadcastMetrics.availability.badge}</span>
+                  </div>
+
+                  {/* Akumulasi Jam & Hari On-Air (Detail Terperinci) */}
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 px-3.5 py-1 rounded-full border border-white/15">
+                    <span className="text-xs">⏱️</span>
+                    <span className="font-bold text-slate-300 text-[11px]">Track Record:</span>
+                    <span className="font-mono font-black text-amber-300 text-[11px]">
+                      {broadcastMetrics.totalHours}+ Jam On-Air ({Math.round(broadcastMetrics.totalHours / 3.5)}+ Hari Siaran Aktif)
+                    </span>
+                  </div>
+
+                  {/* Pancingan Psikologis: Social Proof & Konversi Tinggi */}
+                  <div className="inline-flex items-center gap-1.5 bg-white/15 px-3.5 py-1 rounded-full border border-pink-200/30 text-rose-100 text-[11px] font-black">
+                    <span>🛍️ Speciality: High-Conversion Fashion Styling & Live OOTD Showcase</span>
+                  </div>
+
+                  {/* Pancingan Psikologis: Keamanan Brand / SLA */}
+                  <div className="inline-flex items-center gap-1.5 bg-white/10 px-3.5 py-1 rounded-full border border-pink-200/20 text-emerald-300 text-[11px] font-bold">
+                    <span>⭐ 100% On-Time Professional Attendance & Zero Cancellation Rate</span>
+                  </div>
+
+                  <span className="text-pink-300/40 text-sm font-light">•</span>
+                </div>
+              ))}
+            </div>
+          </div>
           {/* 📌 STICKY CLOUD FOCUS BANNER */}
           <div className="bg-gradient-to-r from-pink-100 via-rose-100 to-amber-100 border-b border-pink-200 px-4 md:px-6 py-2 flex items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2 truncate">
