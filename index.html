@@ -27,6 +27,7 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js"></script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -889,6 +890,40 @@
     } catch(err) {
       console.error("Firebase init error:", err);
     }
+    let messaging = null;
+    try {
+      if (firebase.messaging.isSupported()) {
+        messaging = firebase.messaging();
+      }
+    } catch(err) {
+      console.log("FCM not supported on this browser:", err);
+    }
+
+    // Fungsi otomatis mendaftarkan HP ke Firebase Push
+    const initFirebasePushNotification = async () => {
+      if (!messaging) return;
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          // Ambil service worker yang sudah aktif
+          const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+          
+          // Dapatkan Token Perangkat Unik HP kamu
+          const token = await messaging.getToken({ serviceWorkerRegistration: reg });
+          if (token && firebaseDb) {
+            // Simpan token HP kamu ke Realtime Database agar bisa dikirimi pesan kapan saja
+            firebaseDb.ref('alisya_fcm_tokens').child(token.replace(/[.#$\[\]]/g, '_')).set({
+              token: token,
+              updatedAt: new Date().toISOString(),
+              device: navigator.userAgent
+            });
+            console.log("FCM Token HP Terdaftar:", token);
+          }
+        }
+      } catch (err) {
+        console.error("Gagal mendapatkan FCM Token:", err);
+      }
+    };
 
     const REQUIRED_CATEGORIES = [
       { id: 'b_momuung', name: 'Mom Uung', emoji: '🍼', color: '#B6D7A8' },
@@ -1527,11 +1562,14 @@
       }
     };
 
-    function App() {
+function App() {
       // 🌟 MESIN WAKTU DETIK REAL-TIME (BERDETAK SETIAP 1 DETIK / 1000ms)
       const [nowTime, setNowTime] = useState(() => new Date());
 
       useEffect(() => {
+        // 📲 Panggil fungsi push notification saat web dibuka
+        initFirebasePushNotification();
+
         const timer = setInterval(() => setNowTime(new Date()), 1000);
         return () => clearInterval(timer);
       }, []);
