@@ -1869,7 +1869,7 @@
       const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
       const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Rajin Minum Air Putih & Sayang Mekel Terus! 🌸🐱✨");
-
+      
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
       const [pinInputModal, setPinInputModal] = useState(false);
@@ -2462,6 +2462,94 @@
           .filter(s => s.date === selectedDate)
           .sort((a, b) => a.start_time.localeCompare(b.start_time));
       }, [schedules, selectedDate]);
+      // 💡 ASISTEN PENGINGAT HARIAN KERJA & KESEHATAN LIVE HOST
+      const autoDailyReminder = useMemo(() => {
+        const todayWater = currentDayWellness.water || 0;
+        const currentHour = nowTime.getHours();
+
+        // 1. Prioritas Utama: Sesi Live Dimulai dalam Waktu Dekat (< 45 Menit)
+        if (liveTracker.nextItem && liveTracker.nextItem.startsInMin <= 45 && liveTracker.nextItem.startsInMin > 0) {
+          return {
+            tag: "⏰ SIAP-SIAP LIVE",
+            text: `Shift "${liveTracker.nextItem.title}" mulai ${liveTracker.nextItem.startsInMin} mnt lagi (${liveTracker.nextItem.start_time} WIB). Cek baterai HP, lighting & outfit! 💄`,
+            badge: "bg-rose-500 text-white border-rose-600 shadow-sm",
+            icon: "🚨"
+          };
+        }
+
+        // 2. Prioritas Kedua: Peringatan Jeda Istirahat Terlalu Singkat (Burnout & Pita Suara)
+        if (shortBreakWarnings[realTodayStr]) {
+          return {
+            tag: "🛡️ HEALTH GUARD",
+            text: "Jeda antar shift hari ini cukup padat (<5 jam). Manfaatkan jeda kosong buat rebahan & istirahatkan pita suara ya Alisya! 🌸",
+            badge: "bg-amber-100 text-amber-950 border-amber-300",
+            icon: "⚠️"
+          };
+        }
+
+        // 3. Prioritas Ketiga: Hidrasi Air Putih
+        if (todayWater < 8) {
+          const sisaGelas = 8 - todayWater;
+          let waktuPesan = "Yuk minum segelas air putih biar tenggorokan tetap segar!";
+          if (currentHour >= 18) waktuPesan = "Sudah malam nih, genapkan target 8 gelas biar kulit tetap lembap & glowing!";
+          
+          return {
+            tag: "💧 TARGET HIDRASI",
+            text: `Baru minum ${todayWater}/8 gelas (${todayWater * 250}ml). Kurang ${sisaGelas} gelas lagi. ${waktuPesan}`,
+            badge: "bg-sky-100 text-sky-950 border-sky-300",
+            icon: "🥤"
+          };
+        }
+
+        // 4. Prioritas Keempat: Ceklis Video Affiliate Belum Selesai Hari Ini
+        const pendingKonten = selectedDaySchedules.find(s => 
+          (s.brand_id === 'b_konten' || s.status === 'Konten') && 
+          (!s.checklist || !s.checklist.upload)
+        );
+        if (pendingKonten) {
+          return {
+            tag: "🎬 PROGRES KONTEN",
+            text: `Ada agenda konten "${pendingKonten.title}" yang belum tuntas di-upload hari ini. Ceklis progresnya ya! ✨`,
+            badge: "bg-purple-100 text-purple-950 border-purple-300",
+            icon: "🎬"
+          };
+        }
+
+        // 5. Kondisi Ideal: Semua Target Tercapai
+        return {
+          tag: "📌 FOKUS UTAMA",
+          text: stickyNote,
+          badge: "bg-pink-100 text-maroon border-pink-300",
+          icon: "👑"
+        };
+      }, [currentDayWellness, liveTracker.nextItem, shortBreakWarnings, realTodayStr, nowTime, selectedDaySchedules, stickyNote]);
+
+      // 🔔 Fungsi Kirim Pengingat Langsung ke Notifikasi Layar HP
+      const sendReminderToDeviceNotification = () => {
+        playNotificationChime();
+        if ("Notification" in window) {
+          if (Notification.permission === "granted") {
+            new Notification(`${autoDailyReminder.icon} ${autoDailyReminder.tag}`, {
+              body: autoDailyReminder.text,
+              icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>"
+            });
+            notify("🔔 Pengingat berhasil dikirim ke layar HP kamu!");
+          } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+              if (permission === "granted") {
+                new Notification(`${autoDailyReminder.icon} ${autoDailyReminder.tag}`, {
+                  body: autoDailyReminder.text
+                });
+                notify("🔔 Izin notifikasi aktif! Pengingat terkirim ke HP!");
+              }
+            });
+          } else {
+            notify(`📢 ${autoDailyReminder.text}`);
+          }
+        } else {
+          notify(`📢 ${autoDailyReminder.text}`);
+        }
+      };
 
       const availableSlotsForSelectedDate = useMemo(() => {
         return TIME_SLOTS.filter(slot => {
@@ -3850,22 +3938,48 @@
               ))}
             </div>
           </div>
-          {/* 📌 STICKY CLOUD FOCUS BANNER */}
-          <div className="bg-gradient-to-r from-pink-100 via-rose-100 to-amber-100 border-b border-pink-200 px-4 md:px-6 py-2 flex items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2 truncate">
-              <span className="font-black text-maroon uppercase whitespace-nowrap">{t.stickyNoteLabel}</span>
-              <span className="font-bold text-rose-900 truncate">{stickyNote}</span>
+         {/* ========================================================= */}
+          {/* 🔔 BAR PENGINGAT HARIAN OTOMATIS & NOTIFIKASI HP         */}
+          {/* ========================================================= */}
+          <div className="bg-gradient-to-r from-pink-100/95 via-rose-100/95 to-amber-100/95 border-b border-pink-200/90 px-4 md:px-6 py-2.5 flex items-center justify-between gap-2.5 text-xs shadow-xs sticky top-[58px] z-30">
+            <div
+              onClick={sendReminderToDeviceNotification}
+              className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer group"
+              title="Klik untuk kirim pengingat ini ke notifikasi HP kamu"
+            >
+              <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-black uppercase tracking-wider shrink-0 shadow-2xs ${autoDailyReminder.badge}`}>
+                {autoDailyReminder.tag}
+              </span>
+              <span className="font-bold text-slate-800 truncate group-hover:text-maroon transition flex items-center gap-1.5">
+                <span>{autoDailyReminder.text}</span>
+              </span>
             </div>
-            {isAdmin && (
-              <button
-                onClick={handleEditStickyNote}
-                className="text-[11px] font-extrabold text-maroon bg-white/80 hover:bg-white px-2.5 py-0.5 rounded-lg border border-pink-300 whitespace-nowrap transition shadow-xs"
-              >
-                {t.editNoteBtn}
-              </button>
-            )}
-          </div>
 
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Tombol Kirim Notifikasi ke Layar HP */}
+              <button
+                type="button"
+                onClick={sendReminderToDeviceNotification}
+                className="bg-white hover:bg-pink-50 text-maroon font-black text-[10px] px-2.5 py-1 rounded-xl border border-pink-300 shadow-2xs active:scale-95 transition flex items-center gap-1"
+                title="Kirim ke Notifikasi HP"
+              >
+                <span>🔔</span>
+                <span className="hidden sm:inline">Kirim ke HP</span>
+              </button>
+
+              {/* Tombol Edit Catatan Khusus Admin */}
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={handleEditStickyNote}
+                  className="text-[10px] font-extrabold text-slate-600 hover:text-maroon bg-white/70 hover:bg-white px-2 py-1 rounded-xl border border-pink-200 whitespace-nowrap transition shadow-2xs"
+                  title="Ubah teks target utama"
+                >
+                  ✏️
+                </button>
+              )}
+            </div>
+          </div>
           {/* ========================================================= */}
           {/* 🌟 1. TAMPILAN MODE PC / DESKTOP (FOKUS UTAMA JADWAL)     */}
           {/* ========================================================= */}
