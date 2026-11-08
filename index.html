@@ -2040,7 +2040,8 @@
           return [];
         } catch (e) { return []; }
       });
-      const [currentRadarMediaIdx, setCurrentRadarMediaIdx] = useState(0);
+     const [currentRadarMediaIdx, setCurrentRadarMediaIdx] = useState(0);
+      const [prevRadarMediaIdx, setPrevRadarMediaIdx] = useState(null);
       const [radarMediaModal, setRadarMediaModal] = useState(false);
       const [radarMediaInput, setRadarMediaInput] = useState('');
 
@@ -2058,7 +2059,7 @@
         return () => refRadarMedia.off();
       }, []);
 
-      // Timer Otomatis Ganti Media (Foto/Video) Secara Random Setiap 7 Detik
+      // Timer Otomatis Ganti Media (Foto/Video) dengan Smart Lazy-Buffer (7 Detik)
       useEffect(() => {
         if (!radarMedia || radarMedia.length <= 1) return;
         const interval = setInterval(() => {
@@ -2067,9 +2068,14 @@
             if (nextIdx === prevIdx) {
               nextIdx = (prevIdx + 1) % radarMedia.length;
             }
+            // Simpan indeks lama selama 1.1 detik untuk efek transisi crossfade halus
+            setPrevRadarMediaIdx(prevIdx);
+            setTimeout(() => {
+              setPrevRadarMediaIdx(null);
+            }, 1100);
             return nextIdx;
           });
-        }, 7000); // Durasi ganti media 7 detik
+        }, 7000);
         return () => clearInterval(interval);
       }, [radarMedia]);
 
@@ -2103,41 +2109,10 @@
         setRadarMediaModal(true);
       };
 
-      // Komponen Lapisan Background Media Transparan (Foto & Video) di Dalam Kartu Radar
-      const renderRadarBgSlideshow = () => (
-        <React.Fragment>
-          {radarMedia.length > 0 && (
-            <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden rounded-3xl">
-              {radarMedia.map((media, idx) => {
-                const isActive = idx === (currentRadarMediaIdx % radarMedia.length);
-                return media.type === 'video' ? (
-                  <video
-                    key={media.url + '_' + idx}
-                    src={media.url}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${isActive ? 'opacity-30 scale-100' : 'opacity-0 scale-105'}`}
-                  />
-                ) : (
-                  <img
-                    key={media.url + '_' + idx}
-                    src={media.url}
-                    alt=""
-                    referrerPolicy="no-referrer"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${isActive ? 'opacity-30 scale-100' : 'opacity-0 scale-105'}`}
-                  />
-                );
-              })}
-              {/* Layer gradasi tipis agar teks jadwal tetap 100% tajam & mudah dibaca */}
-              <div className="absolute inset-0 bg-gradient-to-r from-maroon/65 via-[#8A1432]/50 to-rose-900/65"></div>
-            </div>
-          )}
-
-          {/* Tombol Pengaturan Media Admin */}
-          {isAdmin && (
+     // Komponen Lapisan Background Media Transparan (Smart Lazy-Loaded: Max 1-2 Elemen)
+      const renderRadarBgSlideshow = () => {
+        if (!radarMedia || radarMedia.length === 0) {
+          return isAdmin ? (
             <div className="flex justify-end -mb-1">
               <button
                 type="button"
@@ -2146,12 +2121,71 @@
                 title="Atur Slideshow Foto & Video Radar"
               >
                 <span>🎬</span>
-                <span>Foto/Video Radar ({radarMedia.length})</span>
+                <span>Foto/Video Radar (0)</span>
               </button>
             </div>
-          )}
-        </React.Fragment>
-      );
+          ) : null;
+        }
+
+        const activeIdx = currentRadarMediaIdx % radarMedia.length;
+        // Hanya render elemen aktif dan elemen transisi (DOM tetap ringan)
+        const visibleIndices = [activeIdx];
+        if (prevRadarMediaIdx !== null && prevRadarMediaIdx !== activeIdx && prevRadarMediaIdx < radarMedia.length) {
+          visibleIndices.push(prevRadarMediaIdx);
+        }
+
+        return (
+          <React.Fragment>
+            <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden rounded-3xl">
+              {visibleIndices.map(idx => {
+                const media = radarMedia[idx];
+                if (!media || !media.url) return null;
+                const isActive = idx === activeIdx;
+
+                return media.type === 'video' ? (
+                  <video
+                    key={media.url + '_' + idx}
+                    src={media.url}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${isActive ? 'opacity-30 scale-100' : 'opacity-0 scale-105'}`}
+                  />
+                ) : (
+                  <img
+                    key={media.url + '_' + idx}
+                    src={media.url}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    decoding="async"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out ${isActive ? 'opacity-30 scale-100' : 'opacity-0 scale-105'}`}
+                  />
+                );
+              })}
+              {/* Layer gradasi tipis agar teks jadwal tetap 100% tajam & mudah dibaca */}
+              <div className="absolute inset-0 bg-gradient-to-r from-maroon/65 via-[#8A1432]/50 to-rose-900/65"></div>
+            </div>
+
+            {/* Tombol Pengaturan Media Admin */}
+            {isAdmin && (
+              <div className="flex justify-end -mb-1">
+                <button
+                  type="button"
+                  onClick={openRadarMediaSettings}
+                  className="bg-white/15 hover:bg-white/25 text-pink-100 border border-pink-200/30 px-2.5 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1 transition active:scale-95"
+                  title="Atur Slideshow Foto & Video Radar"
+                >
+                  <span>🎬</span>
+                  <span>Foto/Video Radar ({radarMedia.length})</span>
+                </button>
+              </div>
+            )}
+          </React.Fragment>
+        );
+      };
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
