@@ -2524,30 +2524,40 @@
         };
       }, [currentDayWellness, liveTracker.nextItem, shortBreakWarnings, realTodayStr, nowTime, selectedDaySchedules, stickyNote]);
 
-      // 🔔 Fungsi Kirim Pengingat Langsung ke Notifikasi Layar HP
-      const sendReminderToDeviceNotification = () => {
+      // 🔔 Fungsi Kirim Pengingat Tembus Latar Belakang Layar HP
+      const sendReminderToDeviceNotification = async () => {
         playNotificationChime();
-        if ("Notification" in window) {
-          if (Notification.permission === "granted") {
-            new Notification(`${autoDailyReminder.icon} ${autoDailyReminder.tag}`, {
+
+        if (!("Notification" in window)) {
+          notify(`📢 ${autoDailyReminder.text}`);
+          return;
+        }
+
+        let perm = Notification.permission;
+        if (perm === "default") {
+          perm = await Notification.requestPermission();
+        }
+
+        if (perm === "granted") {
+          // Cek apakah Service Worker HP tersedia
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            reg.showNotification(`${autoDailyReminder.icon} ${autoDailyReminder.tag}`, {
               body: autoDailyReminder.text,
-              icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>"
-            });
-            notify("🔔 Pengingat berhasil dikirim ke layar HP kamu!");
-          } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(permission => {
-              if (permission === "granted") {
-                new Notification(`${autoDailyReminder.icon} ${autoDailyReminder.tag}`, {
-                  body: autoDailyReminder.text
-                });
-                notify("🔔 Izin notifikasi aktif! Pengingat terkirim ke HP!");
-              }
+              icon: "https://api.iconify.design/noto:cherry-blossom.svg",
+              badge: "https://api.iconify.design/noto:cherry-blossom.svg",
+              vibrate: [200, 100, 200],
+              tag: "alisya-schedule-reminder",
+              renotify: true
             });
           } else {
-            notify(`📢 ${autoDailyReminder.text}`);
+            new Notification(`${autoDailyReminder.icon} ${autoDailyReminder.tag}`, {
+              body: autoDailyReminder.text
+            });
           }
+          notify("🔔 Pengingat berhasil dikirim ke layar HP kamu!");
         } else {
-          notify(`📢 ${autoDailyReminder.text}`);
+          notify("⚠️ Izin notifikasi belum diizinkan di setelan browser HP kamu.");
         }
       };
 
@@ -5829,6 +5839,15 @@
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
+
+    // 📲 REGISTRASI BACKGROUND SERVICE WORKER UNTUK HP
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('Service Worker Latar Belakang Aktif:', reg.scope))
+          .catch((err) => console.error('Gagal aktivasi Service Worker:', err));
+      });
+    }
   </script>
 </body>
 </html>
