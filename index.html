@@ -1608,6 +1608,16 @@
       });
 
       const [selectedDate, setSelectedDate] = useState(realTodayStr);
+      // 🎯 AUTO-SCROLL KALENDER KE TANGGAL HARI INI SECARA OTOMATIS
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          const activeDayEl = document.getElementById(`cal-day-${selectedDate}`);
+          if (activeDayEl) {
+            activeDayEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }, 350);
+        return () => clearTimeout(timer);
+      }, [selectedDate, currentMonth, activeTab, displayMode]);
       const prevRealTodayRef = useRef(realTodayStr);
 
       // 🔄 AUTO-SWITCH & AUTO-RESET REAL-TIME SETIAP GANTI HARI (JAM 00:00 TENGAH MALAM)
@@ -4780,8 +4790,9 @@
 
                           return (
                             <button
-                              key={day}
-                              onClick={() => setSelectedDate(dateStr)}
+  key={day}
+  id={`cal-day-${dateStr}`}
+  onClick={() => setSelectedDate(dateStr)}
                               className={`cute-calendar-day cute-calendar-strip-day flex-shrink-0 w-12 py-2 rounded-2xl flex flex-col items-center justify-center transition active:scale-95 relative ${isSelected ? 'is-selected bg-gradient-to-b from-maroon to-rose-800 text-white shadow-md scale-105' : isToday ? 'is-today bg-pink-100 text-maroon border border-pink-300 font-black' : 'bg-slate-50 text-slate-700 border border-slate-200'}`}
                             >
                               {hasShortBreak && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-500"></span>}
@@ -4929,15 +4940,16 @@
                               >
                                 {t.colStatus}
                               </th>
-                              {TIME_SLOTS.map(slot => (
-                                <th
-                                  key={slot.label}
-                                  style={{ border: '1px solid #9E1B1E' }}
-                                  className="px-0 py-1.5 text-center font-mono font-extrabold text-[6px] tracking-tighter leading-none"
-                                >
-                                  {slot.start}
-                                </th>
-                              ))}
+                             {TIME_SLOTS.map(slot => (
+  <th
+    key={slot.label}
+    style={{ border: '1px solid #9E1B1E' }}
+    className="px-0 py-1 text-center font-mono font-extrabold text-[6px] tracking-tighter leading-tight"
+  >
+    <div>{slot.start}/</div>
+    <div>{slot.end}</div>
+  </th>
+))}
                             </tr>
                           </thead>
                           <tbody>
