@@ -108,6 +108,56 @@
     .water-pop {
       animation: water-wave 2s ease-in-out infinite;
     }
+    /* 🌸 ANIMASI PRINCESS AURORA GLOW (PINK ROSE & DREAMY LAVENDER BERPUTAR) */
+    @keyframes princessAuroraFlow {
+      0% {
+        background-position: 0% 50%;
+        box-shadow: inset 0 0 10px rgba(244, 114, 182, 0.4), 0 0 12px rgba(224, 87, 128, 0.25);
+      }
+      50% {
+        background-position: 100% 50%;
+        box-shadow: inset 0 0 14px rgba(192, 132, 252, 0.45), 0 0 14px rgba(168, 85, 247, 0.3);
+      }
+      100% {
+        background-position: 0% 50%;
+        box-shadow: inset 0 0 10px rgba(244, 114, 182, 0.4), 0 0 12px rgba(224, 87, 128, 0.25);
+      }
+    }
+
+    .today-active-glow {
+      background: linear-gradient(90deg, #FFE4E6, #F3E8FF, #FED7AA, #FCE7F3, #FFE4E6) !important;
+      background-size: 300% 100% !important;
+      animation: princessAuroraFlow 5s ease infinite !important;
+      position: relative;
+    }
+
+    /* Garis Bingkai Atas & Bawah Lembut Bernuansa Rose-Lavender */
+    .today-active-glow td {
+      border-top: 2px solid #E05780 !important;
+      border-bottom: 2px solid #A855F7 !important;
+    }
+    .today-active-glow td:first-child {
+      border-left: 3px solid #E05780 !important;
+    }
+    .today-active-glow td:last-child {
+      border-right: 3px solid #A855F7 !important;
+    }
+
+    /* Mengubah Otomatis Titik Radar & Teks Menjadi Pink Manis (Menimpa Warna Hijau) */
+    .today-active-glow .bg-emerald-600 {
+      background-color: #E05780 !important;
+    }
+    .today-active-glow .bg-emerald-400 {
+      background-color: #F472B6 !important;
+    }
+    .today-active-glow .text-emerald-900,
+    .today-active-glow .text-emerald-950,
+    .today-active-glow .text-emerald-800 {
+      color: #701A75 !important;
+    }
+    .today-active-glow .bg-emerald-100\/95 {
+      background-color: #FFE4E8 !important;
+    }
   </style>
 
   <!-- VISUAL REFRESH 2026: styling-only layer; application logic remains unchanged -->
@@ -3983,8 +4033,8 @@
                               const density = getDayScheduleDensity(dateStr);
                               const hasShortBreak = shortBreakWarnings[dateStr];
 
-                              return (
-                                <tr key={day} className={`border-b border-slate-200 hover:bg-pink-50/40 transition ${isToday ? 'bg-pink-50/80' : ''}`}>
+                        return (
+                    <tr key={day}className={`transition ${isToday ? 'today-active-glow' : 'hover:bg-pink-50/40'}`}>
                                   <td className={`sticky-col px-4 py-2.5 border-r border-slate-200 whitespace-nowrap shadow-sm ${isToday ? 'bg-pink-100 text-maroon font-black' : isWeekend ? 'bg-rose-50/80 text-rose-900 font-bold' : 'bg-slate-50 font-bold'}`}>
                                     <div className="flex items-center gap-2.5">
                                       <span className="text-base font-black text-slate-900">{day}</span>
@@ -4729,25 +4779,31 @@
                               const density = getDayScheduleDensity(dateStr);
 
                               return (
-                                <tr
+                      <tr
                                   key={day}
-                                  className={isToday ? 'bg-pink-100/90' : isEvenRow ? 'bg-pink-50/35' : 'bg-white'}
+                                  className={isToday ? 'today-active-glow' : isEvenRow ? 'bg-pink-50/35' : 'bg-white'}
                                 >
-                                  {/* Kolom Tanggal & Hari */}
+                                  {/* Kolom Tanggal & Hari dengan Sinar Hijau */}
                                   <td
                                     onClick={() => setSelectedDate(dateStr)}
-                                    style={{ border: '1px solid #E2B6C5' }}
-                                    className={`px-1 py-1 whitespace-nowrap overflow-hidden ${isToday ? 'bg-pink-200/80 text-maroon font-black' : isWeekend ? 'bg-rose-50/80 font-bold' : 'font-bold'}`}
+                                    style={{ border: isToday ? '2px solid #059669' : '1px solid #E2B6C5' }}
+                                    className={`px-1 py-1 whitespace-nowrap overflow-hidden ${isToday ? 'bg-emerald-100/95 text-emerald-950 font-black' : isWeekend ? 'bg-rose-50/80 font-bold' : 'font-bold'}`}
                                   >
                                     <div className="flex items-center gap-0.5 leading-none">
-                                      <span className="text-[8.5px] font-black text-slate-900 w-3 text-right">{day}</span>
-                                      <span className={`text-[7px] uppercase font-extrabold ${isWeekend ? 'text-rose-600' : 'text-slate-600'}`}>{dayName}</span>
+                                      {/* Titik Sinar Berkedip (Radar Radar Ping) */}
+                                      {isToday && (
+                                        <span className="relative flex h-2 w-2 mr-0.5 shrink-0">
+                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                                        </span>
+                                      )}
+                                      <span className={`text-[8.5px] font-black w-3 text-right ${isToday ? 'text-emerald-900 font-extrabold' : 'text-slate-900'}`}>{day}</span>
+                                      <span className={`text-[7px] uppercase font-extrabold ${isToday ? 'text-emerald-800' : isWeekend ? 'text-rose-600' : 'text-slate-600'}`}>{dayName}</span>
                                       {isToday && (
                                         <span className="text-[6.5px] leading-none ml-auto" title={t.todayBadge}>🎀</span>
                                       )}
                                     </div>
                                   </td>
-
                                   {/* Kolom Status Hari */}
                                   <td
                                     style={{ border: '1px solid #E2B6C5' }}
