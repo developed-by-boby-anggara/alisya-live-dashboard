@@ -909,7 +909,11 @@
           const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
           
           // Dapatkan Token Perangkat Unik HP kamu
-          const token = await messaging.getToken({ serviceWorkerRegistration: reg });
+         const token = await messaging.getToken({
+            serviceWorkerRegistration: reg,
+            vapidKey: "BKqufNdDyy4tHHSTkKTJIdl5NLoMZxsFqRcCeEO0DTuNWPrPOcQ_b3iKja2mk-crr4JYGjQrrgi0YjHnYHdQ3DY"
+          });
+          
           if (token && firebaseDb) {
             // Simpan token HP kamu ke Realtime Database agar bisa dikirimi pesan kapan saja
             firebaseDb.ref('alisya_fcm_tokens').child(token.replace(/[.#$\[\]]/g, '_')).set({
