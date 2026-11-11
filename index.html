@@ -2323,8 +2323,7 @@ function App() {
 
       // 🌟 MESIN COUNTDOWN TIMER REAL-TIME PER DETIK (HH:MM:SS)
       const liveTracker = useMemo(() => {
-        const todayList = schedules
-          .filter(s => s.date === realTodayStr && s.status !== 'OFF')
+        const todayList = schedules.filter(s => s.date === realTodayStr && s.status !== 'OFF' && s.status !== 'SAKIT' && s.status !== 'Sakit / Medis' && s.brand_id !== 'b_sakit')
           .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
         const nowTotalSeconds = nowTime.getHours() * 3600 + nowTime.getMinutes() * 60 + nowTime.getSeconds();
@@ -2480,7 +2479,7 @@ function App() {
         const map = {};
         const grouped = {};
         schedules.forEach(s => {
-          if (s.status === 'Tidur' || s.brand_id === 'b_sleep' || s.status === 'OFF') return;
+         if (s.status === 'Tidur' || s.brand_id === 'b_sleep' || s.status === 'OFF' || s.brand_id === 'b_sakit' || s.status === 'Sakit / Medis') return;
           if (!grouped[s.date]) grouped[s.date] = [];
           grouped[s.date].push(s);
         });
@@ -2505,17 +2504,30 @@ function App() {
           .filter(s => s.date === selectedDate)
           .sort((a, b) => a.start_time.localeCompare(b.start_time));
       }, [schedules, selectedDate]);
-      // 💡 ASISTEN PENGINGAT HARIAN KERJA & KESEHATAN LIVE HOST
+     // 💡 ASISTEN PENGINGAT HARIAN KERJA & KESEHATAN LIVE HOST
       const autoDailyReminder = useMemo(() => {
         const todayWater = currentDayWellness.water || 0;
         const currentHour = nowTime.getHours();
 
-        // 1. Prioritas Utama: Sesi Live Dimulai dalam Waktu Dekat (< 45 Menit)
+        // 🩺 PRIORITAS 0: JIKA HARI INI TERCATAT SAKIT / IZIN MEDIS
+        const isSakitHariIni = selectedDaySchedules.some(s => 
+          s.brand_id === 'b_sakit' || s.status === 'SAKIT' || s.status === 'Sakit'
+        );
+        if (isSakitHariIni) {
+          return {
+            tag: "💊 ISTIRAHAT TOTAL",
+            text: "Hari ini tercatat izin sakit. Fokus bedrest, konsumsi obat, dan cepat pulih ya Alisya! 🌸",
+            badge: "bg-rose-100 text-rose-900 border-rose-300",
+            icon: "🤒"
+          };
+        }
+
+        // 1. Prioritas Utama: Sesi Live (< 45 Menit)
         if (liveTracker.nextItem && liveTracker.nextItem.startsInMin <= 45 && liveTracker.nextItem.startsInMin > 0) {
           return {
             tag: "⏰ SIAP-SIAP LIVE",
-            text: `Shift "${liveTracker.nextItem.title}" mulai ${liveTracker.nextItem.startsInMin} mnt lagi (${liveTracker.nextItem.start_time} WIB). Cek baterai HP, lighting & outfit! 💄`,
-            badge: "bg-rose-500 text-white border-rose-600 shadow-sm",
+            text: `Shift "${liveTracker.nextItem.title}" mulai ${liveTracker.nextItem.startsInMin} mnt lagi (${liveTracker.nextItem.start_time} WIB). Cek baterai HP! 💄`,
+            badge: "bg-rose-500 text-white",
             icon: "🚨"
           };
         }
@@ -4656,7 +4668,7 @@ function App() {
                           <option value="Me Time">💅 Me Time</option>
                           <option value="Meeting">💬 Meeting</option>
                           <option value="OFF">☕ OFF</option>
-                          <option value="Sakit / Medis">🏥 Sakit / Medis</option>
+                          <option value="SAKIT">🤒 SAKIT / IZIN MEDIS</option>
                         </select>
                       </div>
                       <div>
@@ -5701,15 +5713,17 @@ function App() {
                       <label className="block font-bold text-slate-700 mb-1">{t.catBrand} *</label>
                       <select
                         value={formData.brand_id}
-                        onChange={e => {
-                          const newBrandId = e.target.value;
-                          let newStatus = formData.status;
-                          if (newBrandId === 'b_konten') newStatus = 'Konten';
-                          else if (newBrandId === 'b_sleep') newStatus = 'Tidur';
-                          else if (newBrandId === 'b_lainlain') newStatus = 'Me Time';
-                          else if (newBrandId === 'b_pribadi') newStatus = 'OFF';
-                          setFormData({ ...formData, brand_id: newBrandId, status: newStatus });
-                        }}
+                      onChange={e => {
+  const newBrandId = e.target.value;
+  let newStatus = formData.status;
+  if (newBrandId === 'b_konten') newStatus = 'Konten';
+  else if (newBrandId === 'b_sleep') newStatus = 'Tidur';
+  else if (newBrandId === 'b_lainlain') newStatus = 'Me Time';
+  else if (newBrandId === 'b_pribadi') newStatus = 'OFF';
+  else if (newBrandId === 'b_sakit') newStatus = 'Sakit / Medis';
+  else if (newBrandId === 'b_momuung' || newBrandId === 'b_aquapress' || newBrandId === 'b_moell') newStatus = 'LIVE';
+  setFormData({ ...formData, brand_id: newBrandId, status: newStatus });
+}}
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold"
                       >
                         {brands.map(b => (
@@ -5732,7 +5746,7 @@ function App() {
                         <option value="Me Time">💅 Me Time</option>
                         <option value="Meeting">💬 Meeting</option>
                         <option value="OFF">☕ OFF (Libur)</option>
-                        <option value="Sakit / Medis">🏥 Sakit / Medis</option>
+                       <option value="Sakit / Medis">🤒 SAKIT / IZIN MEDIS</option>
                       </select>
                     </div>
                   </div>
