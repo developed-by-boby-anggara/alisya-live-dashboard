@@ -2181,100 +2181,127 @@ function App() {
         const ss = String(nowTime.getSeconds()).padStart(2, '0');
         return `${hh}:${mm}:${ss}`;
       }, [nowTime]);
-  // 🎵 PENGATURAN BGM LOVE AND DEEPSPACE
-      const [bgmPlaying, setBgmPlaying] = useState(false);
-      const [hasEntered, setHasEntered] = useState(false);
-      const bgmAudioRef = useRef(null);
+  // 🎵 PENGATURAN BGM PLAYLIST GITHUB (7 TRACKS - RANDOM & AUTO-NEXT)
+  const [bgmPlaying, setBgmPlaying] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
+  const bgmAudioRef = useRef(null);
 
-      // Tempelkan Link Berbagi file MP3 Sarah Brightman dari Google Drive kamu di sini
-    const LND_THEME_BGM_URL = "https://files.catbox.moe/i4aind.mp3";
-// 🎨 DAFTAR SEMUA STIKER LENGKAP UNTUK DIACAK
-const RAFAYEL_ALL_STICKERS = [
-  "./img/stiker1.jpg",
-  "./img/stiker2.jpg",
-  "./img/stiker3.jpg",
-  "./img/stiker4.jpg",
-  "./img/stiker5.jpg",
-  "./img/stiker6.jpg",
-  "./img/stiker7.jpg",
-  "./img/stiker8.jpg",
-  "./img/chibi-rafayel.jpg",
-  "./img/rafael1.jpg"
-];
-    // Konversi link Drive ke streaming audio langsung
-      const getDirectAudioLink = (driveUrl) => {
-        if (!driveUrl) return '';
-        const match = driveUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || driveUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-        if (match && match[1]) {
-          return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+  // Daftar 7 lagu dari folder audio GitHub
+  const BGM_PLAYLIST = [
+    "./audio/bgm1.mp3",
+    "./audio/bgm2.mp3",
+    "./audio/bgm3.mp3",
+    "./audio/bgm4.mp3",
+    "./audio/bgm5.mp3",
+    "./audio/bgm6.mp3",
+    "./audio/bgm7.mp3"
+  ];
+
+  // Indeks lagu acak pertama
+  const currentTrackIdxRef = useRef(Math.floor(Math.random() * BGM_PLAYLIST.length));
+
+  // 🎨 DAFTAR SEMUA STIKER LENGKAP UNTUK DIACAK
+  const RAFAYEL_ALL_STICKERS = [
+    "./img/stiker1.jpg",
+    "./img/stiker2.jpg",
+    "./img/stiker3.jpg",
+    "./img/stiker4.jpg",
+    "./img/stiker5.jpg",
+    "./img/stiker6.jpg",
+    "./img/stiker7.jpg",
+    "./img/stiker8.jpg",
+    "./img/chibi-rafayel.jpg",
+    "./img/rafael1.jpg"
+  ];
+
+  // Fungsi pemutar musik playlist
+  const playTrack = (index) => {
+    try {
+      if (!BGM_PLAYLIST || BGM_PLAYLIST.length === 0) return;
+
+      const trackUrl = BGM_PLAYLIST[index];
+      currentTrackIdxRef.current = index;
+
+      if (!bgmAudioRef.current) {
+        const audio = new Audio(trackUrl);
+        audio.volume = 0.25;
+        audio.preload = "auto";
+        bgmAudioRef.current = audio;
+      } else {
+        bgmAudioRef.current.src = trackUrl;
+      }
+
+      // Begitu 1 lagu selesai, otomatis lanjut ke lagu acak berikutnya
+      bgmAudioRef.current.onended = () => {
+        let nextIdx = Math.floor(Math.random() * BGM_PLAYLIST.length);
+        if (BGM_PLAYLIST.length > 1 && nextIdx === currentTrackIdxRef.current) {
+          nextIdx = (currentTrackIdxRef.current + 1) % BGM_PLAYLIST.length;
         }
-        return driveUrl;
+        playTrack(nextIdx);
       };
 
-      // 🎵 FUNGSI PEMUTAR BGM LENGKAP & STABIL
-      const playBgm = () => {
-        try {
-          if (!bgmAudioRef.current) {
-            const audio = new Audio("https://files.catbox.moe/i4aind.mp3");
-            audio.loop = true;
-            audio.volume = 0.25;
-            audio.preload = "auto";
-            audio.onplay = () => setBgmPlaying(true);
-            audio.onpause = () => setBgmPlaying(false);
-            bgmAudioRef.current = audio;
-          }
-          const promise = bgmAudioRef.current.play();
-          if (promise !== undefined) {
-            promise.then(() => {
-              setBgmPlaying(true);
-            }).catch(err => {
-              console.log("Autoplay ditahan browser, menunggu sentuhan layar:", err);
-            });
-          }
-        } catch (e) {
-          console.log("Error BGM:", e);
-        }
-      };
+      // Sinkronkan tombol BGM ON / OFF
+      bgmAudioRef.current.onplay = () => setBgmPlaying(true);
+      bgmAudioRef.current.onpause = () => setBgmPlaying(false);
 
-      // 🌟 AUTO-PLAY: Langsung berbunyi di PC & otomatis unlock di HP saat layar pertama kali disentuh
-      useEffect(() => {
-        playBgm();
+      const playPromise = bgmAudioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setBgmPlaying(true);
+        }).catch(err => {
+          console.log("Autoplay ditahan browser HP, menunggu sentuhan layar:", err);
+        });
+      }
+    } catch (e) {
+      console.log("Error BGM:", e);
+    }
+  };
 
-        const autoUnlock = () => {
-          playBgm();
-          window.removeEventListener('click', autoUnlock);
-          window.removeEventListener('touchstart', autoUnlock);
-        };
+  // 🌟 AUTO-PLAY: Langsung berbunyi di PC & otomatis unlock di HP saat pertama kali layar disentuh
+  useEffect(() => {
+    playTrack(currentTrackIdxRef.current);
 
-        window.addEventListener('click', autoUnlock, { once: true });
-        window.addEventListener('touchstart', autoUnlock, { once: true });
+    const unlockAudio = () => {
+      if (bgmAudioRef.current && bgmAudioRef.current.paused) {
+        bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
+      } else if (!bgmAudioRef.current) {
+        playTrack(currentTrackIdxRef.current);
+      }
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
 
-        return () => {
-          window.removeEventListener('click', autoUnlock);
-          window.removeEventListener('touchstart', autoUnlock);
-        };
-      }, []);
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
 
-      const handleEnterTerminal = () => {
-        setHasEntered(true);
-        playBgm();
-      };
+    return () => {
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+  }, []);
 
-      const toggleBGM = (e) => {
-        if (e && e.stopPropagation) e.stopPropagation();
-        if (!bgmAudioRef.current) {
-          playBgm();
-          return;
-        }
-        if (bgmAudioRef.current.paused) {
-          bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(console.error);
-        } else {
-          bgmAudioRef.current.pause();
-          setBgmPlaying(false);
-        }
-      };
+  const handleEnterTerminal = () => {
+    setHasEntered(true);
+    if (bgmAudioRef.current && bgmAudioRef.current.paused) {
+      bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
+    } else if (!bgmAudioRef.current) {
+      playTrack(currentTrackIdxRef.current);
+    }
+  };
 
-      // State 2 Bahasa Utama (id & en)
+  const toggleBGM = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!bgmAudioRef.current) {
+      playTrack(currentTrackIdxRef.current);
+      return;
+    }
+    if (bgmAudioRef.current.paused) {
+      bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(console.error);
+    } else {
+      bgmAudioRef.current.pause();
+      setBgmPlaying(false);
+    }
+  };
 
       // State 2 Bahasa Utama (id & en)
       const [lang, setLang] = useState(() => {
