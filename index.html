@@ -2188,8 +2188,18 @@ function App() {
 
       // Tempelkan Link Berbagi file MP3 Sarah Brightman dari Google Drive kamu di sini
     const LND_THEME_BGM_URL = "https://files.catbox.moe/uai2i2.mp3";
- // 🎨 STIKER CHIBI RAFAYEL
-const RAFAYEL_CHIBI_STICKER = "https://images.weserv.nl/?url=files.catbox.moe/ne8vfq.jpg";
+// 🎨 DAFTAR STIKER RAFAYEL DARI FOLDER /img
+      const RAFAYEL_CHIBI_STICKER = "./img/chibi-rafayel.jpg";
+      const RAFAYEL_STICKER_LIST = [
+        "./img/stiker1.jpg",
+        "./img/stiker2.jpg",
+        "./img/stiker3.jpg",
+        "./img/stiker4.jpg",
+        "./img/stiker5.jpg",
+        "./img/stiker6.jpg",
+        "./img/stiker7.jpg",
+        "./img/stiker8.jpg"
+      ];
       // Konversi link Drive ke streaming audio langsung
       const getDirectAudioLink = (driveUrl) => {
         if (!driveUrl) return '';
@@ -3962,12 +3972,12 @@ audio.play().catch(() => playNotificationChime());
       // 🌸 BARIS SAPAAN & AFIRMASI RINGKAS DI DALAM RADAR JADWAL
       const renderCompactGreetingStrip = () => (
         <div className="bg-white/15 backdrop-blur-xs rounded-2xl px-3.5 py-3 border border-pink-200/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs w-full min-w-0">
-          <div className="flex items-start gap-2 min-w-0 flex-1 w-full">
-          <img 
-  src={RAFAYEL_CHIBI_STICKER} 
-  alt="Rafayel" 
-  className="w-10 h-10 object-contain shrink-0 cute-float drop-shadow-md select-none" 
-/>
+         <div className="flex items-start gap-2 min-w-0 flex-1 w-full">
+  <img 
+    src={RAFAYEL_STICKER_LIST[quoteIdx % RAFAYEL_STICKER_LIST.length]} 
+    alt="Rafayel Sticker" 
+    className="w-12 h-12 object-cover rounded-2xl shrink-0 cute-float drop-shadow-md border border-pink-200/40 select-none" 
+  />
             <div className="flex flex-col gap-1 min-w-0 flex-1 w-full">
               <span className="font-black text-pink-200 whitespace-normal break-words leading-snug">
                 {cuteGreeting}
@@ -4468,8 +4478,8 @@ audio.play().catch(() => playNotificationChime());
          >
            <div className="text-center space-y-4 animate-pulse">
              <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-teal-400 via-cyan-400 to-purple-600 p-0.5 shadow-[0_0_35px_rgba(45,212,191,0.6)]">
-               <div className="w-full h-full bg-[#081526] rounded-3xl p-2 flex items-center justify-center">
-  <img src={RAFAYEL_CHIBI_STICKER} alt="Rafayel Lemuria" className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(45,212,191,0.6)]" />
+              <div className="w-full h-full bg-[#081526] rounded-3xl p-2 flex items-center justify-center overflow-hidden">
+  <img src="./img/rafael1.jpg" alt="Rafayel Lemuria" className="w-full h-full object-cover rounded-2xl drop-shadow-[0_0_15px_rgba(45,212,191,0.7)]" />
 </div>
              </div>
              <div>
