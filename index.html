@@ -865,6 +865,595 @@
       border-right-color: rgba(110, 78, 115, 0.28) !important;
     }
   </style>
+<!-- 🌊 LOVE AND DEEPSPACE: COMPLETE HIGH-CONTRAST LEMURIAN SANCTUARY THEME 🌊 -->
+  <style id="love-and-deepspace-theme">
+    :root {
+      --lemuria-abyss: #040914;
+      --lemuria-card: #0A1424;
+      --lemuria-card-inner: #101E35;
+      --lemuria-border: rgba(45, 212, 191, 0.45);
+      --rafael-teal: #2DD4BF;
+      --rafael-cyan: #00F2FE;
+      --rafael-glow: rgba(45, 212, 191, 0.65);
+      --rafael-violet: #C084FC;
+      --sylus-red: #E50914;
+      --pearl-gold: #FDE68A;
+      --text-bright: #FFFFFF;
+      --text-silver: #E2E8F0;
+      --text-muted: #94A3B8;
+    }
+
+    /* 1. Latar Belakang Luar */
+    body.cute-bg {
+      background-color: var(--lemuria-abyss) !important;
+      color: var(--text-bright) !important;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.16), transparent 28rem),
+        radial-gradient(circle at 85% 25%, rgba(192, 132, 252, 0.20), transparent 30rem),
+        radial-gradient(circle at 50% 85%, rgba(45, 212, 191, 0.15), transparent 32rem),
+        linear-gradient(rgba(45, 212, 191, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(192, 132, 252, 0.04) 1px, transparent 1px) !important;
+      background-size: auto, auto, auto, 38px 38px, 38px 38px !important;
+      background-attachment: fixed !important;
+    }
+
+    /* 2. Header & Navigasi */
+    header.sticky {
+      background: linear-gradient(112deg, #051324 0%, #0C2138 50%, #151028 100%) !important;
+      border-bottom: 1.5px solid rgba(45, 212, 191, 0.5) !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9) !important;
+    }
+    header button.bg-pink-100 {
+      background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 14px var(--rafael-glow) !important;
+      border: 1px solid var(--rafael-teal) !important;
+    }
+    header button.text-rose-100 { color: var(--text-silver) !important; }
+
+    .sticky.top-\[58px\] {
+      background: linear-gradient(90deg, #071728 0%, #0E243A 50%, #16122C 100%) !important;
+      border-bottom: 1.5px solid rgba(45, 212, 191, 0.4) !important;
+    }
+    .sticky.top-\[58px\] span,
+    .sticky.top-\[58px\] .text-slate-800 { color: #FFFFFF !important; }
+    .sticky.top-\[58px\] button.bg-white {
+      background-color: #0E1F35 !important;
+      color: var(--rafael-cyan) !important;
+      border-color: rgba(45, 212, 191, 0.5) !important;
+    }
+
+    nav.sticky,
+    #root .bg-white\/90.sticky,
+    #root .bg-white\/95.sticky {
+      background: #061120 !important;
+      border-bottom: 1.5px solid rgba(45, 212, 191, 0.35) !important;
+    }
+    nav.sticky button,
+    #root .bg-white\/90.sticky button {
+      color: var(--text-silver) !important;
+      font-weight: 800 !important;
+    }
+    nav.sticky button.bg-maroon,
+    #root .bg-white\/90.sticky button.bg-maroon {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 50%, #9333EA 100%) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 16px var(--rafael-glow) !important;
+      border: 1px solid #5EEAD4 !important;
+    }
+
+    /* 3. Kartu Radar Jadwal Live */
+    #agenda-capture-area > div.bg-gradient-to-r,
+    #mobile-agenda-capture > div.bg-gradient-to-r {
+      background: linear-gradient(135deg, #051426 0%, #0A223A 50%, #141128 100%) !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.55) !important;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(45, 212, 191, 0.2) !important;
+      color: #FFFFFF !important;
+    }
+    #agenda-capture-area .absolute.inset-0.bg-gradient-to-r,
+    #mobile-agenda-capture .absolute.inset-0.bg-gradient-to-r {
+      background: linear-gradient(135deg, rgba(3, 12, 24, 0.82) 0%, rgba(6, 22, 38, 0.72) 50%, rgba(18, 12, 34, 0.82) 100%) !important;
+    }
+    #agenda-capture-area .bg-white\/15,
+    #mobile-agenda-capture .bg-white\/15 {
+      background: rgba(8, 22, 40, 0.85) !important;
+      border: 1px solid rgba(45, 212, 191, 0.45) !important;
+      backdrop-filter: blur(12px) !important;
+    }
+    #agenda-capture-area button.bg-pink-500\/80,
+    #mobile-agenda-capture button.bg-pink-500\/80 {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%) !important;
+      border: 1px solid #5EEAD4 !important;
+      color: #FFFFFF !important;
+      font-weight: 900 !important;
+      box-shadow: 0 0 14px rgba(45, 212, 191, 0.5) !important;
+    }
+    #agenda-capture-area .text-pink-200,
+    #mobile-agenda-capture .text-pink-200 { color: #5EEAD4 !important; font-weight: 900 !important; }
+    #agenda-capture-area .text-rose-100,
+    #mobile-agenda-capture .text-rose-100 { color: #E2E8F0 !important; }
+    #mobile-agenda-capture button.bg-pink-200,
+    #agenda-capture-area button.bg-pink-200 {
+      background: rgba(45, 212, 191, 0.22) !important;
+      border: 1px solid #2DD4BF !important;
+      color: #FFFFFF !important;
+      font-weight: 900 !important;
+    }
+
+    /* 4. Spreadsheet PC & Mobile */
+    #spreadsheet-capture-area,
+    #mobile-spreadsheet-capture {
+      background: #081324 !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.45) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+      color: #FFFFFF !important;
+    }
+    #mobile-spreadsheet-capture > div:first-child,
+    #root .bg-white.p-4.rounded-3xl {
+      background: #091C33 !important;
+      border-color: rgba(45, 212, 191, 0.35) !important;
+    }
+    #mobile-spreadsheet-capture > div:first-child span.text-maroon {
+      color: #5EEAD4 !important;
+    }
+    #mobile-spreadsheet-capture span.bg-white,
+    .bg-pink-50\/60 {
+      background-color: #0E243E !important;
+      border-color: rgba(45, 212, 191, 0.4) !important;
+      color: #E2E8F0 !important;
+    }
+    #spreadsheet-capture-area thead tr,
+    #mobile-spreadsheet-capture thead tr,
+    #spreadsheet-capture-area thead th,
+    #mobile-spreadsheet-capture thead th,
+    #spreadsheet-capture-area th.sticky-col,
+    tr.sticky-header th {
+      background: #081B34 !important;
+      border-bottom: 2px solid rgba(45, 212, 191, 0.5) !important;
+      border-right: 1px solid rgba(45, 212, 191, 0.3) !important;
+      color: #5EEAD4 !important;
+      font-weight: 900 !important;
+    }
+    #spreadsheet-capture-area td.sticky-col,
+    #mobile-spreadsheet-capture td:first-child,
+    #spreadsheet-capture-area td:first-child {
+      background: #091B33 !important;
+      border-right: 2px solid #2DD4BF !important;
+      border-bottom: 1px solid rgba(45, 212, 191, 0.25) !important;
+      box-shadow: 3px 0 12px rgba(0, 0, 0, 0.5) !important;
+    }
+    #spreadsheet-capture-area td.sticky-col span.text-base,
+    #spreadsheet-capture-area td.sticky-col span.text-slate-900,
+    #mobile-spreadsheet-capture td:first-child span.text-\[8\.5px\],
+    #mobile-spreadsheet-capture td:first-child span.text-slate-900 {
+      color: #FFFFFF !important;
+      font-weight: 900 !important;
+    }
+    #spreadsheet-capture-area td.sticky-col span.text-xs,
+    #spreadsheet-capture-area td.sticky-col span.text-slate-800,
+    #mobile-spreadsheet-capture td:first-child span.text-\[7px\],
+    #mobile-spreadsheet-capture td:first-child span.text-slate-600 {
+      color: #5EEAD4 !important;
+      font-weight: 800 !important;
+    }
+    #spreadsheet-capture-area tbody td:nth-child(n+3),
+    #mobile-spreadsheet-capture tbody td:nth-child(n+3) {
+      background-color: #FFFFFF !important;
+      border-right: 1px solid #CBD5E1 !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+    }
+    #mobile-spreadsheet-capture > div.w-full,
+    #mobile-spreadsheet-capture > div.overflow-hidden {
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      width: 100% !important;
+    }
+    #mobile-spreadsheet-capture table {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: separate !important;
+      border-spacing: 1px !important;
+    }
+
+    /* ========================================================= */
+    /* 🌊 5. WELLNESS & LOUNGE (MEKEL, HIDRASI & PREP - DARK HUD)*/
+    /* ========================================================= */
+    /* Kartu Pembungkus Utama Widget Wellness */
+    #root div:has(> .grid-cols-5),
+    #root .bg-white:has(.grid-cols-5) {
+      background: #081426 !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.45) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+      color: #FFFFFF !important;
+    }
+    #root div:has(> .grid-cols-5) span.text-maroon {
+      color: #5EEAD4 !important;
+    }
+
+    /* Tombol Pilihan Mood */
+    #root .grid-cols-5 button.bg-slate-50 {
+      background: #061120 !important;
+      border-color: rgba(45, 212, 191, 0.25) !important;
+      color: #94A3B8 !important;
+    }
+    #root .grid-cols-5 button:hover {
+      background: #0E243E !important;
+      border-color: #2DD4BF !important;
+    }
+
+    /* 💄 Card 1: Protokol Persiapan Siaran Hunter (Live Prep) */
+    .bg-pink-50\/60:has(span.font-mono) {
+      background: #061224 !important;
+      border: 1px solid rgba(45, 212, 191, 0.35) !important;
+    }
+    .bg-pink-50\/60:has(span.font-mono) span.text-maroon {
+      color: #5EEAD4 !important;
+    }
+    .bg-pink-50\/60:has(span.font-mono) button.bg-white {
+      background: #0B1D36 !important;
+      border: 1px solid rgba(45, 212, 191, 0.3) !important;
+      color: #E2E8F0 !important;
+    }
+    .bg-pink-50\/60:has(span.font-mono) button.bg-gradient-to-r {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%) !important;
+      border: 1px solid #5EEAD4 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.4) !important;
+    }
+
+    /* 🐱 Card 2: Mekel & Mephisto Companion Card */
+    .bg-gradient-to-br.from-rose-50 {
+      background: linear-gradient(135deg, #071529 0%, #0B1F3A 50%, #151028 100%) !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.45) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+    }
+    .bg-gradient-to-br.from-rose-50 .text-maroon {
+      color: #FFFFFF !important;
+    }
+    .bg-gradient-to-br.from-rose-50 p.text-rose-800 {
+      color: #94A3B8 !important;
+    }
+    .bg-gradient-to-br.from-rose-50 button.bg-white {
+      background: #0F2744 !important;
+      border: 1px solid #2DD4BF !important;
+      color: #5EEAD4 !important;
+    }
+    .bg-gradient-to-br.from-rose-50 .bg-white\/90 {
+      background: #071528 !important;
+      border: 1px solid rgba(45, 212, 191, 0.3) !important;
+    }
+    .bg-gradient-to-br.from-rose-50 .text-amber-900 {
+      color: #FDE68A !important;
+    }
+    .bg-gradient-to-br.from-rose-50 .text-sky-900 {
+      color: #7DD3FC !important;
+    }
+    .bg-gradient-to-br.from-rose-50 button.bg-slate-50 {
+      background: #0B1D36 !important;
+      border-color: rgba(45, 212, 191, 0.25) !important;
+      color: #64748B !important;
+    }
+    .bg-gradient-to-br.from-rose-50 button.bg-amber-100 {
+      background: linear-gradient(135deg, #B45309 0%, #D97706 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #FDE68A !important;
+    }
+    .bg-gradient-to-br.from-rose-50 button.bg-sky-100 {
+      background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #7DD3FC !important;
+    }
+
+    /* 💧 Card 3: Protokol Hidrasi & Air Bersih Hunter */
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 {
+      background: linear-gradient(135deg, #061528 0%, #09203C 50%, #0A162E 100%) !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.45) !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .text-rose-950 {
+      color: #5EEAD4 !important;
+      font-weight: 900 !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .text-pink-700 {
+      color: #94A3B8 !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 span.font-mono.bg-white {
+      background: #0B1E38 !important;
+      border: 1px solid #2DD4BF !important;
+      color: #5EEAD4 !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .grid-cols-8 button.bg-white {
+      background: #071528 !important;
+      border-color: rgba(45, 212, 191, 0.25) !important;
+      color: #64748B !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .grid-cols-8 button.bg-gradient-to-b {
+      background: linear-gradient(180deg, #0EA5E9 0%, #0284C7 100%) !important;
+      border: 1px solid #7DD3FC !important;
+      box-shadow: 0 0 10px rgba(14, 165, 233, 0.5) !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 button.bg-gradient-to-r {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 50%, #0284C7 100%) !important;
+      border: 1px solid #5EEAD4 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 16px rgba(45, 212, 191, 0.45) !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .bg-white\/90 {
+      background: #071528 !important;
+      border: 1px solid rgba(45, 212, 191, 0.3) !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .bg-white\/90 .text-maroon {
+      color: #FFFFFF !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 select.bg-pink-50 {
+      background: #0C1F38 !important;
+      border: 1px solid #2DD4BF !important;
+      color: #5EEAD4 !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .bg-white\/80 {
+      background: #061122 !important;
+      border: 1px solid rgba(45, 212, 191, 0.25) !important;
+    }
+    .bg-gradient-to-br.from-pink-50.via-rose-50\/70 .bg-white\/80 span.bg-pink-100\/90 {
+      background: #0B223D !important;
+      border: 1px solid rgba(45, 212, 191, 0.35) !important;
+      color: #7DD3FC !important;
+    }
+
+    /* 🎁 Card 4: Logistik Self-Reward */
+    .bg-amber-50\/90 {
+      background: #07162A !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.4) !important;
+    }
+    .bg-amber-50\/90 .text-amber-900 {
+      color: #FDE68A !important;
+    }
+    .bg-amber-50\/90 .text-maroon {
+      color: #FFFFFF !important;
+    }
+    .bg-amber-50\/90 button.bg-white {
+      background: #0A1C34 !important;
+      border: 1px solid rgba(45, 212, 191, 0.3) !important;
+      color: #E2E8F0 !important;
+    }
+    .bg-amber-50\/90 button.bg-maroon {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%) !important;
+      border: 1px solid #5EEAD4 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 10px rgba(45, 212, 191, 0.4) !important;
+    }
+    .bg-amber-50\/90 button.bg-gradient-to-r {
+      background: linear-gradient(135deg, #D97706 0%, #B45309 100%) !important;
+      border: 1px solid #FDE68A !important;
+      color: #FFFFFF !important;
+    }
+
+    /* 💌 Card 5: Catatan Misi / Diary */
+    .bg-pink-50\/70:has(input) {
+      background: #061324 !important;
+      border: 1px solid rgba(45, 212, 191, 0.35) !important;
+    }
+    .bg-pink-50\/70:has(input) label.text-maroon {
+      color: #5EEAD4 !important;
+    }
+    .bg-pink-50\/70:has(input) input {
+      background: #08192E !important;
+      border: 1px solid rgba(45, 212, 191, 0.4) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* 6. Elemen Umum & Input */
+    #root .bg-white,
+    #root .bg-white\/90,
+    #root .bg-white\/95 {
+      background-color: var(--lemuria-card) !important;
+      border-color: var(--lemuria-border) !important;
+      color: var(--text-bright) !important;
+    }
+    #root .text-slate-800, #root .text-slate-900, #root .text-maroon { color: #FFFFFF !important; }
+    #root .text-slate-500, #root .text-slate-600, #root .text-slate-700 { color: var(--text-muted) !important; }
+
+    span.bg-pink-50 {
+      background-color: var(--lemuria-card-inner) !important;
+      color: var(--rafael-cyan) !important;
+      border-color: rgba(45, 212, 191, 0.5) !important;
+    }
+    div.bg-pink-50\/70 {
+      background-color: rgba(14, 31, 53, 0.85) !important;
+      border-color: rgba(192, 132, 252, 0.35) !important;
+      color: #E9D5FF !important;
+    }
+
+    div.bg-emerald-50, div.bg-emerald-50\/90 {
+      background-color: #08172A !important;
+      border-color: rgba(45, 212, 191, 0.5) !important;
+    }
+    div.bg-emerald-50 span, div.bg-emerald-50\/90 span { color: #FFFFFF !important; }
+    div.bg-emerald-50 button, div.bg-emerald-50\/90 button {
+      background-color: var(--lemuria-card-inner) !important;
+      border-color: rgba(45, 212, 191, 0.45) !important;
+      color: var(--rafael-teal) !important;
+    }
+
+    .cute-calendar-panel { background: #081528 !important; border-color: rgba(45, 212, 191, 0.45) !important; }
+    .cute-calendar-day { background: #050E1C !important; border-color: rgba(255, 255, 255, 0.1) !important; color: var(--text-silver) !important; }
+    .cute-calendar-day span { color: var(--text-silver) !important; }
+    .cute-calendar-day.is-today { border: 1.5px solid var(--rafael-cyan) !important; box-shadow: 0 0 12px var(--rafael-glow) !important; }
+    .cute-calendar-day.is-today span { color: var(--rafael-cyan) !important; }
+    .cute-calendar-day.is-selected {
+      background: linear-gradient(135deg, #0D9488 0%, #115E59 100%) !important;
+      border-color: #5EEAD4 !important;
+      box-shadow: 0 0 15px var(--rafael-glow) !important;
+    }
+    .cute-calendar-day.is-selected span { color: #FFFFFF !important; }
+
+    #root input, #root select, #root textarea {
+      background-color: #071322 !important;
+      color: #FFFFFF !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.4) !important;
+    }
+    #root select option { background-color: #071322 !important; color: #FFFFFF !important; }
+    #root input:focus, #root select:focus, #root textarea:focus {
+      border-color: var(--rafael-cyan) !important;
+      box-shadow: 0 0 12px var(--rafael-glow) !important;
+    }
+    .live-card-glow { border-color: var(--rafael-cyan) !important; box-shadow: 0 0 20px 3px rgba(0, 242, 254, 0.75) !important; }
+    /* ========================================================= */
+    /* 🛸 6. MODAL FORM INPUT MISI JADWAL (LEMURIAN MISSION HUD) */
+    /* ========================================================= */
+    /* Latar Belakang Modal Gelap Transparan Lemuria */
+    .fixed.inset-0.z-50 .bg-white.rounded-t-3xl,
+    .fixed.inset-0.z-50 .bg-white.rounded-3xl {
+      background: #061122 !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.45) !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 30px rgba(45, 212, 191, 0.2) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Header Modal Misi */
+    .fixed.inset-0.z-50 .bg-gradient-to-r.from-maroon {
+      background: linear-gradient(135deg, #071E36 0%, #0F2D4A 50%, #1A1232 100%) !important;
+      border-bottom: 1.5px solid rgba(45, 212, 191, 0.4) !important;
+      color: #5EEAD4 !important;
+    }
+
+    /* Modul Preset Cepat Mom Uung & AquaPress di dalam Modal */
+    .fixed.inset-0.z-50 .bg-amber-50 {
+      background: #08192E !important;
+      border: 1px solid rgba(245, 158, 11, 0.4) !important;
+    }
+    .fixed.inset-0.z-50 .bg-amber-50 span.text-amber-950 {
+      color: #FDE68A !important;
+    }
+    .fixed.inset-0.z-50 .bg-amber-50 button.bg-white {
+      background: #0C233F !important;
+      border: 1px solid rgba(245, 158, 11, 0.3) !important;
+      color: #FFFFFF !important;
+    }
+
+    .fixed.inset-0.z-50 .bg-cyan-50 {
+      background: #071C30 !important;
+      border: 1px solid rgba(45, 212, 191, 0.4) !important;
+    }
+    .fixed.inset-0.z-50 .bg-cyan-50 span.text-cyan-950 {
+      color: #7DD3FC !important;
+    }
+    .fixed.inset-0.z-50 .bg-cyan-50 button.bg-white {
+      background: #0B2642 !important;
+      border: 1px solid rgba(45, 212, 191, 0.3) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Kotak Jadwal yang Sudah Terisi (Daftar Jam Terisi) */
+    .fixed.inset-0.z-50 .bg-pink-50\/80 {
+      background: #071526 !important;
+      border: 1px solid rgba(45, 212, 191, 0.25) !important;
+    }
+    .fixed.inset-0.z-50 .bg-pink-50\/80 .text-maroon {
+      color: #5EEAD4 !important;
+    }
+    .fixed.inset-0.z-50 .bg-pink-50\/80 span.bg-white {
+      background: #0D223B !important;
+      border: 1px solid rgba(229, 9, 20, 0.4) !important;
+      color: #FDA4AF !important;
+    }
+
+    /* Kolom Input Form & Dropdown di Dalam Modal */
+    .fixed.inset-0.z-50 input,
+    .fixed.inset-0.z-50 select,
+    .fixed.inset-0.z-50 textarea {
+      background: #08172B !important;
+      border: 1px solid rgba(45, 212, 191, 0.35) !important;
+      color: #FFFFFF !important;
+      border-radius: 14px !important;
+    }
+    .fixed.inset-0.z-50 input:focus,
+    .fixed.inset-0.z-50 select:focus,
+    .fixed.inset-0.z-50 textarea:focus {
+      border-color: #00F2FE !important;
+      box-shadow: 0 0 10px rgba(45, 212, 191, 0.5) !important;
+    }
+    .fixed.inset-0.z-50 label.text-slate-700 {
+      color: #94A3B8 !important;
+      font-weight: 700 !important;
+    }
+
+    /* Tombol Batal & Simpan Misi */
+    .fixed.inset-0.z-50 button.bg-slate-100 {
+      background: #0B1E34 !important;
+      color: #94A3B8 !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    .fixed.inset-0.z-50 button.bg-gradient-to-r.from-maroon {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 50%, #9333EA 100%) !important;
+      border: 1px solid #5EEAD4 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 16px rgba(45, 212, 191, 0.45) !important;
+    }
+   /* ========================================================= */
+    /* 🔐 7. MODAL PIN OTORISASI ADMIN & CLONE DAY (HUNTER ACCESS) */
+    /* ========================================================= */
+    /* Kotak Dialog Kecil PIN Admin & Clone Day */
+    .fixed.inset-0.z-50 .max-w-xs.bg-white,
+    .fixed.inset-0.z-50 .max-w-sm.bg-white {
+      background: #071528 !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.45) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.95), 0 0 25px rgba(45, 212, 191, 0.2) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Ikon Pita Pink di Modal PIN Diganti Kotak Simbol Evol */
+    .fixed.inset-0.z-50 .max-w-xs .bg-pink-100 {
+      background: #0B2440 !important;
+      border: 1px solid #2DD4BF !important;
+      color: #5EEAD4 !important;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.4) !important;
+    }
+
+    /* Judul & Teks Penjelasan di Modal PIN / Clone */
+    .fixed.inset-0.z-50 .max-w-xs h3,
+    .fixed.inset-0.z-50 .max-w-sm h3 {
+      color: #5EEAD4 !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.04em !important;
+    }
+    .fixed.inset-0.z-50 .max-w-xs p,
+    .fixed.inset-0.z-50 .max-w-sm p {
+      color: #94A3B8 !important;
+    }
+
+    /* Kolom Input PIN (Password Bullets) & Input Tanggal Clone */
+    .fixed.inset-0.z-50 .max-w-xs input,
+    .fixed.inset-0.z-50 .max-w-sm input {
+      background: #050E1C !important;
+      border: 1.5px solid rgba(45, 212, 191, 0.4) !important;
+      color: #00F2FE !important;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+    }
+    .fixed.inset-0.z-50 .max-w-xs input:focus,
+    .fixed.inset-0.z-50 .max-w-sm input:focus {
+      border-color: #5EEAD4 !important;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.5) !important;
+    }
+
+    /* Tombol Aksi Buka Akses / Salin Sekarang */
+    .fixed.inset-0.z-50 .max-w-xs button.bg-maroon,
+    .fixed.inset-0.z-50 .max-w-sm button.bg-maroon {
+      background: linear-gradient(135deg, #0D9488 0%, #14B8A6 100%) !important;
+      border: 1px solid #5EEAD4 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 14px rgba(45, 212, 191, 0.45) !important;
+    }
+    .fixed.inset-0.z-50 .max-w-xs button.bg-slate-100,
+    .fixed.inset-0.z-50 .max-w-sm button.bg-slate-100 {
+      background: #0A1C32 !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #94A3B8 !important;
+    }
+  </style>
+  
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
@@ -1152,50 +1741,50 @@
         cloneModalDesc: "Salin seluruh daftar sesi dari tanggal",
         cloneTargetLabel: "Pilih Tanggal Tujuan:",
         cloneConfirmBtn: "🚀 Salin Sekarang",
-        greetMorning: "Selamat Pagi, Alisya Cantik! ☀️🌸",
-        greetAfternoon: "Selamat Siang, Princess Alisya! 🌤️🌷",
-        greetEvening: "Selamat Sore, Queen Alisya! 🌅✨",
-        greetNight: "Selamat Malam, Sweetheart! 🌙💖",
-        moodTrackerTitle: "🎀 Mood, Minum Air & Rumah Kucing Mekel",
+      greetMorning: "🌅 [MO'S ATELIER] Pagi, Nona Pengawal. Ombak Lemuria berbisik tenang, pastikan harimu penuh warna ya! 🎨",
+        greetAfternoon: "☀️ [MO'S ATELIER] Siang, Putri Duyungku. Tarik napas dulu dan jangan lupa makan siang! ☕",
+        greetEvening: "🌇 [MO'S ATELIER] Senja di Linkon City... Warna langit hari ini indah, tapi senyummu di kamera jauh lebih memikat. ✨",
+        greetNight: "🌙 [MO'S ATELIER] Malam, Nona Pengawal. Shift-mu sudah selesai kan? Istirahatlah, atau aku yang akan memaksamu tidur! 🌊",
+        moodTrackerTitle: "🌌 Lemurian Lounge & Evol Hidrasi (Mekel & Mephisto)",
         autoResetBadge: "🔄 Auto-Reset Tiap Hari 00:00",
-        waterTitle: "💧 Hidrasi & Pengingat Air Putih:",
-        waterGoalDone: "🎉 Yeay! Target 8 gelas (2.000 ml) hari ini tercapai! Suara jernih & kulit glowing!",
-        waterDrinkNowBtn: "+ Minum 1 Gelas Air Putih (250ml) 🥤",
+        waterTitle: "💧 Protokol Hidrasi Lemuria (Perhatian Rafayel):",
+        waterGoalDone: "🎉 Target 8 gelas tercapai! Pita suara aman, resonansi laut Lemuria stabil 100%!",
+        waterDrinkNowBtn: "+ Minum 1 Gelas Air Bersih (250ml) 🥤",
         waterResetBtn: "Reset",
-        waterReminderTitle: "⏰ Pengingat Minum Air:",
+        waterReminderTitle: "⏰ Alarm Hidrasi Rafayel:",
         waterRemOff: "🔕 Mati",
         waterRem30: "🔔 Tiap 30 Menit",
         waterRem60: "🔔 Tiap 1 Jam",
         waterRem90: "🔔 Tiap 1.5 Jam",
         waterRem120: "🔔 Tiap 2 Jam",
-        waterNextIn: "Minum lagi dlm:",
-        waterHistoryTitle: "📝 Riwayat Jam Minum Alisya Hari Ini:",
-        waterEmptyLog: "🥺 Kamu belum minum air putih hari ini. Yuk klik tombol minum di atas biar nggak dehidrasi!",
-        waterPopupTitle: "💧 Waktunya Minum Air Putih, Cantik! 🌸",
-        waterPopupDesc: "Jangan lupa minum segelas air putih dulu ya biar tenggorokan tetap segar saat bicara, badan fit, dan wajah makin glowing!",
-        waterPopupConfirm: "🥤 Aku Sudah Minum! (+1 Gelas)",
-        waterPopupSnooze: "⏳ Ingatkan 10 Menit Lagi",
-        petName: "🐱 Mekel (Kucing Kesayangan Alisya)",
-        petHungry: "Meow.. Mekel belum makan & minum nih, jangan lupa kasih makan & minum Mekel ya! 🐾",
-        petHalf: "Mekel senang sudah dikasih maem/minum, tambahin lagi nanti ya Cantik! 🐾💖",
-        petHappy: "Purrr~ Mekel kenyang & segar banget hari ini! Makasih ya Princess Alisya! 😻💖",
-        petFeedFoodBtn: "🐟 Kasih Makan",
-        petFeedWaterBtn: "🥛 Kasih Minum",
-        petPatBtn: "🐾 Elus Mekel",
-        petFoodLabel: "🐟 Makan Mekel:",
-        petWaterLabel: "🥛 Minum Mekel:",
-        beautyPrepTitle: "💄 Ceklis Persiapan Cantik Sebelum Live:",
-        prepAllDone: "👑 Yeay! 100% Princess Alisya Sudah Siap & Wangi Buat Live!",
-        prepMakeup: "💄 Make Up",
+        waterNextIn: "Asupan lagi dlm:",
+        waterHistoryTitle: "📝 Riwayat Jam Hidrasi Alisya Hari Ini:",
+        waterEmptyLog: "⚠️ Belum ada asupan air hari ini. Cepat minum, jangan sampai tenggorokanmu serak saat siaran langsung!",
+        waterPopupTitle: "💧 Nona Pengawal, Waktunya Minum Air! 🌊",
+        waterPopupDesc: "Rafayel memantau dari atelier: 'Minum airmu sekarang! Suaramu itu aset paling berharga saat live, jangan bikin aku khawatir terus!'",
+        waterPopupConfirm: "🥤 Sudah Minum (+1 Gelas)",
+        waterPopupSnooze: "⏳ Tunda 10 Menit",
+        petName: "🐱 Mekel & Mephisto (Sahabat Lemurian)",
+        petHungry: "Meow.. Mekel & Mephisto menatap mangkuknya. Berikan ransum laut segar ya! 🐾",
+        petHalf: "Mekel & Mephisto lahap menyantap ransumnya. Tambahkan lagi nanti ya Hunter Alisya! 🐾✨",
+        petHappy: "Purrr~ Energi Mekel & Mephisto penuh 100%! Rafayel tersenyum puas melihatmu merawat mereka! 😻🎨",
+        petFeedFoodBtn: "🐟 Ransum Ikan Lemuria",
+        petFeedWaterBtn: "🥛 Air Murni Lemuria",
+        petPatBtn: "🐾 Elus Sahabat Lemurian",
+        petFoodLabel: "🐟 Ransum Lemuria:",
+        petWaterLabel: "🥛 Air Murni:",
+        beautyPrepTitle: "💄 Protokol Persiapan Siaran (Atelier Prep):",
+        prepAllDone: "👑 100% Alisya Siap & Memikat Seluruh Linkon City!",
+        prepMakeup: "💄 Touch Up Cantik",
         prepBath: "🚿 Mandi Segar",
-        prepPerfume: "🌸 Semprot Parfum",
-        prepBattery: "🔋 Cek Baterai HP",
-        rewardTitle: "🎁 Jajanan Self-Reward Alisya Hari Ini:",
-        rewardSpinBtn: "🎰 Acak Jajanan",
-        rewardPickHint: "Klik pilih langsung jajanan yang kamu pengen hari ini:",
-        diaryTitle: "💌 Catatan Kecil / Hal yang Bikin Senang Hari Ini:",
-        diaryPlaceholder: "Tulis hal manis hari ini (misal: Habis jajan tahu kocek & cokelat enak banget!)...",
-        cheerMeBtn: "💖 Mood Booster",
+        prepPerfume: "🌸 Parfum Samudera",
+        prepBattery: "🔋 Daya HP & Kamera",
+        rewardTitle: "🎁 Logistik Self-Reward Alisya Hari Ini:",
+        rewardSpinBtn: "🎰 Acak Reward",
+        rewardPickHint: "Pilih camilan manis yang ingin kamu nikmati hari ini:",
+        diaryTitle: "💌 Sketsa Harian / Catatan Manis Hari Ini:",
+        diaryPlaceholder: "Tuliskan momen manismu hari ini (misal: Selesai shift tepat waktu, jajan cokelat & pancake favorit!)...",
+        cheerMeBtn: "🎨 Bisikan Rafayel",
         slotOccupiedLabel: "Terisi:",
         overlapWarningTitle: "⛔ Jam Bentrok / Sudah Terisi!",
         overlapWarningDesc: "Rentang jam ini bertumpuk dengan jadwal:",
@@ -1207,41 +1796,41 @@
         toggleHideWellness: "Sembunyikan Panel",
         toggleShowWellness: "Buka Panel Mekel & Air",
         affirmations: [
-          "✨ Kamu cantik, berbakat, dan rezekimu mengalir deras hari ini! Semangat live-nya ya!",
-          "🌸 Jangan lupa senyum manis dulu sebelum mulai! Energi positifmu bikin penonton betah.",
-          "💖 Satu per satu jadwal selesai, kamu hebat banget hari ini! Jangan lupa minum air putih ya.",
-          "👑 Queen Alisya siap pecah telor GMV hari ini! Tetap rileks dan happy terus ya!",
-          "🌷 Kalau capek, istirahat sebentar ya. Kesehatan dan kebahagiaanmu selalu nomor satu!",
-          "🍓 Hari ini adalah hari keberuntunganmu! Semua produk yang kamu pegang pasti laris manis.",
-          "🎀 Aura positifmu hari ini luar biasa cantik, siapa pun yang lihat live kamu pasti langsung checkout!",
-          "💫 Pelan-pelan saja, nikmati setiap sesinya. Kamu sudah bekerja sangat keras dan keren banget!",
-          "🍒 Jangan lupa tarik napas dalam-dalam dan tersenyum, kamu pantas mendapatkan semua hal indah hari ini!",
-          "🌷 Suaramu yang ramah dan ceria adalah magnet rezeki. Jaga tenggorokan dan minum yang cukup ya!",
-          "💎 Setiap detik usahamu hari ini sedang membuka pintu rezeki yang lebih besar lagi. Proud of you!",
-          "🧁 Habis selesai semua shift hari ini, jangan lupa jajan tahu kocek, pancake, atau cokelat favoritmu ya!",
-          "🦢 Kamu anggun, pintar berbicara, dan selalu memikat hati audiens. Bersinar terus ya Alisya!",
-          "🌈 Apapun target hari ini, kamu pasti bisa melewatinya dengan senyuman paling manis!",
-          "🍭 Mood yang bagus adalah kunci GMV meroket! Yuk mulai hari ini dengan hati yang gembira.",
-          "💐 Terima kasih sudah selalu semangat dan konsisten. Diri kamu di masa depan pasti bangga banget!",
-          "🦋 Seperti kupu-kupu yang indah, pesonamu hari ini bikin suasana live jadi hangat dan seru!",
-          "🌟 Jangan khawatir soal angka, fokus saja jadi dirimu yang ceria, rezeki terbaik pasti mengikuti!",
-          "🍑 Wajah segar, sudah mandi wangi, baterai HP penuh! Hari ini semuanya berjalan lancar!",
-          "🧸 Kalau ada jam kosong, manfaatkan buat main sama Mekel atau dengerin lagu favoritmu ya!",
-          "🌺 Kamu itu magnet keberuntungan! Setiap kata yang kamu ucapkan membawa berkah dan kebahagiaan.",
-          "🍦 Semangat buat sesi hari ini! Ingat, kamu nggak sendirian dan kamu selalu didukung penuh!",
-          "🎀 Make up oke, parfum wangi, jadwal rapi! Saatnya Alisya bersinar di depan kamera!",
-          "💌 Pesan kecil buat hari ini: Kamu berharga, kamu dicintai, dan kamu luar biasa hebat!",
-          "🌼 Semoga hari ini dipenuhi pembeli yang ramah, loyal, dan borong banyak tanpa ragu!",
-          "🍓 Satu langkah kecil setiap hari membawa perubahan besar. Terus melangkah dengan cantik ya!",
-          "💖 Jangan lupa stretching ringan di sela-sela shift supaya badanmu tetap segar dan nyaman!",
-          "👑 Tak peduli seberapa padat jadwalnya, kamu selalu punya cara elegan untuk menaklukkannya!",
-          "🌷 Senyummu itu menular lho! Sekali kamu senyum, satu ruang live ikut bahagia.",
-          "✨ Percaya sama dirimu sendiri ya, kemampuan komunikasimu itu juara banget!",
-          "🍒 Hari baru, semangat baru, rezeki baru yang berlimpah ruah khusus buat Alisya & Mekel!",
-          "🧁 Istirahat yang cukup itu juga bagian dari produktivitas. Sayangi tubuhmu selalu ya!",
-          "🦢 Tetap tenang, tetap anggun, dan biarkan pesona alamimu bekerja menarik banyak keberuntungan.",
-          "🌈 Semua lelahmu hari ini akan terbayar lunas dengan hasil yang manis dan membanggakan!",
-          "💝 Kamu sudah melakukan yang terbaik! Apresiasi dirimu sendiri karena sudah sejauh ini."
+          "🎨 [Rafayel]: 'Nona Pengawal, lukisan terbaik butuh kesabaran. Jangan biarkan jadwal padat ini membuatmu cemberut, oke?'",
+          "🌊 [Rafayel]: 'Alisya! Jangan bicara terus tanpa minum air! Kalau sampai suaramu serak, aku yang bakal ngambek seharian!'",
+          "🐚 [Rafayel]: 'Atelier Mo terasa sepi kalau kamu belum memulai harimu. Semangat siarannya hari ini, buktikan pesonamu!'",
+          "✨ [Rafayel]: 'Senyum manismu di depan kamera adalah magnet keberuntungan paling kuat di seluruh Lemuria. Tampil percaya diri!'",
+          "🎨 [Rafayel]: 'Kamu itu karya seni terindah yang pernah kulihat. Selesaikan sesi live-mu dengan anggun ya!'",
+          "🌊 [Rafayel]: 'Shift siaranmu masih lama ya? Cepat selesaikan dong... setelah ini kamu harus menemaniku jalan-jalan ke tepi pantai!'",
+          "🥞 [Rafayel]: 'Habis live jangan lupa jajan pancake manis atau cokelat ya! Kalau kamu mau, aku yang pesankan sekarang!'",
+          "💎 [Rafayel]: 'Berapa pun target GMV hari ini, kamu pasti bisa melampauinya. Tapi ingat, kesehatanmu nomor satu bagiku!'",
+          "🔱 [Rafayel]: 'Resonansi Evol air kita selaras 100%. Jangan khawatir, aku selalu mengawasimu dari kejauhan.'",
+          "🌸 [Rafayel]: 'Tarik napas dalam-dalam, Putri Duyungku! Tampil apa adanya saja, semua audiens pasti terpikat padamu!'",
+          "🎨 [Rafayel]: 'Warna senja di Linkon City memang indah, tapi kilau matamu saat menyapa viewers jauh lebih memikat pandanganku.'",
+          "🌊 [Rafayel]: 'Hei, jangan lupa peregangan di jeda shift! Aku tidak mau pengawalku pinggangnya pegal-pegal setelah siaran.'",
+          "☕ [Rafayel]: 'Sudah makan siang belum? Kalau kamu sampai lemas di depan kamera, aku sendiri yang akan datang membawakan bekal!'",
+          "🐚 [Rafayel]: 'Setiap kata yang kamu ucapkan di live room mengalir begitu natural. Kamu memang dilahirkan untuk bersinar, Alisya.'",
+          "✨ [Rafayel]: 'Audiens hari ini pasti sangat beruntung bisa melihat senyum manismu selama berjam-jam. Bikin aku sedikit cemburu, tahu!'",
+          "🎨 [Rafayel]: 'Jangan terlalu memikirkan angka penjualan. Tampilkan saja energimu yang ceria, rezeki pasti akan mengalir deras!'",
+          "🌊 [Rafayel]: 'Tenggorokanmu aman kan? Pokoknya kamu harus janji minum air yang banyak, jangan bikin aku cemas terus!'",
+          "🥞 [Rafayel]: 'Kalau ada komentar penonton yang membuatmu kesal, abaikan saja. Kamu jauh lebih berharga daripada opini mereka.'",
+          "💎 [Rafayel]: 'Kerja kerasmu hari ini luar biasa! Nanti malam, studio seni Lemuria khusus dibuka hanya untuk menyambut kepulanganmu.'",
+          "🔱 [Rafayel]: 'Kamu adalah inspirasi terbesarku. Melihatmu bersemangat membuatku ingin melukis seribu kanvas baru!'",
+          "🌸 [Rafayel]: 'Semprotkan parfum aroma laut favoritmu dulu sebelum mulai. Biar auramu makin segar dan memikat seluruh studio!'",
+          "🎨 [Rafayel]: 'Lelah? Sandarkan kepalamu sebentar. Nona Pengawal juga berhak dimanjakan setelah seharian berjuang keras.'",
+          "🌊 [Rafayel]: 'Ombak samudera berbisik tenang membawakan doa terbaik untuk kelancaran sesi siaran langsungmu hari ini.'",
+          "🐚 [Rafayel]: 'Kamu tahu kenapa aku selalu menunggumu selesai shift? Karena Linkon City terasa membosankan tanpa kehadiranmu.'",
+          "✨ [Rafayel]: 'Pasang earphone-mu baik-baik, dengarkan musiknya, dan nikmati setiap detik di depan kamera. Kamu pasti bisa!'",
+          "🥞 [Rafayel]: 'Hadiah manis apa yang kamu inginkan hari ini? Tahu kocek pedas atau es cokelat? Sebutkan saja, Putri Duyungku!'",
+          "💎 [Rafayel]: 'Pertahankan ritmemu, jangan terburu-buru. Semua target shift ini akan kamu taklukkan satu demi satu dengan mudah.'",
+          "🔱 [Rafayel]: 'Energi Lemuria melindungimu dari rasa lelah. Tetap tersenyum, Nona Pengawal andalanku!'",
+          "🌸 [Rafayel]: 'Kamu hebat sekali sudah bertahan dan konsisten sejauh ini. Aku sangat bangga padamu, Alisya.'",
+          "🎨 [Rafayel]: 'Selesai siaran langsung istirahat total ya! Jangan begadang lagi, atau besok pagi aku bangunkan dengan cipratan air!'",
+          "🌊 [Rafayel]: 'Jangan menahan haus hanya karena siaran sedang ramai! Botol airmu harus selalu dalam jangkauan tanganmu.'",
+          "🐚 [Rafayel]: 'Kalau kamu merasa gugup, ingat bahwa ada seniman Lemuria jenius yang selalu bersorak paling keras untukmu.'",
+          "✨ [Rafayel]: 'Cahaya studio hari ini menyorotmu dengan sempurna. Tapi pancaran rasa percaya dirimu jauh lebih berkilau!'",
+          "🥞 [Rafayel]: 'Nanti kalau shift malammu selesai, temani aku makan camilan tengah malam ya? Nona Pengawal tidak boleh menolak!'",
+          "🎨 [Rafayel]: 'Harimu adalah sebuah mahakarya yang sedang kamu lukis sendiri. Buat setiap goresannya penuh dengan kebahagiaan!'"
         ]
       },
       en: {
@@ -1592,6 +2181,64 @@ function App() {
         const ss = String(nowTime.getSeconds()).padStart(2, '0');
         return `${hh}:${mm}:${ss}`;
       }, [nowTime]);
+  // 🎵 PENGATURAN BGM LOVE AND DEEPSPACE
+      const [bgmPlaying, setBgmPlaying] = useState(false);
+      const [hasEntered, setHasEntered] = useState(false);
+      const bgmAudioRef = useRef(null);
+
+      // Tempelkan Link Berbagi file MP3 Sarah Brightman dari Google Drive kamu di sini
+    const LND_THEME_BGM_URL = "https://files.catbox.moe/uai2i2.mp3";
+ // 🎨 STIKER CHIBI RAFAYEL
+const RAFAYEL_CHIBI_STICKER = "https://images.weserv.nl/?url=files.catbox.moe/ne8vfq.jpg";
+      // Konversi link Drive ke streaming audio langsung
+      const getDirectAudioLink = (driveUrl) => {
+        if (!driveUrl) return '';
+        const match = driveUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || driveUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+          return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+        }
+        return driveUrl;
+      };
+
+     const handleEnterTerminal = () => {
+        setHasEntered(true);
+        try {
+          if (!bgmAudioRef.current) {
+            const directUrl = getDirectAudioLink(LND_THEME_BGM_URL);
+            const audio = new Audio(directUrl);
+            audio.loop = true;
+            audio.volume = 0.5;
+            audio.preload = "auto";
+            bgmAudioRef.current = audio;
+          }
+          bgmAudioRef.current.load();
+          const playPromise = bgmAudioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              setBgmPlaying(true);
+            }).catch(err => {
+              console.log("Interaksi layar dibutuhkan:", err);
+            });
+          }
+        } catch (e) {
+          console.log("Audio unlock:", e);
+        }
+      };
+
+      const toggleBGM = (e) => {
+        e.stopPropagation();
+        if (!bgmAudioRef.current) {
+          handleEnterTerminal();
+          return;
+        }
+        if (bgmPlaying) {
+          bgmAudioRef.current.pause();
+          setBgmPlaying(false);
+        } else {
+          bgmAudioRef.current.play();
+          setBgmPlaying(true);
+        }
+      };
 
       // State 2 Bahasa Utama (id & en)
       const [lang, setLang] = useState(() => {
@@ -1617,9 +2264,24 @@ function App() {
       const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * TRANSLATIONS.id.affirmations.length));
       const [sparkles, setSparkles] = useState([]);
       const [wellnessOpen, setWellnessOpen] = useState(true);
+  // 🎲 TIMER OTOMATIS: Mengacak dialog Rafayel secara random tiap 9 detik (tanpa duplikat berurutan)
+      useEffect(() => {
+        const autoQuoteTimer = setInterval(() => {
+          setQuoteIdx(prev => {
+            const total = t.affirmations.length;
+            if (total <= 1) return 0;
+            let next;
+            do {
+              next = Math.floor(Math.random() * total);
+            } while (next === prev); // Pastikan dialog berikutnya selalu berbeda dari yang sedang tampil
+            return next;
+          });
+        }, 9000); // Berganti acak tiap 9 detik
+        return () => clearInterval(autoQuoteTimer);
+      }, [t.affirmations]);
 
       const triggerCuteSparkles = () => {
-        const emojis = ['💖', '✨', '🌸', '🎀', '🌷', '👑', '🍓', '💫', '🍒', '🧁', '💧', '🐱'];
+      const emojis = ['🔱', '🔴', '🌊', '🍷', '💎', '✨', '🟣', '🐾', '🖤', '🎨'];
         const batch = Array.from({ length: 16 }).map((_, i) => ({
           id: Date.now() + '_' + i,
           emoji: emojis[Math.floor(Math.random() * emojis.length)],
@@ -1630,6 +2292,14 @@ function App() {
         setTimeout(() => setSparkles([]), 1650);
       };
 
+      // Daftar file suara Sylus & Rafayel
+      const LND_VOICE_CLIPS = [
+        "audio/sylus_1.mp3",
+        "audio/sylus_2.mp3",
+        "audio/rafael_1.mp3",
+        "audio/rafael_2.mp3"
+      ];
+
       const handleBoostMood = () => {
         setQuoteIdx(prev => {
           let next = Math.floor(Math.random() * t.affirmations.length);
@@ -1637,7 +2307,16 @@ function App() {
           return next;
         });
         triggerCuteSparkles();
-        playNotificationChime();
+
+        // 🔊 Putar suara acak Sylus / Rafayel
+        try {
+          const randomVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
+          const audio = new Audio(randomVoice);
+          audio.volume = 0.7; 
+audio.play().catch(() => playNotificationChime());
+        } catch (err) {
+          playNotificationChime(); // Cadangan jika file belum ada
+        }
       };
 
       // State Mood, Hydration Log, Mekel Makan/Minum, Beauty Prep & Self-Reward per Tanggal
@@ -1895,15 +2574,23 @@ function App() {
         }
       };
 
+      // 📱💻 DETEKSI OTOMATIS: HP -> Mode HP, Laptop/PC -> Mode PC
       const [displayMode, setDisplayMode] = useState(() => {
-        const saved = localStorage.getItem('alisya_display_mode');
-        if (saved) return saved;
-        return window.innerWidth < 768 ? 'mobile' : 'pc';
+        return window.innerWidth < 1024 ? 'mobile' : 'pc';
       });
+
+      // Otomatis menyesuaikan jika ukuran jendela browser berubah / layar HP diputar
+      useEffect(() => {
+        const handleAutoResize = () => {
+          const newMode = window.innerWidth < 1024 ? 'mobile' : 'pc';
+          setDisplayMode(newMode);
+        };
+        window.addEventListener('resize', handleAutoResize);
+        return () => window.removeEventListener('resize', handleAutoResize);
+      }, []);
 
       const handleSetDisplayMode = (mode) => {
         setDisplayMode(mode);
-        localStorage.setItem('alisya_display_mode', mode);
       };
 
       const [activeTab, setActiveTab] = useState('agenda');
@@ -2509,76 +3196,76 @@ function App() {
         const todayWater = currentDayWellness.water || 0;
         const currentHour = nowTime.getHours();
 
-        // 🩺 PRIORITAS 0: JIKA HARI INI TERCATAT SAKIT / IZIN MEDIS
+        // 🩺 STATUS 0: SAKIT / IZIN MEDIS
         const isSakitHariIni = selectedDaySchedules.some(s => 
           s.brand_id === 'b_sakit' || s.status === 'SAKIT' || s.status === 'Sakit'
         );
         if (isSakitHariIni) {
           return {
-            tag: "💊 ISTIRAHAT TOTAL",
-            text: "Hari ini tercatat izin sakit. Fokus bedrest, konsumsi obat, dan cepat pulih ya Alisya! 🌸",
-            badge: "bg-rose-100 text-rose-900 border-rose-300",
-            icon: "🤒"
+            tag: "🔴 N109 ZONE MEDICAL DIRECTIVE",
+            text: "[Sylus]: 'Status fisikmu tidak layak bertugas hari ini. Istirahat total di kasur, Sweetheart. Semua urusan di luar biar Mephisto yang bereskan.'",
+            badge: "bg-red-950/70 text-rose-200 border-red-500/50",
+            icon: "🍷"
           };
         }
 
-        // 1. Prioritas Utama: Sesi Live (< 45 Menit)
+        // 🚨 STATUS 1: LIVE BERLANGSUNG < 45 MENIT
         if (liveTracker.nextItem && liveTracker.nextItem.startsInMin <= 45 && liveTracker.nextItem.startsInMin > 0) {
           return {
-            tag: "⏰ SIAP-SIAP LIVE",
-            text: `Shift "${liveTracker.nextItem.title}" mulai ${liveTracker.nextItem.startsInMin} mnt lagi (${liveTracker.nextItem.start_time} WIB). Cek baterai HP! 💄`,
-            badge: "bg-rose-500 text-white",
-            icon: "🚨"
+            tag: "⚡ TRANSMISI SIAGA LIVE",
+            text: `[Sylus]: 'Siaran "${liveTracker.nextItem.title}" dimulai ${liveTracker.nextItem.startsInMin} menit lagi (${liveTracker.nextItem.start_time} WIB). Pasang senyum terbaikmu dan kuasai panggung, Kitten.'`,
+            badge: "bg-red-600 text-white shadow-[0_0_15px_rgba(229,9,20,0.6)]",
+            icon: "🔴"
           };
         }
 
-        // 2. Prioritas Kedua: Peringatan Jeda Istirahat Terlalu Singkat (Burnout & Pita Suara)
+        // ⚠️ STATUS 2: JEDA ANTAR SHIFT TERLALU SINGKAT (< 5 JAM)
         if (shortBreakWarnings[realTodayStr]) {
           return {
-            tag: "🛡️ HEALTH GUARD",
-            text: "Jeda antar shift hari ini cukup padat (<5 jam). Manfaatkan jeda kosong buat rebahan & istirahatkan pita suara ya Alisya! 🌸",
-            badge: "bg-amber-100 text-amber-950 border-amber-300",
-            icon: "⚠️"
+            tag: "🟣 LEMURIAN WARNING",
+            text: "[Rafayel]: 'Jadwalmu rapat sekali hari ini! Pokoknya di jeda antar shift kamu harus rebahan dan hemat suaramu, jangan memaksakan diri ya Nona Pengawal!'",
+            badge: "bg-amber-950/70 text-amber-200 border-amber-400/50",
+            icon: "🎨"
           };
         }
 
-        // 3. Prioritas Ketiga: Hidrasi Air Putih
+        // 🥤 STATUS 3: TARGET HIDRASI AIR BELUM TERCAPAI
         if (todayWater < 8) {
           const sisaGelas = 8 - todayWater;
-          let waktuPesan = "Yuk minum segelas air putih biar tenggorokan tetap segar!";
-          if (currentHour >= 18) waktuPesan = "Sudah malam nih, genapkan target 8 gelas biar kulit tetap lembap & glowing!";
-          
+          let lineRafayel = "Minum segelas air putih sekarang, tenggorokanmu itu aset paling berharga saat siaran!";
+          if (currentHour >= 18) lineRafayel = "Sudah malam dan energimu menipis! Genapkan 8 gelas sekarang sebelum aku ngambek seharian!";
+
           return {
-            tag: "💧 TARGET HIDRASI",
-            text: `Baru minum ${todayWater}/8 gelas (${todayWater * 250}ml). Kurang ${sisaGelas} gelas lagi. ${waktuPesan}`,
-            badge: "bg-sky-100 text-sky-950 border-sky-300",
-            icon: "🥤"
+            tag: "💧 PROTOKOL HIDRASI LEMURIA",
+            text: `[Rafayel]: 'Baru ${todayWater}/8 gelas terisi (${todayWater * 250}ml). Kurang ${sisaGelas} gelas lagi! ${lineRafayel}'`,
+            badge: "bg-teal-950/70 text-teal-200 border-teal-400/50",
+            icon: "🌊"
           };
         }
 
-        // 4. Prioritas Keempat: Ceklis Video Affiliate Belum Selesai Hari Ini
+        // 🎬 STATUS 4: CEKLIS VIDEO AFFILIATE
         const pendingKonten = selectedDaySchedules.find(s => 
           (s.brand_id === 'b_konten' || s.status === 'Konten') && 
           (!s.checklist || !s.checklist.upload)
         );
         if (pendingKonten) {
           return {
-            tag: "🎬 PROGRES KONTEN",
-            text: `Ada agenda konten "${pendingKonten.title}" yang belum tuntas di-upload hari ini. Ceklis progresnya ya! ✨`,
-            badge: "bg-purple-100 text-purple-950 border-purple-300",
+            tag: "📡 DIREKTIF KONTEN LINKON",
+            text: `[Evol Terminal]: 'Agenda "${pendingKonten.title}" belum selesai di-upload. Selesaikan produksi visualmu dengan gaya khas Hunter Alisya!'`,
+            badge: "bg-purple-950/70 text-purple-200 border-purple-400/50",
             icon: "🎬"
           };
         }
 
-        // 5. Kondisi Ideal: Semua Target Tercapai
+        // 👑 STATUS 5: FOKUS UTAMA & REKAP HARIAN
         return {
-          tag: "📌 FOKUS UTAMA",
-          text: stickyNote,
-          badge: "bg-pink-100 text-maroon border-pink-300",
-          icon: "👑"
+          tag: "🌌 LINKON DISPATCH DIRECTIVE",
+          text: `[Sylus & Rafayel]: "${stickyNote}"`,
+          badge: "bg-[#140E20] text-purple-200 border-purple-500/40",
+          icon: "✨"
         };
       }, [currentDayWellness, liveTracker.nextItem, shortBreakWarnings, realTodayStr, nowTime, selectedDaySchedules, stickyNote]);
-
+  
       // 🔔 Fungsi Kirim Pengingat Tembus Latar Belakang Layar HP
       const sendReminderToDeviceNotification = async () => {
         playNotificationChime();
@@ -2750,27 +3437,33 @@ function App() {
       const princessProductivity = useMemo(() => {
         const workHours = (stats.totalLiveHours || 0) + (stats.totalKontenHours || 0);
         const restHours = (stats.totalSleepHours || 0) + (stats.totalMeTimeHours || 0);
-        
-        let score = 85;
-        let title = "Slay Mode On! ✨";
-        let message = "Semua porsi kerja dan istirahatmu sangat seimbang dan luar biasa!";
-        let badgeColor = "bg-pink-100 text-pink-900 border-pink-300";
 
+        // Default: Resonansi Stabil
+        let score = 88;
+        let title = "RANK S • RESONANSI EVOL STABIL ✨";
+        let message = "🟣 [Rafayel]: 'Ritme siaranmu hari ini sangat indah bagai sapuan warna di atas kanvas! Nona Pengawal memang yang terbaik~'";
+        let badgeColor = "bg-purple-950/60 text-purple-200 border-purple-400/50";
+
+        // Kasus 1: Kerja Berlebih (>12 Jam) -> Sylus Mengambil Alih
         if (workHours > 12) {
-          score = 70;
-          title = "High Grind Alert 🔥";
-          message = "Wah, kerja keras banget! Jangan lupa luangkan waktu buat istirahat ya.";
-          badgeColor = "bg-amber-100 text-amber-900 border-amber-300";
-        } else if (restHours < 6 && statPeriod === 'daily') {
-          score = 60;
-          title = "Need More Rest 🥺";
-          message = "Waktu tidur atau me time-nya kurang nih. Yuk jaga kesehatan biar tetap glowing!";
-          badgeColor = "bg-rose-100 text-rose-900 border-rose-300";
-        } else if (workHours >= 4 && restHours >= 7) {
-          score = 98;
-          title = "Queen Balance 👑";
-          message = "Produktivitas juara! Target tercapai dan tubuh tetap bugar. Proud of you!";
-          badgeColor = "bg-purple-100 text-purple-900 border-purple-300";
+          score = 68;
+          title = "RANK B • PERINGATAN OVERWORK SYLUS 🔥";
+          message = "🔴 [Sylus]: 'Kitten, siapa yang mengizinkanmu berdiri di depan kamera lebih dari 12 jam? Matikan layarmu sekarang, atau aku sendiri yang datang menyeretmu pulang ke N109 Zone.'";
+          badgeColor = "bg-red-950/60 text-rose-200 border-red-500/50 shadow-[0_0_12px_rgba(229,9,20,0.3)]";
+        } 
+        // Kasus 2: Kurang Istirahat (<6 Jam) -> Rafayel Merajuk & Khawatir
+        else if (restHours < 6 && statPeriod === 'daily') {
+          score = 58;
+          title = "RANK C • PROTOKOL LEMURIA DEFISIT TIDUR ⚠️";
+          message = "🟣 [Rafayel]: 'Alisya! Waktu tidurmu kurang dari 6 jam?! Kalau sampai matamu berkantung dan jatuh sakit, siapa yang bakal menemaniku ke pantai? Tidur sekarang juga, aku nggak mau dengar alasan!'";
+          badgeColor = "bg-amber-950/60 text-amber-200 border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]";
+        } 
+        // Kasus 3: Keseimbangan Sempurna (Kerja Cukup & Tidur Nyenyak) -> Pujian Bersama
+        else if (workHours >= 4 && restHours >= 7) {
+          score = 99;
+          title = "RANK SS • EVOL RESONANCE 100% 👑";
+          message = "🔴 [Sylus]: 'Kerja bagus, Sweetheart. Efisiensimu sempurna.' • 🟣 [Rafayel]: 'Luar biasa! Sebagai hadiahnya, nanti malam studio seni Lemuria khusus dibuka hanya untukmu!'";
+          badgeColor = "bg-gradient-to-r from-red-950/60 via-purple-950/60 to-teal-950/60 text-teal-200 border-teal-400/50 shadow-[0_0_15px_rgba(45,212,191,0.3)]";
         }
 
         return { score, title, message, badgeColor };
@@ -3270,7 +3963,11 @@ function App() {
       const renderCompactGreetingStrip = () => (
         <div className="bg-white/15 backdrop-blur-xs rounded-2xl px-3.5 py-3 border border-pink-200/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs w-full min-w-0">
           <div className="flex items-start gap-2 min-w-0 flex-1 w-full">
-            <span className="text-base shrink-0 cute-float" aria-hidden="true">🎀</span>
+          <img 
+  src={RAFAYEL_CHIBI_STICKER} 
+  alt="Rafayel" 
+  className="w-10 h-10 object-contain shrink-0 cute-float drop-shadow-md select-none" 
+/>
             <div className="flex flex-col gap-1 min-w-0 flex-1 w-full">
               <span className="font-black text-pink-200 whitespace-normal break-words leading-snug">
                 {cuteGreeting}
@@ -3762,6 +4459,35 @@ function App() {
 
       return (
         <div className="min-h-screen flex flex-col relative">
+    {/* 🔱 SPLASH SCREEN: DIVING INTO LEMURIA (RAFAYEL SANCTUARY) */}
+      {!hasEntered && (
+         <div 
+           onClick={handleEnterTerminal}
+           onTouchStart={handleEnterTerminal}
+           className="fixed inset-0 z-50 bg-[#040914]/95 backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-700"
+         >
+           <div className="text-center space-y-4 animate-pulse">
+             <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-teal-400 via-cyan-400 to-purple-600 p-0.5 shadow-[0_0_35px_rgba(45,212,191,0.6)]">
+               <div className="w-full h-full bg-[#081526] rounded-3xl p-2 flex items-center justify-center">
+  <img src={RAFAYEL_CHIBI_STICKER} alt="Rafayel Lemuria" className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(45,212,191,0.6)]" />
+</div>
+             </div>
+             <div>
+               <h2 className="text-xl md:text-2xl font-black tracking-widest text-white uppercase">
+                 Lemurian Sanctuary
+               </h2>
+               <p className="text-xs font-mono text-teal-300 tracking-wider mt-1">
+                 [ RAFAYEL'S ATELIER • HUNTER ALISYA ON-DUTY ]
+               </p>
+             </div>
+             <div className="pt-8">
+               <span className="inline-block px-6 py-2.5 rounded-full border border-teal-400/50 bg-teal-500/15 text-white font-mono text-xs font-black tracking-widest shadow-[0_0_22px_rgba(45,212,191,0.5)]">
+                 DIVING INTO LEMURIA 🌊 ❯
+               </span>
+             </div>
+           </div>
+         </div>
+       )}
           {/* ANIMASI TABURAN HATI & BINTANG IMUT */}
           <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
             {sparkles.map(sp => (
@@ -3824,9 +4550,9 @@ function App() {
           {/* HEADER UTAMA */}
           <header className="bg-gradient-to-r from-maroon via-[#8B1538] to-maroon text-white px-4 md:px-6 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg sticky top-0 z-40 border-b-2 border-pink-300/30">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-pink-200/20 flex items-center justify-center font-black text-rose-200 text-xl border border-pink-200/40 shadow-inner cute-float">
-                🎀
-              </div>
+             <div className="w-10 h-10 rounded-2xl bg-teal-500/20 p-1 flex items-center justify-center border border-teal-400/40 shadow-inner cute-float">
+  <img src={RAFAYEL_CHIBI_STICKER} alt="Rafayel" className="w-full h-full object-contain" />
+</div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-extrabold text-base tracking-wide flex items-center gap-1.5">
@@ -3888,7 +4614,7 @@ function App() {
                 <span>{soundAlert ? '🔔' : '🔕'}</span>
               </button>
 
-              <div className="flex items-center bg-black/30 p-1 rounded-2xl border border-white/15 shadow-inner">
+         <div className="flex items-center bg-black/30 p-1 rounded-2xl border border-white/15 shadow-inner">
                 <button
                   onClick={() => handleSetDisplayMode('mobile')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${displayMode === 'mobile' ? 'bg-pink-100 text-maroon shadow-md' : 'text-rose-100 hover:text-white'}`}
@@ -3902,6 +4628,17 @@ function App() {
                   <span>💻</span><span>{t.modePC}</span>
                 </button>
               </div>
+
+              {/* 🎵 TOMBOL KONTROL BGM LOVE AND DEEPSPACE */}
+              <button
+                type="button"
+                onClick={toggleBGM}
+                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1.5 ${bgmPlaying ? 'bg-purple-600/30 text-purple-200 border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-black/30 text-slate-400 border-white/15'}`}
+                title="Putar / Jeda Musik Tema"
+              >
+                <span>{bgmPlaying ? '🔊' : '🔇'}</span>
+                <span className="hidden sm:inline">{bgmPlaying ? 'BGM ON' : 'BGM OFF'}</span>
+              </button>
             </div>
 
             {/* NAVIGASI BULAN & TAHUN */}
@@ -3958,51 +4695,51 @@ function App() {
             </div>
           </header>
 
-          {/* ========================================================= */}
-          {/* 🌟 EXECUTIVE REAL-TIME MARQUEE TICKER (FASHION OOTD PRO) */}
-          {/* ========================================================= */}
-          <div className="bg-gradient-to-r from-[#4A0A10] via-[#5C0D15] to-[#4A0A10] text-white border-b border-pink-300/30 py-2.5 overflow-hidden relative shadow-md z-30 select-none">
-            <div className="executive-ticker-track items-center gap-6 text-xs">
-              {[1, 2].map((loopId) => (
-                <div key={loopId} className="flex items-center gap-6 shrink-0">
-                  {/* Badge Verifikasi & Nama */}
-                  <div className="inline-flex items-center gap-1.5 bg-white/10 px-3.5 py-1 rounded-full border border-pink-200/30">
-                    <span className="text-amber-300 text-xs">✨</span>
-                    <span className="font-black text-pink-100 text-[11px] tracking-wider uppercase">
-                      Verified Fashion OOTD Host • Alisya
-                    </span>
-                  </div>
+{/* ========================================================= */}
+       {/* 🌌 LINKON CITY HUNTER DISPATCH TICKER (SYLUS x RAFAYEL)   */}
+       {/* ========================================================= */}
+       <div className="bg-gradient-to-r from-[#110D18] via-[#1C0F24] to-[#0A1220] text-white border-b border-purple-500/30 py-2.5 overflow-hidden relative shadow-md z-30 select-none">
+         <div className="executive-ticker-track items-center gap-6 text-xs">
+           {[1, 2].map((loopId) => (
+             <div key={loopId} className="flex items-center gap-6 shrink-0">
+               {/* Badge Otoritas Hunter */}
+               <div className="inline-flex items-center gap-1.5 bg-red-950/40 px-3.5 py-1 rounded-full border border-red-500/40 shadow-[0_0_12px_rgba(229,9,20,0.25)]">
+                 <span className="text-red-400 text-xs">🔴</span>
+                 <span className="font-black text-rose-100 text-[11px] tracking-wider uppercase">
+                   Linkon Hunter Terminal • Hunter Alisya
+                 </span>
+               </div>
 
-                  {/* Indikator Status Real-Time */}
-                  <div className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border text-[11px] font-black tracking-wide ${broadcastMetrics.availability.bg}`}>
-                    <span className={`w-2 h-2 rounded-full animate-ping ${broadcastMetrics.availability.dot}`} />
-                    <span>{broadcastMetrics.availability.badge}</span>
-                  </div>
+               {/* Status Resonansi Evol Real-Time */}
+               <div className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border text-[11px] font-black tracking-wide ${broadcastMetrics.availability.bg}`}>
+                 <span className={`w-2 h-2 rounded-full animate-ping ${broadcastMetrics.availability.dot}`} />
+                 <span>{broadcastMetrics.availability.badge}</span>
+               </div>
 
-                  {/* Akumulasi Jam & Hari On-Air (Detail Terperinci) */}
-                  <div className="inline-flex items-center gap-1.5 bg-black/40 px-3.5 py-1 rounded-full border border-white/15">
-                    <span className="text-xs">⏱️</span>
-                    <span className="font-bold text-slate-300 text-[11px]">Track Record:</span>
-                    <span className="font-mono font-black text-amber-300 text-[11px]">
-                      {broadcastMetrics.totalHours}+ Jam On-Air ({Math.round(broadcastMetrics.totalHours / 3.5)}+ Hari Siaran Aktif)
-                    </span>
-                  </div>
+               {/* Jam Terbang Protocore & Siaran */}
+               <div className="inline-flex items-center gap-1.5 bg-black/60 px-3.5 py-1 rounded-full border border-purple-400/30">
+                 <span className="text-xs">⚡</span>
+                 <span className="font-bold text-slate-300 text-[11px]">Protocore Flight Hours:</span>
+                 <span className="font-mono font-black text-amber-300 text-[11px]">
+                   {broadcastMetrics.totalHours}+ Jam ({Math.round(broadcastMetrics.totalHours / 3.5)}+ Hari Siaran Aktif)
+                 </span>
+               </div>
 
-                  {/* Pancingan Psikologis: Social Proof & Konversi Tinggi */}
-                  <div className="inline-flex items-center gap-1.5 bg-white/15 px-3.5 py-1 rounded-full border border-pink-200/30 text-rose-100 text-[11px] font-black">
-                    <span>🛍️ Speciality: High-Conversion Fashion Styling & Live OOTD Showcase</span>
-                  </div>
+               {/* Direktif Misi Siaran Lemurian & N109 Zone */}
+               <div className="inline-flex items-center gap-1.5 bg-purple-950/40 px-3.5 py-1 rounded-full border border-purple-400/30 text-teal-300 text-[11px] font-black">
+                 <span>🟣 Lemurian Protocol: High-Conversion Fashion & Live OOTD Showcase</span>
+               </div>
 
-                  {/* Pancingan Psikologis: Keamanan Brand / SLA */}
-                  <div className="inline-flex items-center gap-1.5 bg-white/10 px-3.5 py-1 rounded-full border border-pink-200/20 text-emerald-300 text-[11px] font-bold">
-                    <span>⭐ 100% On-Time Professional Attendance & Zero Cancellation Rate</span>
-                  </div>
+               {/* Jaminan Kedisiplinan Hunter */}
+               <div className="inline-flex items-center gap-1.5 bg-teal-950/40 px-3.5 py-1 rounded-full border border-teal-400/30 text-teal-200 text-[11px] font-bold">
+                 <span>🛡️ Hunter SLA: 100% On-Time Attendance & Zero Cancellation Rate</span>
+               </div>
 
-                  <span className="text-pink-300/40 text-sm font-light">•</span>
-                </div>
-              ))}
-            </div>
-          </div>
+               <span className="text-purple-400/40 text-sm font-light">•</span>
+             </div>
+           ))}
+         </div>
+       </div>
          {/* ========================================================= */}
           {/* 🔔 BAR PENGINGAT HARIAN OTOMATIS & NOTIFIKASI HP         */}
           {/* ========================================================= */}
@@ -4056,7 +4793,7 @@ function App() {
                     onClick={() => setPcSubTab('agenda')}
                     className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'agenda' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
-                    <span>🎀</span><span>{t.tabAgenda}</span>
+                  <span>🔱</span><span>{t.tabAgenda}</span>
                   </button>
                   <button
                     onClick={() => setPcSubTab('calendar')}
@@ -4247,8 +4984,8 @@ function App() {
                       <div className="lg:col-span-7 space-y-4">
                         <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border-2 border-pink-200/70 shadow-sm">
                           <span className="text-xs font-black uppercase text-maroon tracking-wider flex items-center gap-1.5">
-                            <span>🎀</span>
-                            <span>{t.sessionList} ({selectedDate}): {selectedDaySchedules.length}</span>
+                            <span>📡</span>
+<span>{t.sessionList} ({selectedDate}): {selectedDaySchedules.length}</span>
                           </span>
                           {selectedDaySchedules.length > 0 && (
                             <button
@@ -4402,9 +5139,9 @@ function App() {
                                       <span className="text-base font-black text-slate-900">{day}</span>
                                       <span className="text-xs uppercase text-slate-800">{dayName}</span>
                                       {isToday && (
-                                        <span className="bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-xs tracking-wider">
-                                          🎀 {t.todayBadge}
-                                        </span>
+                                        <span className="bg-teal-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-xs tracking-wider">
+  🔱 {t.todayBadge}
+</span>
                                       )}
                                       {hasShortBreak && (
                                         <span className="text-amber-600 text-xs font-bold" title={t.shortBreakWarning}>⚠️</span>
@@ -5164,7 +5901,7 @@ function App() {
                                       <span className={`text-[8.5px] font-black w-3 text-right ${isToday ? 'text-emerald-900 font-extrabold' : 'text-slate-900'}`}>{day}</span>
                                       <span className={`text-[7px] uppercase font-extrabold ${isToday ? 'text-emerald-800' : isWeekend ? 'text-rose-600' : 'text-slate-600'}`}>{dayName}</span>
                                       {isToday && (
-                                        <span className="text-[6.5px] leading-none ml-auto" title={t.todayBadge}>🎀</span>
+                                      <span className="text-[6.5px] leading-none ml-auto" title={t.todayBadge}>🔱</span>
                                       )}
                                     </div>
                                   </td>
@@ -5340,7 +6077,7 @@ function App() {
                 {activeTab === 'list' && (
                   <div className="bg-white rounded-3xl border-2 border-pink-200/70 shadow-sm p-4 space-y-3">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-black text-slate-800 text-sm">🎀 {t.allRegistered} ({filteredSchedules.length})</h3>
+                      <h3 className="font-black text-slate-800 text-sm">📋 {t.allRegistered} ({filteredSchedules.length})</h3>
                       <div className="flex items-center gap-2">
                         {(searchQuery || filterBrand !== 'ALL' || filterStatus !== 'ALL' || filterDate || filterHour !== 'ALL') && (
                           <button onClick={handleResetFilter} className="text-[11px] text-rose-600 font-bold hover:underline">Reset</button>
@@ -5568,9 +6305,9 @@ function App() {
           {pinInputModal && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
               <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xs p-6 text-center space-y-4 border-2 border-pink-200 animate-in zoom-in duration-150">
-                <div className="w-12 h-12 rounded-2xl bg-pink-100 text-maroon flex items-center justify-center text-2xl mx-auto font-black shadow-inner">
-                  🎀
-                </div>
+                <div className="w-12 h-12 rounded-2xl bg-teal-950/80 border border-teal-400 text-teal-300 flex items-center justify-center text-2xl mx-auto font-black shadow-inner">
+  🔐
+</div>
                 <div>
                   <h3 className="font-black text-base text-slate-800">{t.adminAccessTitle}</h3>
                   <p className="text-xs text-slate-500 mt-1">{t.adminAccessDesc}</p>
@@ -5605,8 +6342,8 @@ function App() {
               <div className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto border-2 border-pink-200 animate-in slide-in-from-bottom duration-200">
                 <div className="bg-gradient-to-r from-maroon to-rose-800 text-white p-4 flex justify-between items-center sticky top-0 z-10">
                   <h3 className="font-extrabold text-sm flex items-center gap-1.5">
-                    <span>🎀</span>
-                    <span>{selectedSchedule ? t.modalEditTitle : t.modalAddTitle}</span>
+                   <span>🔱</span>
+<span>{selectedSchedule ? t.modalEditTitle : t.modalAddTitle}</span>
                   </h3>
                   <button onClick={() => setModalOpen(false)} className="text-rose-200 hover:text-white font-bold text-lg">✕</button>
                 </div>
