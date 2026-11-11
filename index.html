@@ -2181,12 +2181,12 @@ function App() {
         const ss = String(nowTime.getSeconds()).padStart(2, '0');
         return `${hh}:${mm}:${ss}`;
       }, [nowTime]);
-  // 🎵 PENGATURAN BGM PLAYLIST GITHUB (7 TRACKS - RANDOM & AUTO-NEXT)
+ // 🎵 PENGATURAN BGM PLAYLIST GITHUB (7 TRACKS - PREV, NEXT, RANDOM & AUTO-NEXT)
   const [bgmPlaying, setBgmPlaying] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const bgmAudioRef = useRef(null);
 
-  // Daftar 7 lagu dari folder audio GitHub
+  // Daftar 7 lagu di folder audio GitHub
   const BGM_PLAYLIST = [
     "./audio/bgm1.mp3",
     "./audio/bgm2.mp3",
@@ -2197,7 +2197,7 @@ function App() {
     "./audio/bgm7.mp3"
   ];
 
-  // Indeks lagu acak pertama
+  // Penanda lagu yang sedang diputar
   const currentTrackIdxRef = useRef(Math.floor(Math.random() * BGM_PLAYLIST.length));
 
   // 🎨 DAFTAR SEMUA STIKER LENGKAP UNTUK DIACAK
@@ -2214,13 +2214,15 @@ function App() {
     "./img/rafael1.jpg"
   ];
 
-  // Fungsi pemutar musik playlist
+  // Fungsi utama pemutar lagu
   const playTrack = (index) => {
     try {
       if (!BGM_PLAYLIST || BGM_PLAYLIST.length === 0) return;
 
-      const trackUrl = BGM_PLAYLIST[index];
-      currentTrackIdxRef.current = index;
+      // Pastikan urutan selalu berputar (looping)
+      let validIndex = (index + BGM_PLAYLIST.length) % BGM_PLAYLIST.length;
+      currentTrackIdxRef.current = validIndex;
+      const trackUrl = BGM_PLAYLIST[validIndex];
 
       if (!bgmAudioRef.current) {
         const audio = new Audio(trackUrl);
@@ -2231,16 +2233,12 @@ function App() {
         bgmAudioRef.current.src = trackUrl;
       }
 
-      // Begitu 1 lagu selesai, otomatis lanjut ke lagu acak berikutnya
+      // Jika lagu selesai, otomatis putar lagu berikutnya
       bgmAudioRef.current.onended = () => {
-        let nextIdx = Math.floor(Math.random() * BGM_PLAYLIST.length);
-        if (BGM_PLAYLIST.length > 1 && nextIdx === currentTrackIdxRef.current) {
-          nextIdx = (currentTrackIdxRef.current + 1) % BGM_PLAYLIST.length;
-        }
-        playTrack(nextIdx);
+        handleNextTrack();
       };
 
-      // Sinkronkan tombol BGM ON / OFF
+      // Sinkronkan indikator tombol
       bgmAudioRef.current.onplay = () => setBgmPlaying(true);
       bgmAudioRef.current.onpause = () => setBgmPlaying(false);
 
@@ -2257,7 +2255,21 @@ function App() {
     }
   };
 
-  // 🌟 AUTO-PLAY: Langsung berbunyi di PC & otomatis unlock di HP saat pertama kali layar disentuh
+  // ⏭️ Fungsi Lagu Berikutnya
+  const handleNextTrack = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const nextIdx = (currentTrackIdxRef.current + 1) % BGM_PLAYLIST.length;
+    playTrack(nextIdx);
+  };
+
+  // ⏮️ Fungsi Lagu Sebelumnya
+  const handlePrevTrack = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const prevIdx = (currentTrackIdxRef.current - 1 + BGM_PLAYLIST.length) % BGM_PLAYLIST.length;
+    playTrack(prevIdx);
+  };
+
+  // 🌟 Auto-play di PC & otomatis unlock di HP saat pertama kali menyentuh layar
   useEffect(() => {
     playTrack(currentTrackIdxRef.current);
 
@@ -4714,16 +4726,39 @@ audio.play().catch(() => playNotificationChime());
                   <span>{soundAlert ? '🔔' : '🔕'}</span>
                 </button>
 
-                {/* BGM Love & Deepspace */}
-                <button
-                  type="button"
-                  onClick={toggleBGM}
-                  className={`px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition flex items-center gap-1.5 ${bgmPlaying ? 'bg-purple-600/40 text-purple-200 border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-black/30 text-slate-400 border-white/15'}`}
-                  title="BGM"
-                >
-                  <span>{bgmPlaying ? '🔊' : '🔇'}</span>
-                  <span className="hidden xl:inline">{bgmPlaying ? 'BGM ON' : 'BGM OFF'}</span>
-                </button>
+                {/* BGM Controller Ringkas: Prev ⏮️, Play/Pause 🔊, Next ⏭️ */}
+             <div className={`flex items-center gap-0.5 bg-black/30 p-0.5 rounded-xl md:rounded-2xl border transition shrink-0 ${bgmPlaying ? 'border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'border-white/15'}`}>
+               {/* Tombol Lagu Sebelumnya */}
+               <button
+                 type="button"
+                 onClick={handlePrevTrack}
+                 className="px-1.5 py-1 text-slate-300 hover:text-white rounded-lg active:scale-90 transition text-xs font-bold"
+                 title="Lagu Sebelumnya"
+               >
+                 ⏮️
+               </button>
+
+               {/* Tombol Play/Pause Utama */}
+               <button
+                 type="button"
+                 onClick={toggleBGM}
+                 className={`px-2 md:px-2.5 py-1 rounded-lg md:rounded-xl text-xs font-black transition flex items-center gap-1 ${bgmPlaying ? 'bg-purple-600/50 text-purple-100 shadow-xs' : 'text-slate-400 hover:text-slate-200'}`}
+                 title="Play / Pause BGM"
+               >
+                 <span>{bgmPlaying ? '🔊' : '🔇'}</span>
+                 <span className="hidden xl:inline">{bgmPlaying ? 'BGM ON' : 'BGM OFF'}</span>
+               </button>
+
+               {/* Tombol Lagu Berikutnya */}
+               <button
+                 type="button"
+                 onClick={handleNextTrack}
+                 className="px-1.5 py-1 text-slate-300 hover:text-white rounded-lg active:scale-90 transition text-xs font-bold"
+                 title="Lagu Berikutnya"
+               >
+                 ⏭️
+               </button>
+             </div>
 
                 {/* Switch Mode HP / PC */}
                 <div className="flex items-center bg-black/30 p-1 rounded-xl md:rounded-2xl border border-white/15 shadow-inner">
