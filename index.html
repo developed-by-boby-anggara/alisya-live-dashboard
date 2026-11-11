@@ -3281,80 +3281,103 @@ audio.play().catch(() => playNotificationChime());
           .filter(s => s.date === selectedDate)
           .sort((a, b) => a.start_time.localeCompare(b.start_time));
       }, [schedules, selectedDate]);
-     // 💡 ASISTEN PENGINGAT HARIAN KERJA & KESEHATAN LIVE HOST
+    // 🌊 ASISTEN PENGINGAT REAL-TIME ATELIER RAFAYEL (2 BAHASA & SMART HUD)
       const autoDailyReminder = useMemo(() => {
         const todayWater = currentDayWellness.water || 0;
         const currentHour = nowTime.getHours();
+        const mekelFood = currentDayWellness.mekelFood || 0;
+        const isEnglish = lang === 'en';
 
-        // 🩺 STATUS 0: SAKIT / IZIN MEDIS
+        // 🩺 KONDISI 1: STATUS SAKIT / IZIN MEDIS
         const isSakitHariIni = selectedDaySchedules.some(s => 
-          s.brand_id === 'b_sakit' || s.status === 'SAKIT' || s.status === 'Sakit'
+          s.brand_id === 'b_sakit' || s.status === 'SAKIT' || s.status === 'Sakit' || s.status === 'Sakit / Medis'
         );
         if (isSakitHariIni) {
           return {
-            tag: "🔴 N109 ZONE MEDICAL DIRECTIVE",
-            text: "[Sylus]: 'Status fisikmu tidak layak bertugas hari ini. Istirahat total di kasur, Sweetheart. Semua urusan di luar biar Mephisto yang bereskan.'",
-            badge: "bg-red-950/70 text-rose-200 border-red-500/50",
-            icon: "🍷"
+            tag: isEnglish ? "🚨 LEMURIAN MEDICAL DIRECTIVE" : "🚨 DIREKTIF MEDIS LEMURIA",
+            text: isEnglish 
+              ? "[Rafayel]: 'My bodyguard is sick?! Stop looking at screens and stay in bed, understand? If you push yourself, I will swim over and lock your phone away!'"
+              : "[Rafayel]: 'Nona Pengawalku sakit?! Jangan berani-berani memikirkan live atau layar kamera dulu! Istirahat total di kasur sekarang, atau aku yang akan datang menyita ponselmu!'",
+            badge: "bg-rose-950/80 text-rose-200 border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.4)]",
+            icon: "🩺"
           };
         }
 
-        // 🚨 STATUS 1: LIVE BERLANGSUNG < 45 MENIT
+        // ⚡ KONDISI 2: HITUNG MUNDUR JELANG SHIFT LIVE (< 45 MENIT)
         if (liveTracker.nextItem && liveTracker.nextItem.startsInMin <= 45 && liveTracker.nextItem.startsInMin > 0) {
+          const shiftTitle = liveTracker.nextItem.title;
+          const mins = liveTracker.nextItem.startsInMin;
+          const jamMulai = liveTracker.nextItem.start_time;
           return {
-            tag: "⚡ TRANSMISI SIAGA LIVE",
-            text: `[Sylus]: 'Siaran "${liveTracker.nextItem.title}" dimulai ${liveTracker.nextItem.startsInMin} menit lagi (${liveTracker.nextItem.start_time} WIB). Pasang senyum terbaikmu dan kuasai panggung, Kitten.'`,
-            badge: "bg-red-600 text-white shadow-[0_0_15px_rgba(229,9,20,0.6)]",
-            icon: "🔴"
-          };
-        }
-
-        // ⚠️ STATUS 2: JEDA ANTAR SHIFT TERLALU SINGKAT (< 5 JAM)
-        if (shortBreakWarnings[realTodayStr]) {
-          return {
-            tag: "🟣 LEMURIAN WARNING",
-            text: "[Rafayel]: 'Jadwalmu rapat sekali hari ini! Pokoknya di jeda antar shift kamu harus rebahan dan hemat suaramu, jangan memaksakan diri ya Nona Pengawal!'",
-            badge: "bg-amber-950/70 text-amber-200 border-amber-400/50",
-            icon: "🎨"
-          };
-        }
-
-        // 🥤 STATUS 3: TARGET HIDRASI AIR BELUM TERCAPAI
-        if (todayWater < 8) {
-          const sisaGelas = 8 - todayWater;
-          let lineRafayel = "Minum segelas air putih sekarang, tenggorokanmu itu aset paling berharga saat siaran!";
-          if (currentHour >= 18) lineRafayel = "Sudah malam dan energimu menipis! Genapkan 8 gelas sekarang sebelum aku ngambek seharian!";
-
-          return {
-            tag: "💧 PROTOKOL HIDRASI LEMURIA",
-            text: `[Rafayel]: 'Baru ${todayWater}/8 gelas terisi (${todayWater * 250}ml). Kurang ${sisaGelas} gelas lagi! ${lineRafayel}'`,
-            badge: "bg-teal-950/70 text-teal-200 border-teal-400/50",
+            tag: isEnglish ? "⚡ TRANSMISSION: BROADCAST STANDBY" : "⚡ TRANSMISI SIAGA SIARAN",
+            text: isEnglish
+              ? `[Rafayel]: '${shiftTitle}' starts in ${mins} minutes (${jamMulai} WIB)! Grab your ocean tumbler, take a deep breath, and let Linkon City see your brightest smile~'`
+              : `[Rafayel]: 'Sesi "${shiftTitle}" mulai ${mins} menit lagi (${jamMulai} WIB)! Siapkan botol air samudera, semprotkan parfum favoritmu, dan tunjukkan pesona terbaikmu ya Nona Pengawal~'`,
+            badge: "bg-teal-950/80 text-teal-200 border-teal-400/60 shadow-[0_0_15px_rgba(45,212,191,0.4)]",
             icon: "🌊"
           };
         }
 
-        // 🎬 STATUS 4: CEKLIS VIDEO AFFILIATE
-        const pendingKonten = selectedDaySchedules.find(s => 
-          (s.brand_id === 'b_konten' || s.status === 'Konten') && 
-          (!s.checklist || !s.checklist.upload)
-        );
-        if (pendingKonten) {
+        // 💧 KONDISI 3: DEFISIT HIDRASI AIR BERSIH (< 8 GELAS)
+        if (todayWater < 8) {
+          const sisaGelas = 8 - todayWater;
+          let quoteAir = "";
+          if (currentHour >= 20) {
+            quoteAir = isEnglish 
+              ? `It's already night and you're at ${todayWater}/8 glasses! Drink a warm glass now before I get genuinely worried.` 
+              : `Sudah malam tapi baru ${todayWater}/8 gelas! Cepat minum segelas lagi sekarang, jangan sampai tenggorokanmu serak dan bikin aku cemas terus!`;
+          } else if (currentHour >= 12) {
+            quoteAir = isEnglish 
+              ? `Only ${todayWater}/8 glasses logged. Keep your vocal cords hydrated, pretty mermaid!` 
+              : `Baru ${todayWater}/8 gelas (${todayWater * 250}ml). Suaramu itu aset paling berharga di Linkon City, teguk segelas air sekarang!`;
+          } else {
+            quoteAir = isEnglish 
+              ? `Morning hydration check! Fill your glass to start a colorful Lemurian day!` 
+              : `Awali pagimu dengan segelas air bersih! Resonansi Lemuria butuh asupan hidrasi segar agar energimu menyala 100%!`;
+          }
+
           return {
-            tag: "📡 DIREKTIF KONTEN LINKON",
-            text: `[Evol Terminal]: 'Agenda "${pendingKonten.title}" belum selesai di-upload. Selesaikan produksi visualmu dengan gaya khas Hunter Alisya!'`,
-            badge: "bg-purple-950/70 text-purple-200 border-purple-400/50",
-            icon: "🎬"
+            tag: isEnglish ? "💧 LEMURIAN HYDRATION PROTOCOL" : "💧 PROTOKOL HIDRASI LEMURIA",
+            text: `[Rafayel]: '${quoteAir} (Kurang ${sisaGelas} gelas lagi)'`,
+            badge: "bg-cyan-950/80 text-cyan-200 border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.3)]",
+            icon: "🥤"
           };
         }
 
-        // 👑 STATUS 5: FOKUS UTAMA & REKAP HARIAN
+        // 🐱 KONDISI 4: MEKEL & MEPHISTO BUTUH RANSUM
+        if (mekelFood < 2) {
+          return {
+            tag: isEnglish ? "🐾 COMPANION CARE DIRECTIVE" : "🐾 PERHATIAN SAHABAT LEMURIAN",
+            text: isEnglish
+              ? `[Rafayel]: 'Mekel & Mephisto are purring at their food bowls! Take a sweet pause and feed them some treats, Alisya.'`
+              : `[Rafayel]: 'Mekel dan Mephisto daritadi menatap mangkuknya sambil mengeong lho. Sempatkan beri ransum laut segar untuk mereka ya, Putri Duyungku.'`,
+            badge: "bg-amber-950/80 text-amber-200 border-amber-400/50",
+            icon: "🐟"
+          };
+        }
+
+        // 🌙 KONDISI 5: WAKTU LARUT MALAM / BEGADANG (JAM 23:00 - 04:00)
+        if (currentHour >= 23 || currentHour < 4) {
+          return {
+            tag: isEnglish ? "🌙 DEEP SEA REST PROTOCOL" : "🌙 PROTOKOL ISTIRAHAT SAMUDERA",
+            text: isEnglish
+              ? `[Rafayel]: 'Shift is over, little guard. Put down that phone and close your eyes. Even the tides rest at midnight—I won't let you stay up late!'`
+              : `[Rafayel]: 'Shift-mu sudah selesai kan? Jangan menatap layar terus dan cepat tidur! Ombak Lemuria saja beristirahat di malam hari, kamu tidak boleh begadang!'`,
+            badge: "bg-indigo-950/80 text-indigo-200 border-indigo-400/50 shadow-[0_0_12px_rgba(99,102,241,0.3)]",
+            icon: "🎨"
+          };
+        }
+
+        // ✨ KONDISI 6: HARMONI SEMPURNA & AFIRMASI
         return {
-          tag: "🌌 LINKON DISPATCH DIRECTIVE",
-          text: `[Sylus & Rafayel]: "${stickyNote}"`,
-          badge: "bg-[#140E20] text-purple-200 border-purple-500/40",
-          icon: "✨"
+          tag: isEnglish ? "🔱 LEMURIA HARMONY RESONANCE" : "🔱 RESONANSI HARMONI LEMURIA",
+          text: isEnglish
+            ? `[Rafayel]: 'Hydration 100%, companion happy, and schedule flowing like gentle waves. You're doing magnificently today, my dear guard.'`
+            : `[Rafayel]: 'Target air tercapai, Mekel kenyang, dan ritme jadwalmu mengalir anggun bagai lukisan terbaikku. Kamu hebat sekali hari ini, Nona Pengawal~ ✨'`,
+          badge: "bg-purple-950/80 text-teal-200 border-teal-400/50 shadow-[0_0_15px_rgba(45,212,191,0.3)]",
+          icon: "🔱"
         };
-      }, [currentDayWellness, liveTracker.nextItem, shortBreakWarnings, realTodayStr, nowTime, selectedDaySchedules, stickyNote]);
+      }, [currentDayWellness, liveTracker.nextItem, shortBreakWarnings, realTodayStr, nowTime, selectedDaySchedules, lang]);
   
       // 🔔 Fungsi Kirim Pengingat Tembus Latar Belakang Layar HP
       const sendReminderToDeviceNotification = async () => {
