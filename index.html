@@ -4573,111 +4573,118 @@ audio.play().catch(() => playNotificationChime());
             </div>
           )}
 
-         {/* HEADER UTAMA: BERSIH & RAPI UNTUK HP DAN PC */}
-          <header className="bg-gradient-to-r from-maroon via-[#8B1538] to-maroon text-white px-3 md:px-6 py-2.5 shadow-lg sticky top-0 z-40 border-b-2 border-pink-300/30 flex flex-col gap-2">
-            {/* Baris 1: Identitas & Jam Digital */}
-            <div className="flex items-center justify-between gap-2 w-full">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-9 h-9 rounded-2xl bg-teal-500/20 p-0.5 flex items-center justify-center border border-teal-400/40 shadow-inner cute-float overflow-hidden shrink-0">
+{/* HEADER UTAMA ADAPTIF: 1 BARIS PENUH DI PC, 2 BARIS RAPI DI HP */}
+          <header className="bg-gradient-to-r from-maroon via-[#8B1538] to-maroon text-white px-3 md:px-6 py-2.5 md:py-3.5 shadow-lg sticky top-0 z-40 border-b-2 border-pink-300/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 lg:gap-4">
+            
+            {/* SISI KIRI: Logo, Judul & Indikator Status */}
+            <div className="flex items-center justify-between lg:justify-start gap-2.5 min-w-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-teal-500/20 p-1 flex items-center justify-center border border-teal-400/40 shadow-inner cute-float overflow-hidden shrink-0">
                   <img src={initialHeaderSticker} alt="Rafayel" className="w-full h-full object-cover rounded-xl" />
                 </div>
-                <div className="min-w-0 flex items-center gap-1.5 flex-wrap">
-                  <h1 className="font-extrabold text-sm sm:text-base tracking-wide flex items-center gap-1 truncate">
-                    <span>Alisya Schedule</span>
-                    <button
-                      type="button"
-                      className="flower-next-day calendar-flower"
-                      title="Geser ke tanggal berikutnya"
-                      aria-label="Pilih tanggal berikutnya"
-                      onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
-                    >
-                      <span>🌸</span><span className="flower-arrow">❯</span>
-                    </button>
-                  </h1>
-                  <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider hidden sm:inline">
-                    v6.9-Pincess PRO
-                  </span>
-                  {isAdmin ? (
-                    <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[9px] font-black shadow">👑 ADMIN</span>
-                  ) : (
-                    <span className="bg-white/20 text-rose-100 px-1.5 py-0.5 rounded-full text-[9px] font-semibold">👀 VIEWER</span>
-                  )}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
+                    <h1 className="font-extrabold text-sm md:text-base tracking-wide flex items-center gap-1.5 truncate">
+                      <span>Alisya Schedule</span>
+                      <button
+                        type="button"
+                        className="flower-next-day calendar-flower"
+                        title="Geser ke tanggal berikutnya"
+                        aria-label="Pilih tanggal berikutnya"
+                        onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
+                      >
+                        <span>🌸</span><span className="flower-arrow">❯</span>
+                      </button>
+                    </h1>
+                    <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-mono font-bold tracking-wider">
+                      v6.9-Pincess PRO
+                    </span>
+                    {isAdmin ? (
+                      <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-black shadow">👑 ADMIN</span>
+                    ) : (
+                      <span className="bg-white/20 text-rose-100 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-semibold">👀 VIEWER</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Jam Digital & Tombol Login/Lock */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="flex items-center gap-1 text-[9px] sm:text-[10px] bg-black/40 text-emerald-300 border border-emerald-400/30 px-2 py-1 rounded-xl font-mono font-bold">
+              {/* Jam Digital Khusus Layar HP (Sembunyi otomatis saat di PC) */}
+              <div className="flex items-center gap-1.5 lg:hidden shrink-0">
+                <span className="flex items-center gap-1 text-[10px] bg-black/40 text-emerald-300 border border-emerald-400/30 px-2.5 py-1 rounded-xl font-mono font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                   <span>{liveClockString}</span>
                 </span>
                 {isAdmin ? (
-                  <button onClick={() => { setIsAdmin(false); notify('🔒 Locked'); }} className="bg-rose-950 hover:bg-black text-rose-200 px-2.5 py-1 rounded-xl text-xs font-bold shadow active:scale-95 transition">
+                  <button onClick={() => { setIsAdmin(false); notify('🔒 Locked'); }} className="bg-rose-950 hover:bg-black text-rose-200 px-2.5 py-1 rounded-xl text-xs font-bold shadow">
                     🔒
                   </button>
                 ) : (
-                  <button onClick={() => setPinInputModal(true)} className="bg-pink-400/30 hover:bg-pink-400/40 border border-pink-200/40 text-white px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95 transition shadow">
-                    <span>🔑</span><span>{t.loginBtn}</span>
+                  <button onClick={() => setPinInputModal(true)} className="bg-pink-400/30 text-white px-2.5 py-1 rounded-xl text-xs font-bold shadow">
+                    🔑 Login
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Baris 2: Toolbar Navigasi & Setelan (Scrollable Halus di Layar HP) */}
-            <div className="flex items-center justify-between gap-1.5 overflow-x-auto scrollbar-none w-full pt-0.5 pb-0.5">
+            {/* SISI KANAN / BARIS 2: Toolbar Bahasa, Tema, BGM, Mode, Kalender & Jam PC */}
+            <div className="flex items-center justify-between lg:justify-end gap-2 overflow-x-auto scrollbar-none w-full lg:w-auto">
+              
+              {/* Grup Tombol Fitur */}
               <div className="flex items-center gap-1.5 shrink-0">
-                {/* Pilihan Bahasa */}
-                <div className="flex items-center bg-black/30 px-2 py-1 rounded-xl border border-white/15 shadow-inner">
-                  <span className="text-xs mr-1">🌐</span>
+                {/* Bahasa */}
+                <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-xl md:rounded-2xl border border-white/15 shadow-inner">
+                  <span className="text-xs mr-1.5">🌐</span>
                   <select
                     value={lang}
                     onChange={(e) => handleSetLang(e.target.value)}
-                    className="bg-transparent text-white font-extrabold text-[11px] border-none focus:outline-none cursor-pointer"
+                    className="bg-transparent text-white font-extrabold text-xs border-none focus:outline-none cursor-pointer"
                   >
-                    <option value="id" className="bg-slate-900 text-white">ID</option>
-                    <option value="en" className="bg-slate-900 text-white">EN</option>
+                    <option value="id" className="bg-slate-900 text-white">Indonesia</option>
+                    <option value="en" className="bg-slate-900 text-white">English</option>
                   </select>
                 </div>
 
-                {/* Dark Mode */}
+                {/* Dark/Light Mode */}
                 <button
                   onClick={() => setDarkMode(!darkMode)}
-                  className="px-2 py-1 rounded-xl text-xs font-black border transition bg-black/30 text-rose-100 border-white/15"
+                  className="px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition bg-black/30 text-rose-100 border-white/15 hover:bg-black/40"
                   title="Dark / Light Mode"
                 >
-                  {darkMode ? '☀️' : '🌙'}
+                  <span>{darkMode ? '☀️' : '🌙'}</span>
+                  <span className="hidden xl:inline ml-1">{darkMode ? 'Light' : 'Dark'}</span>
                 </button>
 
                 {/* Alarm */}
                 <button
                   onClick={toggleSoundAlert}
-                  className={`px-2 py-1 rounded-xl text-xs font-black border transition ${soundAlert ? 'bg-emerald-500/30 text-emerald-200 border-emerald-400/40' : 'bg-black/30 text-rose-200/60 border-white/15'}`}
+                  className={`px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition ${soundAlert ? 'bg-emerald-500/30 text-emerald-200 border-emerald-400/40' : 'bg-black/30 text-rose-200/60 border-white/15'}`}
                   title="Sound Reminder"
                 >
-                  {soundAlert ? '🔔' : '🔕'}
+                  <span>{soundAlert ? '🔔' : '🔕'}</span>
                 </button>
 
                 {/* BGM Love & Deepspace */}
                 <button
                   type="button"
                   onClick={toggleBGM}
-                  className={`px-2 py-1 rounded-xl text-xs font-black border transition flex items-center gap-1 ${bgmPlaying ? 'bg-purple-600/40 text-purple-200 border-purple-400/50 shadow-[0_0_8px_rgba(168,85,247,0.4)]' : 'bg-black/30 text-slate-400 border-white/15'}`}
+                  className={`px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition flex items-center gap-1.5 ${bgmPlaying ? 'bg-purple-600/40 text-purple-200 border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-black/30 text-slate-400 border-white/15'}`}
                   title="BGM"
                 >
-                  {bgmPlaying ? '🔊' : '🔇'}
+                  <span>{bgmPlaying ? '🔊' : '🔇'}</span>
+                  <span className="hidden xl:inline">{bgmPlaying ? 'BGM ON' : 'BGM OFF'}</span>
                 </button>
 
-                {/* Mode HP / PC */}
-                <div className="flex items-center bg-black/30 p-0.5 rounded-xl border border-white/15">
+                {/* Switch Mode HP / PC */}
+                <div className="flex items-center bg-black/30 p-1 rounded-xl md:rounded-2xl border border-white/15 shadow-inner">
                   <button
                     onClick={() => handleSetDisplayMode('mobile')}
-                    className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition ${displayMode === 'mobile' ? 'bg-pink-100 text-maroon shadow-xs' : 'text-rose-100'}`}
+                    className={`px-2.5 py-1 rounded-lg md:rounded-xl text-xs font-black transition ${displayMode === 'mobile' ? 'bg-pink-100 text-maroon shadow-xs' : 'text-rose-100 hover:text-white'}`}
                   >
                     📱
                   </button>
                   <button
                     onClick={() => handleSetDisplayMode('pc')}
-                    className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition ${displayMode === 'pc' ? 'bg-pink-100 text-maroon shadow-xs' : 'text-rose-100'}`}
+                    className={`px-2.5 py-1 rounded-lg md:rounded-xl text-xs font-black transition ${displayMode === 'pc' ? 'bg-pink-100 text-maroon shadow-xs' : 'text-rose-100 hover:text-white'}`}
                   >
                     💻
                   </button>
@@ -4685,17 +4692,17 @@ audio.play().catch(() => playNotificationChime());
               </div>
 
               {/* Pemilih Bulan & Tahun */}
-              <div className="flex items-center bg-white/10 rounded-xl p-0.5 text-xs font-bold border border-white/20 shrink-0 gap-0.5">
+              <div className="flex items-center bg-white/10 rounded-xl md:rounded-2xl p-1 text-xs font-bold border border-white/20 shrink-0 gap-1 shadow-sm">
                 <button
                   onClick={() => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y-1)) : setCurrentMonth(m => m-1)}
-                  className="px-1.5 py-0.5 hover:bg-white/20 rounded-lg active:scale-95 transition text-[10px]"
+                  className="px-2 py-1 hover:bg-white/20 rounded-lg active:scale-95 transition"
                 >
                   ◀
                 </button>
                 <select
                   value={currentMonth}
                   onChange={e => setCurrentMonth(Number(e.target.value))}
-                  className="bg-black/40 text-white font-extrabold text-[10px] px-1.5 py-0.5 rounded-lg border border-white/20 focus:outline-none cursor-pointer"
+                  className="bg-black/40 text-white font-extrabold text-xs px-2 py-1 rounded-lg border border-white/20 focus:outline-none cursor-pointer"
                 >
                   {Array.from({ length: 12 }).map((_, idx) => (
                     <option key={idx} value={idx} className="bg-slate-900 text-white">
@@ -4706,7 +4713,7 @@ audio.play().catch(() => playNotificationChime());
                 <select
                   value={currentYear}
                   onChange={e => setCurrentYear(Number(e.target.value))}
-                  className="bg-black/40 text-white font-mono font-extrabold text-[10px] px-1.5 py-0.5 rounded-lg border border-white/20 focus:outline-none cursor-pointer"
+                  className="bg-black/40 text-white font-mono font-extrabold text-xs px-2 py-1 rounded-lg border border-white/20 focus:outline-none cursor-pointer"
                 >
                   {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(yr => (
                     <option key={yr} value={yr} className="bg-slate-900 text-white">
@@ -4716,11 +4723,30 @@ audio.play().catch(() => playNotificationChime());
                 </select>
                 <button
                   onClick={() => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y+1)) : setCurrentMonth(m => m+1)}
-                  className="px-1.5 py-0.5 hover:bg-white/20 rounded-lg active:scale-95 transition text-[10px]"
+                  className="px-2 py-1 hover:bg-white/20 rounded-lg active:scale-95 transition"
                 >
                   ▶
                 </button>
               </div>
+
+              {/* Jam Digital & Tombol Login/Lock Khusus PC (Tampil di Kanan Atas) */}
+              <div className="hidden lg:flex items-center gap-2 shrink-0">
+                <span className="flex items-center gap-1.5 text-xs bg-black/40 text-emerald-300 border border-emerald-400/30 px-3 py-1.5 rounded-2xl font-mono font-bold shadow-inner">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span>{liveClockString} WIB</span>
+                </span>
+
+                {isAdmin ? (
+                  <button onClick={() => { setIsAdmin(false); notify('🔒 Locked'); }} className="bg-rose-950 hover:bg-black text-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow active:scale-95 transition">
+                    🔒 {t.lockBtn}
+                  </button>
+                ) : (
+                  <button onClick={() => setPinInputModal(true)} className="bg-pink-400/30 hover:bg-pink-400/40 border border-pink-200/40 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95 transition shadow">
+                    <span>🔑</span><span>{t.loginBtn}</span>
+                  </button>
+                )}
+              </div>
+
             </div>
           </header>
 
@@ -5065,9 +5091,17 @@ audio.play().catch(() => playNotificationChime());
                                         {t.badgeFinished}
                                       </span>
                                     )}
-                                    <span className="text-[10px] font-black px-2.5 py-1 rounded-xl uppercase tracking-wider" style={{ backgroundColor: item.color + '44', color: '#0F172A' }}>
-                                      {item.status}
-                                    </span>
+                                   <span 
+  className="text-[10px] font-black px-2.5 py-0.5 rounded-xl uppercase tracking-wider shadow-xs" 
+  style={{ 
+    backgroundColor: item.color + '33', 
+    color: '#FFFFFF',
+    border: `1px solid ${item.color}99`,
+    textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+  }}
+>
+  {item.status}
+</span>
                                     <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
                                       <span>{brand?.emoji}</span><span>{brand?.name}</span>
                                     </span>
@@ -5794,10 +5828,18 @@ audio.play().catch(() => playNotificationChime());
                                       {t.badgeFinished}
                                     </span>
                                   )}
-                                  <span className="text-[9px] font-black px-2 py-0.5 rounded-lg uppercase" style={{ backgroundColor: item.color + '44', color: '#0F172A' }}>
-                                    {item.status}
-                                  </span>
-                                  <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                                <span 
+  className="text-[9px] font-black px-2.5 py-0.5 rounded-lg uppercase tracking-wider shadow-xs" 
+  style={{ 
+    backgroundColor: item.color + '33', 
+    color: '#FFFFFF',
+    border: `1px solid ${item.color}99`,
+    textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+  }}
+>
+  {item.status}
+</span>
+                               <span className="text-[11px] font-bold text-slate-200 flex items-center gap-1">
                                     <span>{brand?.emoji}</span><span>{brand?.name}</span>
                                   </span>
                                 </div>
