@@ -2542,19 +2542,45 @@ function App() {
     return arr;
   };
 
-  const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length));
-  const [stickerIdx, setStickerIdx] = useState(() => stickerDeckRef.current.pop());
-
-  const pickNextRandomSticker = () => {
+const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length));
+  const drawFromStickerDeck = (excludeA = -1, excludeB = -1) => {
     if (stickerDeckRef.current.length === 0) {
       stickerDeckRef.current = createShuffledIndices(RAFAYEL_ALL_STICKERS.length);
     }
-    setStickerIdx(stickerDeckRef.current.pop());
+    let picked = stickerDeckRef.current.pop();
+    if ((picked === excludeA || picked === excludeB) && RAFAYEL_ALL_STICKERS.length > 2) {
+      if (stickerDeckRef.current.length === 0) {
+        stickerDeckRef.current = createShuffledIndices(RAFAYEL_ALL_STICKERS.length);
+      }
+      const secondPick = stickerDeckRef.current.pop();
+      stickerDeckRef.current.unshift(picked);
+      picked = (secondPick === excludeA || secondPick === excludeB)
+        ? (picked + 1) % RAFAYEL_ALL_STICKERS.length
+        : secondPick;
+    }
+    return picked;
   };
 
-  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA
+  const initialRadarIdx = useMemo(() => drawFromStickerDeck(), []);
+  const initialHeaderIdx = useMemo(() => drawFromStickerDeck(initialRadarIdx), [initialRadarIdx]);
+
+  const [stickerIdx, setStickerIdx] = useState(initialRadarIdx);
+  const [headerStickerIdx, setHeaderStickerIdx] = useState(initialHeaderIdx);
+  const currentRadarIdxRef = useRef(initialRadarIdx);
+  const currentHeaderIdxRef = useRef(initialHeaderIdx);
+
+  const pickNextRandomSticker = () => {
+    const nextRadarIdx = drawFromStickerDeck(currentRadarIdxRef.current, currentHeaderIdxRef.current);
+    const nextHeaderIdx = drawFromStickerDeck(nextRadarIdx, currentHeaderIdxRef.current);
+    currentRadarIdxRef.current = nextRadarIdx;
+    currentHeaderIdxRef.current = nextHeaderIdx;
+    setStickerIdx(nextRadarIdx);
+    setHeaderStickerIdx(nextHeaderIdx);
+  };
+
+  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA (IKUT BERGANTI ACAK)
   const RAFAYEL_THEME_CONFIG = {
-    portraitUrl: RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length],
+    portraitUrl: RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length],
     studioTitle: "Mo's Atelier • Lemurian Sanctuary",
     subGreetingId: "A Little Piece of Lemuria • Bodyguard Alisya",
     subGreetingEn: "A Little Piece of Lemuria • Bodyguard Alisya"
