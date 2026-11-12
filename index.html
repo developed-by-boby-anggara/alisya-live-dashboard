@@ -2529,14 +2529,6 @@ function App() {
       };
       const t = TRANSLATIONS[lang] || TRANSLATIONS.id;
 
-      // Sapaan Waktu Otomatis Imut
-      const cuteGreeting = useMemo(() => {
-        const hr = nowTime.getHours();
-        if (hr >= 4 && hr < 11) return t.greetMorning;
-        if (hr >= 11 && hr < 15) return t.greetAfternoon;
-        if (hr >= 15 && hr < 18) return t.greetEvening;
-        return t.greetNight;
-      }, [nowTime, t]);
 
       // State Affirmation
       const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * TRANSLATIONS.id.affirmations.length));
@@ -3438,13 +3430,87 @@ audio.play().catch(() => playNotificationChime());
           activeFraction = Number(activeItem.sessionPct) / 100;
         }
 
-        const progressPct = todayList.length > 0
+      const progressPct = todayList.length > 0
           ? Math.min(100, Math.round(((completedCount + activeFraction) / todayList.length) * 100))
           : 0;
 
         return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
       }, [schedules, realTodayStr, nowTime]);
+  
+// 🎨 SAPAAN REAL-TIME FULL KARAKTER RAFAYEL (MO'S ATELIER)
+      const cuteGreeting = useMemo(() => {
+        const hr = nowTime.getHours();
+        const isEn = lang === 'en';
+        const todayItems = schedules
+          .filter(s => s.date === realTodayStr)
+          .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
+        const active = liveTracker.activeItem;
+        const next = liveTracker.nextItem;
+
+        // 1. Jika Hari Ini Status Sakit / Izin Medis
+        const isOffToday = todayItems.some(s => s.status === 'OFF' || s.brand_id === 'b_pribadi');
+        const isSickToday = todayItems.some(s => s.status === 'SAKIT' || s.status === 'Sakit / Medis' || s.brand_id === 'b_sakit');
+
+        if (isSickToday) {
+          return isEn
+            ? "🩺 [Rafayel]: 'My bodyguard is sick and still staring at a screen?! Put it down and stay in bed right now, or I'll sulk for a whole week!'"
+            : "🩺 [Rafayel]: 'Nona Pengawalku lagi sakit tapi masih berani lihat layar?! Cepat berbaring di kasur sekarang juga, atau aku bakal ngambek seminggu penuh!'";
+        }
+
+        // 2. Jika Saat Ini Sedang Ada Sesi Berlangsung
+        if (active) {
+          if (active.status === 'LIVE') {
+            return isEn
+              ? `📡 [Rafayel • ON AIR]: 'Look at my mermaid shining so brightly during "${active.title}"! Keep going until ${active.end_time} (${active.remainingHMS} left)—I'm watching you!'`
+              : `📡 [Rafayel • SEDANG LIVE]: 'Lihat Putri Duyungku bersinar sekali di sesi "${active.title}"! Tuntaskan sampai pukul ${active.end_time} (sisa ${active.remainingHMS})—aku terus mengawasimu!'`;
+          }
+          if (active.status === 'Tidur' || active.brand_id === 'b_sleep') {
+            return isEn
+              ? `😴 [Rafayel]: 'Sst... It's your sleeping hours (${active.start_time}-${active.end_time}). Don't you dare stay awake, dream of Lemuria with me~'`
+              : `😴 [Rafayel]: 'Sst... Sekarang waktumu tidur (${active.start_time}-${active.end_time}). Jangan berani-berani melek lagi, temui aku di mimpi bawah laut Lemuria~'`;
+          }
+          if (active.status === 'Konten' || active.brand_id === 'b_konten') {
+            return isEn
+              ? `🎬 [Rafayel]: 'Creating a masterpiece for "${active.title}" until ${active.end_time}? Hmph, make sure it looks almost as stunning as my paintings!'`
+              : `🎬 [Rafayel]: 'Lagi syuting mahakarya "${active.title}" sampai pukul ${active.end_time}? Hmph, pastikan hasilnya hampir seindah lukisanku ya, Nona Pengawal!'`;
+          }
+          if (active.status === 'Me Time' || active.brand_id === 'b_lainlain') {
+            return isEn
+              ? `💅 [Rafayel]: 'Finally taking time for "${active.title}" until ${active.end_time}! Good—my bodyguard deserves to be pampered like royalty.'`
+              : `💅 [Rafayel]: 'Akhirnya kamu memanjakan diri di "${active.title}" sampai pukul ${active.end_time}! Baguslah, pengawalku memang harus diperlakukan bak bangsawan Lemuria.'`;
+          }
+          return isEn
+            ? `⚡ [Rafayel]: 'You're busy with "${active.title}" (${active.start_time} - ${active.end_time}) right now. Finish it quickly so you can come back to Mo's Atelier!'`
+            : `⚡ [Rafayel]: 'Kamu sedang sibuk dengan "${active.title}" (${active.start_time} - ${active.end_time}) ya. Cepat selesaikan supaya bisa segera kembali ke Mo's Atelier!'`;
+        }
+
+        // 3. Jika Sedang Jam Kosong Menunggu Jadwal Berikutnya
+        if (next) {
+          return isEn
+            ? `🎨 [Rafayel]: 'Aha! Free time before "${next.title}" starts at ${next.start_time} (${next.startsInHMS} left). Come keep me company in the studio while you wait!'`
+            : `🎨 [Rafayel]: 'Aha! Jam kosong sebelum "${next.title}" dimulai pukul ${next.start_time} (${next.startsInHMS} lagi). Sini temani aku melukis di atelier sambil menunggu!'`;
+        }
+
+        // 4. Jika Hari Ini Hari Libur / Jadwal Kosong Seharian
+        if (todayItems.length === 0 || isOffToday) {
+          return isEn
+            ? "🌊 [Rafayel]: 'Zero work on your schedule today?! Wonderful! That means your entire day officially belongs to me—let's go walk by the shore!'"
+            : "🌊 [Rafayel]: 'Jadwal kerjamu kosong seharian ini?! Sempurna! Artinya seluruh waktumu hari ini resmi menjadi milikku—ayo jalan-jalan ke tepi pantai!'";
+        }
+
+        // 5. Jika Semua Jadwal Hari Ini Sudah Selesai
+        const lastDone = todayItems[todayItems.length - 1];
+        if (hr >= 6 && hr < 17) {
+          return isEn
+            ? `✨ [Rafayel]: 'You already conquered "${lastDone.title}" earlier and the rest of the day is free! I'm proud of you, my little mermaid~'`
+            : `✨ [Rafayel]: 'Kamu sudah menaklukkan "${lastDone.title}" tadi dan sisa harimu bebas sekarang! Aku bangga padamu, Putri Duyungku~'`;
+        }
+
+        return isEn
+          ? `🌙 [Rafayel]: '"${lastDone.title}" is long over and tonight is completely free. Don't stay up late, or tomorrow I'll splash you awake!'`
+          : `🌙 [Rafayel]: 'Sesi "${lastDone.title}" tadi sudah tuntas dan malam ini kosong. Jangan begadang lagi, atau besok pagi kubangunkan dengan cipratan air!'`;
+      }, [nowTime, lang, schedules, realTodayStr, liveTracker]);
       // Deteksi apakah suatu sesi jadwal sudah selesai atau akan datang
       const getSessionTimeState = (item) => {
         if (item.date < realTodayStr) return 'done';
