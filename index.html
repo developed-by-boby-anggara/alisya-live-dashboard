@@ -4081,7 +4081,7 @@ audio.play().catch(() => playNotificationChime());
     try {
       const randomClip = touchVoices[Math.floor(Math.random() * touchVoices.length)];
       const audio = new Audio(randomClip);
-      audio.volume = 0.75;
+      audio.volume = 0.45;
       audio.play().catch(() => playNotificationChime());
     } catch (e) {
       playNotificationChime();
