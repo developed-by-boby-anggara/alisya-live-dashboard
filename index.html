@@ -40,8 +40,8 @@
         extend: {
           fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
           colors: {
-            maroon: { DEFAULT: '#7B1113', dark: '#520A0B', light: '#9E1B1E' }
-          }
+         maroon: { DEFAULT: '#0E4D64', dark: '#083344', light: '#14748B' }
+       }
         }
       }
     }
@@ -1662,7 +1662,128 @@
    animation: callBtnBeacon 1.6s ease-in-out infinite !important;
  }
   </style>
-  
+  <!-- 🔱 LEMURIAN TOTAL PALETTE UNIFIER (HAPUS SEMUA SISA MARUN & PINK) -->
+  <style id="lemurian-total-purge-v2">
+    /* 1. Ubah Semua Tombol, Header Tabel & Toast yang Masih Menggunakan bg-maroon */
+    .bg-maroon,
+    .bg-maroon\/95,
+    button.bg-maroon,
+    th.bg-maroon,
+    tr.bg-maroon {
+      background: linear-gradient(135deg, #0D9488 0%, #0284C7 55%, #6D28D9 100%) !important;
+      color: #F3F5F7 !important;
+      border-color: rgba(66, 214, 197, 0.5) !important;
+    }
+    .hover\:bg-maroon-dark:hover {
+      filter: brightness(1.12) !important;
+    }
+    .border-maroon {
+      border-color: #42D6C5 !important;
+    }
+    .text-maroon {
+      color: #5EEAD4 !important;
+    }
+
+    /* 2. Ubah Tombol Kunci/Lock & Badge Libur (bg-rose-950 / bg-rose-100 / bg-rose-500) */
+    header button.bg-rose-950,
+    .bg-rose-950 {
+      background: rgba(185, 155, 235, 0.18) !important;
+      color: #E9D5FF !important;
+      border: 1px solid rgba(185, 155, 235, 0.45) !important;
+    }
+    .bg-rose-500:not(.w-16) {
+      background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #C084FC !important;
+    }
+    .bg-rose-100 {
+      background: rgba(185, 155, 235, 0.2) !important;
+      color: #DDD6FE !important;
+      border-color: rgba(185, 155, 235, 0.45) !important;
+    }
+    .border-rose-900 {
+      border-color: rgba(66, 214, 197, 0.35) !important;
+    }
+
+    /* 3. Ubah Semua Sisa Pink (Tombol Login, Bisikan Rafayel, Toggle Panel, Ring Mood) */
+    .bg-pink-400\/30,
+    .bg-pink-500\/20,
+    .bg-pink-500\/80,
+    button.bg-pink-500\/80 {
+      background: linear-gradient(135deg, rgba(13, 148, 136, 0.45), rgba(109, 40, 217, 0.45)) !important;
+      border-color: rgba(66, 214, 197, 0.55) !important;
+      color: #F3F5F7 !important;
+    }
+    .hover\:bg-pink-500:hover,
+    .hover\:bg-pink-400\/40:hover,
+    .hover\:bg-pink-200:hover,
+    .hover\:bg-pink-100:hover,
+    .hover\:bg-pink-50:hover,
+    .hover\:bg-pink-50\/30:hover,
+    .hover\:bg-pink-50\/40:hover,
+    .hover\:bg-pink-50\/50:hover,
+    .hover\:bg-rose-50\/50:hover {
+      background-color: rgba(66, 214, 197, 0.16) !important;
+    }
+    .border-pink-200,
+    .border-pink-300,
+    .border-pink-300\/30,
+    .border-pink-300\/40,
+    .border-pink-300\/50,
+    .border-pink-300\/60,
+    .border-pink-400,
+    .border-pink-600,
+    .border-rose-300,
+    .border-rose-500 {
+      border-color: rgba(66, 214, 197, 0.42) !important;
+    }
+    .text-pink-100,
+    .text-pink-200,
+    .text-pink-300,
+    .text-pink-600,
+    .text-pink-700,
+    .text-pink-950,
+    .text-rose-200,
+    .text-rose-300 {
+      color: #5EEAD4 !important;
+    }
+    .ring-pink-400 {
+      --tw-ring-color: #42D6C5 !important;
+    }
+
+    /* 4. Ubah Progress Bar & Gradasi Pink ke Ocean Cyan - Lemurian Violet */
+    .from-pink-300.via-amber-300.to-emerald-400,
+    .from-pink-400.via-rose-300.to-emerald-300,
+    .from-sky-400.via-pink-400.to-rose-500,
+    .from-pink-500.via-rose-500.to-pink-500,
+    .from-pink-500.to-rose-500,
+    .from-pink-500.to-rose-600 {
+      background-image: linear-gradient(90deg, #0D9488 0%, #38BDF8 50%, #8B5CF6 100%) !important;
+    }
+
+    /* 5. Ubah Overlay Foto Radar & Tombol Panah Kalender (.flower-next-day) */
+    .from-maroon\/65.via-\[\#8A1432\]\/50.to-rose-900\/65 {
+      background: linear-gradient(135deg, rgba(4, 13, 26, 0.78) 0%, rgba(9, 34, 59, 0.62) 50%, rgba(20, 16, 46, 0.78) 100%) !important;
+    }
+    .flower-next-day,
+    .flower-next-day.calendar-flower {
+      background: linear-gradient(135deg, #0A2239 0%, #161B3B 100%) !important;
+      color: #42D6C5 !important;
+      border-color: rgba(66, 214, 197, 0.45) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* 6. Bersihkan Border Merah Marun (#9E1B1E) & Pink (#E2B6C5) di Tabel Spreadsheet HP */
+    #mobile-spreadsheet-capture th[style*="9E1B1E"] {
+      border-color: rgba(66, 214, 197, 0.35) !important;
+    }
+    #mobile-spreadsheet-capture td[style*="E2B6C5"] {
+      border-color: rgba(66, 214, 197, 0.22) !important;
+    }
+    #mobile-spreadsheet-capture tbody tr:not(.today-active-glow) {
+      background-color: #081528 !important;
+    }
+  </style>
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
