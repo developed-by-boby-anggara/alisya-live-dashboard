@@ -2798,19 +2798,99 @@ audio.play().catch(() => playNotificationChime());
         });
       };
 
-      const handleSpinSelfReward = () => {
-        const item = FAVORITE_REWARDS[Math.floor(Math.random() * FAVORITE_REWARDS.length)];
-        const text = `${item.emoji} ${lang === 'id' ? item.labelId : item.labelEn}`;
-        updateDayWellness({ reward: text });
-        playNotificationChime();
-        notify(`🎁 Self-Reward Hari Ini: ${text}`);
+// 🔮 MINI-GAME: LEMURIAN WISH POOL (GACHA VOUCHER ALA LOVE AND DEEPSPACE)
+      const [isWishing, setIsWishing] = useState(false);
+
+      const LEMURIAN_WISH_POOL = [
+        {
+          rarity: '5★ SSR',
+          color: 'from-amber-400 via-yellow-300 to-amber-500 text-slate-950 border-amber-300',
+          glow: 'shadow-[0_0_20px_rgba(251,191,36,0.45)] border-amber-400/70',
+          titleId: "🔱 Sea God's Exclusive Date & Dinner",
+          titleEn: "🔱 Sea God's Exclusive Date & Dinner",
+          descId: "[Rafayel]: 'Kartu emas! Malam ini aku sendiri yang akan mentraktirmu makan malam tepi laut. Nona Pengawal dilarang menolak!'",
+          descEn: "[Rafayel]: 'Gold card! Tonight I'll treat you to a seaside dinner myself. Bodyguard is forbidden to refuse!'"
+        },
+        {
+          rarity: '5★ SSR',
+          color: 'from-purple-400 via-fuchsia-300 to-cyan-300 text-slate-950 border-purple-300',
+          glow: 'shadow-[0_0_20px_rgba(192,132,252,0.45)] border-purple-400/70',
+          titleId: "🎨 Mo's Atelier VIP Painting & Rest Pass",
+          titleEn: "🎨 Mo's Atelier VIP Painting & Rest Pass",
+          descId: "[Rafayel]: 'Selamat! Kamu mendapat hak istimewa bersantai di studio seniku sambil kulukis wajah cantikmu~'",
+          descEn: "[Rafayel]: 'Congrats! You won VIP access to relax in my studio while I paint your pretty face~'"
+        },
+        {
+          rarity: '4★ SR',
+          color: 'from-[#42D6C5] to-cyan-400 text-slate-950 border-teal-300',
+          glow: 'shadow-[0_0_15px_rgba(66,214,197,0.3)] border-[#42D6C5]/60',
+          titleId: "🍫🥞 Sweet Chocolate & Fluffy Pancake Ticket",
+          titleEn: "🍫🥞 Sweet Chocolate & Fluffy Pancake Ticket",
+          descId: "[Rafayel]: 'Waktunya mengisi ulang energi manismu! Pesan cokelat atau pancake favoritmu sekarang, biar aku yang bayar.'",
+          descEn: "[Rafayel]: 'Time to recharge your sweetness! Order your favorite chocolate or pancakes now, it's on me.'"
+        },
+        {
+          rarity: '4★ SR',
+          color: 'from-[#B99BEB] to-indigo-400 text-slate-950 border-purple-300',
+          glow: 'shadow-[0_0_15px_rgba(185,155,235,0.3)] border-[#B99BEB]/60',
+          titleId: "🌶️🥟 Spicy Tahu Kocek & Crispy Fritters Pass",
+          titleEn: "🌶️🥟 Spicy Tahu Kocek & Crispy Fritters Pass",
+          descId: "[Rafayel]: 'Camilan gurih pedas setelah siaran panjang! Nikmati selagi hangat ya, Putri Duyungku.'",
+          descEn: "[Rafayel]: 'Savory spicy snacks after a long stream! Enjoy them while they're warm, my little mermaid.'"
+        },
+        {
+          rarity: '3★ R',
+          color: 'from-sky-400 to-blue-500 text-white border-sky-300',
+          glow: 'border-sky-400/50',
+          titleId: "🐱💤 30-Min Nap & Mekel Cuddle Voucher",
+          titleEn: "🐱💤 30-Min Nap & Mekel Cuddle Voucher",
+          descId: "[Rafayel]: 'Izin resmi dari bosmu: rebahan 30 menit sambil memeluk Mekel dan dengarkan lagu favoritmu!'",
+          descEn: "[Rafayel]: 'Official permission from your boss: take a 30-minute nap cuddling Mekel and listening to your favorite tunes!'"
+        }
+      ];
+
+      const handleMakeLemurianWish = () => {
+        if (isWishing) return;
+        setIsWishing(true);
+        playWaterBubbleChime();
+
+        setTimeout(() => {
+          // Peluang: 25% 5★ SSR, 45% 4★ SR, 30% 3★ R
+          const roll = Math.random();
+          let pool = LEMURIAN_WISH_POOL;
+          if (roll < 0.25) {
+            pool = LEMURIAN_WISH_POOL.filter(i => i.rarity.includes('5★'));
+          } else if (roll < 0.70) {
+            pool = LEMURIAN_WISH_POOL.filter(i => i.rarity.includes('4★'));
+          } else {
+            pool = LEMURIAN_WISH_POOL.filter(i => i.rarity.includes('3★'));
+          }
+
+          const wonItem = pool[Math.floor(Math.random() * pool.length)];
+          const payloadStr = JSON.stringify({
+            rarity: wonItem.rarity,
+            title: lang === 'en' ? wonItem.titleEn : wonItem.titleId,
+            desc: lang === 'en' ? wonItem.descEn : wonItem.descId,
+            claimed: false
+          });
+
+          setIsWishing(false);
+          updateDayWellness({ reward: payloadStr });
+          playNotificationChime();
+          notify(`✨ [${wonItem.rarity}] Kamu mendapatkan: ${lang === 'en' ? wonItem.titleEn : wonItem.titleId}`);
+        }, 900);
       };
 
-      const handleSelectSpecificReward = (item) => {
-        const text = `${item.emoji} ${lang === 'id' ? item.labelId : item.labelEn}`;
-        updateDayWellness({ reward: text });
-        playNotificationChime();
-        notify(`😋 Yeay! Self-Reward dipilih: ${text}`);
+      const handleClaimWishVoucher = () => {
+        try {
+          const parsed = JSON.parse(currentDayWellness.reward);
+          parsed.claimed = true;
+          updateDayWellness({ reward: JSON.stringify(parsed) });
+          playNotificationChime();
+          notify("🎉 Voucher berhasil diklaim! Selamat menikmati hadiahmu, Nona Pengawal~");
+        } catch (e) {
+          updateDayWellness({ reward: '' });
+        }
       };
 
       const getHariNama = (dateString) => {
@@ -3932,6 +4012,70 @@ audio.play().catch(() => playNotificationChime());
           title: lang === 'en' ? titleEn : titleId
         };
       }, [dailyWellness, schedules, lang, nowTime]);
+  // 📈 UPDATE 03: KOMPARASI PERFORMA BULAN & TAHUN (ATELIER PERFORMANCE DELTA)
+      const periodComparison = useMemo(() => {
+        if (statPeriod !== 'monthly' && statPeriod !== 'yearly') return null;
+
+        const prevItems = schedules.filter(s => {
+          const [sY, sM] = s.date.split('-').map(Number);
+          if (statPeriod === 'monthly') {
+            const prevMonth = customStatMonth === 0 ? 12 : customStatMonth;
+            const prevYear = customStatMonth === 0 ? customStatYear - 1 : customStatYear;
+            return sY === prevYear && sM === prevMonth;
+          } else {
+            return sY === customStatYear - 1;
+          }
+        });
+
+        let prevLiveShifts = 0;
+        let prevLiveHours = 0;
+        let prevGMV = 0;
+
+        prevItems.forEach(s => {
+          if (s.status === 'LIVE') {
+            prevLiveShifts++;
+            prevLiveHours += calculateDurationHours(s.start_time, s.end_time);
+            if (s.gmv) prevGMV += Number(s.gmv) || 0;
+          }
+        });
+
+        prevLiveHours = Math.round(prevLiveHours * 10) / 10;
+
+        const diffShifts = stats.totalLive - prevLiveShifts;
+        const diffHours = Math.round((stats.totalLiveHours - prevLiveHours) * 10) / 10;
+        const diffGMV = stats.totalGMV - prevGMV;
+
+        const prevLabel = statPeriod === 'monthly'
+          ? new Intl.DateTimeFormat(t.locale, { month: 'long', year: 'numeric' }).format(
+              new Date(customStatMonth === 0 ? customStatYear - 1 : customStatYear, customStatMonth === 0 ? 11 : customStatMonth - 1, 1)
+            )
+          : `${t.yearLabel} ${customStatYear - 1}`;
+
+        let rafayelNote = lang === 'en'
+          ? "[Rafayel]: 'Steady pace! Keep balancing your live shifts and rest days so your energy shines every session.'"
+          : "[Rafayel]: 'Ritme yang konsisten! Pertahankan keseimbangan shift live dan waktu istirahatmu biar auramu selalu bersinar~'";
+
+        if (diffGMV > 0 || diffShifts > 0) {
+          rafayelNote = lang === 'en'
+            ? "[Rafayel]: 'Impressive surge! Your numbers climbed higher than the previous period. Looks like Mo's Atelier owes you a celebratory feast!'"
+            : "[Rafayel]: 'Lonjakan yang luar biasa! Angka pencapaianmu naik dibanding periode sebelumnya. Sepertinya Mo's Atelier berutang traktiran perayaan untukmu!'";
+        } else if (diffShifts < 0 && stats.totalSleepHours > 0) {
+          rafayelNote = lang === 'en'
+            ? "[Rafayel]: 'Fewer shifts this time, which means more time for painting by the sea and taking care of yourself. I approve!'"
+            : "[Rafayel]: 'Shift lebih sedikit kali ini, artinya lebih banyak waktu untuk bersantai di tepi laut dan merawat dirimu. Aku sangat setuju!'";
+        }
+
+        return {
+          prevLabel,
+          prevLiveShifts,
+          prevLiveHours,
+          prevGMV,
+          diffShifts,
+          diffHours,
+          diffGMV,
+          rafayelNote
+        };
+      }, [schedules, statPeriod, customStatMonth, customStatYear, stats, lang, t]);
     // 🔱 SISTEM SKOR PRODUKTIVITAS & EVALUASI OTOMATIS RAFAYEL
       const princessProductivity = useMemo(() => {
         const workHours = (stats.totalLiveHours || 0) + (stats.totalKontenHours || 0);
@@ -4876,44 +5020,92 @@ audio.play().catch(() => playNotificationChime());
                   </div>
                 </div>
 
-                {/* 🎁 JAJANAN SELF-REWARD FAVORIT ALISYA */}
-                <div className="bg-amber-50/90 border-2 border-amber-200 rounded-2xl p-3 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="space-y-0.5 min-w-0">
-                      <div className="text-[10px] font-black text-amber-900 uppercase">{t.rewardTitle}</div>
-                      <div className="text-xs font-extrabold text-maroon truncate">
-                        {currentDayWellness.reward || (lang === 'id' ? "Pilih atau acak jajanan favoritmu hari ini! 😋✨" : "Pick or spin your favorite treat today! 😋✨")}
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleSpinSelfReward}
-                      className="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white font-black text-[10px] px-3 py-1.5 rounded-xl shadow active:scale-95 transition shrink-0"
-                    >
-                      {t.rewardSpinBtn}
-                    </button>
-                  </div>
+{/* 🔮 MINI-GAME: LEMURIAN WISH POOL (GACHA VOUCHER RAFAYEL) */}
+                {(() => {
+                  let wonCard = null;
+                  if (currentDayWellness.reward) {
+                    try {
+                      wonCard = JSON.parse(currentDayWellness.reward);
+                    } catch (e) {
+                      wonCard = { rarity: '4★ SR', title: currentDayWellness.reward, desc: "[Rafayel]: 'Hadiah spesial untukmu hari ini!'", claimed: false };
+                    }
+                  }
 
-                  <div className="space-y-1">
-                    <div className="text-[9px] font-bold text-amber-800">{t.rewardPickHint}</div>
-                    <div className="flex flex-wrap gap-1">
-                      {FAVORITE_REWARDS.map(item => {
-                        const fullText = `${item.emoji} ${lang === 'id' ? item.labelId : item.labelEn}`;
-                        const isPicked = currentDayWellness.reward === fullText;
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => handleSelectSpecificReward(item)}
-                            className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition active:scale-95 ${isPicked ? 'bg-maroon text-white border-maroon shadow-xs' : 'bg-white text-amber-950 border-amber-300 hover:bg-amber-100'}`}
-                          >
-                            {lang === 'id' ? item.shortId : item.shortEn}
-                          </button>
-                        );
-                      })}
+                  const cardTheme = wonCard?.rarity?.includes('5★')
+                    ? 'border-amber-400/70 bg-gradient-to-br from-[#1A1625] via-[#261D36] to-[#0E2438] shadow-[0_0_20px_rgba(251,191,36,0.25)]'
+                    : wonCard?.rarity?.includes('4★')
+                      ? 'border-[#B99BEB]/60 bg-gradient-to-br from-[#0B1F36] via-[#171E3B] to-[#0A192E]'
+                      : 'border-[#42D6C5]/40 bg-[#07162A]';
+
+                  return (
+                    <div className="bg-gradient-to-r from-[#071525] via-[#0E263D] to-[#161533] border border-[#42D6C5]/45 rounded-2xl p-3.5 space-y-3 shadow-inner">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="space-y-0.5">
+                          <div className="text-[10px] font-black text-[#42D6C5] uppercase tracking-wider flex items-center gap-1.5">
+                            <span>🔮</span>
+                            <span>{lang === 'en' ? 'Lemurian Wish Pool • Daily Gacha' : 'Lemurian Wish Pool • Gacha Hadiah'}</span>
+                          </div>
+                          <p className="text-[10px] text-[#C7D5DE]">
+                            {lang === 'en'
+                              ? 'Pull a 3★–5★ reward voucher from Rafayel after your shift!'
+                              : 'Tarik kartu voucher 3★–5★ dari Rafayel sebagai hadiah kerja kerasmu!'}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={isWishing}
+                          onClick={handleMakeLemurianWish}
+                          className={`px-3.5 py-2 rounded-xl font-black text-[10px] shadow-md transition active:scale-95 shrink-0 flex items-center gap-1.5 ${
+                            isWishing
+                              ? 'bg-slate-700 text-slate-300 animate-pulse cursor-wait'
+                              : 'bg-gradient-to-r from-[#42D6C5] via-cyan-300 to-[#B99BEB] text-slate-950 hover:brightness-110'
+                          }`}
+                        >
+                          <span>{isWishing ? '✨' : '💫'}</span>
+                          <span>{isWishing ? (lang === 'en' ? 'Wishing...' : 'Memanggil...') : (lang === 'en' ? 'Wish x1' : 'Tarik Wish x1')}</span>
+                        </button>
+                      </div>
+
+                      {wonCard && (
+                        <div className={`rounded-xl p-3 border transition-all space-y-2 ${cardTheme}`}>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${
+                              wonCard.rarity.includes('5★')
+                                ? 'bg-amber-400 text-slate-950'
+                                : wonCard.rarity.includes('4★')
+                                  ? 'bg-[#B99BEB] text-slate-950'
+                                  : 'bg-[#42D6C5]/25 text-[#42D6C5] border border-[#42D6C5]/40'
+                            }`}>
+                              {wonCard.rarity}
+                            </span>
+
+                            {wonCard.claimed ? (
+                              <span className="text-[9px] font-black text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-500/40">
+                                ✅ {lang === 'en' ? 'Redeemed' : 'Sudah Diklaim'}
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={handleClaimWishVoucher}
+                                className="text-[9px] font-black bg-white/15 hover:bg-white/25 text-[#F3F5F7] px-2.5 py-1 rounded-lg border border-white/20 transition active:scale-95"
+                              >
+                                🎟️ {lang === 'en' ? 'Redeem Voucher' : 'Klaim Voucher'}
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="font-black text-xs text-[#F3F5F7]">
+                            {wonCard.title}
+                          </div>
+                          <p className="text-[10px] text-[#C7D5DE] italic leading-relaxed">
+                            {wonCard.desc}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
          {/* 📱 LEMURIAN MOMENTS: CATATAN HARIAN & BALASAN RAFAYEL */}
                 <div className="bg-[#061324] border border-teal-400/40 rounded-2xl p-3 space-y-2.5">
@@ -5976,7 +6168,65 @@ audio.play().catch(() => playNotificationChime());
                         <div className="text-xs text-slate-500 mt-2">{t.hoursOff}</div>
                       </div>
                     </div>
+{/* 📈 KARTU KOMPARASI BULANAN & TAHUNAN (PC) */}
+                    {periodComparison && (
+                      <div className="bg-gradient-to-r from-[#071525] via-[#0E2840] to-[#191638] border border-[#42D6C5]/45 rounded-3xl p-5 shadow-lg space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#42D6C5]/25 pb-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">📈</span>
+                            <h4 className="font-black text-xs text-[#42D6C5] uppercase tracking-wider">
+                              {lang === 'en'
+                                ? `Atelier Comparison vs ${periodComparison.prevLabel}`
+                                : `Perbandingan Performa vs ${periodComparison.prevLabel}`}
+                            </h4>
+                          </div>
+                          <span className="text-[10px] font-mono text-[#C7D5DE] bg-[#071525] px-3 py-1 rounded-full border border-[#42D6C5]/30">
+                            {periodLabel}
+                          </span>
+                        </div>
 
+                        <div className="grid grid-cols-3 gap-4 text-xs">
+                          <div className="bg-[#071525]/80 p-3.5 rounded-2xl border border-[#42D6C5]/25">
+                            <div className="text-[10px] text-[#C7D5DE] font-bold uppercase">Live Shifts</div>
+                            <div className="flex items-baseline gap-2 mt-1">
+                              <span className="text-xl font-black text-[#F3F5F7]">{stats.totalLive}</span>
+                              <span className={`font-mono text-[11px] font-black ${periodComparison.diffShifts >= 0 ? 'text-emerald-400' : 'text-amber-300'}`}>
+                                ({periodComparison.diffShifts >= 0 ? `+${periodComparison.diffShifts}` : periodComparison.diffShifts})
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">Sebelumnya: {periodComparison.prevLiveShifts} shift</div>
+                          </div>
+
+                          <div className="bg-[#071525]/80 p-3.5 rounded-2xl border border-[#42D6C5]/25">
+                            <div className="text-[10px] text-[#C7D5DE] font-bold uppercase">Streaming Hours</div>
+                            <div className="flex items-baseline gap-2 mt-1">
+                              <span className="text-xl font-black text-[#42D6C5]">{stats.totalLiveHours}j</span>
+                              <span className={`font-mono text-[11px] font-black ${periodComparison.diffHours >= 0 ? 'text-emerald-400' : 'text-amber-300'}`}>
+                                ({periodComparison.diffHours >= 0 ? `+${periodComparison.diffHours}j` : `${periodComparison.diffHours}j`})
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">Sebelumnya: {periodComparison.prevLiveHours} jam</div>
+                          </div>
+
+                          <div className="bg-[#071525]/80 p-3.5 rounded-2xl border border-[#B99BEB]/35">
+                            <div className="text-[10px] text-[#C7D5DE] font-bold uppercase">Total GMV</div>
+                            <div className="flex flex-wrap items-baseline gap-1.5 mt-1">
+                              <span className="text-base font-mono font-black text-[#B99BEB]">
+                                Rp {stats.totalGMV.toLocaleString('id-ID')}
+                              </span>
+                              <span className={`font-mono text-[10px] font-black ${periodComparison.diffGMV >= 0 ? 'text-emerald-400' : 'text-amber-300'}`}>
+                                ({periodComparison.diffGMV >= 0 ? `+Rp ${periodComparison.diffGMV.toLocaleString('id-ID')}` : `-Rp ${Math.abs(periodComparison.diffGMV).toLocaleString('id-ID')}`})
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">Sebelumnya: Rp {periodComparison.prevGMV.toLocaleString('id-ID')}</div>
+                          </div>
+                        </div>
+
+                        <p className="text-xs italic text-[#C7D5DE] bg-[#071525]/60 px-3.5 py-2 rounded-xl border-l-4 border-[#42D6C5]">
+                          {periodComparison.rafayelNote}
+                        </p>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-6">
                       <div className="bg-white p-6 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
@@ -6733,7 +6983,31 @@ audio.play().catch(() => playNotificationChime());
                         <div className="text-[10px] text-slate-400 mt-1">{t.hoursMeTime}</div>
                       </div>
                     </div>
-
+{/* 📈 KARTU KOMPARASI BULANAN & TAHUNAN (HP) */}
+                    {periodComparison && (
+                      <div className="bg-gradient-to-r from-[#071525] via-[#0E2840] to-[#191638] border border-[#42D6C5]/45 rounded-3xl p-4 shadow-md space-y-2.5">
+                        <div className="text-[10px] font-black text-[#42D6C5] uppercase tracking-wider">
+                          📈 {lang === 'en' ? `vs ${periodComparison.prevLabel}` : `Komparasi vs ${periodComparison.prevLabel}`}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-[#071525]/80 p-2.5 rounded-xl border border-[#42D6C5]/25">
+                            <div className="text-[9px] text-[#C7D5DE]">Shift & Jam Live</div>
+                            <div className="font-black text-[#F3F5F7] mt-0.5">
+                              {stats.totalLive}x ({periodComparison.diffShifts >= 0 ? `+${periodComparison.diffShifts}` : periodComparison.diffShifts}) • {stats.totalLiveHours}j
+                            </div>
+                          </div>
+                          <div className="bg-[#071525]/80 p-2.5 rounded-xl border border-[#B99BEB]/30">
+                            <div className="text-[9px] text-[#C7D5DE]">Selisih GMV</div>
+                            <div className={`font-mono font-black text-[11px] mt-0.5 ${periodComparison.diffGMV >= 0 ? 'text-emerald-400' : 'text-amber-300'}`}>
+                              {periodComparison.diffGMV >= 0 ? `+Rp ${periodComparison.diffGMV.toLocaleString('id-ID')}` : `-Rp ${Math.abs(periodComparison.diffGMV).toLocaleString('id-ID')}`}
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-[10px] italic text-[#C7D5DE] leading-snug">
+                          {periodComparison.rafayelNote}
+                        </p>
+                      </div>
+                    )}
                     <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                       <h3 className="text-xs font-black text-slate-700 uppercase mb-2">🍩 {t.propTitle}</h3>
                       <div className="h-52 relative"><canvas ref={donutCanvas}></canvas></div>
