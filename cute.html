@@ -3882,13 +3882,14 @@ function App() {
               </div>
 
               <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1 ${darkMode ? 'bg-amber-300 text-slate-900 border-amber-200 shadow' : 'bg-black/30 text-rose-100 border-white/15 hover:bg-black/40'}`}
-                title="Dark / Light Mode"
-              >
-                <span>{darkMode ? '☀️' : '🌙'}</span>
-                <span className="hidden sm:inline">{darkMode ? 'Light' : 'Dark'}</span>
-              </button>
+             type="button"
+             onClick={() => { window.location.href = "./index.html"; }}
+             className="px-3 py-1.5 rounded-2xl text-xs font-black border transition flex items-center gap-1.5 bg-teal-950/75 hover:bg-teal-900 text-teal-200 border-teal-400/50 shadow active:scale-95"
+             title="Pindah ke Mode Love & Deepspace (Rafayel)"
+           >
+             <span>🌊</span>
+             <span className="hidden sm:inline">L&D Mode</span>
+           </button>
 
               <button
                 onClick={toggleSoundAlert}
