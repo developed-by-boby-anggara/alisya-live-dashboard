@@ -257,171 +257,266 @@
     }
   </style>
 
-  <!-- VISUAL REFRESH 2026: styling-only layer; application logic remains unchanged -->
-  <style id="alisya-visual-refresh">
+ <!-- ===================================================================== -->
+  <!-- 🌊 UPDATE 01: RAFAYEL — A LITTLE PIECE OF LEMURIA (VISUAL IDENTITY)  -->
+  <!-- ===================================================================== -->
+  <style id="rafayel-lemurian-sanctuary-v1">
     :root {
-      --candy-rose: #e879a8;
-      --candy-pink: #f5a9c7;
-      --candy-lilac: #b8a4ed;
-      --candy-peach: #ffc9ad;
-      --candy-ink: #49364f;
-      --candy-muted: #8b7891;
-      --candy-paper: rgba(255,255,255,.88);
-      --candy-line: rgba(232,121,168,.20);
-      --candy-shadow: 0 12px 34px rgba(155,91,131,.10);
+      --lemuria-abyss: #071525;
+      --lemuria-ocean: #123C50;
+      --lemuria-teal: #42D6C5;
+      --lemuria-violet: #B99BEB;
+      --lemuria-pearl: #F3F5F7;
+      --lemuria-silver: #C7D5DE;
+      --lemuria-glass: rgba(10, 28, 48, 0.72);
+      --lemuria-glass-card: rgba(13, 35, 58, 0.78);
+      --lemuria-border: rgba(66, 214, 197, 0.28);
+      --lemuria-violet-border: rgba(185, 155, 235, 0.32);
     }
 
-    html { scroll-behavior: smooth; }
+    /* 1. DEEP OCEAN BACKGROUND & SUBTLE UNDERWATER LIGHT RAYS */
     body.cute-bg {
-      color: var(--candy-ink);
-      background-color: #fff8fc;
+      background-color: var(--lemuria-abyss) !important;
+      color: var(--lemuria-pearl) !important;
       background-image:
-        radial-gradient(circle at 8% 8%, rgba(255,194,218,.28), transparent 25rem),
-        radial-gradient(circle at 92% 22%, rgba(198,184,255,.22), transparent 28rem),
-        radial-gradient(circle at 50% 100%, rgba(255,220,196,.22), transparent 30rem),
-        radial-gradient(rgba(235,174,207,.30) .8px, transparent .8px);
-      background-size: auto, auto, auto, 24px 24px;
-      background-position: center, center, center, 0 0;
-      background-attachment: fixed;
+        radial-gradient(ellipse at 18% 0%, rgba(66, 214, 197, 0.16) 0%, transparent 52%),
+        radial-gradient(ellipse at 82% 8%, rgba(185, 155, 235, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 95%, rgba(18, 60, 80, 0.45) 0%, transparent 65%),
+        linear-gradient(180deg, #071525 0%, #0B253A 52%, #071525 100%) !important;
+      background-attachment: fixed !important;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    body, button, input, select, textarea { font-family: "Plus Jakarta Sans", sans-serif; }
-    ::selection { background: #f8c4dc; color: #57334d; }
-    ::-webkit-scrollbar-track { background: #fff2f8; }
-    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#f3b1d0,#c7b7f3); }
+    /* Subtle Diagonal Underwater Light Rays (Ringan & Tidak Menghalangi Klik) */
+    body.cute-bg::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        repeating-linear-gradient(
+          115deg,
+          transparent 0%,
+          transparent 12%,
+          rgba(66, 214, 197, 0.035) 16%,
+          transparent 22%
+        );
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 78%);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 78%);
+    }
 
-    /* Header and navigation */
+    /* Gentle Floating Bubbles & Bioluminescent Particles */
+    @keyframes lemuriaBubbleFloat {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+      20% { opacity: 0.45; }
+      80% { opacity: 0.35; }
+      100% { transform: translateY(-15vh) scale(1.15); opacity: 0; }
+    }
+    .lemuria-ambient-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .lemuria-bubble {
+      position: absolute;
+      bottom: -20px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 30%, rgba(243, 245, 247, 0.55), rgba(66, 214, 197, 0.15));
+      border: 1px solid rgba(66, 214, 197, 0.3);
+      box-shadow: 0 0 8px rgba(66, 214, 197, 0.25);
+      animation: lemuriaBubbleFloat linear infinite;
+    }
+    .lemuria-wave-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(66, 214, 197, 0.45), rgba(185, 155, 235, 0.45), transparent);
+    }
+
+    /* 2. DARK MODE: LEMURIAN NIGHT ADAPTATION */
+    body.dark-theme.cute-bg {
+      background-color: #040B14 !important;
+      background-image:
+        radial-gradient(ellipse at 20% 5%, rgba(185, 155, 235, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 15%, rgba(66, 214, 197, 0.12) 0%, transparent 50%),
+        linear-gradient(180deg, #040B14 0%, #081829 60%, #040B14 100%) !important;
+    }
+
+    /* Scrollbar Lemuria */
+    ::-webkit-scrollbar-track { background: #071525 !important; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(66, 214, 197, 0.6), rgba(185, 155, 235, 0.6)) !important;
+      border-radius: 999px;
+    }
+
+    /* 3. HEADER & NAVIGATION GLASSMORPHISM */
     header.sticky {
-      background: linear-gradient(112deg, #8d456f 0%, #b65f91 48%, #9276c6 100%) !important;
-      border-bottom: 1px solid rgba(255,255,255,.32) !important;
-      box-shadow: 0 8px 28px rgba(113,65,112,.20) !important;
-      backdrop-filter: blur(18px);
+      background: linear-gradient(110deg, rgba(7, 21, 37, 0.92) 0%, rgba(18, 60, 80, 0.88) 55%, rgba(24, 24, 54, 0.92) 100%) !important;
+      backdrop-filter: blur(18px) saturate(1.2) !important;
+      border-bottom: 1px solid rgba(66, 214, 197, 0.35) !important;
+      box-shadow: 0 8px 32px rgba(3, 10, 20, 0.65), 0 0 20px rgba(66, 214, 197, 0.08) !important;
     }
-    header button, header select {
-      transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
-    }
-    header button:hover { filter: brightness(1.08); transform: translateY(-1px); }
-    header button:active { transform: scale(.97); }
 
-    /* Main content surfaces */
+    nav.sticky,
+    #root .bg-white\/90.sticky,
+    #root .bg-white\/95.sticky {
+      background: rgba(8, 24, 42, 0.85) !important;
+      backdrop-filter: blur(16px) !important;
+      border-bottom: 1px solid var(--lemuria-border) !important;
+    }
+
+    nav.sticky button,
+    #root .bg-white\/90.sticky button {
+      color: var(--lemuria-silver) !important;
+      border-radius: 14px !important;
+      transition: all 0.22s ease !important;
+    }
+
+    nav.sticky button:hover,
+    #root .bg-white\/90.sticky button:hover {
+      background: rgba(66, 214, 197, 0.12) !important;
+      color: var(--lemuria-pearl) !important;
+    }
+
+    nav.sticky button.bg-maroon,
+    #root .bg-white\/90.sticky button.bg-maroon {
+      background: linear-gradient(135deg, rgba(66, 214, 197, 0.25) 0%, rgba(185, 155, 235, 0.28) 100%) !important;
+      color: var(--lemuria-pearl) !important;
+      border: 1px solid rgba(66, 214, 197, 0.55) !important;
+      box-shadow: 0 4px 16px rgba(66, 214, 197, 0.22) !important;
+    }
+
+    /* 4. DASHBOARD CARDS, SCHEDULE CARDS & KPI CARDS */
     #root .bg-white,
     #root .bg-white\/90,
     #root .bg-white\/95 {
-      border-color: rgba(232,121,168,.18);
+      background: var(--lemuria-glass-card) !important;
+      backdrop-filter: blur(14px) !important;
+      border: 1px solid var(--lemuria-border) !important;
+      box-shadow: 0 12px 32px rgba(4, 12, 24, 0.45) !important;
+      color: var(--lemuria-pearl) !important;
     }
-    #root .rounded-2xl,
-    #root .rounded-3xl {
-      border-radius: 1.15rem;
-    }
-    #root .shadow,
-    #root .shadow-md,
-    #root .shadow-lg,
-    #root .shadow-xl,
-    #root .shadow-2xl {
-      box-shadow: var(--candy-shadow);
-    }
-    #root .border-pink-200,
-    #root .border-pink-300 { border-color: var(--candy-line) !important; }
 
-    /* Buttons: keep their original colors/actions, refine their feel */
-    #root button {
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    #root .text-slate-900,
+    #root .text-slate-800,
+    #root .text-maroon {
+      color: var(--lemuria-pearl) !important;
     }
-    #root button:not(:disabled):hover {
-      filter: saturate(1.08);
+
+    #root .text-slate-700,
+    #root .text-slate-600,
+    #root .text-slate-500 {
+      color: var(--lemuria-silver) !important;
     }
-    #root button:not(:disabled):active { transform: scale(.975); }
-    #root button:focus-visible,
-    #root input:focus-visible,
-    #root select:focus-visible,
-    #root textarea:focus-visible {
-      outline: 3px solid rgba(213,142,194,.35);
-      outline-offset: 2px;
+
+    /* Kartu Radar Jadwal Utama */
+    #agenda-capture-area > div.bg-gradient-to-r,
+    #mobile-agenda-capture > div.bg-gradient-to-r {
+      background: linear-gradient(135deg, rgba(7, 21, 37, 0.92) 0%, rgba(18, 60, 80, 0.88) 52%, rgba(28, 25, 58, 0.92) 100%) !important;
+      border: 1px solid rgba(66, 214, 197, 0.45) !important;
+      box-shadow: 0 16px 40px rgba(3, 10, 20, 0.7), 0 0 24px rgba(66, 214, 197, 0.14) !important;
     }
- 
-    /* Inputs */
+
+    /* Slot Kosong (Available Schedule) */
+    #root .bg-emerald-50,
+    #root .bg-emerald-50\/90,
+    #root .bg-emerald-100 {
+      background: rgba(11, 36, 54, 0.78) !important;
+      border: 1px solid rgba(66, 214, 197, 0.42) !important;
+      color: var(--lemuria-pearl) !important;
+    }
+    #root .text-emerald-950,
+    #root .text-emerald-900,
+    #root .text-emerald-800,
+    #root .text-emerald-700 {
+      color: var(--lemuria-teal) !important;
+    }
+
+    /* Penyesuaian Lembut Sisa Aksen Pink ke Palet Ocean Teal & Lemurian Violet */
+    #root .bg-pink-50, #root .bg-pink-50\/30, #root .bg-pink-50\/35, #root .bg-pink-50\/40,
+    #root .bg-pink-50\/50, #root .bg-pink-50\/60, #root .bg-pink-50\/70, #root .bg-pink-50\/80,
+    #root .bg-pink-50\/90, #root .bg-pink-100, #root .bg-pink-100\/80, #root .bg-pink-100\/90,
+    #root .bg-rose-50, #root .bg-rose-50\/80 {
+      background: rgba(18, 60, 80, 0.45) !important;
+      border-color: var(--lemuria-border) !important;
+      color: var(--lemuria-pearl) !important;
+    }
+
+    #root .border-pink-200, #root .border-pink-200\/70, #root .border-pink-200\/80,
+    #root .border-pink-300, #root .border-rose-200 {
+      border-color: var(--lemuria-border) !important;
+    }
+
+    #root .text-pink-600, #root .text-pink-700, #root .text-rose-900, #root .text-rose-950 {
+      color: var(--lemuria-teal) !important;
+    }
+
+    /* 5. CALENDAR & SPREADSHEET */
+    .cute-calendar-panel {
+      background: var(--lemuria-glass-card) !important;
+      border: 1px solid var(--lemuria-border) !important;
+    }
+    .cute-calendar-day {
+      background: rgba(7, 21, 37, 0.75) !important;
+      border: 1px solid rgba(199, 213, 222, 0.14) !important;
+      color: var(--lemuria-silver) !important;
+    }
+    .cute-calendar-day:hover {
+      background: rgba(18, 60, 80, 0.7) !important;
+      border-color: var(--lemuria-teal) !important;
+    }
+    .cute-calendar-day.is-today {
+      border: 1.5px solid var(--lemuria-teal) !important;
+      background: rgba(66, 214, 197, 0.14) !important;
+      box-shadow: 0 0 14px rgba(66, 214, 197, 0.25) !important;
+    }
+    .cute-calendar-day.is-selected {
+      background: linear-gradient(135deg, #123C50 0%, #2C3A6E 100%) !important;
+      border: 1.5px solid var(--lemuria-violet) !important;
+      color: var(--lemuria-pearl) !important;
+      box-shadow: 0 6px 18px rgba(185, 155, 235, 0.28) !important;
+    }
+
+    #spreadsheet-capture-area tbody tr:not(.today-active-glow),
+    #mobile-spreadsheet-capture tbody tr:not(.today-active-glow) {
+      background-color: #071525 !important;
+    }
+    #spreadsheet-capture-area tbody td:nth-child(n+3),
+    #mobile-spreadsheet-capture tbody td:nth-child(n+3) {
+      background-color: rgba(12, 34, 56, 0.85) !important;
+      border-color: rgba(66, 214, 197, 0.18) !important;
+    }
+
+    /* 6. BUTTONS, SEARCH BAR & INPUT FIELDS */
     #root input:not([type="checkbox"]):not([type="radio"]),
     #root select,
     #root textarea {
-      border-radius: 14px;
-      border-color: rgba(203,160,194,.42);
-      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+      background-color: rgba(7, 21, 37, 0.88) !important;
+      color: var(--lemuria-pearl) !important;
+      border: 1px solid rgba(66, 214, 197, 0.35) !important;
+      border-radius: 14px !important;
+    }
+    #root input::placeholder,
+    #root textarea::placeholder {
+      color: rgba(199, 213, 222, 0.5) !important;
     }
     #root input:focus,
     #root select:focus,
     #root textarea:focus {
-      border-color: #d88bb8;
-      box-shadow: 0 0 0 4px rgba(232,121,168,.10);
+      border-color: var(--lemuria-teal) !important;
+      box-shadow: 0 0 0 3px rgba(66, 214, 197, 0.18) !important;
+      outline: none !important;
     }
 
-    /* Friendly card hover for desktop; no layout or interaction changes */
-    @media (hover:hover) and (pointer:fine) {
-      #root .bg-white.rounded-2xl,
-      #root .bg-white.rounded-3xl,
-      #root .bg-white\/90.rounded-2xl,
-      #root .bg-white\/90.rounded-3xl {
-        transition: box-shadow .22s ease, border-color .22s ease;
-      }
-      #root .bg-white.rounded-2xl:hover,
-      #root .bg-white.rounded-3xl:hover,
-      #root .bg-white\/90.rounded-2xl:hover,
-      #root .bg-white\/90.rounded-3xl:hover {
-        box-shadow: 0 16px 38px rgba(155,91,131,.14);
-        border-color: rgba(232,121,168,.30);
-      }
-    }
-
-    /* Tables and dense schedule views */
-    #root table { border-collapse: separate; border-spacing: 0; }
-    #root th { letter-spacing: .045em; }
-    #root td, #root th { border-color: rgba(222,190,215,.38); }
-    #root tr:hover td { background-color: rgba(255,239,247,.52); }
-
-    /* Cute accent details */
-    #root .cute-float { filter: drop-shadow(0 5px 8px rgba(255,205,226,.30)); }
-    #root .live-card-glow { border-radius: 1.25rem; }
-    #root .sparkle-anim { filter: drop-shadow(0 2px 5px rgba(216,132,190,.25)); }
-
-    /* Preserve the existing dark theme while softening its surfaces */
-    body.dark-theme {
-      background-color: #171426 !important;
-      background-image:
-        radial-gradient(circle at 10% 8%, rgba(120,75,126,.16), transparent 25rem),
-        radial-gradient(circle at 90% 18%, rgba(92,78,151,.15), transparent 28rem),
-        radial-gradient(#30263f 1px, transparent 1px) !important;
-      background-size: auto, auto, 26px 26px !important;
-      color: #f6edf8 !important;
-    }
-    body.dark-theme #root .bg-white,
-    body.dark-theme #root .bg-white\/90,
-    body.dark-theme #root .bg-white\/95 {
-      background-color: rgba(39,32,54,.96) !important;
-      border-color: rgba(194,145,190,.18) !important;
-      color: #f6edf8 !important;
-    }
-    body.dark-theme #root tr:hover td { background-color: rgba(117,79,123,.16) !important; }
-    body.dark-theme #root input,
-    body.dark-theme #root select,
-    body.dark-theme #root textarea {
-      background-color: #211b30;
-      color: #f6edf8;
-      border-color: #51405e;
-    }
-    body.dark-theme header.sticky {
-      background: linear-gradient(112deg,#35233f 0%,#533451 50%,#40365f 100%) !important;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-      }
-    }
-    @media (max-width: 640px) {
-      body.cute-bg { background-attachment: scroll; }
-      #root .rounded-3xl { border-radius: 1.15rem; }
+    /* 7. MODAL & TOAST */
+    .fixed.inset-0.z-50 .bg-white,
+    .fixed.inset-0.z-50 .bg-gradient-to-b {
+      background: linear-gradient(160deg, #071525 0%, #0E2B42 60%, #171B3A 100%) !important;
+      border: 1px solid rgba(66, 214, 197, 0.45) !important;
+      color: var(--lemuria-pearl) !important;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85) !important;
     }
   </style>
 
@@ -2420,6 +2515,13 @@ function App() {
 
       // State Affirmation
       const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * TRANSLATIONS.id.affirmations.length));
+  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA (UBAH FOTO DI SINI)
+const RAFAYEL_THEME_CONFIG = {
+  portraitUrl: "./img/rafael1.jpg", // Ganti path ini jika ingin memakai foto Rafayel lain
+  studioTitle: "Mo's Atelier • Lemurian Sanctuary",
+  subGreetingId: "A Little Piece of Lemuria • Bodyguard Alisya",
+  subGreetingEn: "A Little Piece of Lemuria • Bodyguard Alisya"
+};
   // 🎲 State untuk mengacak stiker
 const [stickerIdx, setStickerIdx] = useState(() => Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length));
 const initialHeaderSticker = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
@@ -4837,6 +4939,16 @@ audio.play().catch(() => playNotificationChime());
 
       return (
         <div className="min-h-screen flex flex-col relative">
+          {/* 🫧 AMBIENT LEMURIAN BUBBLES & BIOLUMINESCENT PARTICLES */}
+       <div className="lemuria-ambient-layer" aria-hidden="true">
+         <span className="lemuria-bubble" style={{ left: '8%', width: '10px', height: '10px', animationDuration: '14s', animationDelay: '0s' }}></span>
+         <span className="lemuria-bubble" style={{ left: '22%', width: '6px', height: '6px', animationDuration: '18s', animationDelay: '3s' }}></span>
+         <span className="lemuria-bubble" style={{ left: '41%', width: '12px', height: '12px', animationDuration: '16s', animationDelay: '6s' }}></span>
+         <span className="lemuria-bubble" style={{ left: '63%', width: '7px', height: '7px', animationDuration: '20s', animationDelay: '2s' }}></span>
+         <span className="lemuria-bubble" style={{ left: '79%', width: '11px', height: '11px', animationDuration: '15s', animationDelay: '5s' }}></span>
+         <span className="lemuria-bubble" style={{ left: '92%', width: '8px', height: '8px', animationDuration: '17s', animationDelay: '1s' }}></span>
+       </div>
+          
     {/* 🔱 SPLASH SCREEN: DIVING INTO LEMURIA (RAFAYEL SANCTUARY) */}
       {!hasEntered && (
         <div 
@@ -4927,37 +5039,45 @@ audio.play().catch(() => playNotificationChime());
 {/* HEADER UTAMA ADAPTIF: 1 BARIS PENUH DI PC, 2 BARIS RAPI DI HP */}
           <header className="bg-gradient-to-r from-maroon via-[#8B1538] to-maroon text-white px-3 md:px-6 py-2.5 md:py-3.5 shadow-lg sticky top-0 z-40 border-b-2 border-pink-300/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 lg:gap-4">
             
-            {/* SISI KIRI: Logo, Judul & Indikator Status */}
-            <div className="flex items-center justify-between lg:justify-start gap-2.5 min-w-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-teal-500/20 p-1 flex items-center justify-center border border-teal-400/40 shadow-inner cute-float overflow-hidden shrink-0">
-                  <img src={initialHeaderSticker} alt="Rafayel" className="w-full h-full object-cover rounded-xl" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
-                    <h1 className="font-extrabold text-sm md:text-base tracking-wide flex items-center gap-1.5 truncate">
-                      <span>Alisya Schedule</span>
-                      <button
-                        type="button"
-                        className="flower-next-day calendar-flower"
-                        title="Geser ke tanggal berikutnya"
-                        aria-label="Pilih tanggal berikutnya"
-                        onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
-                      >
-                        <span>🌊</span><span className="flower-arrow">❯</span>
-                      </button>
-                    </h1>
-                    <span className="bg-teal-500/20 text-teal-200 border border-teal-400/40 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-mono font-bold tracking-wider shadow-[0_0_10px_rgba(45,212,191,0.3)]">
-                   LEMURIAN OS • RAFAYEL
+           {/* SISI KIRI: Identitas Rafayel — A Little Piece of Lemuria */}
+         <div className="flex items-center justify-between lg:justify-start gap-3 min-w-0">
+           <div className="flex items-center gap-3 min-w-0">
+             <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#42D6C5]/30 to-[#B99BEB]/30 p-0.5 flex items-center justify-center border border-[#42D6C5]/50 shadow-[0_0_15px_rgba(66,214,197,0.3)] cute-float overflow-hidden shrink-0">
+               <img
+                 src={RAFAYEL_THEME_CONFIG.portraitUrl}
+                 onError={(e) => { e.currentTarget.src = initialHeaderSticker; }}
+                 alt="Rafayel"
+                 className="w-full h-full object-cover rounded-[14px]"
+               />
+             </div>
+             <div className="min-w-0">
+               <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
+                 <h1 className="font-extrabold text-sm md:text-base tracking-wide text-[#F3F5F7] flex items-center gap-1.5 truncate">
+                   <span>Alisya Schedule</span>
+                   <button
+                     type="button"
+                     className="flower-next-day calendar-flower"
+                     title="Geser ke tanggal berikutnya"
+                     aria-label="Pilih tanggal berikutnya"
+                     onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
+                   >
+                     <span>🌊</span><span className="flower-arrow">❯</span>
+                   </button>
+                 </h1>
+                 <span className="bg-[#42D6C5]/15 text-[#42D6C5] border border-[#42D6C5]/40 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-mono font-bold tracking-wider">
+                   RAFAYEL • LEMURIA
                  </span>
-                    {isAdmin ? (
-                      <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-black shadow">👑 ADMIN</span>
-                    ) : (
-                      <span className="bg-white/20 text-rose-100 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-semibold">👀 VIEWER</span>
-                    )}
-                  </div>
-                </div>
-              </div>
+                 {isAdmin ? (
+                   <span className="bg-amber-300/90 text-slate-950 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-black shadow">👑 ADMIN</span>
+                 ) : (
+                   <span className="bg-white/10 text-[#C7D5DE] px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-semibold">👀 VIEWER</span>
+                 )}
+               </div>
+               <p className="text-[10px] md:text-[11px] text-[#C7D5DE]/85 font-medium tracking-wide truncate mt-0.5">
+                 {lang === 'en' ? RAFAYEL_THEME_CONFIG.subGreetingEn : RAFAYEL_THEME_CONFIG.subGreetingId}
+               </p>
+             </div>
+           </div>
 
               {/* Jam Digital Khusus Layar HP (Sembunyi otomatis saat di PC) */}
               <div className="flex items-center gap-1.5 lg:hidden shrink-0">
