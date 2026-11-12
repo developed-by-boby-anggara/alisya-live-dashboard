@@ -5752,11 +5752,10 @@ audio.play().catch(() => playNotificationChime());
        </div>
           
     {/* 🔱 SPLASH SCREEN: DIVING INTO LEMURIA (RAFAYEL SANCTUARY) */}
-      {!hasEntered && (
-        <div 
-        onClick={handleEnterTerminal}
-        className="fixed inset-0 z-50 bg-[#040914]/95 backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-700"
-      >
+     {!hasEntered && (
+     <div 
+     className="fixed inset-0 z-50 bg-[#040914]/95 backdrop-blur-md flex flex-col items-center justify-center select-none transition-all duration-700 px-4"
+   >
            <div className="text-center space-y-4 animate-pulse">
              <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-teal-400 via-cyan-400 to-purple-600 p-0.5 shadow-[0_0_35px_rgba(45,212,191,0.6)]">
              <div className="w-full h-full bg-[#081526] rounded-3xl p-2 flex items-center justify-center overflow-hidden">
@@ -5771,10 +5770,24 @@ audio.play().catch(() => playNotificationChime());
                  [ RAFAYEL'S ATELIER • HUNTER ALISYA ON-DUTY ]
                </p>
              </div>
-             <div className="pt-8">
-               <span className="inline-block px-6 py-2.5 rounded-full border border-teal-400/50 bg-teal-500/15 text-white font-mono text-xs font-black tracking-widest shadow-[0_0_22px_rgba(45,212,191,0.5)]">
+            <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+               {/* Pilihan 1: Masuk ke Mode Lemurian Sanctuary (Rafayel + Suara & Call) */}
+               <button
+                 type="button"
+                 onClick={handleEnterTerminal}
+                 className="w-full sm:w-auto px-6 py-3 rounded-full border border-teal-400/60 bg-gradient-to-r from-teal-500/25 to-purple-600/25 hover:from-teal-500/40 hover:to-purple-600/40 text-white font-mono text-xs font-black tracking-widest shadow-[0_0_22px_rgba(45,212,191,0.5)] active:scale-95 transition cursor-pointer"
+               >
                  DIVING INTO LEMURIA 🌊 ❯
-               </span>
+               </button>
+
+               {/* Pilihan 2: Pindah ke Versi Cute Pastel (Fokus Jadwal Bersih) */}
+               <button
+                 type="button"
+                 onClick={() => { window.location.href = "./cute.html"; }}
+                 className="w-full sm:w-auto px-6 py-3 rounded-full border border-pink-300/60 bg-pink-500/20 hover:bg-pink-500/35 text-pink-100 font-sans text-xs font-black tracking-wider shadow-[0_0_18px_rgba(244,114,182,0.35)] active:scale-95 transition cursor-pointer"
+               >
+                 🌸 CUTE SCHEDULE MODE ❯
+               </button>
              </div>
            </div>
          </div>
