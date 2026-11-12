@@ -2510,31 +2510,162 @@ function App() {
   const callVoiceAudioRef = useRef(null);
   const ringtoneIntervalRef = useRef(null);
 
- const RAFAYEL_CALL_SCENARIOS = [
+// 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./SoundRafael/)
+  const RAFAYEL_WELCOME_VOICES = [
+    "./SoundRafael/welcome1.mp3",
+    "./SoundRafael/rafayel_call_welcome.mp3",
+    "./SoundRafael/rafayel_call_welcome2.mp3"
+  ];
+
+  // 📞 DAFTAR LENGKAP SKENARIO PANGGILAN SUARA REAL-TIME RAFAYEL (FOLDER: ./SoundRafael/)
+  const RAFAYEL_CALL_SCENARIOS = [
     {
-      audioUrl: "./audio/rafayel_call_welcome.mp3",
-      tagId: "Panggilan Masuk • Selamat Datang",
-      tagEn: "Incoming Call • Welcome Back",
-      titleId: "Rafayel • Mo's Atelier",
-      titleEn: "Rafayel • Mo's Atelier",
-      subtitleId: "Akhirnya kamu membuka terminal jadwal ini...",
-      subtitleEn: "You finally opened the schedule terminal...",
-      transcriptId: "Nona Pengawal! Kenapa baru buka webnya sekarang? Aku sudah menunggumu dari tadi di studio sambil menyiapkan cat warna biru laut. Cek jadwalmu hari ini baik-baik, jangan lupa minum air, dan setelah selesai temui aku di pantai!",
-      transcriptEn: "Bodyguard! Why are you only opening the web now? I've been waiting for you in the studio preparing sea-blue paint. Check your schedule carefully today, stay hydrated, and meet me at the shore when you're done!"
+      key: "boost",
+      audioUrl: "./SoundRafael/rafayel_call_boost.mp3",
+      tagId: "Transmisi Semangat • Mode Siaran",
+      tagEn: "Broadcast Boost • On-Air Standby",
+      titleId: "Rafayel • Sea God Support",
+      titleEn: "Rafayel • Sea God Support",
+      subtitleId: "Pesan penyemangat khusus sebelum menyalakan kamera",
+      subtitleEn: "Special encouragement before turning on the camera",
+      transcriptId: "Hei, dengarkan baik-baik. Sebelum kamu menyalakan kamera itu, ingat siapa dirimu—pengawal nomor satuku! Buat semua orang di luar sana terpukau, tunjukkan betapa bersinarnya dirimu, dan cepat kembali ke Mo's Atelier begitu selesai. Sepakat?",
+      transcriptEn: "Hey, listen up. Before you turn on that camera, remember who you belong to—my number one bodyguard! Go dazzle everyone out there, make them see how radiant you are, and hurry back to Mo's Atelier as soon as you're done. Deal?"
     },
     {
-      audioUrl: "./audio/rafayel_call_hydrate.mp3",
+      key: "hydrate",
+      audioUrl: "./SoundRafael/rafayel_call_hydrate.mp3",
       tagId: "Panggilan Darurat • Cek Hidrasi",
       tagEn: "Priority Call • Hydration Check",
       titleId: "Rafayel • Sea God Alert",
       titleEn: "Rafayel • Sea God Alert",
       subtitleId: "Peringatan resonansi suara dari Lemuria",
       subtitleEn: "Vocal resonance alert from Lemuria",
-      transcriptId: "Alisya, aku bisa merasakan dari kejauhan kalau kamu lupa minum air lagi! Suaramu itu aset paling berharga saat siaran langsung. Cepat ambil gelasmu dan minum sekarang juga sebelum aku berenang ke sana!",
-      transcriptEn: "Alisya, I can sense from afar that you forgot to drink water again! Your voice is your most precious asset during live streams. Grab your glass and drink right now before I swim over there!"
+      transcriptId: "Alisya! Berhenti bicara selama lima detik dan minum airmu! Insting Lemuria-ku bilang tenggorokanmu mulai kering. Kalau putri duyung favoritku sampai kehilangan suaranya, aku bakal ngambek sebulan penuh! Cepat minum sekarang juga!",
+      transcriptEn: "Alisya! Stop talking for five seconds and drink your water! My Lemurian instincts are telling me your throat is getting dry. If my favorite mermaid loses her voice, I'm going to sulk for an entire month! Go take a sip right now!"
     },
     {
-      audioUrl: "./audio/rafayel_call_rest.mp3",
+      key: "chill",
+      audioUrl: "./SoundRafael/rafayel_call_chill.mp3",
+      tagId: "Panggilan Santai • Jam Kosong",
+      tagEn: "Break Time Call • Atelier Invitation",
+      titleId: "Rafayel • Mo's Atelier",
+      titleEn: "Rafayel • Mo's Atelier",
+      subtitleId: "Undangan melukis senja di studio seni",
+      subtitleEn: "Invitation to paint the sunset in the studio",
+      transcriptId: "Aha! Ketahuan lagi santai di sela-sela jadwal ya! Bercanda kok—sebenarnya aku senang kamu akhirnya istirahat sebentar. Sini temani aku di studio sebentar. Aku bakal meracik warna senja paling indah khusus untukmu, dilarang bahas kerjaan!",
+      transcriptEn: "Aha! Caught you slacking off between schedules! Just kidding—actually, I'm glad you're taking a breather. Come keep me company in the studio for a bit. I'll mix the prettiest sunset colors just for you, no work allowed!"
+    },
+    {
+      key: "night",
+      audioUrl: "./SoundRafael/rafayel_call_night.mp3",
+      tagId: "Panggilan Malam • Larangan Begadang",
+      tagEn: "Night Call • Curfew Alert",
+      titleId: "Rafayel • Linkon City Line",
+      titleEn: "Rafayel • Linkon City Line",
+      subtitleId: "Ombak samudera saja sudah beristirahat",
+      subtitleEn: "Even the ocean tides are asleep at this hour",
+      transcriptId: "Lihat jamnya, pengawal kecilku. Ombak samudera saja sudah tidur di jam segini, tapi kamu masih melek? Pejamkan matamu dan istirahatlah sekarang. Besok pagi, aku janji akulah hal pertama yang kamu lihat saat ombak menyapa. Selamat malam, Putri Duyungku.",
+      transcriptEn: "Look at the clock, little guard. Even the ocean tides go to sleep at this hour, yet you're still awake? Close your eyes and rest already. Tomorrow morning, I promise I'll be the first thing you see when the waves roll in. Goodnight, my mermaid."
+    },
+    {
+      key: "morning",
+      audioUrl: "./SoundRafael/rafayel_call_morning.mp3",
+      tagId: "Panggilan Pagi • Morning Tide",
+      tagEn: "Morning Call • Rise & Shine",
+      titleId: "Rafayel • Lemurian Dawn",
+      titleEn: "Rafayel • Lemurian Dawn",
+      subtitleId: "Sapaan ombak pagi dari Mo's Atelier",
+      subtitleEn: "Morning tide greeting from Mo's Atelier",
+      transcriptId: "Bangun dan bersinarlah, tukang tidur! Ombak pagi sudah menyapa, begitu juga seniman favoritmu ini. Semalam kamu mimpiin Lemuria nggak? Cepat siap-siap—kanvas baru sudah menunggu kita lukis hari ini!",
+      transcriptEn: "Rise and shine, sleepyhead! The morning tide is already here, and so is your favorite artist. Did you dream of Lemuria last night? Hurry up and get ready—a brand new canvas is waiting for us to paint today!"
+    },
+    {
+      key: "jealous",
+      audioUrl: "./SoundRafael/rafayel_call_jealous.mp3",
+      tagId: "Panggilan Protes • Mode Merajuk",
+      tagEn: "Pouting Call • Attention Required",
+      titleId: "Rafayel • Your Real Boss",
+      titleEn: "Rafayel • Your Real Boss",
+      subtitleId: "Seniman Lemuria sedang menuntut perhatian",
+      subtitleEn: "The Lemurian artist is demanding attention",
+      transcriptId: "Hmph. Seharian ini kamu terus menatap layar itu dan mengobrol dengan semua orang kecuali aku! Perlu kuingatkan siapa bos aslimu? Cepat selesaikan shift-mu—malam ini seluruh perhatianmu kupesan khusus untukku!",
+      transcriptEn: "Hmph. You've been staring at that screen and talking to everyone else except me all day! Do I need to remind you who your real boss is? Wrap up your shift quickly—I'm reserving all of your attention tonight!"
+    },
+    {
+      key: "treat",
+      audioUrl: "./SoundRafael/rafayel_call_treat.mp3",
+      tagId: "Perintah Dewa Laut • Self-Reward",
+      tagEn: "Sea God's Order • Sweet Treat",
+      titleId: "Rafayel • VIP Treat Pass",
+      titleEn: "Rafayel • VIP Treat Pass",
+      subtitleId: "Traktiran camilan manis spesial untukmu",
+      subtitleEn: "Special sweet snack treat just for you",
+      transcriptId: "Hei, Nona Pengawalku! Karena kamu sudah bekerja sangat keras hari ini, aku secara resmi memerintahkanmu membeli cokelat manis, pancake, atau camilan enak apa pun yang lagi kamu mau sekarang. Biar aku yang bayar—tidak ada yang boleh menolak perintah Dewa Laut!",
+      transcriptEn: "Hey, my bodyguard! Since you worked so hard today, I officially order you to go buy some sweet chocolate, pancakes, or whatever yummy snack you're craving right now. Put it on my tab—nobody says no to the Sea God!"
+    },
+    {
+      key: "rain",
+      audioUrl: "./SoundRafael/rafayel_call_rain.mp3",
+      tagId: "Transmisi Puitis • Suara Hujan",
+      tagEn: "Poetic Line • Rainy Echoes",
+      titleId: "Rafayel • Deep Sea Echo",
+      titleEn: "Rafayel • Deep Sea Echo",
+      subtitleId: "Menghangatkanmu dari kejauhan di Linkon City",
+      subtitleEn: "Keeping you warm across Linkon City",
+      transcriptId: "Dengarkan suara hujan di luar... Rasanya mengingatkanku pada lautan dalam di kampung halamanku. Kapan pun cuaca terasa mendung, panggil saja namaku. Meski terpisah jarak di Linkon City, aku akan selalu menemukan jalan untuk menghangatkanmu, Alisya.",
+      transcriptEn: "Listen to the rain outside... It reminds me of the deep ocean back home. Whenever the weather feels gloomy, just call my name. Even across Linkon City, I'll always find my way to keep you warm, Alisya."
+    },
+    {
+      key: "proud",
+      audioUrl: "./SoundRafael/rafayel_call_proud.mp3",
+      tagId: "Panggilan Apresiasi • Ratu Hari Ini",
+      tagEn: "Celebration Call • Conquered Today",
+      titleId: "Rafayel • Pearl of Lemuria",
+      titleEn: "Rafayel • Pearl of Lemuria",
+      subtitleId: "Pujian tulus dari seniman Lemuria",
+      subtitleEn: "Sincere praise from the Lemurian artist",
+      transcriptId: "Lihat dirimu, bersinar lebih terang daripada mutiara mana pun di dasar samudera! Aku tahu merekrutmu sebagai pengawalku adalah keputusan paling cerdas yang pernah kubuat. Berilah hormat, Alisya—kamu benar-benar menaklukkan hari ini layaknya seorang ratu!",
+      transcriptEn: "Look at you, shining brighter than any pearl in the deep sea! I knew hiring you as my bodyguard was the smartest decision I ever made. Take a bow, Alisya—you truly conquered today like a queen!"
+    },
+    {
+      key: "dayoff",
+      audioUrl: "./SoundRafael/rafayel_call_dayoff.mp3",
+      tagId: "Panggilan Hari Libur • Kencan Pantai",
+      tagEn: "Day Off Call • Beach Date",
+      titleId: "Rafayel • Shore Walk",
+      titleEn: "Rafayel • Shore Walk",
+      subtitleId: "Seluruh waktumu hari ini milikku!",
+      subtitleEn: "Your entire day officially belongs to me!",
+      transcriptId: "Jadwal kerjamu kosong seharian ini?! Kabar terbaik hari ini! Artinya seluruh waktumu hari ini resmi menjadi milikku. Pakai bajumu yang paling cantik—sepuluh menit lagi kujemput untuk jalan-jalan di tepi pantai!",
+      transcriptEn: "Zero shifts on your schedule today?! Best news ever! That means your entire day officially belongs to me. Put on your prettiest outfit—I'm picking you up in ten minutes for a walk along the shore!"
+    },
+    {
+      key: "missyou",
+      audioUrl: "./SoundRafael/rafayel_call_missyou.mp3",
+      tagId: "Panggilan Tanpa Alasan • Kangen",
+      tagEn: "Random Call • Missing You",
+      titleId: "Rafayel • Quiet Atelier",
+      titleEn: "Rafayel • Quiet Atelier",
+      subtitleId: "Kuas lukis pun bosan tanpa kehadiranmu",
+      subtitleEn: "Even the paintbrushes are bored without you",
+      transcriptId: "Nggak ada keadaan darurat kok... aku cuma menelepon karena atelier terasa terlalu sepi tanpa kehadiranmu. Bahkan kuas lukisku saja kelihatan bosan! Ceritakan kamu lagi ngapain sekarang supaya aku bisa dengar suaramu sebentar.",
+      transcriptEn: "No emergency... I just called because the atelier got way too quiet without you around. Even the paintbrushes look bored! Tell me what you're doing right now so I can hear your voice for a bit."
+    },
+    {
+      key: "lullaby",
+      audioUrl: "./SoundRafael/rafayel_call_lullaby.mp3",
+      tagId: "Panggilan Pengantar Tidur • Deep Tide",
+      tagEn: "Lullaby Call • Drift with the Tide",
+      titleId: "Rafayel • Midnight Waves",
+      titleEn: "Rafayel • Midnight Waves",
+      subtitleId: "Bisikan lembut pengantar istirahat malam",
+      subtitleEn: "Gentle whisper to drift you to sleep",
+      transcriptId: "Sst... Pejamkan matamu dan dengarkan suara deburan ombak. Biarkan semua rasa lelahmu hanyut terbawa pasang surut malam ini. Kapan pun kamu terbangun besok pagi, aku akan tetap di sini menunggumu, Alisya.",
+      transcriptEn: "Shh... Close your eyes and listen to the sound of the waves. Let all your worries drift away with the tide tonight. Whenever you wake up tomorrow, I'll still be right here waiting for you, Alisya."
+    },
+    {
+      key: "rest",
+      audioUrl: "./SoundRafael/rafayel_call_rest.mp3",
       tagId: "Panggilan Malam • Perhatian Atelier",
       tagEn: "Evening Call • Atelier Care",
       titleId: "Rafayel • Linkon City Line",
@@ -2543,6 +2674,18 @@ function App() {
       subtitleEn: "Exclusive voice transmission for you",
       transcriptId: "Kerja kerasmu hari ini luar biasa, Putri Duyungku. Kalau sesi siaranmu sudah selesai, cepat istirahat dan jangan begadang. Besok aku akan melukis senyummu yang paling manis di atas kanvas baruku~",
       transcriptEn: "You worked so hard today, my little mermaid. Once your stream is finished, get some rest and don't stay up late. Tomorrow I'll paint your sweetest smile on my new canvas~"
+    },
+    {
+      key: "live_end",
+      audioUrl: "./SoundRafael/live-end.mp3",
+      tagId: "Sesi Siaran Selesai • Atelier Check-In",
+      tagEn: "Stream Wrapped • Atelier Check-In",
+      titleId: "Rafayel • Sea God's Reward",
+      titleEn: "Rafayel • Sea God's Reward",
+      subtitleId: "Selamat datang kembali dari dunia siaran!",
+      subtitleEn: "Welcome back from your live broadcast!",
+      transcriptId: "Akhirnya siaranmu selesai juga! Aku sudah menghitung mundur detiknya dari tadi. Istirahatkan suaramu sekarang, lalu temani aku di studio!",
+      transcriptEn: "Your broadcast is finally over! I've been counting down the seconds. Rest your voice now and come keep me company in the studio!"
     }
   ];
 
@@ -2566,11 +2709,40 @@ function App() {
     } catch (e) {}
   };
 
+  // 🎯 PEMILIH PANGGILAN PINTAR BERDASARKAN KONDISI REAL-TIME / KANGEN
+  const pickSmartRafayelCallIndex = () => {
+    const hr = new Date().getHours();
+    const todayItems = schedules.filter(s => s.date === realTodayStr);
+    const todayWater = (dailyWellness[realTodayStr]?.water) || 0;
+    const isOff = todayItems.length === 0 || todayItems.some(s => s.status === 'OFF' || s.brand_id === 'b_pribadi');
+    const isLiveNow = todayItems.some(s => {
+      const nowM = new Date().getHours() * 60 + new Date().getMinutes();
+      const stM = timeToMinutes(s.start_time);
+      let enM = timeToMinutes(s.end_time);
+      if (enM <= stM) enM = 24 * 60;
+      return s.status === 'LIVE' && nowM >= stM && nowM < enM;
+    });
+
+    const candidateKeys = ["missyou", "chill", "rain"]; // Selalu ada peluang panggilan kangen/random
+
+    if (hr >= 23 || hr < 4) candidateKeys.push("night", "lullaby");
+    else if (hr >= 5 && hr < 10) candidateKeys.push("morning");
+
+    if (todayWater < 6) candidateKeys.push("hydrate", "hydrate");
+    if (isLiveNow) candidateKeys.push("jealous", "boost");
+    if (isOff) candidateKeys.push("dayoff", "treat");
+    if (todayItems.length > 0 && !isLiveNow && hr >= 17) candidateKeys.push("proud", "rest", "live_end");
+
+    const chosenKey = candidateKeys[Math.floor(Math.random() * candidateKeys.length)];
+    const foundIdx = RAFAYEL_CALL_SCENARIOS.findIndex(item => item.key === chosenKey);
+    return foundIdx >= 0 ? foundIdx : 0;
+  };
+
   // Memicu panggilan masuk Rafayel
   const triggerIncomingRafayelCall = (scenarioIndex = null) => {
     const idx = scenarioIndex !== null
       ? scenarioIndex % RAFAYEL_CALL_SCENARIOS.length
-      : Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length);
+      : pickSmartRafayelCallIndex();
     setCurrentCallScenario(idx);
     setRafayelCallStatus('ringing');
     setRafayelCallSeconds(0);
@@ -2605,12 +2777,11 @@ function App() {
     }
   }, [rafayelCallModalOpen, rafayelCallStatus]);
 
-  // Terima panggilan Rafayel & putar file suara dari GitHub (./audio/rafayel_call_welcome.mp3, dll)
+  // Terima panggilan Rafayel & putar file suara dari GitHub
   const handleAcceptRafayelCall = () => {
     setRafayelCallStatus('connected');
     setRafayelCallSeconds(0);
 
-    // Kecilkan volume BGM sementara agar suara telepon Rafayel terdengar jernih
     if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
       bgmAudioRef.current.volume = 0.06;
     }
@@ -2625,12 +2796,10 @@ function App() {
       callVoiceAudioRef.current = voice;
 
       voice.onended = () => {
-        // Kembalikan volume BGM setelah voice call selesai
         if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.25;
       };
 
       voice.play().catch(() => {
-        // Fallback jika file mp3 belum diunggah ke GitHub
         playNotificationChime();
       });
     } catch (e) {
@@ -2652,17 +2821,37 @@ function App() {
     setRafayelCallSeconds(0);
   };
 
+  // ⏱️ TIMER OTOMATIS 30 DETIK SETELAH MASUK WEB: MUNCULKAN PANGGILAN REAL-TIME RAFAYEL
+  useEffect(() => {
+    if (!hasEntered) return;
+    const thirtySecCallTimer = setTimeout(() => {
+      triggerIncomingRafayelCall();
+    }, 30000); // 30.000 ms = 30 detik setelah masuk web
+    return () => clearTimeout(thirtySecCallTimer);
+  }, [hasEntered]);
+
+  // 🌊 SAAT PERTAMA MASUK WEB: LANGSUNG PUTAR 1 DARI 3 SUARA WELCOME SECARA ACAK
   const handleEnterTerminal = () => {
     setHasEntered(true);
+
+    // 1. Putar 1 dari 3 suara welcome secara acak dari folder ./SoundRafael/
+    try {
+      const randomWelcomeUrl = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
+      const welcomeAudio = new Audio(randomWelcomeUrl);
+      welcomeAudio.volume = 0.9;
+      if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.08;
+      welcomeAudio.onended = () => {
+        if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.25;
+      };
+      welcomeAudio.play().catch(() => {});
+    } catch (e) {}
+
+    // 2. Pastikan BGM ikut berjalan lembut di latar belakang
     if (bgmAudioRef.current && bgmAudioRef.current.paused) {
       bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
     } else if (!bgmAudioRef.current) {
       playTrack(currentTrackIdxRef.current);
     }
-    // 📞 Otomatis memunculkan Incoming Call dari Rafayel 1.2 detik setelah masuk ke web!
-    setTimeout(() => {
-      triggerIncomingRafayelCall(0);
-    }, 1200);
   };
 
   const toggleBGM = (e) => {
@@ -7598,7 +7787,7 @@ audio.play().catch(() => playNotificationChime());
                   ) : (
                     <div className="py-2">
                       <p className="text-[11px] font-mono text-[#B99BEB] animate-pulse">
-                       {lang === 'en' ? "🌊 Incoming call from Mo's Atelier..." : "🌊 Panggilan suara masuk dari Mo's Atelier..."}
+                      {lang === 'en' ? "🌊 Incoming call from Mo's Atelier..." : "🌊 Panggilan suara masuk dari Mo's Atelier..."}
                       </p>
                     </div>
                   )}
