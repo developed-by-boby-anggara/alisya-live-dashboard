@@ -2450,10 +2450,18 @@ function App() {
     }
   };
 
-  // ⏭️ Fungsi Lagu Berikutnya
+ // ⏭️ Fungsi Lagu Berikutnya (100% Random & Anti-Duplikat Lagu Sebelumnya)
   const handleNextTrack = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
-    const nextIdx = (currentTrackIdxRef.current + 1) % BGM_PLAYLIST.length;
+    const total = BGM_PLAYLIST.length;
+    if (total <= 1) {
+      playTrack(0);
+      return;
+    }
+    let nextIdx;
+    do {
+      nextIdx = Math.floor(Math.random() * total);
+    } while (nextIdx === currentTrackIdxRef.current);
     playTrack(nextIdx);
   };
 
