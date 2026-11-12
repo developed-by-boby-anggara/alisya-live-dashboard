@@ -3831,18 +3831,26 @@ function App() {
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="font-extrabold text-base tracking-wide flex items-center gap-1.5">
-                    <span>Alisya Schedule</span>
-                    <button
-                            type="button"
-                            className="flower-next-day calendar-flower"
-                            title="Geser ke tanggal berikutnya"
-                            aria-label="Pilih tanggal berikutnya"
-                            onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
-                          >
-                            <span>🌸</span><span className="flower-arrow">❯</span>
-                          </button>
-                  </h1>
+                 <h1 className="font-extrabold text-base tracking-wide flex items-center gap-1.5">
+                      <span>Alisya Schedule</span>
+                      <button
+                        type="button"
+                        className="flower-next-day calendar-flower"
+                        title="Geser ke tanggal berikutnya"
+                        aria-label="Pilih tanggal berikutnya"
+                        onClick={() => setSelectedDate(addDaysToDateStr(selectedDate, 1))}
+                      >
+                        <span>🌸</span><span className="flower-arrow">❯</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { window.location.href = "./index.html"; }}
+                        className="bg-teal-950/80 hover:bg-teal-900 text-teal-200 border border-teal-400/50 px-2.5 py-1 rounded-full text-[10px] font-black tracking-wide shadow transition active:scale-95"
+                        title="Kembali ke Tema Rafayel Lemuria"
+                      >
+                        🌊 Lemuria
+                      </button>
+                    </h1>
                   <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider">
                     v6.9-Pincess PRO
                   </span>
