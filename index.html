@@ -2569,16 +2569,21 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
   const currentRadarIdxRef = useRef(initialRadarIdx);
   const currentHeaderIdxRef = useRef(initialHeaderIdx);
 
-  const pickNextRandomSticker = () => {
+  // Acak stiker BAWAH (Kartu Radar - tiap 9 detik) & pastikan BEDA dari foto Header ATAS
+  const pickNextRadarSticker = () => {
     const nextRadarIdx = drawFromStickerDeck(currentRadarIdxRef.current, currentHeaderIdxRef.current);
-    const nextHeaderIdx = drawFromStickerDeck(nextRadarIdx, currentHeaderIdxRef.current);
     currentRadarIdxRef.current = nextRadarIdx;
-    currentHeaderIdxRef.current = nextHeaderIdx;
     setStickerIdx(nextRadarIdx);
+  };
+
+  // Acak foto profil ATAS (Header - tiap 15 detik) & pastikan BEDA dari stiker Radar BAWAH
+  const pickNextHeaderSticker = () => {
+    const nextHeaderIdx = drawFromStickerDeck(currentHeaderIdxRef.current, currentRadarIdxRef.current);
+    currentHeaderIdxRef.current = nextHeaderIdx;
     setHeaderStickerIdx(nextHeaderIdx);
   };
 
-  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA (IKUT BERGANTI ACAK)
+  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA
   const RAFAYEL_THEME_CONFIG = {
     portraitUrl: RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length],
     studioTitle: "Mo's Atelier • Lemurian Sanctuary",
@@ -2586,14 +2591,14 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
     subGreetingEn: "A Little Piece of Lemuria • Bodyguard Alisya"
   };
 
-  const initialHeaderSticker = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
+  const initialHeaderSticker = useMemo(() => RAFAYEL_ALL_STICKERS[initialHeaderIdx], [initialHeaderIdx]);
   const initialCoverSplash = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
   const [sparkles, setSparkles] = useState([]);
   const [wellnessOpen, setWellnessOpen] = useState(true);
 
+  // Timer 9 Detik: khusus Afirmasi & Stiker BAWAH
   useEffect(() => {
     const autoQuoteTimer = setInterval(() => {
-      // Acak teks afirmasi tiap 9 detik
       setQuoteIdx(prev => {
         const total = t.affirmations.length;
         if (total <= 1) return 0;
@@ -2603,11 +2608,18 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
         } while (next === prev);
         return next;
       });
-      // Acak stiker gambar secara merata dari seluruh 27 koleksi tiap 9 detik
-      pickNextRandomSticker();
+      pickNextRadarSticker();
     }, 9000);
     return () => clearInterval(autoQuoteTimer);
   }, [t.affirmations]);
+
+  // Timer 15 Detik: khusus Foto Profil Header ATAS
+  useEffect(() => {
+    const autoHeaderTimer = setInterval(() => {
+      pickNextHeaderSticker();
+    }, 15000);
+    return () => clearInterval(autoHeaderTimer);
+  }, []);
 
       const triggerCuteSparkles = () => {
       const emojis = ['🔱', '🔴', '🌊', '🍷', '💎', '✨', '🟣', '🐾', '🖤', '🎨'];
@@ -2632,8 +2644,8 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
           if (next === prev) next = (prev + 1) % t.affirmations.length;
           return next;
         });
-        // Ikut mengacak stiker gambar saat tombol ditekan
-  setStickerIdx(prev => Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length));
+        // Ikut mengacak stiker gambar bawah secara merata & anti-kembar saat tombol ditekan
+        pickNextRadarSticker();
         triggerCuteSparkles();
 
         // 🔊 Putar suara acak Sylus / Rafayel
@@ -5484,7 +5496,7 @@ audio.play().catch(() => playNotificationChime());
            <div className="flex items-center gap-3 min-w-0">
              <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#42D6C5]/30 to-[#B99BEB]/30 p-0.5 flex items-center justify-center border border-[#42D6C5]/50 shadow-[0_0_15px_rgba(66,214,197,0.3)] cute-float overflow-hidden shrink-0">
                <img
-                 src={RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length]}
+                 src={RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length]}
                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }}
                  alt="Rafayel"
                  className="w-full h-full aspect-square object-cover object-top rounded-[14px]"
