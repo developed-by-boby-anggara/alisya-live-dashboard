@@ -1784,6 +1784,33 @@
       background-color: #081528 !important;
     }
   </style>
+  <!-- ⚡ MOBILE GPU & PERFORMANCE BOOSTER -->
+  <style id="mobile-gpu-booster">
+    @media (max-width: 1024px) {
+      /* Matikan fixed background yang bikin scroll patah-patah di HP */
+      body.cute-bg {
+        background-attachment: scroll !important;
+      }
+      /* Ganti blur berat di setiap kartu menjadi warna solid semi-transparan cepat */
+      #root .backdrop-blur,
+      #root .backdrop-blur-xs,
+      #root .backdrop-blur-sm,
+      #root .backdrop-blur-md,
+      #root .backdrop-blur-lg,
+      #root .bg-white,
+      #root .bg-white\/90,
+      #root .bg-white\/95,
+      #agenda-capture-area .bg-white\/15,
+      #mobile-agenda-capture .bg-white\/15 {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      /* Kurangi gelembung animasi berlebih di HP agar baterai & RAM hemat */
+      .lemuria-bubble:nth-child(n+4) {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
   <div id="root"></div>
@@ -3584,7 +3611,14 @@ audio.play().catch(() => playNotificationChime());
       const [activeTab, setActiveTab] = useState('agenda');
       const [pcSubTab, setPcSubTab] = useState('agenda');
 
-      const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
+     const [schedules, setSchedules] = useState(() => {
+     try {
+       const cached = localStorage.getItem('alisya_schedules_cache');
+       return cached ? JSON.parse(cached) : INITIAL_SCHEDULES;
+     } catch (e) {
+       return INITIAL_SCHEDULES;
+     }
+   });
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
       const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Rajin Minum Air Putih & Sayang Mekel Terus! 🌊🐱✨");
       
@@ -3629,7 +3663,10 @@ audio.play().catch(() => playNotificationChime());
         const refSch = firebaseDb.ref('alisya_schedules');
         refSch.on('value', snap => {
           const val = snap.val();
-          if (val && Array.isArray(val)) setSchedules(val);
+         if (val && Array.isArray(val)) {
+         setSchedules(val);
+         try { localStorage.setItem('alisya_schedules_cache', JSON.stringify(val)); } catch (e) {}
+       }
           else refSch.set(INITIAL_SCHEDULES);
         });
 
