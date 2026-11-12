@@ -6,7 +6,7 @@
   <title>Alisya Schedule Dashboard 🌊</title>
  
   <!-- PWA & Mobile Web Capabilities (URL-Encoded Valid Manifest) -->
-  <meta name="theme-color" content="#7B1113">
+  <meta name="theme-color" content="#051324">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Alisya Schedule">
@@ -138,39 +138,122 @@
       }
     }
 
-    .today-active-glow {
-      background: linear-gradient(90deg, #FFE4E6, #F3E8FF, #FED7AA, #FCE7F3, #FFE4E6) !important;
+.today-active-glow {
+      background: linear-gradient(90deg, #07223B, #16183D, #082F49, #1E1B4B, #07223B) !important;
       background-size: 300% 100% !important;
       animation: princessAuroraFlow 5s ease infinite !important;
       position: relative;
     }
 
-    /* Garis Bingkai Atas & Bawah Lembut Bernuansa Rose-Lavender */
+    /* Garis Bingkai Atas & Bawah Bercahaya Teal & Violet */
     .today-active-glow td {
-      border-top: 2px solid #E05780 !important;
+      border-top: 2px solid #2DD4BF !important;
       border-bottom: 2px solid #A855F7 !important;
+      color: #FFFFFF !important;
     }
     .today-active-glow td:first-child {
-      border-left: 3px solid #E05780 !important;
+      border-left: 3px solid #00F2FE !important;
     }
     .today-active-glow td:last-child {
-      border-right: 3px solid #A855F7 !important;
+      border-right: 3px solid #C084FC !important;
     }
 
-    /* Mengubah Otomatis Titik Radar & Teks Menjadi Pink Manis (Menimpa Warna Hijau) */
+    /* Titik Radar & Teks Samudera Lemuria */
     .today-active-glow .bg-emerald-600 {
-      background-color: #E05780 !important;
+      background-color: #2DD4BF !important;
     }
     .today-active-glow .bg-emerald-400 {
-      background-color: #F472B6 !important;
+      background-color: #00F2FE !important;
     }
     .today-active-glow .text-emerald-900,
     .today-active-glow .text-emerald-950,
     .today-active-glow .text-emerald-800 {
-      color: #701A75 !important;
+      color: #5EEAD4 !important;
     }
     .today-active-glow .bg-emerald-100\/95 {
-      background-color: #FFE4E8 !important;
+      background-color: #09253E !important;
+    }
+    /* ========================================================= */
+    /* 🔱 8. LEMURIAN TOTAL OVERRIDE (HAPUS SEMUA SISA PINK)     */
+    /* ========================================================= */
+    /* Scrollbar bertema samudera */
+    ::-webkit-scrollbar-track { background: #040914 !important; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #0D9488, #7C3AED) !important; }
+
+    /* Semua latar pink pastel diubah ke Deep Ocean Navy */
+    .bg-pink-50, .bg-pink-50\/30, .bg-pink-50\/35, .bg-pink-50\/40, .bg-pink-50\/50,
+    .bg-pink-50\/60, .bg-pink-50\/70, .bg-pink-50\/80, .bg-pink-50\/90,
+    .bg-pink-100, .bg-pink-100\/80, .bg-pink-100\/90, .bg-pink-200,
+    .bg-rose-50, .bg-rose-50\/80, .bg-rose-100 {
+      background-color: #0B1D36 !important;
+      color: #E2E8F0 !important;
+    }
+
+    /* Semua border pink/rose diubah ke Teal & Violet Glow */
+    .border-pink-200, .border-pink-200\/70, .border-pink-200\/80,
+    .border-pink-300, .border-pink-400, .border-rose-200, .border-rose-300 {
+      border-color: rgba(45, 212, 191, 0.38) !important;
+    }
+
+    /* Semua teks pink/rose/maroon diubah ke Aqua Cyan & Silver */
+    .text-pink-600, .text-pink-700, .text-pink-800,
+    .text-rose-600, .text-rose-700, .text-rose-800, .text-rose-900, .text-rose-950 {
+      color: #5EEAD4 !important;
+    }
+
+    /* Tombol-tombol gradasi pink diubah ke gradasi Teal - Cyan - Violet Rafayel */
+    .from-pink-500, .from-maroon {
+      --tw-gradient-from: #0D9488 !important;
+      --tw-gradient-to: rgb(13 148 136 / 0) !important;
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+    }
+    .via-rose-500, .via-\[\#8B1538\], .via-\[\#8A1432\] {
+      --tw-gradient-stops: var(--tw-gradient-from), #0284C7, var(--tw-gradient-to) !important;
+    }
+    .to-rose-500, .to-rose-600, .to-rose-700, .to-rose-800, .to-rose-900, .to-pink-500 {
+      --tw-gradient-to: #6D28D9 !important;
+    }
+
+    /* Kotak Available Schedule (Slot Jam Kosong) menjadi Bioluminescent Sea */
+    .bg-emerald-50, .bg-emerald-50\/90, .bg-emerald-100 {
+      background-color: #06182C !important;
+      border-color: rgba(45, 212, 191, 0.5) !important;
+      color: #CCFBF1 !important;
+    }
+    .text-emerald-900, .text-emerald-950, .text-emerald-800, .text-emerald-700 {
+      color: #5EEAD4 !important;
+    }
+    .border-emerald-200, .border-emerald-300 {
+      border-color: rgba(45, 212, 191, 0.45) !important;
+    }
+
+    /* Kotak Checklist Konten & Tombol Edit/Copy */
+    .bg-slate-100 {
+      background-color: #0E223D !important;
+      color: #CBD5E1 !important;
+      border-color: rgba(148, 163, 184, 0.3) !important;
+    }
+
+    /* Popup Pengingat Minum Air */
+    .from-pink-50.via-white.to-sky-50 {
+      background: linear-gradient(180deg, #07192E 0%, #0B2340 50%, #161230 100%) !important;
+      border-color: #2DD4BF !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Baris Spreadsheet Genap/Ganjil agar Gelap Elegan & Kontras */
+    #spreadsheet-capture-area tbody tr:not(.today-active-glow),
+    #mobile-spreadsheet-capture tbody tr:not(.today-active-glow) {
+      background-color: #081528 !important;
+    }
+    #spreadsheet-capture-area tbody td:nth-child(n+3),
+    #mobile-spreadsheet-capture tbody td:nth-child(n+3) {
+      background-color: #0A1B32 !important;
+      border-color: rgba(45, 212, 191, 0.22) !important;
+    }
+    #spreadsheet-capture-area tbody td:nth-child(n+3):hover,
+    #mobile-spreadsheet-capture tbody td:nth-child(n+3):hover {
+      background-color: #112A4A !important;
     }
   </style>
 
@@ -1764,10 +1847,10 @@
         waterPopupDesc: "Rafayel memantau dari atelier: 'Minum airmu sekarang! Suaramu itu aset paling berharga saat live, jangan bikin aku khawatir terus!'",
         waterPopupConfirm: "🥤 Sudah Minum (+1 Gelas)",
         waterPopupSnooze: "⏳ Tunda 10 Menit",
-        petName: "🐱 Mekel & Mephisto (Sahabat Lemurian)",
-        petHungry: "Meow.. Mekel & Mephisto menatap mangkuknya. Berikan ransum laut segar ya! 🐾",
-        petHalf: "Mekel & Mephisto lahap menyantap ransumnya. Tambahkan lagi nanti ya Hunter Alisya! 🐾✨",
-        petHappy: "Purrr~ Energi Mekel & Mephisto penuh 100%! Rafayel tersenyum puas melihatmu merawat mereka! 😻🎨",
+        petName: "🐱 Mekel (Kucing Kesayangan Lemuria)",
+petHungry: "Meow.. Mekel menatap mangkuknya. Berikan ransum laut segar ya! 🐾",
+petHalf: "Mekel lahap menyantap ransumnya. Tambahkan lagi nanti ya Nona Pengawal! 🐾✨",
+petHappy: "Purrr~ Energi Mekel penuh 100%! Rafayel tersenyum puas melihatmu merawatnya! 😻🎨",
         petFeedFoodBtn: "🐟 Ransum Ikan Lemuria",
         petFeedWaterBtn: "🥛 Air Murni Lemuria",
         petPatBtn: "🐾 Elus Sahabat Lemurian",
@@ -2380,13 +2463,10 @@ const initialCoverSplash = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.ra
         setTimeout(() => setSparkles([]), 1650);
       };
 
-      // Daftar file suara Sylus & Rafayel
-      const LND_VOICE_CLIPS = [
-        "audio/sylus_1.mp3",
-        "audio/sylus_2.mp3",
-        "audio/rafael_1.mp3",
-        "audio/rafael_2.mp3"
-      ];
+     const LND_VOICE_CLIPS = [
+  "audio/rafael_1.mp3",
+  "audio/rafael_2.mp3"
+];
 
       const handleBoostMood = () => {
         setQuoteIdx(prev => {
@@ -2809,8 +2889,9 @@ audio.play().catch(() => playNotificationChime());
         title: '',
         brand_id: 'b_momuung',
         status: 'LIVE',
-        color: '#B6D7A8',
-        notes: '',
+     color: brands[0]?.color || '#B6D7A8',
+          notes: '',
+          gmv: '',
         checklist: { shoot: false, edit: false, upload: false }
       });
 
@@ -3486,15 +3567,17 @@ audio.play().catch(() => playNotificationChime());
 
       const stats = useMemo(() => {
         let totalLive = 0, totalOff = 0, totalSick = 0, totalMeeting = 0, totalSleep = 0, totalMeTime = 0, totalKonten = 0;
+        let totalGMV = 0;
         let totalLiveHours = 0, totalSleepHours = 0, totalKontenHours = 0, totalMeTimeHours = 0;
 
         filteredByStatPeriod.forEach(s => {
           const dur = calculateDurationHours(s.start_time, s.end_time);
 
-          if (s.status === 'LIVE') {
-            totalLive++;
-            totalLiveHours += dur;
-          } else if (s.status === 'OFF') {
+       if (s.status === 'LIVE') {
+          totalLive++;
+          totalLiveHours += dur;
+          if (s.gmv) totalGMV += Number(s.gmv) || 0;
+        } else if (s.status === 'OFF') {
             totalOff++;
           } else if (s.status === 'Sakit / Medis') {
             totalSick++;
@@ -3529,7 +3612,7 @@ audio.play().catch(() => playNotificationChime());
           return { name: b.name, emoji: b.emoji, totalShift: list.length, liveCount, offCount, totalJam: liveCount * 2, color: b.color };
         });
 
-        return { totalLive, totalOff, totalSick, totalMeeting, totalSleep, totalMeTime, totalKonten, totalLiveHours, totalSleepHours, totalKontenHours, totalMeTimeHours, perBrand };
+       return { totalLive, totalOff, totalSick, totalMeeting, totalSleep, totalMeTime, totalKonten, totalLiveHours, totalSleepHours, totalKontenHours, totalMeTimeHours, totalGMV, perBrand };
       }, [filteredByStatPeriod, brands, statPeriod]);
 
       const balanceScoreData = useMemo(() => {
@@ -3545,8 +3628,102 @@ audio.play().catch(() => playNotificationChime());
         }
         return { text: t.scoreBalanced, color: 'text-emerald-800 bg-emerald-50 border-emerald-200' };
       }, [stats, statPeriod, t]);
+  // ⏳ RAFAYEL'S TIDE TIMER (POMODORO FOKUS & ISTIRAHAT REAL-TIME)
+      const [tideTimerSeconds, setTideTimerSeconds] = useState(25 * 60);
+      const [tideTimerRunning, setTideTimerRunning] = useState(false);
+      const [tideTimerMode, setTideTimerMode] = useState('focus'); // 'focus' | 'break' | 'live'
 
-      // 👑 SISTEM SKOR PRODUKTIVITAS & EVALUASI OTOMATIS
+      useEffect(() => {
+        if (!tideTimerRunning) return;
+        const interval = setInterval(() => {
+          setTideTimerSeconds(prev => {
+            if (prev <= 1) {
+              setTideTimerRunning(false);
+              playWaterBubbleChime();
+              updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 3 });
+              notify(lang === 'en'
+                ? "🌊 [Rafayel]: 'Tide cycle complete! Great focus, my guard. +3 Affinity Hearts!'"
+                : "🌊 [Rafayel]: 'Waktu pasang surut selesai! Fokusmu luar biasa, Nona Pengawal. +3 Affinity Hearts!'"
+              );
+              return tideTimerMode === 'focus' ? 25 * 60 : tideTimerMode === 'live' ? 45 * 60 : 15 * 60;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        return () => clearInterval(interval);
+      }, [tideTimerRunning, tideTimerMode]);
+
+      const selectTidePreset = (mode, mins) => {
+        setTideTimerRunning(false);
+        setTideTimerMode(mode);
+        setTideTimerSeconds(mins * 60);
+      };
+
+      // 📅 EKSPOR 1 SESI JADWAL LANGSUNG KE GOOGLE CALENDAR
+      const handleExportToGoogleCalendar = (e, item) => {
+        e.stopPropagation();
+        const cleanDate = item.date.replace(/-/g, '');
+        const startClean = item.start_time.replace(':', '') + '00';
+        let endClean = item.end_time.replace(':', '') + '00';
+        let endDate = cleanDate;
+
+        // Jika melewati tengah malam (misal 23:00 - 06:00)
+        if (timeToMinutes(item.end_time) <= timeToMinutes(item.start_time)) {
+          endDate = addDaysToDateStr(item.date, 1).replace(/-/g, '');
+        }
+
+        const brandName = brands.find(b => b.id === item.brand_id)?.name || '';
+        const title = encodeURIComponent(`[${item.status}] ${item.title} (${brandName})`);
+        const details = encodeURIComponent(`Kategori: ${brandName}\nCatatan: ${item.notes || '-'}\n${item.gmv ? `Aktual GMV: Rp ${Number(item.gmv).toLocaleString('id-ID')}` : ''}\n\n— Alisya Schedule (Mo's Atelier)`);
+        const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${cleanDate}T${startClean}/${endDate}T${endClean}&details=${details}`;
+
+        window.open(gcalUrl, '_blank');
+        notify('📅 Membuka Google Calendar untuk menyimpan jadwal ini...');
+      };
+// 💖 SISTEM AFFINITY LEVEL LOVE AND DEEPSPACE (RAFAYEL)
+      const rafayelAffinity = useMemo(() => {
+        // Hitung total aktivitas dari seluruh riwayat harian
+        let totalWater = 0;
+        let totalMekel = 0;
+        let totalPrep = 0;
+        Object.values(dailyWellness || {}).forEach(day => {
+          totalWater += (day.water || 0);
+          totalMekel += (day.mekelFood || 0) + (day.mekelWater || 0);
+          if (day.prep) {
+            totalPrep += Object.values(day.prep).filter(Boolean).length;
+          }
+        });
+
+        // Hitung jumlah jadwal yang sudah selesai
+        const doneSchedules = schedules.filter(s => getSessionTimeState(s) === 'done').length;
+
+        // Total EXP & Level (Base Lv. 55)
+        const totalExp = (totalWater * 15) + (totalMekel * 20) + (totalPrep * 10) + (doneSchedules * 30);
+        const level = 55 + Math.floor(totalExp / 100);
+        const currentExp = totalExp % 100;
+
+        // Gelar Kedekatan berdasarkan Level
+        let titleId = "Nona Pengawal Andalan 🛡️";
+        let titleEn = "Trusted Bodyguard 🛡️";
+        if (level >= 80) {
+          titleId = "Pasangan Abadi Dewa Laut 🔱👑";
+          titleEn = "Sea God's Eternal Companion 🔱👑";
+        } else if (level >= 70) {
+          titleId = "Belahan Jiwa Lemuria 🌊💎";
+          titleEn = "Lemurian Soulbound 🌊💎";
+        } else if (level >= 60) {
+          titleId = "Muse Utama Atelier Mo 🎨✨";
+          titleEn = "Mo's Atelier Muse 🎨✨";
+        }
+
+        return {
+          level,
+          currentExp,
+          totalExp,
+          title: lang === 'en' ? titleEn : titleId
+        };
+      }, [dailyWellness, schedules, lang, nowTime]);
+    // 🔱 SISTEM SKOR PRODUKTIVITAS & EVALUASI OTOMATIS RAFAYEL
       const princessProductivity = useMemo(() => {
         const workHours = (stats.totalLiveHours || 0) + (stats.totalKontenHours || 0);
         const restHours = (stats.totalSleepHours || 0) + (stats.totalMeTimeHours || 0);
@@ -3554,29 +3731,29 @@ audio.play().catch(() => playNotificationChime());
         // Default: Resonansi Stabil
         let score = 88;
         let title = "RANK S • RESONANSI EVOL STABIL ✨";
-        let message = "🟣 [Rafayel]: 'Ritme siaranmu hari ini sangat indah bagai sapuan warna di atas kanvas! Nona Pengawal memang yang terbaik~'";
+        let message = "🎨 [Rafayel]: 'Ritme siaranmu hari ini sangat indah bagai sapuan warna di atas kanvas! Nona Pengawal memang yang terbaik~'";
         let badgeColor = "bg-purple-950/60 text-purple-200 border-purple-400/50";
 
-        // Kasus 1: Kerja Berlebih (>12 Jam) -> Sylus Mengambil Alih
+        // Kasus 1: Kerja Berlebih (>12 Jam) -> Rafayel Ngambek & Protektif
         if (workHours > 12) {
           score = 68;
-          title = "RANK B • PERINGATAN OVERWORK SYLUS 🔥";
-          message = "🔴 [Sylus]: 'Kitten, siapa yang mengizinkanmu berdiri di depan kamera lebih dari 12 jam? Matikan layarmu sekarang, atau aku sendiri yang datang menyeretmu pulang ke N109 Zone.'";
-          badgeColor = "bg-red-950/60 text-rose-200 border-red-500/50 shadow-[0_0_12px_rgba(229,9,20,0.3)]";
+          title = "RANK B • PROTES KERAS ATELIER MO 🎨";
+          message = "🌊 [Rafayel]: 'Nona Pengawal! Siapa yang mengizinkanmu berdiri di depan kamera lebih dari 12 jam?! Matikan layarmu sekarang juga, atau aku akan datang membanjiri studiomu sampai kamu pulang istirahat!'";
+          badgeColor = "bg-rose-950/60 text-rose-200 border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.3)]";
         } 
         // Kasus 2: Kurang Istirahat (<6 Jam) -> Rafayel Merajuk & Khawatir
         else if (restHours < 6 && statPeriod === 'daily') {
           score = 58;
-          title = "RANK C • PROTOKOL LEMURIA DEFISIT TIDUR ⚠️";
-          message = "🟣 [Rafayel]: 'Alisya! Waktu tidurmu kurang dari 6 jam?! Kalau sampai matamu berkantung dan jatuh sakit, siapa yang bakal menemaniku ke pantai? Tidur sekarang juga, aku nggak mau dengar alasan!'";
+          title = "RANK C • DEFISIT TIDUR LEMURIA ⚠️";
+          message = "🐚 [Rafayel]: 'Alisya! Waktu tidurmu kurang dari 6 jam?! Kalau sampai matamu berkantung dan jatuh sakit, siapa yang bakal menemaniku jalan-jalan ke tepi pantai? Tidur sekarang juga, aku nggak mau dengar alasan!'";
           badgeColor = "bg-amber-950/60 text-amber-200 border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]";
         } 
-        // Kasus 3: Keseimbangan Sempurna (Kerja Cukup & Tidur Nyenyak) -> Pujian Bersama
+        // Kasus 3: Keseimbangan Sempurna (Kerja Cukup & Tidur Nyenyak) -> Pujian Manis Rafayel
         else if (workHours >= 4 && restHours >= 7) {
           score = 99;
-          title = "RANK SS • EVOL RESONANCE 100% 👑";
-          message = "🔴 [Sylus]: 'Kerja bagus, Sweetheart. Efisiensimu sempurna.' • 🟣 [Rafayel]: 'Luar biasa! Sebagai hadiahnya, nanti malam studio seni Lemuria khusus dibuka hanya untukmu!'";
-          badgeColor = "bg-gradient-to-r from-red-950/60 via-purple-950/60 to-teal-950/60 text-teal-200 border-teal-400/50 shadow-[0_0_15px_rgba(45,212,191,0.3)]";
+          title = "RANK SS • SEA GOD RESONANCE 100% 👑";
+          message = "🔱 [Rafayel]: 'Luar biasa, Putri Duyungku! Jadwal kerja dan istirahatmu seimbang sempurna. Sebagai hadiahnya, malam ini studio seni Lemuria khusus dibuka hanya untuk memanjakanmu!'";
+          badgeColor = "bg-gradient-to-r from-teal-950/60 via-cyan-950/60 to-purple-950/60 text-teal-200 border-teal-400/50 shadow-[0_0_15px_rgba(45,212,191,0.3)]";
         }
 
         return { score, title, message, badgeColor };
@@ -3649,7 +3826,7 @@ audio.play().catch(() => playNotificationChime());
               labels: ['🟢 LIVE', '🎬 Konten', '😴 Sleep', '💅 Me Time', '☕ OFF', '💬 Meeting'],
               datasets: [{
                 data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
-                backgroundColor: ['#B6D7A8', '#8B5CF6', '#6366F1', '#EC4899', '#EF4444', '#00FFFF'],
+             backgroundColor: ['#2DD4BF', '#A855F7', '#3B82F6', '#F472B6', '#F43F5E', '#38BDF8'],
                 borderWidth: 2
               }]
             },
@@ -3663,7 +3840,7 @@ audio.play().catch(() => playNotificationChime());
             data: {
               labels: stats.perBrand.map(b => b.name),
               datasets: [
-                { label: '🟢 Shift / Session', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#B6D7A8' }
+               { label: '🔱 Shift / Session', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#2DD4BF' }
               ]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
@@ -3793,8 +3970,9 @@ audio.play().catch(() => playNotificationChime());
           title: '',
           brand_id: brands[0]?.id || 'b_momuung',
           status: 'LIVE',
-          color: brands[0]?.color || '#B6D7A8',
+         color: brands[0]?.color || '#B6D7A8',
           notes: '',
+          gmv: '',
           checklist: { shoot: false, edit: false, upload: false }
         });
         setModalOpen(true);
@@ -4144,6 +4322,68 @@ audio.play().catch(() => playNotificationChime());
 
             {wellnessOpen && (
               <div className="space-y-4 pt-1">
+                {/* 💖 RAFAYEL AFFINITY LEVEL BAR (LOVE AND DEEPSPACE HUD) */}
+                <div className="bg-gradient-to-r from-[#0A192F] via-[#132240] to-[#1D1538] border border-teal-400/40 rounded-2xl p-3 space-y-2 shadow-inner">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gradient-to-r from-teal-400 to-cyan-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-xs">
+                        AFFINITY Lv.{rafayelAffinity.level}
+                      </span>
+                      <span className="text-xs font-extrabold text-teal-200">
+                        {rafayelAffinity.title}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px] font-black text-purple-300">
+                      {rafayelAffinity.currentExp} / 100 EXP
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-black/50 rounded-full overflow-hidden border border-teal-500/30 p-0.5">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-teal-400 via-cyan-300 to-purple-400 transition-all duration-500"
+                      style={{ width: `${rafayelAffinity.currentExp}%` }}
+                    ></div>
+                  </div>
+                </div>
+                {/* ⏳ RAFAYEL'S TIDE TIMER (FOKUS & ISTIRAHAT REAL-TIME) */}
+             <div className="bg-[#061224] border border-cyan-400/35 rounded-2xl p-3 space-y-2.5">
+               <div className="flex items-center justify-between gap-2">
+                 <span className="text-[10px] font-black text-cyan-300 uppercase tracking-wider">
+                   ⏳ {lang === 'en' ? "Rafayel's Tide Timer" : "Timer Pasang Surut Lemuria"}
+                 </span>
+                 <div className="flex items-center gap-1">
+                   <button type="button" onClick={() => selectTidePreset('focus', 25)} className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${tideTimerMode === 'focus' ? 'bg-cyan-500 text-slate-950 border-cyan-300' : 'bg-slate-900 text-slate-300 border-slate-700'}`}>
+                     🎬 25m
+                   </button>
+                   <button type="button" onClick={() => selectTidePreset('live', 45)} className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${tideTimerMode === 'live' ? 'bg-teal-500 text-slate-950 border-teal-300' : 'bg-slate-900 text-slate-300 border-slate-700'}`}>
+                     📡 45m
+                   </button>
+                   <button type="button" onClick={() => selectTidePreset('break', 15)} className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${tideTimerMode === 'break' ? 'bg-purple-500 text-white border-purple-300' : 'bg-slate-900 text-slate-300 border-slate-700'}`}>
+                     ☕ 15m
+                   </button>
+                 </div>
+               </div>
+               <div className="flex items-center justify-between gap-3 bg-black/40 px-3 py-2 rounded-xl border border-cyan-500/20">
+                 <span className="font-mono text-xl font-black text-cyan-200 tracking-widest">
+                   {formatSecondsToMS(tideTimerSeconds)}
+                 </span>
+                 <div className="flex items-center gap-1.5">
+                   <button
+                     type="button"
+                     onClick={() => setTideTimerRunning(!tideTimerRunning)}
+                     className={`px-3 py-1.5 rounded-xl text-[10px] font-black transition active:scale-95 ${tideTimerRunning ? 'bg-amber-500 text-slate-950' : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950'}`}
+                   >
+                     {tideTimerRunning ? '⏸ Pause' : '▶ Mulai'}
+                   </button>
+                   <button
+                     type="button"
+                     onClick={() => selectTidePreset(tideTimerMode, tideTimerMode === 'focus' ? 25 : tideTimerMode === 'live' ? 45 : 15)}
+                     className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-slate-800 text-slate-300 hover:text-white"
+                   >
+                     ↺
+                   </button>
+                 </div>
+               </div>
+             </div>
                 {/* 5 Pilihan Mood Hari Ini */}
                 <div className="grid grid-cols-5 gap-1.5">
                   {MOOD_LIST.map(m => {
@@ -4457,22 +4697,47 @@ audio.play().catch(() => playNotificationChime());
                   </div>
                 </div>
 
-                {/* 💌 CATATAN KECIL / GRATITUDE DIARY HARI INI */}
-                <div className="bg-pink-50/70 border border-pink-200 rounded-2xl p-3 space-y-1.5">
-                  <label className="block text-[10px] font-black text-maroon">{t.diaryTitle}</label>
+         {/* 📱 LEMURIAN MOMENTS: CATATAN HARIAN & BALASAN RAFAYEL */}
+                <div className="bg-[#061324] border border-teal-400/40 rounded-2xl p-3 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-black text-teal-300 uppercase tracking-wider">
+                      📱 {lang === 'en' ? "Post to Linkon Moments" : "Posting ke Linkon Moments"}
+                    </label>
+                    <span className="text-[9px] font-mono text-purple-300">● Rafayel Online</span>
+                  </div>
                   <input
                     type="text"
                     value={currentDayWellness.diary || ''}
                     onChange={e => updateDayWellness({ diary: e.target.value }, false)}
                     placeholder={t.diaryPlaceholder}
-                    className="w-full bg-white border border-pink-200 rounded-xl px-3 py-2 text-xs font-bold text-rose-950 placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="w-full bg-[#08192E] border border-teal-400/40 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      };
+                  {currentDayWellness.diary && currentDayWellness.diary.trim() !== '' && (
+                    <div className="bg-[#0B203B] border-l-4 border-teal-400 rounded-r-xl p-2.5 flex items-start gap-2.5 animate-in fade-in duration-300">
+                      <img
+                        src="./img/chibi-rafayel.jpg"
+                        alt="Rafayel"
+                        className="w-8 h-8 rounded-full object-cover border border-teal-300 shrink-0"
+                      />
+                      <div className="space-y-0.5 text-[11px]">
+                        <div className="font-black text-teal-300 flex items-center gap-1.5">
+                          <span>Rafayel</span>
+                          <span className="text-[9px] font-normal text-slate-400">• Mo's Atelier</span>
+                        </div>
+                        <p className="text-slate-200 leading-snug">
+                          {lang === 'en'
+                            ? `"Noted, my dear bodyguard! Whatever happens today, remember I'm always on your side. Come to the studio when you're done~ 🎨"`
+                            : `"Sudah kubaca, Nona Pengawal! Apa pun yang terjadi hari ini, ingat aku selalu ada di pihakmu. Kalau sudah selesai jangan lupa mampir ke atelier ya~ 🎨"`}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+             </div>
+           </div>
+         )}
+       </div>
+     );
+   };
 
       // 🌟 KOMPONEN BANNER LIVE NOW DENGAN COUNTDOWN DETIK REAL-TIME & INFO JAM HABIS
       const renderLiveNowBanner = () => (
@@ -4682,9 +4947,9 @@ audio.play().catch(() => playNotificationChime());
                         <span>🌊</span><span className="flower-arrow">❯</span>
                       </button>
                     </h1>
-                    <span className="bg-pink-400/25 text-pink-100 border border-pink-300/40 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-mono font-bold tracking-wider">
-                      v6.9-Pincess PRO
-                    </span>
+                    <span className="bg-teal-500/20 text-teal-200 border border-teal-400/40 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-mono font-bold tracking-wider shadow-[0_0_10px_rgba(45,212,191,0.3)]">
+                   LEMURIAN OS • RAFAYEL
+                 </span>
                     {isAdmin ? (
                       <span className="bg-amber-300 text-amber-950 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-black shadow">👑 ADMIN</span>
                     ) : (
@@ -4859,18 +5124,16 @@ audio.play().catch(() => playNotificationChime());
             </div>
           </header>
 
-{/* ========================================================= */}
-       {/* 🌌 LINKON CITY HUNTER DISPATCH TICKER (SYLUS x RAFAYEL)   */}
-       {/* ========================================================= */}
-       <div className="bg-gradient-to-r from-[#110D18] via-[#1C0F24] to-[#0A1220] text-white border-b border-purple-500/30 py-2.5 overflow-hidden relative shadow-md z-30 select-none">
+{/* 🌊 MO'S ATELIER LEMURIAN DISPATCH TICKER (100% RAFAYEL)   */}
+       <div className="bg-gradient-to-r from-[#041222] via-[#0B223C] to-[#120E29] text-white border-b border-teal-500/30 py-2.5 overflow-hidden relative shadow-md z-30 select-none">
          <div className="executive-ticker-track items-center gap-6 text-xs">
            {[1, 2].map((loopId) => (
              <div key={loopId} className="flex items-center gap-6 shrink-0">
-               {/* Badge Otoritas Hunter */}
-               <div className="inline-flex items-center gap-1.5 bg-red-950/40 px-3.5 py-1 rounded-full border border-red-500/40 shadow-[0_0_12px_rgba(229,9,20,0.25)]">
-                 <span className="text-red-400 text-xs">🔴</span>
-                 <span className="font-black text-rose-100 text-[11px] tracking-wider uppercase">
-                   Linkon Hunter Terminal • Hunter Alisya
+               {/* Badge Otoritas Atelier */}
+               <div className="inline-flex items-center gap-1.5 bg-teal-950/50 px-3.5 py-1 rounded-full border border-teal-400/40 shadow-[0_0_12px_rgba(45,212,191,0.25)]">
+                 <span className="text-teal-300 text-xs">🎨</span>
+                 <span className="font-black text-teal-100 text-[11px] tracking-wider uppercase">
+                   Mo's Atelier Terminal • Bodyguard Alisya
                  </span>
                </div>
 
@@ -4881,25 +5144,25 @@ audio.play().catch(() => playNotificationChime());
                </div>
 
                {/* Jam Terbang Protocore & Siaran */}
-               <div className="inline-flex items-center gap-1.5 bg-black/60 px-3.5 py-1 rounded-full border border-purple-400/30">
-                 <span className="text-xs">⚡</span>
-                 <span className="font-bold text-slate-300 text-[11px]">Protocore Flight Hours:</span>
+               <div className="inline-flex items-center gap-1.5 bg-black/60 px-3.5 py-1 rounded-full border border-cyan-400/30">
+                 <span className="text-xs">🌊</span>
+                 <span className="font-bold text-slate-300 text-[11px]">Lemurian Resonance Hours:</span>
                  <span className="font-mono font-black text-amber-300 text-[11px]">
                    {broadcastMetrics.totalHours}+ Jam ({Math.round(broadcastMetrics.totalHours / 3.5)}+ Hari Siaran Aktif)
                  </span>
                </div>
 
-               {/* Direktif Misi Siaran Lemurian & N109 Zone */}
+               {/* Direktif Misi Siaran Lemurian */}
                <div className="inline-flex items-center gap-1.5 bg-purple-950/40 px-3.5 py-1 rounded-full border border-purple-400/30 text-teal-300 text-[11px] font-black">
-                 <span>🟣 Lemurian Protocol: High-Conversion Fashion & Live OOTD Showcase</span>
+                 <span>🔱 Sea God Protocol: High-Conversion Fashion & Live OOTD Showcase</span>
                </div>
 
-               {/* Jaminan Kedisiplinan Hunter */}
-               <div className="inline-flex items-center gap-1.5 bg-teal-950/40 px-3.5 py-1 rounded-full border border-teal-400/30 text-teal-200 text-[11px] font-bold">
-                 <span>🛡️ Hunter SLA: 100% On-Time Attendance & Zero Cancellation Rate</span>
+               {/* Jaminan Kedisiplinan */}
+               <div className="inline-flex items-center gap-1.5 bg-sky-950/40 px-3.5 py-1 rounded-full border border-sky-400/30 text-sky-200 text-[11px] font-bold">
+                 <span>🐚 Lemurian Oath: 100% On-Time Attendance & Zero Cancellation Rate</span>
                </div>
 
-               <span className="text-purple-400/40 text-sm font-light">•</span>
+               <span className="text-teal-400/40 text-sm font-light">•</span>
              </div>
            ))}
          </div>
@@ -5176,6 +5439,11 @@ audio.play().catch(() => playNotificationChime());
                                     </span>
                                   </div>
                                   <div className="font-black text-base text-slate-900">{item.title}</div>
+                                  {Number(item.gmv) > 0 && (
+                                 <div className="inline-flex items-center gap-1.5 bg-emerald-950/70 border border-emerald-400/40 text-emerald-300 font-mono text-[10px] font-black px-2.5 py-0.5 rounded-lg">
+                                   <span>💰 GMV: Rp {Number(item.gmv).toLocaleString('id-ID')}</span>
+                                 </div>
+                               )}
                                   {item.notes && (
                                     <div className="bg-pink-50/70 border border-pink-200/80 p-2.5 rounded-2xl text-xs text-rose-900 italic">
                                       💌 {item.notes}
@@ -5183,17 +5451,27 @@ audio.play().catch(() => playNotificationChime());
                                   )}
                                   {renderKontenChecklist(item)}
                                 </div>
-                                {isAdmin && (
-                                  <div className="flex flex-col items-end gap-2">
-                                    <span className="text-xs text-pink-600 font-extrabold">{t.editBtn} ❯</span>
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }}
-                                      className="text-xs text-slate-600 font-bold bg-pink-50 hover:bg-pink-100 px-2.5 py-1 rounded-xl transition"
-                                    >
-                                      {t.copyBtn}
-                                    </button>
-                                  </div>
-                                )}
+                              <div className="flex flex-col items-end gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleExportToGoogleCalendar(e, item)}
+                                    className="text-[10px] text-teal-200 font-black bg-teal-950/80 hover:bg-teal-900 border border-teal-400/40 px-2.5 py-1 rounded-xl transition"
+                                    title="Simpan ke Google Calendar"
+                                  >
+                                    📅 GCal
+                                  </button>
+                                  {isAdmin && (
+                                    <React.Fragment>
+                                      <span className="text-xs text-pink-600 font-extrabold">{t.editBtn} ❯</span>
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }}
+                                        className="text-xs text-slate-600 font-bold bg-pink-50 hover:bg-pink-100 px-2.5 py-1 rounded-xl transition"
+                                      >
+                                        {t.copyBtn}
+                                      </button>
+                                    </React.Fragment>
+                                  )}
+                                </div>
                               </div>
                             );
                           })
@@ -5349,33 +5627,33 @@ audio.play().catch(() => playNotificationChime());
                         <h3 className="font-black text-sm text-slate-800">{t.statFilterTitle}</h3>
                         <p className="text-xs text-slate-500">{t.statFilterDesc}</p>
                       </div>
-{/* 👑 PRINCESS PRODUCTIVITY SCORE PANEL (PC) */}
-                    <div className="bg-gradient-to-r from-pink-50 via-purple-50 to-pink-100 p-5 rounded-3xl border-2 border-pink-300 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-white shadow-inner border-2 border-pink-300 flex items-center justify-center text-3xl cute-float shrink-0">
-                          👑
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-black text-sm text-[#9C2750] uppercase tracking-wider">Princess Productivity Score</h4>
-                            <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${princessProductivity.badgeColor}`}>
-                              {princessProductivity.title}
-                            </span>
-                          </div>
-                          <p className="text-xs font-bold text-slate-700 leading-relaxed">
-                            "{princessProductivity.message}"
-                          </p>
-                        </div>
-                      </div>
+{/* 🔱 LEMURIAN RESONANCE EVALUATION PANEL (PC) */}
+                 <div className="bg-gradient-to-r from-[#06162B] via-[#0F2342] to-[#1A1336] p-5 rounded-3xl border-2 border-teal-400/50 shadow-[0_0_25px_rgba(45,212,191,0.2)] flex flex-col md:flex-row items-center justify-between gap-4">
+                   <div className="flex items-center gap-4">
+                     <div className="w-16 h-16 rounded-2xl bg-[#091E36] shadow-inner border-2 border-teal-400/60 flex items-center justify-center text-3xl cute-float shrink-0">
+                       🔱
+                     </div>
+                     <div className="space-y-1">
+                       <div className="flex items-center gap-2 flex-wrap">
+                         <h4 className="font-black text-sm text-teal-300 uppercase tracking-wider">Lemurian Resonance Evaluation</h4>
+                         <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${princessProductivity.badgeColor}`}>
+                           {princessProductivity.title}
+                         </span>
+                       </div>
+                       <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                         "{princessProductivity.message}"
+                       </p>
+                     </div>
+                   </div>
 
-                      <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border-2 border-pink-200 shadow-xs shrink-0">
-                        <div className="text-right">
-                          <div className="text-[10px] font-bold text-slate-400 uppercase">Skor Kamu</div>
-                          <div className="text-2xl font-black text-[#E05780] font-mono">{princessProductivity.score}/100</div>
-                        </div>
-                        <div className="text-2xl">✨</div>
-                      </div>
-                    </div>
+                   <div className="flex items-center gap-3 bg-[#05101F] px-5 py-3 rounded-2xl border border-teal-400/40 shadow-inner shrink-0">
+                     <div className="text-right">
+                       <div className="text-[10px] font-bold text-slate-400 uppercase">Sync Rate</div>
+                       <div className="text-2xl font-black text-cyan-300 font-mono">{princessProductivity.score}%</div>
+                     </div>
+                     <div className="text-2xl">🌊</div>
+                   </div>
+                 </div>
                       
                       <div className="flex flex-wrap items-center gap-3">
                         <div className="flex items-center gap-1.5 bg-pink-50 p-1.5 rounded-2xl border border-pink-200">
@@ -5428,7 +5706,10 @@ audio.play().catch(() => playNotificationChime());
                           <span>🟢</span><span>{t.totalLive}</span>
                         </div>
                         <div className="text-3xl font-black text-emerald-600 mt-2">{stats.totalLive}</div>
-                        <div className="text-xs text-slate-500 mt-2 font-bold">≈ {stats.totalLiveHours} {t.hoursLive}</div>
+                        <div className="text-[10px] text-slate-400 mt-1 font-bold">≈ {stats.totalLiveHours} {t.hoursLive}</div>
+                        <div className="text-[11px] font-mono font-black text-emerald-400 mt-1">
+                          💰 Rp {stats.totalGMV.toLocaleString('id-ID')}
+                        </div>
                       </div>
                       <div className="bg-white p-5 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
@@ -5913,6 +6194,11 @@ audio.play().catch(() => playNotificationChime());
                                   </span>
                                 </div>
                                 <div className="font-black text-sm text-slate-900 leading-snug">{item.title}</div>
+                                {Number(item.gmv) > 0 && (
+                                 <div className="inline-flex items-center gap-1.5 bg-emerald-950/70 border border-emerald-400/40 text-emerald-300 font-mono text-[10px] font-black px-2.5 py-0.5 rounded-lg">
+                                   <span>💰 GMV: Rp {Number(item.gmv).toLocaleString('id-ID')}</span>
+                                 </div>
+                               )}
                                 {item.notes && (
                                   <div className="bg-pink-50/70 border border-pink-200 p-2 rounded-xl text-[10px] text-rose-900 italic">
                                     💌 {item.notes}
@@ -5920,14 +6206,24 @@ audio.play().catch(() => playNotificationChime());
                                 )}
                                 {renderKontenChecklist(item)}
                               </div>
-                              {isAdmin && (
-                                <div className="flex flex-col items-end gap-1">
-                                  <span className="text-[11px] text-pink-600 font-extrabold">{t.editBtn} ❯</span>
-                                  <button onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }} className="text-[9px] text-slate-500 font-bold bg-pink-50 px-2 py-0.5 rounded-lg">
-                                    📋
-                                  </button>
-                                </div>
-                              )}
+                             <div className="flex flex-col items-end gap-1">
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleExportToGoogleCalendar(e, item)}
+                                  className="text-[9px] text-teal-200 font-black bg-teal-950/80 border border-teal-400/40 px-2 py-0.5 rounded-lg"
+                                  title="Simpan ke Google Calendar"
+                                >
+                                  📅 GCal
+                                </button>
+                                {isAdmin && (
+                                  <React.Fragment>
+                                    <span className="text-[11px] text-pink-600 font-extrabold">{t.editBtn} ❯</span>
+                                    <button onClick={(e) => { e.stopPropagation(); handleDuplicate(item); }} className="text-[9px] text-slate-500 font-bold bg-pink-50 px-2 py-0.5 rounded-lg">
+                                      📋
+                                    </button>
+                                  </React.Fragment>
+                                )}
+                              </div>
                             </div>
                           );
                         })
@@ -6117,24 +6413,24 @@ audio.play().catch(() => playNotificationChime());
                         <span className="font-black text-slate-800">{t.statFilterTitle}</span>
                         <span className="font-bold text-maroon text-[11px] truncate">{periodLabel}</span>
                       </div>
-{/* 👑 PRINCESS PRODUCTIVITY SCORE PANEL (HP) */}
-                    <div className="bg-gradient-to-r from-pink-50 via-purple-50 to-pink-100 p-4 rounded-3xl border-2 border-pink-300 shadow-sm space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">👑</span>
-                          <span className="font-black text-xs text-[#9C2750] uppercase">Princess Score</span>
-                        </div>
-                        <span className="font-mono font-black text-base text-[#E05780] bg-white px-3 py-0.5 rounded-xl border border-pink-200">
-                          {princessProductivity.score}/100 ✨
-                        </span>
-                      </div>
-                      <div>
-                        <span className={`inline-block text-[9px] font-black px-2 py-0.5 rounded-full border mb-1 ${princessProductivity.badgeColor}`}>
-                          {princessProductivity.title}
-                        </span>
-                        <p className="text-[11px] font-bold text-slate-700 leading-snug">"{princessProductivity.message}"</p>
-                      </div>
-                    </div>
+{/* 🔱 LEMURIAN RESONANCE EVALUATION PANEL (HP) */}
+                 <div className="bg-gradient-to-r from-[#06162B] via-[#0F2342] to-[#1A1336] p-4 rounded-3xl border-2 border-teal-400/50 shadow-sm space-y-2">
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                       <span className="text-xl">🔱</span>
+                       <span className="font-black text-xs text-teal-300 uppercase">Lemurian Sync</span>
+                     </div>
+                     <span className="font-mono font-black text-base text-cyan-300 bg-[#05101F] px-3 py-0.5 rounded-xl border border-teal-400/40">
+                       {princessProductivity.score}% 🌊
+                     </span>
+                   </div>
+                   <div>
+                     <span className={`inline-block text-[9px] font-black px-2 py-0.5 rounded-full border mb-1 ${princessProductivity.badgeColor}`}>
+                       {princessProductivity.title}
+                     </span>
+                     <p className="text-[11px] font-bold text-slate-200 leading-snug">"{princessProductivity.message}"</p>
+                   </div>
+                 </div>
                       
                       <div className="grid grid-cols-4 gap-1 bg-pink-50 p-1 rounded-xl">
                         <button
@@ -6180,7 +6476,10 @@ audio.play().catch(() => playNotificationChime());
                       <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">🟢 {t.totalLive}</div>
                         <div className="text-3xl font-black text-emerald-600 mt-1">{stats.totalLive}</div>
-                        <div className="text-[10px] text-slate-400 mt-1 font-bold">≈ {stats.totalLiveHours} {t.hoursLive}</div>
+                        <div className="text-xs text-slate-500 mt-2 font-bold">≈ {stats.totalLiveHours} {t.hoursLive}</div>
+                        <div className="text-[11px] font-mono font-black text-emerald-400 mt-1">
+                          💰 Rp {stats.totalGMV.toLocaleString('id-ID')}
+                        </div>
                       </div>
                       <div className="bg-white p-4 rounded-3xl border-2 border-pink-200/70 shadow-sm">
                         <div className="text-[10px] font-bold text-slate-500 uppercase">🎬 {t.takeKonten}</div>
@@ -6366,11 +6665,41 @@ audio.play().catch(() => playNotificationChime());
               )}
             </div>
           )}
+{/* ========================================================= */}
+          {/* 🌊 BAR PENGINGAT REAL-TIME ATELIER RAFAYEL (DI BAWAH)      */}
+          {/* ========================================================= */}
+          <div className="max-w-[1600px] w-full mx-auto px-3 md:px-6 mt-4 mb-2">
+            <div className="bg-gradient-to-r from-[#061528] via-[#0B223D] to-[#14102B] border border-teal-400/40 rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs shadow-[0_8px_25px_rgba(0,0,0,0.6)]">
+              <div
+                onClick={sendReminderToDeviceNotification}
+                className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 min-w-0 flex-1 cursor-pointer group"
+                title="Klik untuk kirim transmisi Rafayel ke notifikasi HP"
+              >
+                <span className={`px-2.5 py-1 rounded-full border text-[9px] sm:text-[10px] font-black uppercase tracking-wider self-start shrink-0 ${autoDailyReminder.badge}`}>
+                  {autoDailyReminder.tag}
+                </span>
+                <p className="font-bold text-[11px] sm:text-xs leading-relaxed text-slate-200 whitespace-normal break-words m-0 group-hover:text-teal-300 transition">
+                  {autoDailyReminder.text}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                <button
+                  type="button"
+                  onClick={sendReminderToDeviceNotification}
+                  className="bg-teal-950/80 hover:bg-teal-900 text-teal-200 font-black text-[10px] px-3 py-1.5 rounded-xl border border-teal-400/40 shadow-xs active:scale-95 transition flex items-center gap-1.5"
+                >
+                  <span>🐚</span>
+                  <span>{lang === 'en' ? 'Send to Phone' : 'Kirim ke HP'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* ========================================================= */}
           {/* 🌟 3. MODAL POPUP PIN, CLONE DAY & FORM INPUT JADWAL      */}
           {/* ========================================================= */}
-{/* MODAL PENGATURAN SLIDESHOW FOTO & VIDEO RADAR */}
+          {/* MODAL PENGATURAN SLIDESHOW FOTO & VIDEO RADAR */}
           {radarMediaModal && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
               <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4 border-2 border-pink-300 animate-in zoom-in duration-150">
@@ -6731,7 +7060,22 @@ audio.play().catch(() => playNotificationChime());
                       </div>
                     </div>
                   )}
-
+{formData.status === 'LIVE' && (
+                 <div className="bg-emerald-950/40 border border-emerald-500/40 p-3 rounded-2xl space-y-1">
+                   <label className="block font-black text-emerald-300 text-[11px]">
+                     💰 {lang === 'en' ? 'Actual GMV Achieved (Rp)' : 'Pencapaian Aktual GMV Live (Rp)'}
+                   </label>
+                   <input
+                     type="number"
+                     min="0"
+                     step="1000"
+                     value={formData.gmv || ''}
+                     onChange={e => setFormData({ ...formData, gmv: e.target.value })}
+                     placeholder="Contoh: 15000000"
+                     className="w-full bg-slate-900 border border-emerald-400/50 rounded-xl px-3 py-2 font-mono font-black text-emerald-200 focus:outline-none"
+                   />
+                 </div>
+               )}
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">{t.formNotes}</label>
                     <textarea
