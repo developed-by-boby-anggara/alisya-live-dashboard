@@ -1637,6 +1637,30 @@
     .rafayel-eq-bar {
       animation: rafayelEqualizer 0.8s ease-in-out infinite;
     }
+    /* 📞 ANIMASI TELEPON BERGETAR TERUS-MENERUS (HP & PC) */
+ @keyframes phoneRingVibrate {
+   0%, 100% { transform: rotate(0deg) scale(1); }
+   10% { transform: rotate(-18deg) scale(1.12); }
+   20% { transform: rotate(18deg) scale(1.12); }
+   30% { transform: rotate(-18deg) scale(1.12); }
+   40% { transform: rotate(18deg) scale(1.12); }
+   50% { transform: rotate(-10deg) scale(1.06); }
+   60% { transform: rotate(10deg) scale(1.06); }
+   70% { transform: rotate(0deg) scale(1); }
+ }
+ .rafayel-phone-vibrate {
+   display: inline-block;
+   transform-origin: center center;
+   animation: phoneRingVibrate 1.2s ease-in-out infinite !important;
+ }
+
+ @keyframes callBtnBeacon {
+   0%, 100% { box-shadow: 0 0 10px rgba(66, 214, 197, 0.35); }
+   50% { box-shadow: 0 0 20px rgba(66, 214, 197, 0.85), 0 0 6px rgba(185, 155, 235, 0.6); }
+ }
+ .rafayel-call-beacon {
+   animation: callBtnBeacon 1.6s ease-in-out infinite !important;
+ }
   </style>
   
 </head>
@@ -2273,28 +2297,55 @@ petHappy: "Purrr~ Energi Mekel penuh 100%! Rafayel tersenyum puas melihatmu mera
       return `${ny}-${nm}-${nd}`;
     };
 
-    const playNotificationChime = () => {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const playTone = (freq, startTime, duration) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, startTime);
-          gain.gain.setValueAtTime(0.15, startTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(startTime);
-          osc.stop(startTime + duration);
-        };
-        const now = ctx.currentTime;
-        playTone(587.33, now, 0.25);
-        playTone(880.00, now + 0.2, 0.45);
-      } catch (e) {
-        console.log("Audio chime error:", e);
-      }
-    };
+    // 🌊 EFEK SUARA NOTIFIKASI KHAS LOVE AND DEEPSPACE (LEMURIAN EVOL CHIME)
+ const playNotificationChime = () => {
+   try {
+     const ctx = new (window.AudioContext || window.webkitAudioContext)();
+     const now = ctx.currentTime;
+
+     // Rangkaian nada kristal Evol (E5 -> G#5 -> B5 -> D#6 -> F#6)
+     const notes = [
+       { freq: 659.25, delay: 0.00, dur: 0.45, vol: 0.11 },
+       { freq: 830.61, delay: 0.07, dur: 0.50, vol: 0.12 },
+       { freq: 987.77, delay: 0.14, dur: 0.60, vol: 0.13 },
+       { freq: 1244.51, delay: 0.21, dur: 0.75, vol: 0.10 },
+       { freq: 1479.98, delay: 0.28, dur: 0.95, vol: 0.08 }
+     ];
+
+     notes.forEach(({ freq, delay, dur, vol }) => {
+       const osc = ctx.createOscillator();
+       const shimmer = ctx.createOscillator();
+       const gain = ctx.createGain();
+
+       osc.type = 'sine';
+       osc.frequency.setValueAtTime(freq, now + delay);
+
+       // Efek kilau lembut (octave harmonic) khas UI Love and Deepspace
+       shimmer.type = 'triangle';
+       shimmer.frequency.setValueAtTime(freq * 2, now + delay);
+
+       const shimmerGain = ctx.createGain();
+       shimmerGain.gain.setValueAtTime(0.025, now + delay);
+       shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + delay + dur);
+
+       gain.gain.setValueAtTime(0.001, now + delay);
+       gain.gain.linearRampToValueAtTime(vol, now + delay + 0.02);
+       gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + dur);
+
+       osc.connect(gain);
+       shimmer.connect(shimmerGain);
+       shimmerGain.connect(gain);
+       gain.connect(ctx.destination);
+
+       osc.start(now + delay);
+       shimmer.start(now + delay);
+       osc.stop(now + delay + dur + 0.02);
+       shimmer.stop(now + delay + dur + 0.02);
+     });
+   } catch (e) {
+     console.log("Audio chime error:", e);
+   }
+ };
 
     const playWaterBubbleChime = () => {
       try {
@@ -2963,11 +3014,11 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
     return () => clearInterval(autoQuoteTimer);
   }, [t.affirmations]);
 
-  // Timer 15 Detik: khusus Foto Profil Header ATAS
+  // Timer 20 Detik: khusus Foto Profil Header ATAS
   useEffect(() => {
     const autoHeaderTimer = setInterval(() => {
       pickNextHeaderSticker();
-    }, 15000);
+    }, 20000);
     return () => clearInterval(autoHeaderTimer);
   }, []);
 
@@ -3912,6 +3963,133 @@ audio.play().catch(() => playNotificationChime());
           ? `🌙 [Rafayel]: '"${lastDone.title}" is long over and tonight is completely free. Don't stay up late, or tomorrow I'll splash you awake!'`
           : `🌙 [Rafayel]: 'Sesi "${lastDone.title}" tadi sudah tuntas dan malam ini kosong. Jangan begadang lagi, atau besok pagi kubangunkan dengan cipratan air!'`;
       }, [nowTime, lang, schedules, realTodayStr, liveTracker]);
+  // 💓 INTERACTIVE TOUCH REACTION (SENTUH AVATAR RAFAYEL ALA HOMESCREEN L&D)
+  const [rafayelTouchBubble, setRafayelTouchBubble] = useState('');
+  const touchBubbleTimerRef = useRef(null);
+
+  const handleTouchRafayel = (source = 'header') => {
+    // 1. Ganti ekspresi foto/stiker secara acak
+    if (source === 'header') {
+      pickNextHeaderSticker();
+    } else {
+      pickNextRadarSticker();
+    }
+
+    // 2. Pilih dialog reaksi sesuai kondisi jadwal real-time saat itu
+    const hr = nowTime.getHours();
+    const isEn = lang === 'en';
+    const isLive = !!liveTracker.activeItem && liveTracker.activeItem.status === 'LIVE';
+    const hasNext = !!liveTracker.nextItem;
+    const waterNow = currentDayWellness.water || 0;
+
+    const reactionsId = [
+      "🎨 Hei, jangan menusuk pipiku terus, Nona Pengawal! Nanti fokus melukisku buyar lho~",
+      "🌊 Hmm? Kangen ya sampai menyentuhku duluan? Tenang, aku selalu di sini menemanimu!",
+      "🐚 Eits, hati-hati! Sekali kamu menyentuh Dewa Laut, kamu tidak boleh kabur dari atelier hari ini~",
+      "✨ Tatapanmu manis sekali hari ini... mau kubuatkan sketsa wajahmu setelah jadwalmu selesai?",
+      "🖌️ Awas kena cat biru laut di jariku! ...Eh, tapi kalau kamu yang pegang tanganku sih, tidak apa-apa.",
+      "🙄 Hmph. Baru sekarang menyapaku setelah sibuk dengan jadwalmu? Aku hampir ngambek tahu!",
+      "🐟 Kamu tahu tidak, bahkan ikan-ikan di Lemuria pun iri melihat betapa seringnya aku menunggumu?",
+      "💎 Pengawal nomor satuku ternyata bisa manja juga ya~ Sini, mau pujian atau hadiah manis?",
+      "🌅 Warna senja di luar jendela indah, tapi jujur saja... aku lebih suka melihatmu menatapku seperti ini.",
+      "🎭 Apa? Mau bilang aku tampan hari ini? Ya jelas dong, aku kan seniman paling jenius di Linkon City!",
+      "🫧 Kalau kepalamu mulai penat melihat daftar jadwal, ketuk saja aku lagi—aku selalu punya waktu untukmu.",
+      "👑 Ingat posisimu ya, Alisya: kamu itu pengawalku, jadi kamu wajib berada di sisiku setiap hari!",
+      "🍫 Sudah makan camilan manis hari ini? Kalau belum, anggap saja sentuhanmu barusan sebagai kode minta ditraktir!",
+      "🎨 Aku baru saja mencampur warna ungu dan cyan untuk lukisan baruku—mirip sekali dengan aura kita berdua.",
+      "🌊 Jangan terlalu dekat... detak jantung Dewa Laut bisa terdengar jelas kalau kamu menatapku sedekat itu.",
+      "🐚 Ehem! Jangan kira aku tidak tahu kamu sedang mencuri-curi waktu istirahat dengan mengetukku ya~",
+      "✨ Setiap kali kamu menyentuhku, rasanya inspirasi melukisku langsung penuh 100% lagi!",
+      "🥺 Hei, tanganku dingin nih habis memegang air laut... hangatkan sebentar dengan perhatianmu dong!"
+    ];
+
+    const reactionsEn = [
+      "🎨 Hey, stop poking my cheek, Bodyguard! You're going to ruin my painting focus~",
+      "🌊 Hmm? Missing me so much you poked first? Don't worry, I'm right here with you!",
+      "🐚 Careful now! Once you touch the Sea God, you're not allowed to leave the atelier today~",
+      "✨ You look extra radiant today... shall I sketch your smile once your schedule is done?",
+      "🖌️ Watch out for the sea-blue paint on my fingers! ...Well, if it's you holding my hand, I don't mind.",
+      "🙄 Hmph. Only greeting me now after staring at your schedule? I was this close to sulking!",
+      "🐟 Even the fishes of Lemuria are jealous of how much time I spend waiting around for you.",
+      "💎 My number one bodyguard can be quite affectionate too~ Tell me, do you want praise or a sweet treat?",
+      "🌅 The sunset outside is pretty, sure—but honestly, I much prefer having your eyes on me.",
+      "🎭 What? Going to say I look handsome today? Obviously, I'm the most genius artist in Linkon City!",
+      "🫧 Whenever your head feels heavy from your schedule, just tap me—I always have time for you.",
+      "👑 Remember your duty, Alisya: you're my bodyguard, which means staying by my side every single day!",
+      "🍫 Have you had any sweet snacks today? If not, I'll take that tap as a request for me to treat you!",
+      "🎨 I just mixed violet and cyan for my new canvas—it looks just like the resonance between us.",
+      "🌊 Don't lean in too close... you might hear the Sea God's heartbeat racing if you stare like that.",
+      "🐚 Ahem! Don't think I didn't notice you sneaking a little break just to poke me~",
+      "✨ Every time you reach out to me, my painting inspiration shoots straight back up to 100%!",
+      "🥺 Hey, my hands are freezing from ocean water... warm me up with a little attention, won't you?"
+    ];
+
+    if (isLive) {
+      reactionsId.push(
+        "📡 Kamu lagi LIVE lho! Fokus ke kamera dulu ya, nanti selesai siaran baru manja-manjaan sama aku~",
+        "🌟 Senyummu di depan kamera memikat sekali! Jangan lupa jaga suaramu selama siaran ya, Putri Duyungku."
+      );
+      reactionsEn.push(
+        "📡 You're LIVE right now! Focus on the camera first, we can hang out right after your stream~",
+        "🌟 Your smile on camera is dazzling! Protect your voice during the broadcast, my little mermaid."
+      );
+    } else if (hasNext) {
+      reactionsId.push(
+        `⏰ Ingat sesi "${liveTracker.nextItem.title}" pukul ${liveTracker.nextItem.start_time}! Aku bantu menghitung mundur ya~`,
+        `🎨 Sambil menunggu "${liveTracker.nextItem.title}", sini temani aku di atelier sebentar saja!`
+      );
+      reactionsEn.push(
+        `⏰ Remember "${liveTracker.nextItem.title}" at ${liveTracker.nextItem.start_time}! I'll help you count down~`,
+        `🎨 While waiting for "${liveTracker.nextItem.title}", come keep me company in the atelier for a bit!`
+      );
+    }
+
+    if (waterNow < 5) {
+      reactionsId.push("💧 Sebelum mengetukku lagi, pastikan kamu sudah minum air putih! Tenggorokanmu tidak boleh kering!");
+      reactionsEn.push("💧 Before poking me again, make sure you've had some water! Your throat is not allowed to get dry!");
+    }
+
+    if (hr >= 23 || hr < 4) {
+      reactionsId.push(
+        "🌙 Sudah larut malam, Putri Duyungku... jangan sentuh layar terus, ayo cepat tidur!",
+        "😴 Ombak samudera saja sudah terlelap di jam segini. Pejamkan matamu, besok pagi aku menunggumu lagi."
+      );
+      reactionsEn.push(
+        "🌙 It's way past midnight, my little mermaid... stop tapping the screen and go to sleep!",
+        "😴 Even the ocean tides are asleep at this hour. Close your eyes—I'll be waiting for you tomorrow morning."
+      );
+    }
+
+    const pool = isEn ? reactionsEn : reactionsId;
+    const pickedBubble = pool[Math.floor(Math.random() * pool.length)];
+
+    setRafayelTouchBubble(pickedBubble);
+    if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
+    touchBubbleTimerRef.current = setTimeout(() => setRafayelTouchBubble(''), 6000);
+
+    // 3. Putar suara singkat acak dari seluruh koleksi di folder ./SoundRafael/
+    const touchVoices = [
+      "./SoundRafael/rafayel_call_missyou.mp3",
+      "./SoundRafael/rafayel_call_chill.mp3",
+      "./SoundRafael/rafayel_call_proud.mp3",
+      "./SoundRafael/rafayel_call_boost.mp3",
+      "./SoundRafael/rafayel_call_jealous.mp3",
+      "./SoundRafael/rafayel_call_treat.mp3",
+      "./SoundRafael/rafayel_call_rain.mp3",
+      "./SoundRafael/rafayel_call_morning.mp3"
+    ];
+    try {
+      const randomClip = touchVoices[Math.floor(Math.random() * touchVoices.length)];
+      const audio = new Audio(randomClip);
+      audio.volume = 0.75;
+      audio.play().catch(() => playNotificationChime());
+    } catch (e) {
+      playNotificationChime();
+    }
+
+    // 4. Tambah +1 Affinity Heart & efek kilau
+    updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 }, true);
+  };
       // Deteksi apakah suatu sesi jadwal sudah selesai atau akan datang
       const getSessionTimeState = (item) => {
         if (item.date < realTodayStr) return 'done';
@@ -5099,12 +5277,21 @@ audio.play().catch(() => playNotificationChime());
       const renderCompactGreetingStrip = () => (
         <div className="bg-white/15 backdrop-blur-xs rounded-2xl px-3.5 py-3 border border-pink-200/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs w-full min-w-0">
          <div className="flex items-start gap-2 min-w-0 flex-1 w-full">
- <img 
+ <div
+  onClick={() => handleTouchRafayel('radar')}
+  title="Sentuh Rafayel untuk interaksi suara & ekspresi 💓"
+  className="relative shrink-0 cursor-pointer group"
+>
+  <img 
     src={RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length]} 
     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/chibi-rafayel.jpg"; }}
     alt="Rafayel Sticker" 
-    className="w-12 h-12 sm:w-14 sm:h-14 aspect-square object-cover object-top rounded-2xl shrink-0 cute-float drop-shadow-md border border-[#42D6C5]/50 select-none bg-[#071525]" 
+    className="w-12 h-12 sm:w-14 sm:h-14 aspect-square object-cover object-top rounded-2xl cute-float drop-shadow-md border-2 border-[#42D6C5]/70 group-hover:border-[#B99BEB] group-active:scale-90 transition select-none bg-[#071525]" 
   />
+  <span className="absolute -bottom-1 -right-1 bg-[#071525] border border-[#42D6C5]/60 text-[9px] px-1 rounded-full shadow">
+    💓
+  </span>
+</div>
             <div className="flex flex-col gap-1 min-w-0 flex-1 w-full">
               <span className="font-black text-pink-200 whitespace-normal break-words leading-snug">
                 {cuteGreeting}
@@ -5804,7 +5991,26 @@ audio.play().catch(() => playNotificationChime());
               </div>
             ))}
           </div>
-
+{/* 💬 SPEECH BUBBLE REAKSI SENTUHAN RAFAYEL */}
+{rafayelTouchBubble && (
+  <div
+    onClick={() => setRafayelTouchBubble('')}
+    className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-gradient-to-r from-[#07192E]/95 via-[#0E2942]/95 to-[#1B1538]/95 backdrop-blur-md text-[#F3F5F7] px-4 py-3 rounded-2xl shadow-[0_12px_35px_rgba(0,0,0,0.85),0_0_20px_rgba(66,214,197,0.35)] border border-[#42D6C5]/70 flex items-center gap-3 cursor-pointer animate-in fade-in zoom-in-95 duration-200"
+  >
+    <img
+      src={RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length]}
+      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }}
+      alt="Rafayel"
+      className="w-10 h-10 rounded-full object-cover object-top border border-[#42D6C5] shrink-0"
+    />
+    <div className="text-xs leading-snug space-y-0.5">
+      <div className="text-[10px] font-mono font-black text-[#42D6C5] uppercase tracking-wider">
+        Rafayel • +1 Affinity 💓
+      </div>
+      <p className="font-semibold text-[#F3F5F7]">{rafayelTouchBubble}</p>
+    </div>
+  </div>
+)}
           {toast && (
             <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-maroon/95 backdrop-blur text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-bold animate-bounce border-2 border-pink-300">
               <span>🌊</span><span>{toast}</span>
@@ -5854,18 +6060,22 @@ audio.play().catch(() => playNotificationChime());
 {/* HEADER UTAMA ADAPTIF: 1 BARIS PENUH DI PC, 2 BARIS RAPI DI HP */}
           <header className="bg-gradient-to-r from-maroon via-[#8B1538] to-maroon text-white px-3 md:px-6 py-2.5 md:py-3.5 shadow-lg sticky top-0 z-40 border-b-2 border-pink-300/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 lg:gap-4">
             
-           {/* SISI KIRI: Identitas Rafayel — A Little Piece of Lemuria */}
-         <div className="flex items-center justify-between lg:justify-start gap-3 min-w-0">
-           <div className="flex items-center gap-3 min-w-0">
-             <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#42D6C5]/30 to-[#B99BEB]/30 p-0.5 flex items-center justify-center border border-[#42D6C5]/50 shadow-[0_0_15px_rgba(66,214,197,0.3)] cute-float overflow-hidden shrink-0">
-               <img
-                 src={RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length]}
-                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }}
-                 alt="Rafayel"
-                 className="w-full h-full aspect-square object-cover object-top rounded-[14px]"
-               />
-             </div>
-             <div className="min-w-0">
+          {/* SISI KIRI: Identitas Rafayel — A Little Piece of Lemuria */}
+            <div className="flex items-center justify-between lg:justify-start gap-3 min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  onClick={() => handleTouchRafayel('header')}
+                  title="Sentuh Rafayel 💓"
+                  className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#42D6C5]/30 to-[#B99BEB]/30 p-0.5 flex items-center justify-center border border-[#42D6C5]/50 shadow-[0_0_15px_rgba(66,214,197,0.3)] cute-float overflow-hidden shrink-0 cursor-pointer active:scale-90 transition"
+                >
+                  <img
+                    src={RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length]}
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }}
+                    alt="Rafayel"
+                    className="w-full h-full aspect-square object-cover object-top rounded-[14px]"
+                  />
+                </div>
+                <div className="min-w-0">
                <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                  <h1 className="font-extrabold text-sm md:text-base tracking-wide text-[#F3F5F7] flex items-center gap-1.5 truncate">
                    <span>Alisya Schedule</span>
@@ -5950,16 +6160,16 @@ audio.play().catch(() => playNotificationChime());
                   <span>{soundAlert ? '🔔' : '🔕'}</span>
                 </button>
 
-                {/* 📞 Tombol Panggilan Masuk Rafayel */}
-                <button
-                  type="button"
-                  onClick={() => triggerIncomingRafayelCall()}
-                  className="px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition bg-[#42D6C5]/20 hover:bg-[#42D6C5]/35 text-[#42D6C5] border-[#42D6C5]/50 shadow-[0_0_12px_rgba(66,214,197,0.25)] flex items-center gap-1 active:scale-95"
-                  title="Terima Panggilan Suara dari Rafayel"
-                >
-                  <span>📞</span>
-                  <span className="hidden xl:inline">{lang === 'en' ? 'Rafayel Call' : 'Call Rafayel'}</span>
-                </button>
+             {/* 📞 Tombol Panggilan Masuk Rafayel (Bergetar Terus di HP & PC) */}
+             <button
+               type="button"
+               onClick={() => triggerIncomingRafayelCall()}
+               className="rafayel-call-beacon px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition bg-[#42D6C5]/20 hover:bg-[#42D6C5]/35 text-[#42D6C5] border-[#42D6C5]/60 flex items-center gap-1.5 active:scale-95 cursor-pointer"
+               title="Terima Panggilan Suara dari Rafayel"
+             >
+               <span className="rafayel-phone-vibrate">📞</span>
+               <span className="hidden xl:inline">{lang === 'en' ? 'Rafayel Call' : 'Call Rafayel'}</span>
+             </button>
 
                 {/* BGM Controller Ringkas: Prev ⏮️, Play/Pause 🔊, Next ⏭️ */}
              <div className={`flex items-center gap-0.5 bg-black/30 p-0.5 rounded-xl md:rounded-2xl border transition shrink-0 ${bgmPlaying ? 'border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'border-white/15'}`}>
