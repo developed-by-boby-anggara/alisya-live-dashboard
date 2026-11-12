@@ -214,7 +214,7 @@
       --tw-gradient-to: #6D28D9 !important;
     }
 
-    /* Kotak Available Schedule (Slot Jam Kosong) menjadi Bioluminescent Sea */
+    /* Kotak Available  (Slot Jam Kosong) menjadi Bioluminescent Sea */
     .bg-emerald-50, .bg-emerald-50\/90, .bg-emerald-100 {
       background-color: #06182C !important;
       border-color: rgba(45, 212, 191, 0.5) !important;
@@ -388,7 +388,7 @@
       box-shadow: 0 4px 16px rgba(66, 214, 197, 0.22) !important;
     }
 
-    /* 4. DASHBOARD CARDS, SCHEDULE CARDS & KPI CARDS */
+    /* 4. DASHBOARD CARDS,  CARDS & KPI CARDS */
     #root .bg-white,
     #root .bg-white\/90,
     #root .bg-white\/95 {
@@ -419,7 +419,7 @@
       box-shadow: 0 16px 40px rgba(3, 10, 20, 0.7), 0 0 24px rgba(66, 214, 197, 0.14) !important;
     }
 
-    /* Slot Kosong (Available Schedule) */
+    /* Slot Kosong (Available ) */
     #root .bg-emerald-50,
     #root .bg-emerald-50\/90,
     #root .bg-emerald-100 {
@@ -1362,7 +1362,7 @@
       { id: 'b_pribadi', name: 'Agenda Pribadi & OFF', emoji: '☕', color: '#EF4444' }
     ];
 
-    const INITIAL_SCHEDULES = [
+    const INITIAL_S = [
       { id: 's1', date: '2026-10-26', start_time: '14:00', end_time: '18:00', title: 'Shift 3 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#B6D7A8', notes: 'Target GMV 20 Juta' },
       { id: 's2', date: '2026-10-26', start_time: '10:00', end_time: '12:00', title: 'Meet Aya', brand_id: 'b_pribadi', status: 'Meeting', color: '#00FFFF', notes: 'Briefing Outfit' },
       { id: 's_sleep1', date: '2026-10-26', start_time: '23:00', end_time: '06:00', title: 'Istirahat Tidur Malam', brand_id: 'b_sleep', status: 'Tidur', color: '#6366F1', notes: 'Sleep hygiene 7 jam' },
@@ -1446,7 +1446,7 @@
         lockBtn: "Kunci",
         loginBtn: "Login",
         radarTitle: "Radar Jadwal Alisya (00:00 - 23:59)",
-        availableTitle: "Available Schedule (Slot Jam Kosong)",
+        availableTitle: "Available  (Slot Jam Kosong)",
         allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
         slotsReady: "Slot Siap Pakai",
         calendarTitle: "Kalender Tanggal",
@@ -3834,7 +3834,7 @@ audio.play().catch(() => playNotificationChime());
         const freeSlots = Math.max(0, totalPrimeSlots - occupiedPrimeSlots);
 
         let availability = {
-          badge: '🟢 Schedule Active',
+          badge: 'Schedule Active',
           bg: 'bg-emerald-500/25 text-emerald-200 border-emerald-400/50',
           dot: 'bg-emerald-400',
           hint: 'Slot Siaran Berjalan Normal'
