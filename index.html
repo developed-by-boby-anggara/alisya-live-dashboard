@@ -2429,7 +2429,7 @@ function App() {
       if (!bgmAudioRef.current) {
         const audio = new Audio(trackUrl);
         audio.volume = 0.25;
-        audio.preload = "auto";
+        audio.preload = "none";
         bgmAudioRef.current = audio;
       } else {
         bgmAudioRef.current.src = trackUrl;
@@ -5918,17 +5918,17 @@ audio.play().catch(() => playNotificationChime());
               {/* Grup Tombol Fitur */}
               <div className="flex items-center gap-1.5 shrink-0">
                 {/* Bahasa */}
-                <div className="flex items-center bg-black/30 px-2.5 py-1.5 rounded-xl md:rounded-2xl border border-white/15 shadow-inner">
-                  <span className="text-xs mr-1.5">🌐</span>
-                  <select
-                    value={lang}
-                    onChange={(e) => handleSetLang(e.target.value)}
-                    className="bg-transparent text-white font-extrabold text-xs border-none focus:outline-none cursor-pointer"
-                  >
-                    <option value="id" className="bg-slate-900 text-white">Indonesia</option>
-                    <option value="en" className="bg-slate-900 text-white">English</option>
-                  </select>
-                </div>
+             <div className="flex items-center bg-black/30 px-2 py-1.5 rounded-xl md:rounded-2xl border border-white/15 shadow-inner shrink-0">
+               <span className="text-xs mr-1">🌐</span>
+               <select
+                 value={lang}
+                 onChange={(e) => handleSetLang(e.target.value)}
+                 className="bg-transparent text-white font-extrabold text-xs border-none focus:outline-none cursor-pointer pr-1"
+               >
+                 <option value="id" className="bg-slate-900 text-white">ID</option>
+                 <option value="en" className="bg-slate-900 text-white">EN</option>
+               </select>
+             </div>
 
              {/* 🌸 Switch ke Cute Mode */}
              <button
