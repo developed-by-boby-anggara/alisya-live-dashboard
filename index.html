@@ -1630,6 +1630,13 @@
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
       color: #94A3B8 !important;
     }
+    @keyframes rafayelEqualizer {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
+    }
+    .rafayel-eq-bar {
+      animation: rafayelEqualizer 0.8s ease-in-out infinite;
+    }
   </style>
   
 </head>
@@ -2495,6 +2502,156 @@ function App() {
     };
   }, []);
 
+  // 📞 SIMULASI INCOMING CALL / VOICE MESSAGE DARI RAFAYEL (SAAT MASUK WEB & MANUAL)
+  const [rafayelCallModalOpen, setRafayelCallModalOpen] = useState(false);
+  const [rafayelCallStatus, setRafayelCallStatus] = useState('ringing'); // 'ringing' | 'connected'
+  const [rafayelCallSeconds, setRafayelCallSeconds] = useState(0);
+  const [currentCallScenario, setCurrentCallScenario] = useState(0);
+  const callVoiceAudioRef = useRef(null);
+  const ringtoneIntervalRef = useRef(null);
+
+ const RAFAYEL_CALL_SCENARIOS = [
+    {
+      audioUrl: "./audio/rafayel_call_welcome.mp3",
+      tagId: "Panggilan Masuk • Selamat Datang",
+      tagEn: "Incoming Call • Welcome Back",
+      titleId: "Rafayel • Mo's Atelier",
+      titleEn: "Rafayel • Mo's Atelier",
+      subtitleId: "Akhirnya kamu membuka terminal jadwal ini...",
+      subtitleEn: "You finally opened the schedule terminal...",
+      transcriptId: "Nona Pengawal! Kenapa baru buka webnya sekarang? Aku sudah menunggumu dari tadi di studio sambil menyiapkan cat warna biru laut. Cek jadwalmu hari ini baik-baik, jangan lupa minum air, dan setelah selesai temui aku di pantai!",
+      transcriptEn: "Bodyguard! Why are you only opening the web now? I've been waiting for you in the studio preparing sea-blue paint. Check your schedule carefully today, stay hydrated, and meet me at the shore when you're done!"
+    },
+    {
+      audioUrl: "./audio/rafayel_call_hydrate.mp3",
+      tagId: "Panggilan Darurat • Cek Hidrasi",
+      tagEn: "Priority Call • Hydration Check",
+      titleId: "Rafayel • Sea God Alert",
+      titleEn: "Rafayel • Sea God Alert",
+      subtitleId: "Peringatan resonansi suara dari Lemuria",
+      subtitleEn: "Vocal resonance alert from Lemuria",
+      transcriptId: "Alisya, aku bisa merasakan dari kejauhan kalau kamu lupa minum air lagi! Suaramu itu aset paling berharga saat siaran langsung. Cepat ambil gelasmu dan minum sekarang juga sebelum aku berenang ke sana!",
+      transcriptEn: "Alisya, I can sense from afar that you forgot to drink water again! Your voice is your most precious asset during live streams. Grab your glass and drink right now before I swim over there!"
+    },
+    {
+      audioUrl: "./audio/rafayel_call_rest.mp3",
+      tagId: "Panggilan Malam • Perhatian Atelier",
+      tagEn: "Evening Call • Atelier Care",
+      titleId: "Rafayel • Linkon City Line",
+      titleEn: "Rafayel • Linkon City Line",
+      subtitleId: "Transmisi suara eksklusif untukmu",
+      subtitleEn: "Exclusive voice transmission for you",
+      transcriptId: "Kerja kerasmu hari ini luar biasa, Putri Duyungku. Kalau sesi siaranmu sudah selesai, cepat istirahat dan jangan begadang. Besok aku akan melukis senyummu yang paling manis di atas kanvas baruku~",
+      transcriptEn: "You worked so hard today, my little mermaid. Once your stream is finished, get some rest and don't stay up late. Tomorrow I'll paint your sweetest smile on my new canvas~"
+    }
+  ];
+
+  // Nada dering kristal Lemuria saat panggilan berdering
+  const playLemurianRingtonePulse = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [659.25, 830.61, 987.77, 1318.51];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.14);
+        gain.gain.setValueAtTime(0.11, ctx.currentTime + i * 0.14);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.14);
+        osc.stop(ctx.currentTime + i * 0.14 + 0.46);
+      });
+    } catch (e) {}
+  };
+
+  // Memicu panggilan masuk Rafayel
+  const triggerIncomingRafayelCall = (scenarioIndex = null) => {
+    const idx = scenarioIndex !== null
+      ? scenarioIndex % RAFAYEL_CALL_SCENARIOS.length
+      : Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length);
+    setCurrentCallScenario(idx);
+    setRafayelCallStatus('ringing');
+    setRafayelCallSeconds(0);
+    setRafayelCallModalOpen(true);
+    playLemurianRingtonePulse();
+  };
+
+  // Efek nada dering berulang & timer durasi saat panggilan tersambung
+  useEffect(() => {
+    if (!rafayelCallModalOpen) {
+      if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
+      if (callVoiceAudioRef.current) {
+        callVoiceAudioRef.current.pause();
+        callVoiceAudioRef.current.currentTime = 0;
+      }
+      return;
+    }
+
+    if (rafayelCallStatus === 'ringing') {
+      ringtoneIntervalRef.current = setInterval(() => {
+        playLemurianRingtonePulse();
+      }, 2400);
+      return () => clearInterval(ringtoneIntervalRef.current);
+    }
+
+    if (rafayelCallStatus === 'connected') {
+      if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
+      const timer = setInterval(() => {
+        setRafayelCallSeconds(prev => prev + 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [rafayelCallModalOpen, rafayelCallStatus]);
+
+  // Terima panggilan Rafayel & putar file suara dari GitHub (./audio/rafayel_call_welcome.mp3, dll)
+  const handleAcceptRafayelCall = () => {
+    setRafayelCallStatus('connected');
+    setRafayelCallSeconds(0);
+
+    // Kecilkan volume BGM sementara agar suara telepon Rafayel terdengar jernih
+    if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
+      bgmAudioRef.current.volume = 0.06;
+    }
+
+    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+    try {
+      if (callVoiceAudioRef.current) {
+        callVoiceAudioRef.current.pause();
+      }
+      const voice = new Audio(scenario.audioUrl);
+      voice.volume = 0.95;
+      callVoiceAudioRef.current = voice;
+
+      voice.onended = () => {
+        // Kembalikan volume BGM setelah voice call selesai
+        if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.25;
+      };
+
+      voice.play().catch(() => {
+        // Fallback jika file mp3 belum diunggah ke GitHub
+        playNotificationChime();
+      });
+    } catch (e) {
+      playNotificationChime();
+    }
+  };
+
+  // Tutup / Akhiri panggilan Rafayel
+  const handleEndRafayelCall = () => {
+    if (callVoiceAudioRef.current) {
+      callVoiceAudioRef.current.pause();
+      callVoiceAudioRef.current.currentTime = 0;
+    }
+    if (bgmAudioRef.current) {
+      bgmAudioRef.current.volume = 0.25;
+    }
+    setRafayelCallModalOpen(false);
+    setRafayelCallStatus('ringing');
+    setRafayelCallSeconds(0);
+  };
+
   const handleEnterTerminal = () => {
     setHasEntered(true);
     if (bgmAudioRef.current && bgmAudioRef.current.paused) {
@@ -2502,6 +2659,10 @@ function App() {
     } else if (!bgmAudioRef.current) {
       playTrack(currentTrackIdxRef.current);
     }
+    // 📞 Otomatis memunculkan Incoming Call dari Rafayel 1.2 detik setelah masuk ke web!
+    setTimeout(() => {
+      triggerIncomingRafayelCall(0);
+    }, 1200);
   };
 
   const toggleBGM = (e) => {
@@ -5586,6 +5747,17 @@ audio.play().catch(() => playNotificationChime());
                   <span>{soundAlert ? '🔔' : '🔕'}</span>
                 </button>
 
+                {/* 📞 Tombol Panggilan Masuk Rafayel */}
+                <button
+                  type="button"
+                  onClick={() => triggerIncomingRafayelCall()}
+                  className="px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition bg-[#42D6C5]/20 hover:bg-[#42D6C5]/35 text-[#42D6C5] border-[#42D6C5]/50 shadow-[0_0_12px_rgba(66,214,197,0.25)] flex items-center gap-1 active:scale-95"
+                  title="Terima Panggilan Suara dari Rafayel"
+                >
+                  <span>📞</span>
+                  <span className="hidden xl:inline">{lang === 'en' ? 'Rafayel Call' : 'Call Rafayel'}</span>
+                </button>
+
                 {/* BGM Controller Ringkas: Prev ⏮️, Play/Pause 🔊, Next ⏭️ */}
              <div className={`flex items-center gap-0.5 bg-black/30 p-0.5 rounded-xl md:rounded-2xl border transition shrink-0 ${bgmPlaying ? 'border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'border-white/15'}`}>
                {/* Tombol Lagu Sebelumnya */}
@@ -7353,6 +7525,146 @@ audio.play().catch(() => playNotificationChime());
           {/* ========================================================= */}
           {/* 🌟 3. MODAL POPUP PIN, CLONE DAY & FORM INPUT JADWAL      */}
           {/* ========================================================= */}
+          {/* 📞 MODAL INCOMING CALL / VOICE MESSAGE SIMULASI DARI RAFAYEL */}
+          {rafayelCallModalOpen && (() => {
+            const activeCall = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+            const isConnected = rafayelCallStatus === 'connected';
+            return (
+              <div className="fixed inset-0 z-50 bg-[#040914]/85 backdrop-blur-lg flex items-center justify-center p-4 animate-in fade-in duration-300">
+                <div className="w-full max-w-sm rounded-[32px] bg-gradient-to-b from-[#081C30] via-[#0D2942] to-[#171636] border-2 border-[#42D6C5]/60 shadow-[0_24px_70px_rgba(0,0,0,0.9),0_0_35px_rgba(66,214,197,0.3)] p-6 text-center space-y-5 relative overflow-hidden">
+                  {/* Efek Cahaya Samudera di Atas */}
+                  <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-40 bg-[#42D6C5]/20 blur-3xl pointer-events-none"></div>
+
+                  {/* Badge Status Panggilan */}
+                  <div className="flex items-center justify-center gap-2">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-black tracking-wider uppercase border ${isConnected ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50' : 'bg-[#42D6C5]/20 text-[#42D6C5] border-[#42D6C5]/50 animate-pulse'}`}>
+                      <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-ping' : 'bg-[#42D6C5] animate-ping'}`}></span>
+                      <span>
+                        {isConnected
+                          ? `${lang === 'en' ? 'ON CALL' : 'TERHUBUNG'} • ${formatSecondsToMS(rafayelCallSeconds)}`
+                          : (lang === 'en' ? activeCall.tagEn : activeCall.tagId)}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Avatar Rafayel dengan Ring Gelombang */}
+                  <div className="relative w-28 h-28 mx-auto">
+                    <div className={`absolute inset-0 rounded-full border-2 border-[#42D6C5]/60 ${isConnected ? 'animate-ping opacity-30' : 'animate-ping opacity-50'}`}></div>
+                    <div className="relative w-28 h-28 rounded-full p-1 bg-gradient-to-tr from-[#42D6C5] via-cyan-300 to-[#B99BEB] shadow-[0_0_25px_rgba(66,214,197,0.5)]">
+                      <img
+                        src={RAFAYEL_ALL_STICKERS[headerStickerIdx % RAFAYEL_ALL_STICKERS.length]}
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }}
+                        alt="Rafayel Call"
+                        className="w-full h-full aspect-square object-cover object-top rounded-full bg-[#071525]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nama & Subjudul */}
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-black text-[#F3F5F7] tracking-wide">
+                      {lang === 'en' ? activeCall.titleEn : activeCall.titleId}
+                    </h3>
+                    <p className="text-xs font-medium text-[#C7D5DE]">
+                      {lang === 'en' ? activeCall.subtitleEn : activeCall.subtitleId}
+                    </p>
+                  </div>
+
+                  {/* Gelombang Audio & Subtitle Suara Saat Panggilan Diterima */}
+                  {isConnected ? (
+                    <div className="space-y-3 animate-in zoom-in-95 duration-200">
+                      {/* Equalizer Gelombang Suara */}
+                      <div className="flex items-center justify-center gap-1.5 h-7">
+                        {[0, 0.15, 0.3, 0.1, 0.25, 0.05, 0.2, 0.35, 0.12].map((delay, idx) => (
+                          <span
+                            key={idx}
+                            style={{ animationDelay: `${delay}s` }}
+                            className="w-1.5 bg-gradient-to-t from-[#42D6C5] to-[#B99BEB] rounded-full rafayel-eq-bar"
+                          ></span>
+                        ))}
+                      </div>
+
+                      {/* Kotak Teks Terjemahan Suara Rafayel */}
+                      <div className="bg-[#061322]/90 border border-[#42D6C5]/40 rounded-2xl p-3.5 text-left space-y-1.5 shadow-inner">
+                        <div className="flex items-center justify-between text-[9px] font-mono text-[#42D6C5] uppercase font-bold">
+                          <span>🎙️ Voice Transcript</span>
+                          <span>Linkon Line</span>
+                        </div>
+                        <p className="text-xs text-[#F3F5F7] italic leading-relaxed">
+                          {lang === 'en' ? activeCall.transcriptEn : activeCall.transcriptId}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-2">
+                      <p className="text-[11px] font-mono text-[#B99BEB] animate-pulse">
+                       {lang === 'en' ? "🌊 Incoming call from Mo's Atelier..." : "🌊 Panggilan suara masuk dari Mo's Atelier..."}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Tombol Kontrol Telepon (Angkat / Tutup / Ganti Pesan Suara) */}
+                  <div className="flex items-center justify-center gap-4 pt-2">
+                    {!isConnected ? (
+                      <React.Fragment>
+                        <button
+                          type="button"
+                          onClick={handleEndRafayelCall}
+                          className="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-xl shadow-[0_0_20px_rgba(244,63,94,0.5)] active:scale-90 transition"
+                          title={lang === 'en' ? 'Decline' : 'Tolak'}
+                        >
+                          📵
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleAcceptRafayelCall}
+                          className="px-6 h-14 rounded-full bg-gradient-to-r from-[#42D6C5] to-emerald-400 hover:brightness-110 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(66,214,197,0.65)] animate-bounce active:scale-95 transition"
+                        >
+                          <span className="text-lg">📞</span>
+                          <span>{lang === 'en' ? 'Answer Call' : 'Angkat Telepon'}</span>
+                        </button>
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextScen = (currentCallScenario + 1) % RAFAYEL_CALL_SCENARIOS.length;
+                            setCurrentCallScenario(nextScen);
+                            setRafayelCallSeconds(0);
+                            if (callVoiceAudioRef.current) {
+                              callVoiceAudioRef.current.pause();
+                            }
+                            const nextVoice = new Audio(RAFAYEL_CALL_SCENARIOS[nextScen].audioUrl);
+                            nextVoice.volume = 0.95;
+                            callVoiceAudioRef.current = nextVoice;
+                            nextVoice.onended = () => {
+                              if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.25;
+                            };
+                            nextVoice.play().catch(() => playNotificationChime());
+                          }}
+                          className="px-4 h-12 rounded-full bg-[#123C50] hover:bg-[#184E68] text-[#42D6C5] border border-[#42D6C5]/40 font-black text-[11px] flex items-center gap-1.5 active:scale-95 transition"
+                          title="Putar Pesan Suara Lainnya"
+                        >
+                          <span>⏭️</span>
+                          <span>{lang === 'en' ? 'Next Voice' : 'Suara Lain'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleEndRafayelCall}
+                          className="px-6 h-12 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(244,63,94,0.55)] active:scale-95 transition"
+                        >
+                          <span>📵</span>
+                          <span>{lang === 'en' ? 'End Call' : 'Tutup Telepon'}</span>
+                        </button>
+                      </React.Fragment>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* 📜 MODAL ARSIP SURAT & MEMORI AFFINITY RAFAYEL */}
           {affinityModalOpen && (
             <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
