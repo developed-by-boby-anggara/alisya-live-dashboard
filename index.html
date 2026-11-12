@@ -2532,43 +2532,56 @@ function App() {
 
       // State Affirmation
       const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * TRANSLATIONS.id.affirmations.length));
-  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA (UBAH FOTO DI SINI)
-const RAFAYEL_THEME_CONFIG = {
-  portraitUrl: "./img/rafael1.jpg", // Ganti path ini jika ingin memakai foto Rafayel lain
-  studioTitle: "Mo's Atelier • Lemurian Sanctuary",
-  subGreetingId: "A Little Piece of Lemuria • Bodyguard Alisya",
-  subGreetingEn: "A Little Piece of Lemuria • Bodyguard Alisya"
-};
-  // 🎲 State untuk mengacak stiker
-const [stickerIdx, setStickerIdx] = useState(() => Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length));
-const initialHeaderSticker = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
-const initialCoverSplash = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
-      const [sparkles, setSparkles] = useState([]);
-      const [wellnessOpen, setWellnessOpen] = useState(true);
- useEffect(() => {
-  const autoQuoteTimer = setInterval(() => {
-    // Acak teks afirmasi tiap 9 detik
-    setQuoteIdx(prev => {
-      const total = t.affirmations.length;
-      if (total <= 1) return 0;
-      let next;
-      do {
-        next = Math.floor(Math.random() * total);
-      } while (next === prev);
-      return next;
-    });
-    // Acak stiker gambar tiap 9 detik tanpa duplikat berurutan
-    setStickerIdx(prev => {
-      const total = RAFAYEL_ALL_STICKERS.length;
-      let next;
-      do {
-        next = Math.floor(Math.random() * total);
-      } while (next === prev);
-      return next;
-    });
-  }, 9000);
-  return () => clearInterval(autoQuoteTimer);
-}, [t.affirmations]);
+// 🎲 Pengacak Merata (Shuffle Deck): Memastikan SEMUA 27 stiker keluar bergantian sebelum diulang
+  const createShuffledIndices = (total) => {
+    const arr = Array.from({ length: total }, (_, i) => i);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length));
+  const [stickerIdx, setStickerIdx] = useState(() => stickerDeckRef.current.pop());
+
+  const pickNextRandomSticker = () => {
+    if (stickerDeckRef.current.length === 0) {
+      stickerDeckRef.current = createShuffledIndices(RAFAYEL_ALL_STICKERS.length);
+    }
+    setStickerIdx(stickerDeckRef.current.pop());
+  };
+
+  // 🎨 KONFIGURASI VISUAL RAFAYEL — A LITTLE PIECE OF LEMURIA
+  const RAFAYEL_THEME_CONFIG = {
+    portraitUrl: RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length],
+    studioTitle: "Mo's Atelier • Lemurian Sanctuary",
+    subGreetingId: "A Little Piece of Lemuria • Bodyguard Alisya",
+    subGreetingEn: "A Little Piece of Lemuria • Bodyguard Alisya"
+  };
+
+  const initialHeaderSticker = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
+  const initialCoverSplash = useMemo(() => RAFAYEL_ALL_STICKERS[Math.floor(Math.random() * RAFAYEL_ALL_STICKERS.length)], []);
+  const [sparkles, setSparkles] = useState([]);
+  const [wellnessOpen, setWellnessOpen] = useState(true);
+
+  useEffect(() => {
+    const autoQuoteTimer = setInterval(() => {
+      // Acak teks afirmasi tiap 9 detik
+      setQuoteIdx(prev => {
+        const total = t.affirmations.length;
+        if (total <= 1) return 0;
+        let next;
+        do {
+          next = Math.floor(Math.random() * total);
+        } while (next === prev);
+        return next;
+      });
+      // Acak stiker gambar secara merata dari seluruh 27 koleksi tiap 9 detik
+      pickNextRandomSticker();
+    }, 9000);
+    return () => clearInterval(autoQuoteTimer);
+  }, [t.affirmations]);
 
       const triggerCuteSparkles = () => {
       const emojis = ['🔱', '🔴', '🌊', '🍷', '💎', '✨', '🟣', '🐾', '🖤', '🎨'];
@@ -4700,8 +4713,9 @@ audio.play().catch(() => playNotificationChime());
          <div className="flex items-start gap-2 min-w-0 flex-1 w-full">
  <img 
     src={RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length]} 
+    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/chibi-rafayel.jpg"; }}
     alt="Rafayel Sticker" 
-    className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-xl sm:rounded-2xl shrink-0 cute-float drop-shadow-md border border-pink-200/40 select-none" 
+    className="w-12 h-12 sm:w-14 sm:h-14 aspect-square object-cover object-top rounded-2xl shrink-0 cute-float drop-shadow-md border border-[#42D6C5]/50 select-none bg-[#071525]" 
   />
             <div className="flex flex-col gap-1 min-w-0 flex-1 w-full">
               <span className="font-black text-pink-200 whitespace-normal break-words leading-snug">
@@ -5216,9 +5230,10 @@ audio.play().catch(() => playNotificationChime());
                   {currentDayWellness.diary && currentDayWellness.diary.trim() !== '' && (
                     <div className="bg-[#0B203B] border-l-4 border-teal-400 rounded-r-xl p-2.5 flex items-start gap-2.5 animate-in fade-in duration-300">
                       <img
-                        src="./img/chibi-rafayel.jpg"
+                        src={RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length]}
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/chibi-rafayel.jpg"; }}
                         alt="Rafayel"
-                        className="w-8 h-8 rounded-full object-cover border border-teal-300 shrink-0"
+                        className="w-9 h-9 aspect-square rounded-full object-cover object-top border border-teal-300 shrink-0"
                       />
                       <div className="space-y-0.5 text-[11px]">
                         <div className="font-black text-teal-300 flex items-center gap-1.5">
@@ -5357,7 +5372,7 @@ audio.play().catch(() => playNotificationChime());
            <div className="text-center space-y-4 animate-pulse">
              <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-teal-400 via-cyan-400 to-purple-600 p-0.5 shadow-[0_0_35px_rgba(45,212,191,0.6)]">
              <div className="w-full h-full bg-[#081526] rounded-3xl p-2 flex items-center justify-center overflow-hidden">
-  <img src={initialCoverSplash} alt="Rafayel Lemuria" className="w-full h-full object-cover rounded-2xl drop-shadow-[0_0_15px_rgba(45,212,191,0.7)]" />
+  <img src={initialCoverSplash} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }} alt="Rafayel Lemuria" className="w-full h-full aspect-square object-cover object-top rounded-2xl drop-shadow-[0_0_15px_rgba(45,212,191,0.7)]" />
 </div>
              </div>
              <div>
@@ -5443,10 +5458,10 @@ audio.play().catch(() => playNotificationChime());
            <div className="flex items-center gap-3 min-w-0">
              <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#42D6C5]/30 to-[#B99BEB]/30 p-0.5 flex items-center justify-center border border-[#42D6C5]/50 shadow-[0_0_15px_rgba(66,214,197,0.3)] cute-float overflow-hidden shrink-0">
                <img
-                 src={RAFAYEL_THEME_CONFIG.portraitUrl}
-                 onError={(e) => { e.currentTarget.src = initialHeaderSticker; }}
+                 src={RAFAYEL_ALL_STICKERS[stickerIdx % RAFAYEL_ALL_STICKERS.length]}
+                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "./img/rafael1.jpg"; }}
                  alt="Rafayel"
-                 className="w-full h-full object-cover rounded-[14px]"
+                 className="w-full h-full aspect-square object-cover object-top rounded-[14px]"
                />
              </div>
              <div className="min-w-0">
