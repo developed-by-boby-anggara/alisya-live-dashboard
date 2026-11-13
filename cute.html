@@ -28,10 +28,10 @@
   <!-- Chart.js & html2canvas (Deferred) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-  <!-- Firebase SDK (Deferred) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js" defer></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js"></script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -897,8 +897,20 @@
   
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
-  <div id="root"></div>
-
+  <div id="root">
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FFF5F7;color:#7B1113;font-family:sans-serif;text-align:center;padding:20px;">
+      <div style="font-size:32px;margin-bottom:10px;">🌸</div>
+      <div style="font-weight:800;font-size:14px;letter-spacing:1px;">MEMUAT JADWAL ALISYA...</div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('error', function(e) {
+      var root = document.getElementById('root');
+      if (root && root.innerText.indexOf('MEMUAT JADWAL') !== -1) {
+        root.innerHTML = '<div style="padding:24px;color:#9f1239;background:#fff1f2;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
+      }
+    });
+  </script>
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
@@ -1985,16 +1997,16 @@ function App() {
         }
       }, [selectedDate]);
 
-      // Firebase Realtime Listener
-      useEffect(() => {
-        if (!firebaseDb) return;
-        const refSch = firebaseDb.ref('alisya_schedules');
+      const refSch = firebaseDb.ref('alisya_schedules');
         refSch.on('value', snap => {
           const val = snap.val();
-         if (val && Array.isArray(val)) {
+          if (val && Array.isArray(val)) {
             setSchedules(val);
             try { localStorage.setItem('alisya_schedules_cache', JSON.stringify(val)); } catch (e) {}
+          } else {
+            refSch.set(INITIAL_SCHEDULES);
           }
+        });
 
         const refBrands = firebaseDb.ref('alisya_brands');
         refBrands.on('value', snap => {
