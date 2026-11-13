@@ -2049,7 +2049,6 @@ function App() {
 
       useEffect(() => {
         // 📲 Panggil fungsi push notification saat web dibuka
-        initFirebasePushNotification();
 
         const timer = setInterval(() => setNowTime(new Date()), 1000);
         return () => clearInterval(timer);
@@ -2181,9 +2180,10 @@ function App() {
     playTrack(prevIdx);
   };
 
-  // 🌟 Auto-play di PC & otomatis unlock di HP saat pertama kali menyentuh layar
+// 🌟 Musik baru dimuat setelah pengguna klik tombol masuk Lemuria
   useEffect(() => {
-    playTrack(currentTrackIdxRef.current);
+    return () => {};
+  }, []);
 
     const unlockAudio = () => {
       if (bgmAudioRef.current && bgmAudioRef.current.paused) {
