@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <!-- Pinch-to-Zoom 2 Jari Aktif (user-scalable=yes, maximum-scale=5.0) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <title>Alisya Work Schedule — Official Partner Portal 💼</title>
-  <meta name="theme-color" content="#06101E">
+  <title>Alisya Work Schedule — Executive Partner Suite 💼</title>
+  <meta name="theme-color" content="#121110">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <!-- React 18 Production (Tanpa Babel = Buka Instan Tanpa Jeda) -->
+  <!-- React 18 Production (Tanpa Babel = Buka Instan 0.1 Detik) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
 
@@ -30,29 +30,30 @@
 
   <style>
     :root {
-      --bg-abyss: #050D1A;
-      --bg-navy: #09172B;
-      --bg-card: #0D1F38;
-      --bg-card-inner: #122947;
-      --border-teal: rgba(45, 212, 191, 0.35);
-      --border-subtle: rgba(148, 163, 184, 0.2);
-      --teal-accent: #2DD4BF;
-      --cyan-accent: #00F2FE;
-      --emerald-accent: #10B981;
-      --text-white: #F8FAFC;
-      --text-silver: #CBD5E1;
-      --text-muted: #94A3B8;
+      /* 🏛️ TEMA EKSKLUSIF: EXECUTIVE OBSIDIAN & CHAMPAGNE GOLD */
+      --bg-obsidian: #121110;
+      --bg-charcoal: #1A1816;
+      --bg-espresso: #23201D;
+      --bg-elevated: #2C2824;
+      --gold-primary: #D4AF37;
+      --gold-bright: #F5D77F;
+      --gold-soft: rgba(212, 175, 55, 0.16);
+      --border-gold: rgba(212, 175, 55, 0.34);
+      --border-warm: rgba(255, 248, 235, 0.12);
+      --text-ivory: #FAF8F5;
+      --text-sand: #D6D1C7;
+      --text-taupe: #9E9689;
+      --emerald-live: #10B981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
-      background-color: var(--bg-abyss);
+      background-color: var(--bg-obsidian);
       background-image:
-        radial-gradient(circle at 12% 10%, rgba(45, 212, 191, 0.12), transparent 26rem),
-        radial-gradient(circle at 88% 18%, rgba(56, 189, 248, 0.10), transparent 28rem),
-        linear-gradient(180deg, #050D1A 0%, #09172B 55%, #050D1A 100%);
-      color: var(--text-white);
+        radial-gradient(circle at 15% 0%, rgba(212, 175, 55, 0.09), transparent 32rem),
+        radial-gradient(circle at 85% 15%, rgba(180, 130, 70, 0.07), transparent 32rem);
+      color: var(--text-ivory);
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-font-smoothing: antialiased;
       padding-bottom: 60px;
@@ -61,24 +62,24 @@
 
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #050D1A; }
-    ::-webkit-scrollbar-thumb { background: #1E3A5F; border-radius: 999px; }
+    ::-webkit-scrollbar-track { background: #121110; }
+    ::-webkit-scrollbar-thumb { background: #3D362E; border-radius: 999px; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     /* Header & Navigasi */
     .exec-header {
-      background: linear-gradient(110deg, #061224 0%, #0C223D 55%, #09192E 100%);
-      border-bottom: 1.5px solid var(--border-teal);
+      background: #171513;
+      border-bottom: 1.5px solid var(--border-gold);
       padding: 10px 14px;
       position: sticky;
       top: 0;
       z-index: 40;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75);
     }
     .exec-ticker {
-      background: linear-gradient(90deg, #040B16, #091B32, #040B16);
-      border-bottom: 1px solid rgba(45, 212, 191, 0.28);
+      background: #0D0C0B;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.24);
       padding: 7px 0;
       overflow: hidden;
       font-size: 11px;
@@ -90,14 +91,14 @@
     .ticker-track {
       display: flex;
       width: max-content;
-      gap: 24px;
+      gap: 26px;
       animation: tickerMove 36s linear infinite;
     }
     .ticker-track:hover { animation-play-state: paused; }
 
     .exec-nav {
-      background: rgba(6, 17, 33, 0.96);
-      border-bottom: 1.5px solid rgba(45, 212, 191, 0.25);
+      background: #161412;
+      border-bottom: 1.5px solid rgba(212, 175, 55, 0.22);
       padding: 8px 12px;
       position: sticky;
       top: 58px;
@@ -108,23 +109,23 @@
       overflow-x: auto;
     }
 
-    /* Kartu & Kontainer */
+    /* Kontainer & Kartu Solid */
     .wrap-pc { max-width: 1520px; margin: 0 auto; padding: 18px; }
     .wrap-hp { max-width: 540px; margin: 0 auto; padding: 10px; }
 
     .exec-card {
-      background: var(--bg-card);
-      border: 1.5px solid var(--border-teal);
+      background: var(--bg-charcoal);
+      border: 1.5px solid var(--border-gold);
       border-radius: 20px;
       padding: 14px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
     }
     .radar-card {
-      background: linear-gradient(135deg, #061529 0%, #0C2644 52%, #081B33 100%);
-      border: 1.5px solid rgba(45, 212, 191, 0.55);
+      background: linear-gradient(135deg, #1E1B18 0%, #27221D 52%, #191614 100%);
+      border: 1.5px solid rgba(212, 175, 55, 0.58);
       border-radius: 22px;
       padding: 16px;
-      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65), 0 0 20px rgba(45, 212, 191, 0.12);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(245, 215, 127, 0.15);
     }
 
     /* Tombol & Input */
@@ -146,11 +147,12 @@
       gap: 5px;
       white-space: nowrap;
     }
-    .btn-teal {
-      background: linear-gradient(135deg, #0D9488 0%, #0284C7 100%);
-      color: #FFFFFF;
-      border-color: #5EEAD4;
-      box-shadow: 0 0 12px rgba(45, 212, 191, 0.3);
+    .btn-gold {
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #121110;
+      border-color: #F5D77F;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.28);
     }
     .btn-emerald {
       background: #10B981;
@@ -159,42 +161,44 @@
       font-weight: 900;
     }
     .btn-dark {
-      background: #0F243F;
-      color: #E2E8F0;
-      border-color: rgba(45, 212, 191, 0.35);
+      background: var(--bg-espresso);
+      color: var(--text-ivory);
+      border-color: rgba(212, 175, 55, 0.32);
     }
-    .btn-dark:hover { background: #163357; }
+    .btn-dark:hover { background: var(--bg-elevated); }
+
     .nav-pill {
       padding: 7px 13px;
       border-radius: 12px;
       font-size: 11px;
       font-weight: 800;
-      color: var(--text-silver);
+      color: var(--text-sand);
       background: transparent;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .nav-pill.active {
-      background: linear-gradient(135deg, #0D9488 0%, #0284C7 100%);
-      color: #FFFFFF;
-      border: 1px solid #5EEAD4;
-      box-shadow: 0 0 12px rgba(45, 212, 191, 0.35);
+      background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+      color: #121110;
+      border: 1px solid #F5D77F;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.32);
     }
 
     input, select, textarea {
       font-family: inherit;
       font-size: 11px;
       font-weight: 700;
-      color: #FFFFFF;
-      background: #071426;
-      border: 1.5px solid rgba(45, 212, 191, 0.38);
+      color: var(--text-ivory);
+      background: #141210;
+      border: 1.5px solid rgba(212, 175, 55, 0.35);
       border-radius: 11px;
       padding: 7px 10px;
       outline: none;
     }
     input:focus, select:focus, textarea:focus {
-      border-color: var(--cyan-accent);
-      box-shadow: 0 0 10px rgba(45, 212, 191, 0.35);
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
     }
 
     /* Kalender 1 Baris Horizontal (Strip) */
@@ -210,9 +214,9 @@
       width: 48px;
       padding: 8px 4px;
       border-radius: 14px;
-      background: #071426;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--text-silver);
+      background: #141210;
+      border: 1px solid var(--border-warm);
+      color: var(--text-sand);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -220,32 +224,32 @@
       position: relative;
     }
     .cal-day-btn.is-today {
-      border: 1.5px solid var(--cyan-accent);
-      background: rgba(45, 212, 191, 0.15);
-      box-shadow: 0 0 10px rgba(45, 212, 191, 0.25);
+      border: 1.5px solid var(--gold-bright);
+      background: rgba(212, 175, 55, 0.16);
+      color: var(--gold-bright);
     }
     .cal-day-btn.is-selected {
-      background: linear-gradient(135deg, #0D9488 0%, #0369A1 100%);
-      border: 1.5px solid #5EEAD4;
-      color: #FFFFFF;
+      background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+      border: 1.5px solid #FFF3C4;
+      color: #121110;
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(45, 212, 191, 0.4);
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
     }
 
     /* ================================================================= */
-    /* 📊 MATRIKS SPREADSHEET HP & PC (PERSIS GAMBAR REFERENSI)          */
+    /* 📊 MATRIKS SPREADSHEET HP & PC (SOLID ESPRESSO & GOLD)            */
     /* ================================================================= */
     .matrix-shell {
-      background: #071324;
-      border: 1.5px solid rgba(45, 212, 191, 0.45);
+      background: #161412;
+      border: 1.5px solid rgba(212, 175, 55, 0.48);
       border-radius: 18px;
       overflow: hidden;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
     }
     .matrix-legend {
-      background: #091C34;
+      background: #1F1C19;
       padding: 8px 10px;
-      border-bottom: 1.5px solid rgba(45, 212, 191, 0.35);
+      border-bottom: 1.5px solid rgba(212, 175, 55, 0.32);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -260,9 +264,9 @@
       user-select: none;
     }
     .matrix-table-hp th {
-      background: #081B34;
-      color: #5EEAD4;
-      border: 1px solid rgba(45, 212, 191, 0.35);
+      background: #221E1A;
+      color: var(--gold-bright);
+      border: 1px solid rgba(212, 175, 55, 0.32);
       padding: 4px 1px;
       font-size: 6px;
       font-weight: 900;
@@ -270,49 +274,44 @@
       line-height: 1.15;
     }
     .matrix-table-hp td {
-      border: 1px solid rgba(45, 212, 191, 0.22);
+      border: 1px solid rgba(255, 248, 235, 0.14);
       height: 22px;
       padding: 1.5px;
       vertical-align: middle;
-      background: #0A1B32;
+      background: #1A1816;
     }
     .matrix-table-hp tr:nth-child(even) td {
-      background: #08162A;
+      background: #151311;
     }
     .matrix-table-hp td.col-date-hp {
-      background: #091B33 !important;
-      border-right: 1.5px solid #2DD4BF;
+      background: #1F1C18 !important;
+      border-right: 1.5px solid var(--gold-primary);
       padding: 2px 3px;
       white-space: nowrap;
       overflow: hidden;
     }
     .matrix-table-hp td.col-status-hp {
-      background: #08172C !important;
+      background: #1B1815 !important;
       padding: 1px 2px;
       text-align: center;
       overflow: hidden;
     }
 
-    /* Highlight Baris Hari Ini (Aurora Glow) */
-    @keyframes todayGlow {
-      0%, 100% { box-shadow: inset 0 0 8px rgba(45, 212, 191, 0.45); }
-      50% { box-shadow: inset 0 0 14px rgba(0, 242, 254, 0.65); }
-    }
+    /* Highlight Baris Hari Ini (Gold Shimmer) */
     .row-today-glow td {
-      border-top: 1.5px solid #2DD4BF !important;
-      border-bottom: 1.5px solid #00F2FE !important;
-      animation: todayGlow 3s infinite;
+      border-top: 1.5px solid var(--gold-bright) !important;
+      border-bottom: 1.5px solid var(--gold-primary) !important;
+      background: rgba(212, 175, 55, 0.12) !important;
     }
     .row-today-glow td.col-date-hp {
-      background: #0A2742 !important;
-      border-left: 2.5px solid #00F2FE !important;
+      background: #2E2618 !important;
+      border-left: 2.5px solid var(--gold-bright) !important;
     }
 
     /* Badge Status di Dalam Tabel HP */
     .status-pill-hp {
       display: block;
       width: 100%;
-       truncate: true;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -323,11 +322,11 @@
       line-height: 1;
       letter-spacing: -0.02em;
     }
-    .st-full { background: linear-gradient(135deg, #7C3AED, #4F46E5); color: #FFFFFF; border: 1px solid #C084FC; }
+    .st-full { background: linear-gradient(135deg, #9333EA, #6D28D9); color: #FFFFFF; border: 1px solid #D8B4FE; }
     .st-med { background: #FEF3C7; color: #78350F; border: 1px solid #F59E0B; }
     .st-low { background: #064E3B; color: #6EE7B7; border: 1px solid #10B981; }
-    .st-free { background: #0F2942; color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
-    .st-off { background: rgba(148, 163, 184, 0.2); color: #E2E8F0; border: 1px solid rgba(148, 163, 184, 0.45); }
+    .st-free { background: #26221C; color: #F5D77F; border: 1px solid rgba(212, 175, 55, 0.45); }
+    .st-off { background: rgba(148, 163, 184, 0.18); color: #E2E8F0; border: 1px solid rgba(148, 163, 184, 0.4); }
 
     /* Tabel Matriks PC */
     .matrix-table-pc {
@@ -336,9 +335,9 @@
       font-size: 11px;
     }
     .matrix-table-pc th {
-      background: #081B34;
-      color: #5EEAD4;
-      border: 1px solid rgba(45, 212, 191, 0.35);
+      background: #221E1A;
+      color: var(--gold-bright);
+      border: 1px solid rgba(212, 175, 55, 0.35);
       padding: 10px 8px;
       position: sticky;
       top: 0;
@@ -346,18 +345,18 @@
       font-weight: 900;
     }
     .matrix-table-pc td {
-      border: 1px solid rgba(45, 212, 191, 0.22);
+      border: 1px solid rgba(255, 248, 235, 0.14);
       padding: 5px;
       vertical-align: top;
       height: 52px;
-      background: #0A1B32;
+      background: #1A1816;
     }
     .matrix-table-pc td.sticky-col-pc {
       position: sticky;
       left: 0;
       z-index: 15;
-      background: #091B33;
-      border-right: 2px solid #2DD4BF;
+      background: #1F1C18;
+      border-right: 2px solid var(--gold-primary);
     }
 
     /* Utilitas Flex & Grid */
@@ -372,17 +371,6 @@
     .gap-2 { gap: 8px; }
     .gap-3 { gap: 12px; }
     .gap-4 { gap: 16px; }
-
-    .agenda-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    @media (min-width: 1024px) {
-      .agenda-layout.pc {
-        grid-template-columns: 430px 1fr;
-      }
-    }
 
     @keyframes pingDot {
       0% { transform: scale(1); opacity: 0.9; }
@@ -399,7 +387,7 @@
       position: absolute;
       inset: 0;
       border-radius: 999px;
-      background: #00F2FE;
+      background: #F5D77F;
       animation: pingDot 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
     }
     .radar-dot-core {
@@ -407,7 +395,7 @@
       width: 8px;
       height: 8px;
       border-radius: 999px;
-      background: #2DD4BF;
+      background: #10B981;
     }
 
     /* Modal */
@@ -415,32 +403,32 @@
       position: fixed;
       inset: 0;
       z-index: 60;
-      background: rgba(3, 8, 18, 0.8);
+      background: rgba(10, 9, 8, 0.82);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 14px;
     }
     .modal-box {
-      background: #081528;
-      border: 1.5px solid #2DD4BF;
+      background: #1A1816;
+      border: 1.5px solid var(--gold-primary);
       border-radius: 22px;
       width: 100%;
       max-width: 440px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 18px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-      color: #FFFFFF;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.92);
+      color: var(--text-ivory);
     }
   </style>
 </head>
 <body>
   <div id="root">
-    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#050D1A;color:#2DD4BF;font-family:sans-serif;text-align:center;padding:20px;">
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#121110;color:#F5D77F;font-family:sans-serif;text-align:center;padding:20px;">
       <div style="font-size:32px;margin-bottom:8px;">💼</div>
-      <div style="font-weight:800;font-size:14px;color:#F8FAFC;letter-spacing:0.05em;">MEMUAT WORK SCHEDULE ALISYA...</div>
-      <div style="font-size:11px;color:#94A3B8;margin-top:5px;">Sinkronisasi Jadwal Real-Time</div>
+      <div style="font-weight:800;font-size:14px;color:#FAF8F5;letter-spacing:0.06em;">MEMUAT WORK SCHEDULE ALISYA...</div>
+      <div style="font-size:11px;color:#9E9689;margin-top:5px;">Executive Partner Suite • Real-Time Sync</div>
     </div>
   </div>
 
@@ -448,7 +436,7 @@
     window.addEventListener('error', function(e) {
       var root = document.getElementById('root');
       if (root && root.innerText.indexOf('MEMUAT WORK SCHEDULE') !== -1) {
-        root.innerHTML = '<div style="padding:24px;color:#FDA4AF;background:#050D1A;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
+        root.innerHTML = '<div style="padding:24px;color:#FDA4AF;background:#121110;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
       }
     });
 
@@ -547,9 +535,9 @@
     const TRANSLATIONS = {
       id: {
         locale: 'id-ID',
-        portalSub: "Official Live Broadcast & Content Production Schedule (Real-Time)",
+        portalSub: "Executive Broadcast & Content Schedule • Real-Time Sync",
         modeHP: "HP", modePC: "PC", lockBtn: "Kunci", loginBtn: "Login",
-        radarTitle: "RADAR JADWAL ALISYA (00:00 - 23:59)",
+        radarTitle: "RADAR JADWAL OPERASIONAL ALISYA (00:00 - 23:59)",
         availableTitle: "Available Schedule (Slot Jam Kosong)",
         allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
         slotsReady: "Slot Siap Pakai",
@@ -569,7 +557,7 @@
         tabColors: "Warna Brand",
         btnExportCSV: "CSV", btnAddSch: "+ Tambah Jadwal",
         liveNowActive: "SEDANG BERLANGSUNG:",
-        liveNowIdle: "✨ Saat ini tidak ada sesi yang sedang berlangsung",
+        liveNowIdle: "✨ Saat ini tidak ada sesi yang sedang berlangsung (Standby)",
         endsAt: "Habis Pukul", timeLeft: "Sisa Waktu:",
         sessionProgress: "Progres Sesi Berjalan",
         nextUp: "Sesi Berikutnya:", progressToday: "Progres Total Agenda Hari Ini",
@@ -589,9 +577,9 @@
       },
       en: {
         locale: 'en-US',
-        portalSub: "Official Live Broadcast & Content Production Schedule (Real-Time)",
+        portalSub: "Executive Broadcast & Content Schedule • Real-Time Sync",
         modeHP: "Mobile", modePC: "PC", lockBtn: "Lock", loginBtn: "Login",
-        radarTitle: "ALISYA'S SCHEDULE RADAR (00:00 - 23:59)",
+        radarTitle: "ALISYA'S OPERATIONAL SCHEDULE RADAR (00:00 - 23:59)",
         availableTitle: "Available Schedule (Empty Time Slots)",
         allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
         slotsReady: "Slots Available",
@@ -611,7 +599,7 @@
         tabColors: "Brand Colors",
         btnExportCSV: "CSV", btnAddSch: "+ Add Schedule",
         liveNowActive: "LIVE NOW:",
-        liveNowIdle: "✨ No active session at this moment",
+        liveNowIdle: "✨ No active session at this moment (Standby)",
         endsAt: "Ends At", timeLeft: "Countdown:",
         sessionProgress: "Current Session Progress",
         nextUp: "Next Session:", progressToday: "Today's Total Agenda Progress",
@@ -668,7 +656,6 @@
       const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
       const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
 
-      // Otomatis pindah hari saat lewat jam 00:00 tengah malam
       useEffect(() => {
         if (prevRealTodayRef.current !== realTodayStr) {
           prevRealTodayRef.current = realTodayStr;
@@ -683,7 +670,6 @@
         }
       }, [selectedDate]);
 
-      // Auto-scroll strip kalender 1 baris ke tanggal yang dipilih / hari ini
       useEffect(() => {
         const timer = setTimeout(() => {
           const el = document.getElementById(`work-cal-day-${selectedDate}`);
@@ -901,7 +887,6 @@
         });
       }, [selectedDaySchedules]);
 
-      // Status Kepadatan Hari (Persis Gambar Referensi: FULL SCH, MEDIUM, LOW, DAY OFF, FREE SLOT)
       const getDayScheduleDensity = (dateStr, isCompact = false) => {
         const dayShifts = schedules.filter(s => s.date === dateStr);
         if (dayShifts.length === 0) return { text: t.statusFree, cls: 'st-free' };
@@ -1001,7 +986,7 @@
         if (!el || typeof html2canvas === 'undefined') { notify('⚠️ Sedang memuat modul gambar...'); return; }
         notify('📸 Memproses gambar tabel...');
         try {
-          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#050D1A' });
+          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#121110' });
           const link = document.createElement('a');
           link.download = `Alisya_Schedule_${filenameLabel}.png`;
           link.href = canvas.toDataURL('image/png');
@@ -1092,7 +1077,7 @@
       // Banner Live Now & Countdown Real-Time
       const renderLiveNowBanner = () => h('div', {
         style: {
-          background: 'rgba(0, 0, 0, 0.35)', border: '1px solid rgba(45, 212, 191, 0.25)',
+          background: '#141210', border: '1px solid rgba(212, 175, 55, 0.32)',
           borderRadius: '16px', padding: '12px', marginTop: '12px'
         }
       },
@@ -1103,40 +1088,40 @@
                   h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
                   `${t.liveNowActive} ${liveTracker.activeItem.title}`
                 ),
-                h('span', { className: 'font-mono', style: { background: 'rgba(255,255,255,0.12)', padding: '3px 8px', borderRadius: '8px', color: '#E2E8F0', fontWeight: 700 } },
+                h('span', { className: 'font-mono', style: { background: '#23201D', padding: '3px 8px', borderRadius: '8px', color: '#FAF8F5', fontWeight: 700, border: '1px solid rgba(212,175,55,0.25)' } },
                   `⏰ ${liveTracker.activeItem.start_time} - ${liveTracker.activeItem.end_time} (${t.endsAt} ${liveTracker.activeItem.end_time})`
                 ),
-                h('span', { className: 'font-mono', style: { background: '#10B981', color: '#042F2E', fontWeight: 900, padding: '3px 9px', borderRadius: '8px' } },
+                h('span', { className: 'font-mono', style: { background: '#D4AF37', color: '#121110', fontWeight: 900, padding: '3px 9px', borderRadius: '8px' } },
                   `⏳ ${t.timeLeft} ${liveTracker.activeItem.remainingHMS}`
                 )
               )
-            : h('span', { style: { color: '#CBD5E1', fontWeight: 700 } }, t.liveNowIdle),
+            : h('span', { style: { color: '#D6D1C7', fontWeight: 700 } }, t.liveNowIdle),
           liveTracker.nextItem && h('div', {
             className: 'flex items-center gap-1-5',
-            style: { background: 'rgba(245, 158, 11, 0.18)', border: '1px solid rgba(251, 191, 36, 0.35)', padding: '4px 9px', borderRadius: '10px', color: '#FDE68A', fontWeight: 700 }
+            style: { background: 'rgba(212, 175, 55, 0.14)', border: '1px solid rgba(245, 215, 127, 0.4)', padding: '4px 9px', borderRadius: '10px', color: '#F5D77F', fontWeight: 700 }
           },
             h('span', null, `⏭️ ${t.nextUp}`),
             h('span', { style: { color: '#FFFFFF', fontWeight: 900 } }, liveTracker.nextItem.title),
             h('span', { className: 'font-mono' }, `(${liveTracker.nextItem.start_time})`),
-            h('span', { className: 'font-mono', style: { background: 'rgba(0,0,0,0.45)', padding: '2px 6px', borderRadius: '6px', fontWeight: 900 } }, `-${liveTracker.nextItem.startsInHMS}`)
+            h('span', { className: 'font-mono', style: { background: 'rgba(0,0,0,0.55)', padding: '2px 6px', borderRadius: '6px', fontWeight: 900 } }, `-${liveTracker.nextItem.startsInHMS}`)
           )
         ),
         liveTracker.activeItem && h('div', { style: { marginTop: '8px' } },
-          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#6EE7B7', fontWeight: 700, marginBottom: '4px' } },
+          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#F5D77F', fontWeight: 700, marginBottom: '4px' } },
             h('span', null, `⚡ ${t.sessionProgress}: ${liveTracker.activeItem.title}`),
             h('span', { className: 'font-mono' }, `${liveTracker.activeItem.sessionPct}%`)
           ),
-          h('div', { style: { width: '100%', height: '6px', background: 'rgba(0,0,0,0.45)', borderRadius: '999px', overflow: 'hidden' } },
-            h('div', { style: { width: `${liveTracker.activeItem.sessionPct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #00F2FE)' } })
+          h('div', { style: { width: '100%', height: '6px', background: '#26221E', borderRadius: '999px', overflow: 'hidden' } },
+            h('div', { style: { width: `${liveTracker.activeItem.sessionPct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #D4AF37)' } })
           )
         ),
         h('div', { style: { marginTop: '8px' } },
-          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#CBD5E1', fontWeight: 700, marginBottom: '4px' } },
+          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#D6D1C7', fontWeight: 700, marginBottom: '4px' } },
             h('span', null, `📅 ${t.progressToday} (${realTodayStr})`),
-            h('span', { className: 'font-mono', style: { color: '#5EEAD4' } }, `${liveTracker.progressPct}% ${t.completed}`)
+            h('span', { className: 'font-mono', style: { color: '#F5D77F' } }, `${liveTracker.progressPct}% ${t.completed}`)
           ),
-          h('div', { style: { width: '100%', height: '7px', background: 'rgba(0,0,0,0.45)', borderRadius: '999px', overflow: 'hidden' } },
-            h('div', { style: { width: `${liveTracker.progressPct}%`, height: '100%', background: 'linear-gradient(90deg, #0D9488, #38BDF8, #8B5CF6)' } })
+          h('div', { style: { width: '100%', height: '7px', background: '#26221E', borderRadius: '999px', overflow: 'hidden' } },
+            h('div', { style: { width: `${liveTracker.progressPct}%`, height: '100%', background: 'linear-gradient(90deg, #D4AF37, #F5D77F, #10B981)' } })
           )
         )
       );
@@ -1155,9 +1140,9 @@
             className: 'btn',
             style: {
               padding: '4px 9px', fontSize: '10px',
-              background: cl[st.key] ? '#10B981' : '#0E223D',
-              color: cl[st.key] ? '#042F2E' : '#CBD5E1',
-              borderColor: cl[st.key] ? '#6EE7B7' : 'rgba(148,163,184,0.3)'
+              background: cl[st.key] ? '#D4AF37' : '#23201D',
+              color: cl[st.key] ? '#121110' : '#D6D1C7',
+              borderColor: cl[st.key] ? '#F5D77F' : 'rgba(212,175,55,0.3)'
             }
           }, `${cl[st.key] ? '✅' : '⬜'} ${st.label}`))
         );
@@ -1240,11 +1225,11 @@
               labels: ['LIVE', 'Konten', 'Rest', 'Me Time', 'OFF', 'Meeting'],
               datasets: [{
                 data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
-                backgroundColor: ['#2DD4BF', '#A855F7', '#3B82F6', '#F472B6', '#F43F5E', '#38BDF8'],
-                borderWidth: 2, borderColor: '#0D1F38'
+                backgroundColor: ['#D4AF37', '#A855F7', '#3B82F6', '#F472B6', '#F43F5E', '#10B981'],
+                borderWidth: 2, borderColor: '#1A1816'
               }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#E2E8F0' } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#FAF8F5' } } } }
           });
         }
         if (barCanvas.current) {
@@ -1253,15 +1238,15 @@
             type: 'bar',
             data: {
               labels: stats.perBrand.map(b => b.name),
-              datasets: [{ label: 'Total Shift / Sesi', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#2DD4BF', borderRadius: 6 }]
+              datasets: [{ label: 'Total Shift / Sesi', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#D4AF37', borderRadius: 6 }]
             },
             options: {
               responsive: true, maintainAspectRatio: false,
               scales: {
-                x: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(148,163,184,0.15)' } },
-                y: { beginAtZero: true, ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(148,163,184,0.15)' } }
+                x: { ticks: { color: '#D6D1C7' }, grid: { color: 'rgba(255,248,235,0.08)' } },
+                y: { beginAtZero: true, ticks: { color: '#D6D1C7' }, grid: { color: 'rgba(255,248,235,0.08)' } }
               },
-              plugins: { legend: { labels: { color: '#E2E8F0' } } }
+              plugins: { legend: { labels: { color: '#FAF8F5' } } }
             }
           });
         }
@@ -1354,8 +1339,8 @@
         toast && h('div', {
           style: {
             position: 'fixed', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 80,
-            background: '#0D9488', color: '#FFFFFF', padding: '10px 20px', borderRadius: '999px',
-            fontSize: '12px', fontWeight: 900, border: '1.5px solid #5EEAD4', boxShadow: '0 10px 25px rgba(0,0,0,0.6)'
+            background: '#D4AF37', color: '#121110', padding: '10px 20px', borderRadius: '999px',
+            fontSize: '12px', fontWeight: 900, border: '1.5px solid #FFF3C4', boxShadow: '0 10px 25px rgba(0,0,0,0.75)'
           }
         }, `💼 ${toast}`),
 
@@ -1366,28 +1351,28 @@
               h('div', {
                 style: {
                   width: '40px', height: '40px', borderRadius: '12px',
-                  background: 'linear-gradient(135deg, rgba(45,212,191,0.2), rgba(2,132,199,0.25))',
-                  border: '1px solid #2DD4BF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'
+                  background: 'linear-gradient(135deg, rgba(212,175,55,0.22), rgba(184,134,11,0.28))',
+                  border: '1px solid #D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'
                 }
               }, '💼'),
               h('div', null,
                 h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
-                  h('h1', { style: { fontSize: '15px', fontWeight: 900, color: '#FFFFFF' } }, 'Alisya Work Schedule'),
+                  h('h1', { style: { fontSize: '15px', fontWeight: 900, color: '#FAF8F5' } }, 'Alisya Work Schedule'),
                   h('button', {
                     className: 'btn btn-dark',
-                    style: { padding: '3px 8px', fontSize: '10px', color: '#5EEAD4' },
+                    style: { padding: '3px 8px', fontSize: '10px', color: '#F5D77F' },
                     onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1)),
                     title: 'Geser ke tanggal berikutnya'
                   }, '💼 ❯'),
                   h('span', {
                     className: 'font-mono',
-                    style: { background: 'rgba(45,212,191,0.15)', color: '#5EEAD4', border: '1px solid rgba(45,212,191,0.4)', padding: '2px 8px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
-                  }, 'WORK MODE'),
+                    style: { background: 'rgba(212,175,55,0.16)', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.45)', padding: '2px 8px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
+                  }, 'EXECUTIVE SUITE'),
                   isAdmin
-                    ? h('span', { style: { background: '#FDE047', color: '#0F172A', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 900 } }, '👑 ADMIN')
-                    : h('span', { style: { background: 'rgba(255,255,255,0.1)', color: '#CBD5E1', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 700 } }, '👀 PARTNER')
+                    ? h('span', { style: { background: '#F5D77F', color: '#121110', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 900 } }, '👑 ADMIN')
+                    : h('span', { style: { background: '#23201D', color: '#D6D1C7', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 700, border: '1px solid rgba(212,175,55,0.25)' } }, '👀 PARTNER')
                 ),
-                h('p', { style: { fontSize: '10px', color: '#94A3B8', marginTop: '2px' } }, t.portalSub)
+                h('p', { style: { fontSize: '10px', color: '#9E9689', marginTop: '2px' } }, t.portalSub)
               )
             ),
 
@@ -1395,7 +1380,7 @@
             h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
               h('span', {
                 className: 'font-mono flex items-center gap-1-5',
-                style: { background: 'rgba(0,0,0,0.45)', color: '#34D399', border: '1px solid rgba(16,185,129,0.35)', padding: '5px 10px', borderRadius: '11px', fontSize: '11px', fontWeight: 800 }
+                style: { background: '#121110', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.4)', padding: '5px 10px', borderRadius: '11px', fontSize: '11px', fontWeight: 800 }
               },
                 h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
                 `${liveClockString}`
@@ -1409,16 +1394,16 @@
                 onClick: () => { window.location.href = './index.html'; },
                 title: 'Kembali ke Lemurian Sanctuary'
               }, '🌊 Lemuria'),
-              h('div', { className: 'flex items-center', style: { background: 'rgba(0,0,0,0.35)', padding: '2px', borderRadius: '11px', border: '1px solid rgba(255,255,255,0.15)' } },
+              h('div', { className: 'flex items-center', style: { background: '#121110', padding: '2px', borderRadius: '11px', border: '1px solid rgba(212,175,55,0.3)' } },
                 h('button', {
                   onClick: () => setDisplayMode('mobile'),
                   className: 'btn',
-                  style: { padding: '4px 8px', background: displayMode === 'mobile' ? '#0D9488' : 'transparent', color: '#FFF' }
+                  style: { padding: '4px 8px', background: displayMode === 'mobile' ? '#D4AF37' : 'transparent', color: displayMode === 'mobile' ? '#121110' : '#D6D1C7' }
                 }, '📱'),
                 h('button', {
                   onClick: () => setDisplayMode('pc'),
                   className: 'btn',
-                  style: { padding: '4px 8px', background: displayMode === 'pc' ? '#0D9488' : 'transparent', color: '#FFF' }
+                  style: { padding: '4px 8px', background: displayMode === 'pc' ? '#D4AF37' : 'transparent', color: displayMode === 'pc' ? '#121110' : '#D6D1C7' }
                 }, '💻')
               ),
               h('div', { className: 'flex items-center gap-1' },
@@ -1433,7 +1418,7 @@
               ),
               isAdmin
                 ? h('button', { className: 'btn btn-dark', onClick: () => { setIsAdmin(false); notify('🔒 Locked'); } }, '🔒')
-                : h('button', { className: 'btn btn-teal', onClick: () => setPinInputModal(true) }, `🔑 ${t.loginBtn}`)
+                : h('button', { className: 'btn btn-gold', onClick: () => setPinInputModal(true) }, `🔑 ${t.loginBtn}`)
             )
           )
         ),
@@ -1442,10 +1427,10 @@
         h('div', { className: 'exec-ticker' },
           h('div', { className: 'ticker-track' },
             [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center gap-4' },
-              h('span', { style: { fontWeight: 900, color: '#5EEAD4' } }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
+              h('span', { style: { fontWeight: 900, color: '#F5D77F' } }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
               h('span', { style: { color: '#34D399', fontWeight: 800 } }, `${broadcastMetrics.badge} (${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan)`),
-              h('span', { style: { color: '#FDE68A', fontWeight: 700 } }, `⏱️ Jam Terbang: ${broadcastMetrics.totalHours}+ Jam Live Aktif`),
-              h('span', { style: { color: '#CBD5E1' } }, `📌 Fokus: ${stickyNote}`)
+              h('span', { style: { color: '#FAF8F5', fontWeight: 700 } }, `⏱️ Jam Terbang: ${broadcastMetrics.totalHours}+ Jam Live Aktif`),
+              h('span', { style: { color: '#D6D1C7' } }, `📌 Fokus: ${stickyNote}`)
             ))
           )
         ),
@@ -1478,7 +1463,7 @@
               h('div', { className: 'flex flex-wrap items-center justify-between gap-2' },
                 h('div', { className: 'flex items-center gap-1-5' },
                   h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
-                  h('span', { style: { fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', color: '#5EEAD4' } }, t.radarTitle)
+                  h('span', { style: { fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', color: '#F5D77F' } }, t.radarTitle)
                 ),
                 h('div', { className: 'flex items-center gap-1-5' },
                   h('button', { className: 'btn btn-dark', onClick: () => exportElementAsPNG('work-agenda-capture', selectedDate) }, `📸 ${t.btnSavePNG}`),
@@ -1487,25 +1472,25 @@
               ),
 
               h('div', { className: 'flex items-center justify-between gap-2', style: { marginTop: '10px' } },
-                h('h2', { style: { fontSize: displayMode === 'mobile' ? '17px' : '22px', fontWeight: 900, color: '#FFFFFF' } }, `${getHariNama(selectedDate)}, ${selectedDate}`),
+                h('h2', { style: { fontSize: displayMode === 'mobile' ? '17px' : '22px', fontWeight: 900, color: '#FAF8F5' } }, `${getHariNama(selectedDate)}, ${selectedDate}`),
                 h('span', { className: `status-pill-hp ${dayDensity.cls}`, style: { width: 'auto', fontSize: '10px', padding: '4px 10px', borderRadius: '999px' } }, dayDensity.text)
               ),
-              h('p', { style: { fontSize: '11px', color: '#CBD5E1', marginTop: '4px' } },
+              h('p', { style: { fontSize: '11px', color: '#D6D1C7', marginTop: '4px' } },
                 `${selectedDaySchedules.length} ${t.scheduledSessions} • ${selectedDaySchedules.filter(s => s.status !== 'Tidur').length} ${t.productiveActs}`
               ),
               shortBreakWarnings[selectedDate] && h('div', { style: { marginTop: '6px', fontSize: '10px', background: 'rgba(245,158,11,0.2)', color: '#FDE68A', padding: '4px 8px', borderRadius: '8px', fontWeight: 700 } }, t.shortBreakWarning),
 
               renderLiveNowBanner(),
 
-              h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.12)' } },
+              h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(212,175,55,0.22)' } },
                 h('div', { className: 'flex items-center gap-1-5' },
-                  h('span', { style: { fontSize: '10px', color: '#94A3B8', fontWeight: 700 } }, t.jump),
+                  h('span', { style: { fontSize: '10px', color: '#9E9689', fontWeight: 700 } }, t.jump),
                   h('button', { className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px' }, onClick: () => jumpToOffset(0) }, t.today),
                   h('button', { className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px' }, onClick: () => jumpToOffset(1) }, t.tomorrow),
                   h('button', { className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px' }, onClick: () => jumpToOffset(2) }, t.dayAfter)
                 ),
                 selectedDaySchedules.length > 0 && isAdmin && h('button', {
-                  className: 'btn btn-teal', style: { padding: '4px 10px', fontSize: '10px' },
+                  className: 'btn btn-gold', style: { padding: '4px 10px', fontSize: '10px' },
                   onClick: () => { setCloneTargetDate(addDaysToDateStr(selectedDate, 1)); setCloneModalOpen(true); }
                 }, t.btnCloneDay)
               )
@@ -1514,14 +1499,14 @@
             // 2. KALENDER TANGGAL 1 BARIS HORIZONTAL (BISA DI-SWIPE & NEXT ❯)
             h('div', { className: 'exec-card', style: { padding: '12px' } },
               h('div', { className: 'flex items-center justify-between', style: { marginBottom: '8px' } },
-                h('span', { style: { fontSize: '11px', fontWeight: 900, color: '#5EEAD4', textTransform: 'uppercase' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
+                h('span', { style: { fontSize: '11px', fontWeight: 900, color: '#F5D77F', textTransform: 'uppercase' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
                 h('div', { className: 'flex items-center gap-1' },
                   h('button', {
-                    className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px', color: '#5EEAD4' },
+                    className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px', color: '#F5D77F' },
                     onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, -1))
                   }, '❮ Prev'),
                   h('button', {
-                    className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px', color: '#5EEAD4' },
+                    className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px', color: '#F5D77F' },
                     onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1))
                   }, 'Next ❯')
                 )
@@ -1547,7 +1532,7 @@
                     h('div', { className: 'flex gap-1', style: { marginTop: '4px', height: '4px' } },
                       dayShifts.slice(0, 3).map((s, idx) => h('span', {
                         key: idx,
-                        style: { width: '4px', height: '4px', borderRadius: '999px', background: isSelected ? '#FFFFFF' : s.color }
+                        style: { width: '4px', height: '4px', borderRadius: '999px', background: isSelected ? '#121110' : s.color }
                       }))
                     )
                   );
@@ -1556,10 +1541,10 @@
             ),
 
             // 3. AVAILABLE SCHEDULE (SLOT JAM KOSONG)
-            h('div', { className: 'exec-card', style: { background: '#06182C', borderColor: 'rgba(45,212,191,0.5)' } },
+            h('div', { className: 'exec-card', style: { background: '#171E19', borderColor: 'rgba(16,185,129,0.45)' } },
               h('div', { className: 'flex items-center justify-between', style: { marginBottom: '8px' } },
-                h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#5EEAD4' } }, `🟢 ${t.availableTitle}`),
-                h('span', { style: { fontSize: '10px', fontWeight: 800, background: 'rgba(45,212,191,0.15)', color: '#5EEAD4', padding: '2px 8px', borderRadius: '999px' } }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
+                h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#6EE7B7' } }, `🟢 ${t.availableTitle}`),
+                h('span', { style: { fontSize: '10px', fontWeight: 800, background: 'rgba(16,185,129,0.18)', color: '#6EE7B7', padding: '2px 8px', borderRadius: '999px' } }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
               ),
               availableSlotsForSelectedDate.length === 0
                 ? h('div', { style: { fontSize: '11px', color: '#FDA4AF', fontWeight: 700, padding: '4px 0' } }, t.allSlotsFilled)
@@ -1568,18 +1553,18 @@
                       key: slot.label,
                       onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
                       className: 'btn btn-dark font-mono',
-                      style: { flexShrink: 0, color: '#5EEAD4', borderColor: 'rgba(45,212,191,0.45)' }
+                      style: { flexShrink: 0, color: '#6EE7B7', borderColor: 'rgba(16,185,129,0.45)', background: '#111814' }
                     }, `+ ${slot.start}-${slot.end}`))
                   )
             ),
 
             // 4. DAFTAR SESI JADWAL HARIAN
-            h('div', { className: 'flex-col gap-2-5', style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               selectedDaySchedules.length === 0
                 ? h('div', { className: 'exec-card', style: { textAlign: 'center', padding: '36px 16px' } },
                     h('div', { style: { fontSize: '34px', marginBottom: '6px' } }, '💼'),
-                    h('div', { style: { fontSize: '14px', fontWeight: 900, color: '#FFFFFF' } }, t.noSchedule),
-                    h('p', { style: { fontSize: '11px', color: '#94A3B8', marginTop: '4px' } }, t.noScheduleSub)
+                    h('div', { style: { fontSize: '14px', fontWeight: 900, color: '#FAF8F5' } }, t.noSchedule),
+                    h('p', { style: { fontSize: '11px', color: '#9E9689', marginTop: '4px' } }, t.noScheduleSub)
                   )
                 : selectedDaySchedules.map(item => {
                     const brand = brands.find(b => b.id === item.brand_id);
@@ -1592,8 +1577,8 @@
                       className: 'exec-card flex items-start justify-between gap-3',
                       style: {
                         position: 'relative', overflow: 'hidden', paddingLeft: '20px',
-                        borderColor: isCurrentlyLive ? '#00F2FE' : 'rgba(45,212,191,0.35)',
-                        boxShadow: isCurrentlyLive ? '0 0 18px rgba(0,242,254,0.45)' : undefined,
+                        borderColor: isCurrentlyLive ? '#F5D77F' : 'rgba(212,175,55,0.34)',
+                        boxShadow: isCurrentlyLive ? '0 0 18px rgba(212,175,55,0.35)' : undefined,
                         opacity: timeState === 'done' && !isCurrentlyLive ? 0.78 : 1
                       }
                     },
@@ -1602,14 +1587,14 @@
                         h('div', { className: 'flex flex-wrap items-center gap-1-5' },
                           h('span', {
                             className: 'font-mono',
-                            style: { background: '#101E35', color: '#00F2FE', border: '1px solid rgba(45,212,191,0.45)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 900 }
+                            style: { background: '#23201D', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.45)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 900 }
                           }, `⏰ ${item.start_time} - ${item.end_time}`),
                           isCurrentlyLive && h('span', {
                             className: 'font-mono',
                             style: { background: '#10B981', color: '#042F2E', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 900 }
                           }, `LIVE • -${liveTracker.activeItem.remainingHMS}`),
                           !isCurrentlyLive && timeState === 'done' && h('span', {
-                            style: { background: '#0E223D', color: '#94A3B8', padding: '3px 8px', borderRadius: '8px', fontSize: '9px', fontWeight: 800 }
+                            style: { background: '#26221E', color: '#9E9689', padding: '3px 8px', borderRadius: '8px', fontSize: '9px', fontWeight: 800 }
                           }, t.badgeFinished),
                           h('span', {
                             style: {
@@ -1617,21 +1602,21 @@
                               padding: '2px 8px', borderRadius: '8px', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase'
                             }
                           }, item.status),
-                          h('span', { style: { fontSize: '11px', fontWeight: 700, color: '#E2E8F0' } }, `${brand?.emoji || ''} ${brand?.name || ''}`)
+                          h('span', { style: { fontSize: '11px', fontWeight: 700, color: '#D6D1C7' } }, `${brand?.emoji || ''} ${brand?.name || ''}`)
                         ),
-                        h('div', { style: { fontSize: '15px', fontWeight: 900, color: '#FFFFFF', marginTop: '6px' } }, item.title),
+                        h('div', { style: { fontSize: '15px', fontWeight: 900, color: '#FAF8F5', marginTop: '6px' } }, item.title),
                         Number(item.gmv) > 0 && h('div', {
                           className: 'font-mono',
                           style: { display: 'inline-block', marginTop: '5px', background: 'rgba(6,78,59,0.7)', border: '1px solid rgba(52,211,153,0.4)', color: '#6EE7B7', padding: '2px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 800 }
                         }, `💰 GMV: Rp ${Number(item.gmv).toLocaleString('id-ID')}`),
                         item.notes && h('div', {
-                          style: { marginTop: '6px', background: 'rgba(14,31,53,0.85)', border: '1px solid rgba(45,212,191,0.25)', padding: '6px 10px', borderRadius: '10px', fontSize: '11px', color: '#CBD5E1', fontStyle: 'italic' }
+                          style: { marginTop: '6px', background: '#141210', border: '1px solid rgba(212,175,55,0.22)', padding: '6px 10px', borderRadius: '10px', fontSize: '11px', color: '#D6D1C7', fontStyle: 'italic' }
                         }, `📌 ${item.notes}`),
                         renderKontenChecklist(item)
                       ),
                       h('div', { className: 'flex-col gap-1-5 items-end' },
                         h('button', {
-                          type: 'button', className: 'btn btn-dark', style: { padding: '4px 8px', fontSize: '9px', color: '#5EEAD4' },
+                          type: 'button', className: 'btn btn-dark', style: { padding: '4px 8px', fontSize: '9px', color: '#F5D77F' },
                           onClick: e => handleExportToGoogleCalendar(e, item)
                         }, '📅 GCal'),
                         isAdmin && h('button', {
@@ -1650,18 +1635,18 @@
           activeTab === 'calendar' && h('div', { className: 'flex-col gap-3' },
             h('div', { className: 'flex items-center justify-between gap-2' },
               h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
-              h('button', { className: 'btn btn-teal', style: { flex: 1, padding: '9px' }, onClick: () => exportElementAsPNG('work-matrix-capture', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
+              h('button', { className: 'btn btn-gold', style: { flex: 1, padding: '9px' }, onClick: () => exportElementAsPNG('work-matrix-capture', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
             ),
 
             h('div', { id: 'work-matrix-capture', className: 'matrix-shell' },
               // Legend Kategori di Atas Matriks
               h('div', { className: 'matrix-legend' },
-                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#5EEAD4', textTransform: 'uppercase' } }, `🗓️ ${monthName} ${currentYear}`),
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#F5D77F', textTransform: 'uppercase' } }, `🗓️ ${monthName} ${currentYear}`),
                 h('div', { className: 'flex flex-wrap items-center gap-1-5' },
                   brands.map(b => h('span', {
                     key: b.id,
                     className: 'flex items-center gap-1',
-                    style: { fontSize: '8px', fontWeight: 800, background: '#0E243E', color: '#E2E8F0', padding: '2px 6px', borderRadius: '6px', border: '1px solid rgba(45,212,191,0.35)' }
+                    style: { fontSize: '8px', fontWeight: 800, background: '#141210', color: '#FAF8F5', padding: '2px 6px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.35)' }
                   },
                     h('span', { style: { width: '8px', height: '8px', borderRadius: '2px', background: b.color } }),
                     b.name
@@ -1675,7 +1660,7 @@
                     h('table', { className: 'matrix-table-hp' },
                       h('thead', null,
                         h('tr', null,
-                          h('th', { style: { width: '48px', textAlign: 'left', paddingLeft: '4px', fontSize: '7.5px' } }, `🌊 ${t.colDate}`),
+                          h('th', { style: { width: '48px', textAlign: 'left', paddingLeft: '4px', fontSize: '7.5px' } }, `💼 ${t.colDate}`),
                           h('th', { style: { width: '52px', fontSize: '7.5px' } }, t.colStatus),
                           TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono' },
                             h('div', null, `${slot.start}/`),
@@ -1702,8 +1687,8 @@
                                   h('span', { className: 'radar-dot-ping' }),
                                   h('span', { className: 'radar-dot-core', style: { width: '6px', height: '6px' } })
                                 ),
-                                h('span', { style: { fontSize: '8.5px', fontWeight: 900, color: '#FFFFFF', width: '12px', textAlign: 'right' } }, day),
-                                h('span', { style: { fontSize: '7px', fontWeight: 800, color: '#5EEAD4', textTransform: 'uppercase' } }, dayName)
+                                h('span', { style: { fontSize: '8.5px', fontWeight: 900, color: '#FAF8F5', width: '12px', textAlign: 'right' } }, day),
+                                h('span', { style: { fontSize: '7px', fontWeight: 800, color: '#F5D77F', textTransform: 'uppercase' } }, dayName)
                               )
                             ),
                             h('td', { className: 'col-status-hp' },
@@ -1735,7 +1720,7 @@
                                     key: item.id,
                                     style: {
                                       width: '100%', flex: 1, minHeight: '15px', borderRadius: '3px',
-                                      background: item.color, border: '1px solid rgba(0,0,0,0.25)'
+                                      background: item.color, border: '1px solid rgba(0,0,0,0.35)'
                                     }
                                   }))
                                 )
@@ -1769,8 +1754,8 @@
                             h('td', { className: 'sticky-col-pc' },
                               h('div', { className: 'flex items-center gap-2' },
                                 isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
-                                h('span', { style: { fontSize: '14px', fontWeight: 900, color: '#FFFFFF' } }, day),
-                                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#5EEAD4', textTransform: 'uppercase' } }, dayName)
+                                h('span', { style: { fontSize: '14px', fontWeight: 900, color: '#FAF8F5' } }, day),
+                                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#F5D77F', textTransform: 'uppercase' } }, dayName)
                               )
                             ),
                             h('td', { style: { textAlign: 'center', verticalAlign: 'middle' } },
@@ -1793,7 +1778,7 @@
                                 slotItems.map(item => h('div', {
                                   key: item.id,
                                   style: {
-                                    background: item.color, color: '#0F172A', padding: '4px 6px',
+                                    background: item.color, color: '#121110', padding: '4px 6px',
                                     borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px'
                                   }
                                 },
@@ -1818,7 +1803,7 @@
               h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
                 ['daily', 'weekly', 'monthly', 'yearly'].map(p => h('button', {
                   key: p, onClick: () => setStatPeriod(p),
-                  className: `btn ${statPeriod === p ? 'btn-teal' : 'btn-dark'}`,
+                  className: `btn ${statPeriod === p ? 'btn-gold' : 'btn-dark'}`,
                   style: { textTransform: 'capitalize' }
                 }, p))
               ),
@@ -1828,22 +1813,22 @@
             ),
             h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' } },
               [
-                { label: t.totalLive, val: stats.totalLive, sub: `≈ ${stats.totalLiveHours} ${t.hoursLive}`, color: '#34D399' },
+                { label: t.totalLive, val: stats.totalLive, sub: `≈ ${stats.totalLiveHours} ${t.hoursLive}`, color: '#F5D77F' },
                 { label: t.takeKonten, val: stats.totalKonten, sub: `≈ ${stats.totalKontenHours} ${t.hoursProd}`, color: '#C084FC' },
                 { label: t.sleepTime, val: stats.totalSleep, sub: `≈ ${stats.totalSleepHours} ${t.hoursSleep}`, color: '#60A5FA' },
                 { label: t.offDay, val: stats.totalOff, sub: 'Days Off', color: '#FB7185' }
               ].map((k, idx) => h('div', { key: idx, className: 'exec-card' },
-                h('div', { style: { fontSize: '10px', fontWeight: 800, color: '#94A3B8' } }, k.label),
+                h('div', { style: { fontSize: '10px', fontWeight: 800, color: '#9E9689' } }, k.label),
                 h('div', { style: { fontSize: '26px', fontWeight: 900, color: k.color, marginTop: '4px' } }, k.val),
-                h('div', { style: { fontSize: '11px', color: '#CBD5E1', marginTop: '4px', fontWeight: 700 } }, k.sub)
+                h('div', { style: { fontSize: '11px', color: '#D6D1C7', marginTop: '4px', fontWeight: 700 } }, k.sub)
               ))
             ),
             h('div', { className: 'exec-card' },
-              h('h3', { style: { fontSize: '12px', fontWeight: 900, color: '#5EEAD4', marginBottom: '10px' } }, `🍩 ${t.propTitle}`),
+              h('h3', { style: { fontSize: '12px', fontWeight: 900, color: '#F5D77F', marginBottom: '10px' } }, `🍩 ${t.propTitle}`),
               h('div', { style: { height: '220px', position: 'relative' } }, h('canvas', { ref: donutCanvas }))
             ),
             h('div', { className: 'exec-card' },
-              h('h3', { style: { fontSize: '12px', fontWeight: 900, color: '#5EEAD4', marginBottom: '10px' } }, `📊 ${t.barTitle}`),
+              h('h3', { style: { fontSize: '12px', fontWeight: 900, color: '#F5D77F', marginBottom: '10px' } }, `📊 ${t.barTitle}`),
               h('div', { style: { height: '220px', position: 'relative' } }, h('canvas', { ref: barCanvas }))
             )
           ),
@@ -1853,8 +1838,8 @@
           // =================================================================
           activeTab === 'list' && h('div', { className: 'exec-card flex-col gap-3' },
             h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
-              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
-              isAdmin && h('button', { className: 'btn btn-teal', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
+              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
+              isAdmin && h('button', { className: 'btn btn-gold', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
             ),
             h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : 'repeat(3, 1fr)', gap: '8px' } },
               h('input', { type: 'text', placeholder: t.searchPlaceholder, value: searchQuery, onChange: e => setSearchQuery(e.target.value) }),
@@ -1873,16 +1858,16 @@
                 return h('div', {
                   key: s.id,
                   style: {
-                    background: '#081528', border: '1px solid rgba(45,212,191,0.3)', borderRadius: '14px',
+                    background: '#141210', border: '1px solid rgba(212,175,55,0.28)', borderRadius: '14px',
                     padding: '10px 12px', borderLeft: `5px solid ${s.color}`
                   }
                 },
                   h('div', { className: 'flex items-center justify-between' },
-                    h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#5EEAD4' } }, `${getHariNama(s.date)}, ${s.date}`),
-                    h('span', { className: 'font-mono', style: { fontSize: '11px', fontWeight: 900, color: '#FFFFFF' } }, `${s.start_time} - ${s.end_time}`)
+                    h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#F5D77F' } }, `${getHariNama(s.date)}, ${s.date}`),
+                    h('span', { className: 'font-mono', style: { fontSize: '11px', fontWeight: 900, color: '#FAF8F5' } }, `${s.start_time} - ${s.end_time}`)
                   ),
-                  h('div', { style: { fontSize: '13px', fontWeight: 900, color: '#FFFFFF', marginTop: '3px' } }, s.title),
-                  h('div', { className: 'flex items-center justify-between', style: { marginTop: '4px', fontSize: '10px', color: '#94A3B8' } },
+                  h('div', { style: { fontSize: '13px', fontWeight: 900, color: '#FAF8F5', marginTop: '3px' } }, s.title),
+                  h('div', { className: 'flex items-center justify-between', style: { marginTop: '4px', fontSize: '10px', color: '#9E9689' } },
                     h('span', null, `${brand?.emoji || ''} ${brand?.name || ''} • [${s.status}]`),
                     isAdmin && h('div', { className: 'flex gap-2' },
                       h('button', { className: 'btn btn-dark', style: { padding: '2px 7px', fontSize: '9px' }, onClick: () => handleOpenEdit(s) }, t.editBtn),
@@ -1898,10 +1883,10 @@
           // TAB 5: WARNA BRAND
           // =================================================================
           activeTab === 'colors' && h('div', { className: 'exec-card flex-col gap-2-5', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
-            h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, `🎨 ${t.tabColors}`),
+            h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, `🎨 ${t.tabColors}`),
             brands.map(b => h('div', {
               key: b.id, className: 'flex items-center justify-between',
-              style: { background: '#081528', padding: '10px 12px', borderRadius: '14px', border: '1px solid rgba(45,212,191,0.3)' }
+              style: { background: '#141210', padding: '10px 12px', borderRadius: '14px', border: '1px solid rgba(212,175,55,0.28)' }
             },
               h('div', { className: 'flex items-center gap-2' },
                 h('input', {
@@ -1915,7 +1900,7 @@
                 }),
                 h('span', { style: { fontSize: '12px', fontWeight: 800 } }, `${b.emoji} ${b.name}`)
               ),
-              h('span', { className: 'font-mono', style: { fontSize: '11px', color: '#94A3B8' } }, b.color)
+              h('span', { className: 'font-mono', style: { fontSize: '11px', color: '#9E9689' } }, b.color)
             ))
           )
         ),
@@ -1923,7 +1908,7 @@
         // MODAL PIN ADMIN
         pinInputModal && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '320px', textAlign: 'center' } },
-            h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#5EEAD4', marginBottom: '12px' } }, '🔑 Admin Access'),
+            h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#F5D77F', marginBottom: '12px' } }, '🔑 Admin Access'),
             h('form', { onSubmit: handleVerifyPin, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', {
                 type: 'password', maxLength: 6, autoFocus: true, value: enteredPin,
@@ -1935,7 +1920,7 @@
               pinError && h('div', { style: { color: '#FDA4AF', fontSize: '11px', fontWeight: 800 } }, 'PIN salah!'),
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('button', { type: 'button', className: 'btn btn-dark', onClick: () => setPinInputModal(false) }, 'Batal'),
-                h('button', { type: 'submit', className: 'btn btn-teal' }, 'Buka Akses')
+                h('button', { type: 'submit', className: 'btn btn-gold' }, 'Buka Akses')
               )
             )
           )
@@ -1944,12 +1929,12 @@
         // MODAL CLONE DAY
         cloneModalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px' } },
-            h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, '📋 Salin Jadwal 1 Hari Penuh'),
+            h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, '📋 Salin Jadwal 1 Hari Penuh'),
             h('form', { onSubmit: handleCloneFullDay, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', { type: 'date', required: true, value: cloneTargetDate, onChange: e => setCloneTargetDate(e.target.value) }),
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('button', { type: 'button', className: 'btn btn-dark', onClick: () => setCloneModalOpen(false) }, 'Batal'),
-                h('button', { type: 'submit', className: 'btn btn-teal' }, 'Salin Sekarang')
+                h('button', { type: 'submit', className: 'btn btn-gold' }, 'Salin Sekarang')
               )
             )
           )
@@ -1958,8 +1943,8 @@
         // MODAL TAMBAH / EDIT JADWAL
         modalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
-            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1px solid rgba(45,212,191,0.3)', paddingBottom: '8px' } },
-              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, selectedSchedule ? '✏️ Edit Jadwal' : '✨ Tambah Jadwal Baru'),
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1px solid rgba(212,175,55,0.3)', paddingBottom: '8px' } },
+              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, selectedSchedule ? '✏️ Edit Jadwal' : '✨ Tambah Jadwal Baru'),
               h('button', { className: 'btn btn-dark', onClick: () => setModalOpen(false) }, '✕')
             ),
             h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
@@ -2013,7 +1998,7 @@
                   : h('span'),
                 h('div', { className: 'flex gap-2' },
                   h('button', { type: 'button', className: 'btn btn-dark', onClick: () => setModalOpen(false) }, 'Batal'),
-                  h('button', { type: 'submit', disabled: !!currentFormConflict, className: 'btn btn-teal' }, 'Simpan ke Cloud')
+                  h('button', { type: 'submit', disabled: !!currentFormConflict, className: 'btn btn-gold' }, 'Simpan ke Cloud')
                 )
               )
             )
