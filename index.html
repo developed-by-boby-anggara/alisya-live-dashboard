@@ -2504,27 +2504,39 @@ function App() {
     }
   }, [rafayelCallModalOpen, rafayelCallStatus]);
 
- // Terima panggilan Rafayel & putar file suara dari GitHub
-  const handleAcceptRafayelCall = () => {
-    playCallActionTone(true);
-    setRafayelCallStatus('connected');
-    setRafayelCallSeconds(0);
-
-    if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
-      bgmAudioRef.current.volume = 0.05;
-    }
-
-    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+ // 🎙️ PENGENDALI SUARA TUNGGAL RAFAYEL (ANTI-TABRAKAN / OTOMATIS STOP SUARA SEBELUMNYA)
+  const stopCurrentRafayelVoice = () => {
     try {
       if (callVoiceAudioRef.current) {
         callVoiceAudioRef.current.pause();
+        callVoiceAudioRef.current.currentTime = 0;
+        callVoiceAudioRef.current = null;
       }
-      const voice = new Audio(scenario.audioUrl);
-      voice.volume = 0.55; // Volume karakter lebih lembut
+    } catch (e) {}
+  };
+
+  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.65) => {
+    try {
+      // 1. Hentikan suara Rafayel sebelumnya jika masih berbicara
+      stopCurrentRafayelVoice();
+
+      // 2. Kecilkan BGM sedikit agar suara Rafayel terdengar jernih
+      if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
+        bgmAudioRef.current.volume = 0.06;
+      }
+
+      // 3. Putar suara baru di saluran tunggal
+      const voice = new Audio(audioUrl);
+      voice.volume = volumeLevel;
       callVoiceAudioRef.current = voice;
 
       voice.onended = () => {
-        if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.25;
+        if (callVoiceAudioRef.current === voice) {
+          callVoiceAudioRef.current = null;
+        }
+        if (bgmAudioRef.current) {
+          bgmAudioRef.current.volume = 0.25;
+        }
       };
 
       voice.play().catch(() => {
@@ -2535,13 +2547,20 @@ function App() {
     }
   };
 
+  // Terima panggilan Rafayel & putar file suara dari GitHub (Otomatis hentikan suara lain)
+  const handleAcceptRafayelCall = () => {
+    playCallActionTone(true);
+    setRafayelCallStatus('connected');
+    setRafayelCallSeconds(0);
+
+    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+    playExclusiveRafayelVoice(scenario.audioUrl, 0.65);
+  };
+
   // Tutup / Akhiri panggilan Rafayel
   const handleEndRafayelCall = () => {
     playCallActionTone(false);
-    if (callVoiceAudioRef.current) {
-      callVoiceAudioRef.current.pause();
-      callVoiceAudioRef.current.currentTime = 0;
-    }
+    stopCurrentRafayelVoice();
     if (bgmAudioRef.current) {
       bgmAudioRef.current.volume = 0.25;
     }
