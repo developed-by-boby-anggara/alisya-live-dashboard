@@ -3,90 +3,276 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Alisya Work Schedule — Official Partner Portal 💼</title>
-  <meta name="theme-color" content="#0F172A">
+  <title>Alisya Work Schedule — Official Executive Portal 💼</title>
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Preconnect Cepat -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-          colors: {
-            corp: { DEFAULT: '#0F172A', light: '#1E293B', accent: '#0D9488' }
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- React 18 Production TANPA BABEL (Buka Instan 0 Detik di Semua HP Klien) -->
+  <!-- React 18 Production (Tanpa Babel & Tanpa Tailwind CDN = Instan 0.1 Detik) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
 
-  <!-- Firebase Realtime Database (Sinkron 100% Real-Time dengan index.html) -->
+  <!-- Firebase Realtime Database (Sinkron 100% dengan index.html) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <!-- Chart.js & html2canvas -->
+  <!-- Chart.js & html2canvas (Deferred agar tidak menahan loading awal) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0F172A; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
-    .scrollbar-none::-webkit-scrollbar { display: none; }
-    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-    .sticky-col { position: sticky; left: 0; z-index: 20; }
-    .sticky-header { position: sticky; top: 0; z-index: 30; }
-
-    body {
-      background-color: #0B1120;
-      background-image: 
-        radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.08), transparent 28rem),
-        radial-gradient(circle at 85% 20%, rgba(14, 165, 233, 0.08), transparent 30rem);
-      color: #F8FAFC;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    :root {
+      --bg-main: #F4F6F9;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F8FAFC;
+      --text-main: #0F172A;
+      --text-muted: #475569;
+      --text-light: #64748B;
+      --border-color: #E2E8F0;
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-soft: #EFF6FF;
+      --emerald: #059669;
+      --emerald-soft: #ECFDF5;
+      --amber: #D97706;
+      --amber-soft: #FFFBEB;
+      --danger: #DC2626;
+      --danger-soft: #FEF2F2;
     }
 
-    @keyframes marqueeScroll {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 48px;
+    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Layout & Utilitas Kerja Profesional */
+    .container { max-width: 1440px; margin: 0 auto; padding: 16px; }
+    .container-mobile { max-width: 540px; margin: 0 auto; padding: 12px; }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .header-bar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+    }
+    .nav-bar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 20px;
+      position: sticky;
+      top: 61px;
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      overflow-x: auto;
+    }
+    .ticker-bar {
+      background: #0F172A;
+      color: #F8FAFC;
+      padding: 8px 0;
+      overflow: hidden;
+      font-size: 12px;
+      border-bottom: 1px solid #1E293B;
+    }
+    @keyframes marqueeWork {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
     .ticker-track {
       display: flex;
       width: max-content;
-      animation: marqueeScroll 36s linear infinite;
+      gap: 28px;
+      animation: marqueeWork 35s linear infinite;
     }
     .ticker-track:hover { animation-play-state: paused; }
 
-    .today-row-highlight {
-      background: linear-gradient(90deg, rgba(6, 78, 59, 0.55), rgba(15, 23, 42, 0.9), rgba(6, 78, 59, 0.55)) !important;
+    /* Grid & Flex */
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .grid-agenda {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
     }
-    .today-row-highlight td {
-      border-top: 2px solid #10B981 !important;
-      border-bottom: 2px solid #0EA5E9 !important;
+    @media (min-width: 1024px) {
+      .grid-agenda.pc-mode {
+        grid-template-columns: 420px 1fr;
+      }
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+
+    /* Buttons & Inputs */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    button:active { transform: scale(0.97); }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary { background: var(--primary); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-emerald { background: var(--emerald); color: #FFFFFF; }
+    .btn-emerald:hover { filter: brightness(0.95); }
+    .btn-outline { background: #FFFFFF; color: var(--text-main); border-color: #CBD5E1; }
+    .btn-outline:hover { background: var(--bg-subtle); border-color: #94A3B8; }
+    .btn-subtle { background: #F1F5F9; color: #334155; }
+    .btn-subtle:hover { background: #E2E8F0; }
+    .btn-tab {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      white-space: nowrap;
+    }
+    .btn-tab.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 8px 12px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+    .badge-live { background: #DCFCE7; color: #166534; border-color: #86EFAC; }
+    .badge-blue { background: #DBEAFE; color: #1E40AF; border-color: #93C5FD; }
+    .badge-amber { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+    .badge-danger { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
+    .badge-neutral { background: #F1F5F9; color: #334155; border-color: #CBD5E1; }
+
+    /* Radar Executive Banner */
+    .radar-banner {
+      background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+      color: #FFFFFF;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    }
+    .live-box {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981, #3B82F6);
+      transition: width 0.4s ease;
+    }
+
+    /* Table Spreadsheet */
+    .table-wrap { overflow-x: auto; max-height: 74vh; border: 1px solid var(--border-color); border-radius: 14px; background: #FFF; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
+    thead th { background: #F1F5F9; color: #1E293B; font-weight: 800; position: sticky; top: 0; z-index: 20; }
+    .sticky-left { position: sticky; left: 0; background: #FFFFFF; z-index: 15; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
+    tr.today-row td { background: #EFF6FF !important; border-top: 2px solid var(--primary); border-bottom: 2px solid var(--primary); }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px; z-index: 60;
+    }
+    .modal-card {
+      background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 460px;
+      max-height: 90vh; overflow-y: auto; padding: 20px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.25); }
+    }
+    .dot-live {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #10B981; display: inline-block;
+      animation: pulseDot 1.5s infinite;
     }
   </style>
 </head>
-<body class="antialiased selection:bg-emerald-500 selection:text-slate-950 pb-12">
+<body>
   <div id="root">
-    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0B1120;color:#10B981;font-family:sans-serif;text-align:center;padding:20px;">
-      <div style="font-size:32px;margin-bottom:10px;">💼</div>
-      <div style="font-weight:800;font-size:14px;letter-spacing:1px;color:#F8FAFC;">MEMUAT WORK SCHEDULE ALISYA...</div>
-      <div style="font-size:11px;color:#94A3B8;margin-top:6px;">Sinkronisasi Jadwal Real-Time</div>
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F4F6F9;color:#0F172A;font-family:sans-serif;text-align:center;padding:20px;">
+      <div style="font-size:32px;margin-bottom:8px;">💼</div>
+      <div style="font-weight:800;font-size:14px;color:#0F172A;">MEMUAT WORK SCHEDULE ALISYA...</div>
+      <div style="font-size:12px;color:#64748B;margin-top:4px;">Menghubungkan ke Database Jadwal Real-Time</div>
     </div>
   </div>
 
@@ -94,14 +280,14 @@
     window.addEventListener('error', function(e) {
       var root = document.getElementById('root');
       if (root && root.innerText.indexOf('MEMUAT WORK SCHEDULE') !== -1) {
-        root.innerHTML = '<div style="padding:24px;color:#fda4af;background:#090d16;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
+        root.innerHTML = '<div style="padding:24px;color:#991B1B;background:#FEF2F2;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
       }
     });
 
     const { useState, useEffect, useMemo, useRef } = React;
     const h = React.createElement;
 
-    // --- KONEKSI FIREBASE REALTIME DB (SAMA PERSIS DENGAN INDEX.HTML) ---
+    // --- KONEKSI FIREBASE REALTIME DB (100% SINKRON DENGAN INDEX.HTML) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
       authDomain: "alisya-live-db.firebaseapp.com",
@@ -193,87 +379,90 @@
     const TRANSLATIONS = {
       id: {
         locale: 'id-ID',
-        portalSub: "Official Live Broadcast & Content Production Schedule",
-        modeHP: "Mode HP", modePC: "Mode PC", lockBtn: "Kunci", loginBtn: "Admin",
-        radarTitle: "Radar Jadwal Operasional Alisya (00:00 - 23:59 WIB)",
+        portalSub: "Portal Jadwal Operasional Live & Ketersediaan Slot Real-Time",
+        modeHP: "Mode HP", modePC: "Mode PC", lockBtn: "Kunci", loginBtn: "Login Admin",
+        radarTitle: "RADAR JADWAL OPERATIONAL ALISYA (00:00 - 23:59 WIB)",
         availableTitle: "Available Schedule (Slot Jam Kosong)",
-        allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
+        allSlotsFilled: "⚠️ Semua slot jam pada tanggal ini sudah terisi penuh.",
         slotsReady: "Slot Tersedia",
-        calendarTitle: "Kalender Tanggal",
-        sessionList: "Daftar Sesi Jadwal",
-        noSchedule: "Tidak Ada Jadwal di Tanggal Ini 💼",
-        noScheduleSub: "Seluruh slot jam pada tanggal ini masih kosong dan tersedia untuk penjadwalan.",
-        btnShareWA: "Share WhatsApp", btnSavePNG: "Simpan PNG",
-        btnShareRekapWA: "Share Rekap Spreadsheet ke WA",
+        calendarTitle: "Kalender Bulanan",
+        sessionList: "Daftar Sesi Jadwal Harian",
+        noSchedule: "Tidak Ada Sesi Terjadwal",
+        noScheduleSub: "Seluruh slot waktu pada tanggal ini masih kosong / tersedia untuk kolaborasi & penjadwalan.",
+        btnShareWA: "Share WA", btnSavePNG: "Simpan PNG",
+        btnShareRekapWA: "Share Rekap Bulanan ke WA",
         btnDownloadTablePNG: "Unduh Gambar Tabel (.PNG)",
         btnAddSession: "+ Tambah Sesi", btnCloneDay: "📋 Salin 1 Hari",
         jump: "Lompat:", today: "Hari Ini", tomorrow: "Besok", dayAfter: "Lusa",
         tabAgenda: "Agenda Harian",
         tabSpreadsheet: "Kalender Spreadsheet",
-        tabKPI: "KPI & Statistik Kerja",
+        tabKPI: "KPI & Diagram Grafik",
         tabList: "Daftar Semua Jadwal",
         tabColors: "Warna Brand & Kategori",
-        btnExportCSV: "Ekspor CSV (Excel)", btnAddSch: "+ Tambah Jadwal",
+        btnExportCSV: "Ekspor CSV", btnAddSch: "+ Tambah Jadwal",
         liveNowActive: "SEDANG BERLANGSUNG:",
         liveNowIdle: "🟢 Saat ini tidak ada sesi yang sedang berlangsung (Standby)",
-        endsAt: "Selesai Pkl", timeLeft: "Sisa Waktu:",
+        endsAt: "Habis Pukul", timeLeft: "Sisa Waktu Mundur:",
+        sessionProgress: "Progres Sesi Berjalan",
         nextUp: "Sesi Berikutnya:", progressToday: "Progres Total Agenda Hari Ini",
         completed: "Selesai", scheduledSessions: "Sesi Terjadwal", productiveActs: "Aktivitas Produktif",
         colDateTime: "TANGGAL & HARI \\ JAM", colDayStatus: "STATUS HARI", todayBadge: "HARI INI",
-        statusFree: "🟢 FREE SLOT", statusLow: "🔵 LOW", statusMed: "🟡 MEDIUM", statusFull: "🔥 FULL SCHEDULE", statusOff: "☕ LIBUR / OFF",
+        statusFree: "🟢 FREE SLOT", statusLow: "🔵 LOW", statusMed: "🟡 MEDIUM", statusFull: "🔴 FULL SCHEDULE", statusOff: "⚪ LIBUR / OFF",
         allRegistered: "Semua Jadwal Terdaftar",
         searchPlaceholder: "🔍 Cari nama shift, brand, catatan...",
-        allCategories: "Semua Kategori", allStatuses: "Semua Status", allHours: "Semua Jam",
+        allCategories: "Semua Kategori", allStatuses: "Semua Status",
         colDay: "Hari", colDate: "Tanggal", colHour: "Jam Digital", colTitle: "Judul Shift / Agenda", colCategory: "Kategori", colStatus: "Status", colNotes: "Catatan", colAction: "Aksi",
-        badgeFinished: "✅ SELESAI", editBtn: "Edit", copyBtn: "📋 Salin", deleteBtn: "Hapus",
-        shortBreakWarning: "⚠️ Jeda istirahat antar shift < 5 jam",
+        badgeFinished: "✅ SELESAI", badgeUpcoming: "⏳ AKAN DATANG", editBtn: "Edit", copyBtn: "📋 Salin", deleteBtn: "Hapus",
+        shortBreakWarning: "⚠️ Jeda istirahat antar shift terlalu singkat (<5 jam)!",
         totalLive: "TOTAL SHIFT LIVE", takeKonten: "TAKE KONTEN VIDEO", sleepTime: "JAM ISTIRAHAT", meTime: "ME TIME", offDay: "HARI LIBUR / OFF",
         hoursLive: "Jam Streaming", hoursProd: "Jam Produksi", hoursSleep: "Jam Istirahat",
-        propTitle: "PROPORSI WAKTU KERJA", barTitle: "BEBAN AKTIVITAS PER BRAND / KATEGORI"
+        propTitle: "PROPORSI WAKTU KERJA", barTitle: "BEBAN AKTIVITAS PER KATEGORI"
       },
       en: {
         locale: 'en-US',
-        portalSub: "Official Live Broadcast & Content Production Schedule",
-        modeHP: "Mobile", modePC: "PC Mode", lockBtn: "Lock", loginBtn: "Admin",
-        radarTitle: "Alisya's Operational Schedule Radar (00:00 - 23:59 WIB)",
+        portalSub: "Official Live Broadcast Schedule & Real-Time Slot Availability",
+        modeHP: "Mobile", modePC: "PC Mode", lockBtn: "Lock", loginBtn: "Admin Login",
+        radarTitle: "ALISYA'S OPERATIONAL SCHEDULE RADAR (00:00 - 23:59 WIB)",
         availableTitle: "Available Schedule (Empty Time Slots)",
-        allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
+        allSlotsFilled: "⚠️ All time slots for this date are fully booked.",
         slotsReady: "Slots Available",
-        calendarTitle: "Date Calendar",
-        sessionList: "Scheduled Sessions",
-        noSchedule: "No Schedule for this Date 💼",
-        noScheduleSub: "All time slots on this date are currently open and available.",
-        btnShareWA: "Share WhatsApp", btnSavePNG: "Save PNG",
-        btnShareRekapWA: "Share Spreadsheet Recap to WA",
+        calendarTitle: "Monthly Calendar",
+        sessionList: "Daily Scheduled Sessions",
+        noSchedule: "No Sessions Scheduled",
+        noScheduleSub: "All time slots on this date are currently empty and open for booking.",
+        btnShareWA: "Share WA", btnSavePNG: "Save PNG",
+        btnShareRekapWA: "Share Monthly Recap to WA",
         btnDownloadTablePNG: "Download Table Image (.PNG)",
         btnAddSession: "+ Add Session", btnCloneDay: "📋 Clone Day",
         jump: "Jump:", today: "Today", tomorrow: "Tomorrow", dayAfter: "Day After",
         tabAgenda: "Daily Agenda",
         tabSpreadsheet: "Spreadsheet Calendar",
-        tabKPI: "Work KPI & Analytics",
+        tabKPI: "KPI & Charts",
         tabList: "Complete Schedule List",
         tabColors: "Brand Colors",
-        btnExportCSV: "Export CSV (Excel)", btnAddSch: "+ Add Schedule",
+        btnExportCSV: "Export CSV", btnAddSch: "+ Add Schedule",
         liveNowActive: "LIVE NOW:",
         liveNowIdle: "🟢 No active session at this moment (Standby)",
         endsAt: "Ends At", timeLeft: "Countdown:",
+        sessionProgress: "Current Session Progress",
         nextUp: "Next Session:", progressToday: "Today's Total Agenda Progress",
         completed: "Completed", scheduledSessions: "Scheduled Sessions", productiveActs: "Productive Activities",
         colDateTime: "DATE & DAY \\ TIME", colDayStatus: "DAY STATUS", todayBadge: "TODAY",
-        statusFree: "🟢 FREE SLOT", statusLow: "🔵 LOW", statusMed: "🟡 MEDIUM", statusFull: "🔥 FULL SCHEDULE", statusOff: "☕ DAY OFF",
+        statusFree: "🟢 FREE SLOT", statusLow: "🔵 LOW", statusMed: "🟡 MEDIUM", statusFull: "🔴 FULL SCHEDULE", statusOff: "⚪ DAY OFF",
         allRegistered: "All Registered Schedules",
         searchPlaceholder: "🔍 Search shift title, brand, notes...",
-        allCategories: "All Categories", allStatuses: "All Statuses", allHours: "All Hours",
+        allCategories: "All Categories", allStatuses: "All Statuses",
         colDay: "Day", colDate: "Date", colHour: "Time (24H)", colTitle: "Shift / Activity Title", colCategory: "Category", colStatus: "Status", colNotes: "Notes", colAction: "Action",
-        badgeFinished: "✅ DONE", editBtn: "Edit", copyBtn: "📋 Copy", deleteBtn: "Delete",
-        shortBreakWarning: "⚠️ Break between shifts < 5 hours",
-        totalLive: "TOTAL LIVE SHIFTS", takeKonten: "VIDEO CONTENT SHOOT", sleepTime: "REST TIME", meTime: "PERSONAL", offDay: "DAY OFF",
+        badgeFinished: "✅ DONE", badgeUpcoming: "⏳ UPCOMING", editBtn: "Edit", copyBtn: "📋 Copy", deleteBtn: "Delete",
+        shortBreakWarning: "⚠️ Short break between shifts (<5 hours)!",
+        totalLive: "TOTAL LIVE SHIFTS", takeKonten: "VIDEO CONTENT SHOOT", sleepTime: "REST TIME", meTime: "ME TIME", offDay: "DAY OFF",
         hoursLive: "Streaming Hours", hoursProd: "Production Hours", hoursSleep: "Rest Hours",
-        propTitle: "WORK TIME PROPORTION", barTitle: "ACTIVITY LOAD PER BRAND / CATEGORY"
+        propTitle: "WORK TIME PROPORTION", barTitle: "ACTIVITY LOAD PER CATEGORY"
       }
     };
 
     function WorkApp() {
+      // Mesin Detik Real-Time (Berdetak setiap 1 detik untuk Countdown & Jam Digital)
       const [nowTime, setNowTime] = useState(() => new Date());
       useEffect(() => {
         const timer = setInterval(() => setNowTime(new Date()), 1000);
@@ -321,7 +510,7 @@
         } catch (e) { return INITIAL_SCHEDULES; }
       });
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
-      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress! 💼✨");
+      const [stickyNote, setStickyNote] = useState("Jadwal Operasional Live Streaming & Produksi Konten Alisya.");
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -338,7 +527,6 @@
       const [filterBrand, setFilterBrand] = useState('ALL');
       const [filterStatus, setFilterStatus] = useState('ALL');
       const [filterDate, setFilterDate] = useState('');
-      const [filterHour, setFilterHour] = useState('ALL');
 
       const [modalOpen, setModalOpen] = useState(false);
       const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -415,6 +603,7 @@
         return 'upcoming';
       };
 
+      // Mesin Countdown Real-Time per Detik (Sama Persis dengan index.html)
       const liveTracker = useMemo(() => {
         const todayList = schedules
           .filter(s => s.date === realTodayStr && s.status !== 'OFF' && s.status !== 'SAKIT' && s.status !== 'Sakit / Medis' && s.brand_id !== 'b_sakit')
@@ -483,7 +672,7 @@
           });
         }
         const freeSlots = Math.max(0, totalPrimeSlots - occupiedPrimeSlots);
-        let badge = '🟢 Schedule Active & Open';
+        let badge = '🟢 Schedule Active';
         if (freeSlots <= 10) badge = '🔒 Fully Booked This Week';
         else if (freeSlots <= 28) badge = '⚡ Limited Slots Remaining';
 
@@ -525,16 +714,16 @@
 
       const getDayScheduleDensity = (dateStr) => {
         const dayShifts = schedules.filter(s => s.date === dateStr);
-        if (dayShifts.length === 0) return { text: t.statusFree, badge: 'bg-slate-800 text-emerald-300 border-emerald-500/40' };
-        if (dayShifts.some(s => s.status === 'OFF')) return { text: t.statusOff, badge: 'bg-slate-800 text-slate-300 border-slate-600' };
+        if (dayShifts.length === 0) return { text: t.statusFree, cls: 'badge-live' };
+        if (dayShifts.some(s => s.status === 'OFF')) return { text: t.statusOff, cls: 'badge-neutral' };
         let prodHours = 0;
         dayShifts.forEach(s => {
           if (s.status !== 'Tidur' && s.brand_id !== 'b_sleep') prodHours += calculateDurationHours(s.start_time, s.end_time);
         });
-        if (prodHours >= 10) return { text: t.statusFull, badge: 'bg-rose-600 text-white border-rose-400 font-black' };
-        if (prodHours >= 8) return { text: t.statusMed, badge: 'bg-amber-500/20 text-amber-300 border-amber-400/50 font-bold' };
-        if (prodHours > 0) return { text: t.statusLow, badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 font-bold' };
-        return { text: t.statusFree, badge: 'bg-slate-800 text-emerald-300 border-emerald-500/40' };
+        if (prodHours >= 10) return { text: t.statusFull, cls: 'badge-danger' };
+        if (prodHours >= 8) return { text: t.statusMed, cls: 'badge-amber' };
+        if (prodHours > 0) return { text: t.statusLow, cls: 'badge-blue' };
+        return { text: t.statusFree, cls: 'badge-live' };
       };
 
       const existingSchedulesOnFormDate = useMemo(() => {
@@ -543,7 +732,7 @@
           .sort((a, b) => a.start_time.localeCompare(b.start_time));
       }, [schedules, formData.date, selectedSchedule]);
 
-      const getRangeConflictOnFormDate = (startStr, endStr) => {
+      const checkConflictRange = (startStr, endStr) => {
         const sMin = timeToMinutes(startStr);
         let eMin = timeToMinutes(endStr);
         if (eMin <= sMin) eMin = 24 * 60;
@@ -551,21 +740,11 @@
           const exS = timeToMinutes(s.start_time);
           let exE = timeToMinutes(s.end_time);
           if (exE <= exS) exE = 24 * 60;
-          return sMin < exE && eMin > exStart;
+          return sMin < exE && eMin > exS;
         });
       };
 
-      const currentFormConflict = useMemo(() => {
-        const sMin = timeToMinutes(formData.start_time);
-        let eMin = timeToMinutes(formData.end_time);
-        if (eMin <= sMin) eMin = 24 * 60;
-        return existingSchedulesOnFormDate.find(s => {
-          const exS = timeToMinutes(s.start_time);
-          let exE = timeToMinutes(s.end_time);
-          if (exE <= exS) exE = 24 * 60;
-          return sMin < exE && eMin > exS;
-        });
-      }, [formData.start_time, formData.end_time, existingSchedulesOnFormDate]);
+      const currentFormConflict = useMemo(() => checkConflictRange(formData.start_time, formData.end_time), [formData.start_time, formData.end_time, existingSchedulesOnFormDate]);
 
       const findFirstFreeSlotOnDate = (dateStr, prefStart = '10:00', prefEnd = '12:00') => {
         const dayList = schedules.filter(s => s.date === dateStr);
@@ -629,10 +808,10 @@
 
       const exportElementAsPNG = async (elementId, filenameLabel) => {
         const el = document.getElementById(elementId);
-        if (!el || typeof html2canvas === 'undefined') { notify('⚠️ Gagal mengekspor gambar.'); return; }
+        if (!el || typeof html2canvas === 'undefined') { notify('⚠️ Sedang memuat modul gambar...'); return; }
         notify('📸 Memproses gambar jadwal...');
         try {
-          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#0B1120' });
+          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#F4F6F9' });
           const link = document.createElement('a');
           link.download = `Alisya_Work_Schedule_${filenameLabel}.png`;
           link.href = canvas.toDataURL('image/png');
@@ -685,7 +864,7 @@
           return s;
         });
         saveSchedulesToCloud(updated);
-        notify('✅ Progres produksi diperbarui!');
+        notify('✅ Progres konten diperbarui!');
       };
 
       const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
@@ -720,36 +899,46 @@
         setModalOpen(true);
       };
 
-      const renderLiveNowBanner = () => h('div', { className: 'bg-slate-950/60 rounded-2xl p-3.5 border border-slate-700/80 space-y-2.5 mt-2' },
-        h('div', { className: 'flex flex-wrap items-center justify-between gap-2 text-xs' },
+      // Komponen Banner Live Now & Countdown Real-Time
+      const renderLiveNowBanner = () => h('div', { className: 'live-box' },
+        h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { fontSize: '12px' } },
           liveTracker.activeItem
             ? h('div', { className: 'flex flex-wrap items-center gap-2' },
-                h('span', { className: 'flex items-center gap-1.5 font-black text-emerald-400 text-xs sm:text-sm' },
-                  h('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse' }),
+                h('span', { className: 'flex items-center gap-2', style: { fontWeight: 800, color: '#34D399', fontSize: '13px' } },
+                  h('span', { className: 'dot-live' }),
                   `${t.liveNowActive} ${liveTracker.activeItem.title}`
                 ),
-                h('span', { className: 'bg-slate-800 text-slate-200 font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-slate-700' },
-                  `⏰ ${liveTracker.activeItem.start_time} - ${liveTracker.activeItem.end_time}`
+                h('span', { className: 'font-mono', style: { background: 'rgba(255,255,255,0.12)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px' } },
+                  `⏰ ${liveTracker.activeItem.start_time} - ${liveTracker.activeItem.end_time} (${t.endsAt} ${liveTracker.activeItem.end_time})`
                 ),
-                h('span', { className: 'bg-emerald-500 text-slate-950 font-mono font-black text-xs px-2.5 py-1 rounded-xl shadow' },
+                h('span', { className: 'font-mono', style: { background: '#10B981', color: '#064E3B', fontWeight: 800, padding: '4px 10px', borderRadius: '8px', fontSize: '12px' } },
                   `⏳ ${t.timeLeft} ${liveTracker.activeItem.remainingHMS}`
                 )
               )
-            : h('span', { className: 'text-slate-300 font-bold' }, t.liveNowIdle),
-          liveTracker.nextItem && h('div', { className: 'text-[11px] font-bold bg-amber-500/15 border border-amber-400/30 px-3 py-1 rounded-xl text-amber-200 flex items-center gap-1.5' },
+            : h('span', { style: { color: '#CBD5E1', fontWeight: 600 } }, t.liveNowIdle),
+          liveTracker.nextItem && h('div', { className: 'flex items-center gap-2', style: { background: 'rgba(245, 158, 11, 0.18)', border: '1px solid rgba(251, 191, 36, 0.35)', padding: '4px 10px', borderRadius: '10px', color: '#FDE68A', fontSize: '11px', fontWeight: 700 } },
             h('span', null, `⏭️ ${t.nextUp}`),
-            h('span', { className: 'text-white font-black' }, liveTracker.nextItem.title),
-            h('span', { className: 'font-mono text-amber-300' }, `(${liveTracker.nextItem.start_time})`),
-            h('span', { className: 'bg-black/40 text-amber-300 font-mono font-black px-2 py-0.5 rounded-lg' }, `-${liveTracker.nextItem.startsInHMS}`)
+            h('span', { style: { color: '#FFFFFF', fontWeight: 800 } }, liveTracker.nextItem.title),
+            h('span', { className: 'font-mono' }, `(${liveTracker.nextItem.start_time})`),
+            h('span', { className: 'font-mono', style: { background: 'rgba(0,0,0,0.35)', padding: '2px 6px', borderRadius: '6px', fontWeight: 800 } }, `-${liveTracker.nextItem.startsInHMS}`)
           )
         ),
-        h('div', { className: 'space-y-1' },
-          h('div', { className: 'flex justify-between text-[10px] text-slate-300 font-bold' },
-            h('span', null, `📅 ${t.progressToday} (${realTodayStr})`),
-            h('span', { className: 'font-mono text-emerald-400' }, `${liveTracker.progressPct}% ${t.completed}`)
+        liveTracker.activeItem && h('div', { style: { marginTop: '10px' } },
+          h('div', { className: 'flex justify-between', style: { fontSize: '11px', color: '#A7F3D0', fontWeight: 700 } },
+            h('span', null, `⚡ ${t.sessionProgress}: ${liveTracker.activeItem.title}`),
+            h('span', { className: 'font-mono' }, `${liveTracker.activeItem.sessionPct}%`)
           ),
-          h('div', { className: 'w-full h-2 bg-slate-800 rounded-full overflow-hidden' },
-            h('div', { className: 'h-full bg-gradient-to-r from-emerald-500 to-sky-400 transition-all duration-500', style: { width: `${liveTracker.progressPct}%` } })
+          h('div', { className: 'progress-track' },
+            h('div', { className: 'progress-fill', style: { width: `${liveTracker.activeItem.sessionPct}%` } })
+          )
+        ),
+        h('div', { style: { marginTop: '10px' } },
+          h('div', { className: 'flex justify-between', style: { fontSize: '11px', color: '#CBD5E1', fontWeight: 700 } },
+            h('span', null, `📅 ${t.progressToday} (${realTodayStr})`),
+            h('span', { className: 'font-mono', style: { color: '#38BDF8' } }, `${liveTracker.progressPct}% ${t.completed}`)
+          ),
+          h('div', { className: 'progress-track' },
+            h('div', { className: 'progress-fill', style: { width: `${liveTracker.progressPct}%` } })
           )
         )
       );
@@ -758,14 +947,20 @@
         if (item.brand_id !== 'b_konten' && item.status !== 'Konten') return null;
         const cl = item.checklist || { shoot: false, edit: false, upload: false };
         const steps = [
-          { key: 'shoot', label: '1. Take Video', activeCls: 'bg-emerald-600 text-white border-emerald-500' },
-          { key: 'edit', label: '2. Editing', activeCls: 'bg-amber-500 text-slate-950 border-amber-400' },
-          { key: 'upload', label: '3. Done Upload', activeCls: 'bg-sky-500 text-slate-950 border-sky-400' }
+          { key: 'shoot', label: '1. Take Video' },
+          { key: 'edit', label: '2. Editing' },
+          { key: 'upload', label: '3. Done Upload' }
         ];
-        return h('div', { className: 'flex flex-wrap items-center gap-1.5 pt-1.5', onClick: e => e.stopPropagation() },
+        return h('div', { className: 'flex flex-wrap items-center gap-2', style: { marginTop: '8px' }, onClick: e => e.stopPropagation() },
           steps.map(st => h('button', {
             key: st.key, type: 'button', onClick: e => handleToggleChecklist(e, item.id, st.key),
-            className: `px-2.5 py-1 rounded-xl text-[10px] font-black border transition flex items-center gap-1 ${cl[st.key] ? st.activeCls : 'bg-slate-800 text-slate-400 border-slate-700'}`
+            className: 'btn',
+            style: {
+              padding: '4px 10px', fontSize: '11px',
+              background: cl[st.key] ? '#059669' : '#F1F5F9',
+              color: cl[st.key] ? '#FFFFFF' : '#475569',
+              borderColor: cl[st.key] ? '#047857' : '#CBD5E1'
+            }
           }, `${cl[st.key] ? '✅' : '⬜'} ${st.label}`))
         );
       };
@@ -825,7 +1020,6 @@
           if (filterBrand !== 'ALL' && s.brand_id !== filterBrand) return false;
           if (filterStatus !== 'ALL' && s.status !== filterStatus) return false;
           if (filterDate && s.date !== filterDate) return false;
-          if (filterHour !== 'ALL' && parseInt(s.start_time.split(':')[0], 10) !== parseInt(filterHour, 10)) return false;
           if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
             const bName = brands.find(b => b.id === s.brand_id)?.name.toLowerCase() || '';
@@ -833,7 +1027,7 @@
           }
           return true;
         }).sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
-      }, [schedules, filterBrand, filterStatus, filterDate, filterHour, searchQuery, brands]);
+      }, [schedules, filterBrand, filterStatus, filterDate, searchQuery, brands]);
 
       const donutCanvas = useRef(null), barCanvas = useRef(null);
       const donutInst = useRef(null), barInst = useRef(null);
@@ -848,11 +1042,11 @@
               labels: ['LIVE', 'Konten', 'Rest', 'Personal', 'OFF', 'Meeting'],
               datasets: [{
                 data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
-                backgroundColor: ['#10B981', '#8B5CF6', '#3B82F6', '#EC4899', '#EF4444', '#06B6D4'],
-                borderWidth: 2, borderColor: '#0F172A'
+                backgroundColor: ['#059669', '#7C3AED', '#2563EB', '#DB2777', '#DC2626', '#0891B2'],
+                borderWidth: 2, borderColor: '#FFFFFF'
               }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#CBD5E1' } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
           });
         }
         if (barCanvas.current) {
@@ -861,16 +1055,9 @@
             type: 'bar',
             data: {
               labels: stats.perBrand.map(b => b.name),
-              datasets: [{ label: 'Total Sesi / Shift', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#10B981', borderRadius: 6 }]
+              datasets: [{ label: 'Total Sesi / Shift', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#2563EB', borderRadius: 6 }]
             },
-            options: {
-              responsive: true, maintainAspectRatio: false,
-              scales: {
-                x: { ticks: { color: '#94A3B8' }, grid: { color: '#1E293B' } },
-                y: { beginAtZero: true, ticks: { color: '#94A3B8' }, grid: { color: '#1E293B' } }
-              },
-              plugins: { legend: { labels: { color: '#CBD5E1' } } }
-            }
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
           });
         }
       }, [activeTab, stats]);
@@ -884,18 +1071,12 @@
       };
 
       const applyPresetShift = (brandId, labelPrefix, shiftNum, start, end) => {
-        const sMin = timeToMinutes(start), eMin = timeToMinutes(end);
-        const conflict = existingSchedulesOnFormDate.find(s => {
-          const exS = timeToMinutes(s.start_time);
-          let exE = timeToMinutes(s.end_time);
-          if (exE <= exS) exE = 24 * 60;
-          return sMin < exE && eMin > exS;
-        });
+        const conflict = checkConflictRange(start, end);
         if (conflict) { notify(`⛔ Jam ${start}-${end} sudah terisi oleh "${conflict.title}"!`); return; }
         const bObj = brands.find(b => b.id === brandId);
         setFormData(prev => ({
           ...prev, title: `Shift ${shiftNum} ${labelPrefix}`, brand_id: brandId, status: 'LIVE',
-          color: bObj?.color || '#10B981', start_time: start, end_time: end
+          color: bObj?.color || '#B6D7A8', start_time: start, end_time: end
         }));
       };
 
@@ -962,91 +1143,101 @@
         notify(`✅ ${cloned.length} sesi berhasil disalin ke ${cloneTargetDate}!`);
       };
 
-      return h('div', { className: 'min-h-screen flex flex-col relative' },
-        toast && h('div', { className: 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-black border border-emerald-400' },
-          h('span', null, '💼'), h('span', null, toast)
-        ),
+      const dayDensity = getDayScheduleDensity(selectedDate);
 
-        // HEADER EXECUTIVE WORK MODE
-        h('header', { className: 'bg-slate-900/95 backdrop-blur border-b border-slate-800 px-3 md:px-6 py-3 sticky top-0 z-40 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 shadow-lg' },
-          h('div', { className: 'flex items-center justify-between gap-3' },
-            h('div', { className: 'flex items-center gap-3 min-w-0' },
-              h('div', { className: 'w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-xl shrink-0 shadow-inner' }, '💼'),
-              h('div', { className: 'min-w-0' },
+      return h('div', null,
+        toast && h('div', {
+          style: {
+            position: 'fixed', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 80,
+            background: '#0F172A', color: '#FFFFFF', padding: '10px 20px', borderRadius: '999px',
+            fontSize: '12px', fontWeight: 800, boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+          }
+        }, `💼 ${toast}`),
+
+        // HEADER EXECUTIVE PORTAL
+        h('header', { className: 'header-bar' },
+          h('div', { className: 'flex flex-wrap items-center justify-between gap-3', style: { maxWidth: '1440px', margin: '0 auto' } },
+            h('div', { className: 'flex items-center gap-3' },
+              h('div', {
+                style: {
+                  width: '42px', height: '42px', borderRadius: '12px', background: '#EFF6FF',
+                  border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px'
+                }
+              }, '💼'),
+              h('div', null,
                 h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                  h('h1', { className: 'font-extrabold text-sm md:text-base text-white tracking-wide truncate' }, 'Alisya Work Schedule'),
-                  h('span', { className: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-mono font-bold' }, 'WORK MODE • LIVE SYNC'),
+                  h('h1', { style: { fontSize: '16px', fontWeight: 800, color: '#0F172A' } }, 'Alisya Work Schedule'),
+                  h('span', { className: 'badge badge-blue font-mono' }, 'EXECUTIVE WORK MODE'),
                   isAdmin
-                    ? h('span', { className: 'bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full text-[9px] font-black' }, '👑 ADMIN')
-                    : h('span', { className: 'bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full text-[9px] font-semibold border border-slate-700' }, '👀 PARTNER VIEW')
+                    ? h('span', { className: 'badge badge-amber' }, '👑 ADMIN ACTIVE')
+                    : h('span', { className: 'badge badge-neutral' }, '👀 CLIENT & PARTNER VIEW')
                 ),
-                h('p', { className: 'text-[10px] md:text-[11px] text-slate-400 truncate mt-0.5' }, t.portalSub)
+                h('p', { style: { fontSize: '11px', color: '#64748B', marginTop: '2px', fontWeight: 500 } }, t.portalSub)
               )
             ),
-            h('span', { className: 'lg:hidden font-mono text-[10px] font-bold bg-slate-950 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-xl shrink-0' }, liveClockString)
-          ),
 
-          h('div', { className: 'flex items-center justify-between lg:justify-end gap-2 overflow-x-auto scrollbar-none' },
-            h('div', { className: 'flex items-center gap-1.5 shrink-0' },
-              h('select', {
-                value: lang, onChange: e => handleSetLang(e.target.value),
-                className: 'bg-slate-800 text-white font-bold text-xs px-2.5 py-1.5 rounded-xl border border-slate-700 cursor-pointer'
-              },
+            // Toolbar Kanan
+            h('div', { className: 'flex items-center gap-2 flex-wrap' },
+              h('span', { className: 'badge badge-live font-mono', style: { fontSize: '12px', padding: '6px 12px' } },
+                h('span', { className: 'dot-live' }),
+                `${liveClockString} WIB`
+              ),
+              h('select', { value: lang, onChange: e => handleSetLang(e.target.value) },
                 h('option', { value: 'id' }, '🇮🇩 ID'),
                 h('option', { value: 'en' }, '🇬🇧 EN')
               ),
-              h('button', {
-                type: 'button', onClick: () => { window.location.href = './index.html'; },
-                className: 'px-3 py-1.5 rounded-xl text-xs font-black bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-500/40 transition flex items-center gap-1'
-              }, h('span', null, '🌊'), h('span', { className: 'hidden sm:inline' }, 'Lemuria Mode')),
-              h('div', { className: 'flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700' },
+              h('div', { className: 'flex items-center gap-1', style: { background: '#F1F5F9', padding: '3px', borderRadius: '10px', border: '1px solid #CBD5E1' } },
                 h('button', {
                   onClick: () => setDisplayMode('mobile'),
-                  className: `px-2.5 py-1 rounded-lg text-xs font-black transition ${displayMode === 'mobile' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300'}`
-                }, '📱'),
+                  className: 'btn',
+                  style: { padding: '5px 10px', background: displayMode === 'mobile' ? '#2563EB' : 'transparent', color: displayMode === 'mobile' ? '#FFF' : '#475569' }
+                }, `📱 ${t.modeHP}`),
                 h('button', {
                   onClick: () => setDisplayMode('pc'),
-                  className: `px-2.5 py-1 rounded-lg text-xs font-black transition ${displayMode === 'pc' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300'}`
-                }, '💻')
-              )
-            ),
-
-            h('div', { className: 'flex items-center bg-slate-800 rounded-xl p-1 text-xs font-bold border border-slate-700 shrink-0 gap-1' },
-              h('button', { onClick: () => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y - 1)) : setCurrentMonth(m => m - 1), className: 'px-2 py-1 hover:bg-slate-700 rounded-lg text-slate-200' }, '◀'),
-              h('select', {
-                value: currentMonth, onChange: e => setCurrentMonth(Number(e.target.value)),
-                className: 'bg-slate-900 text-white font-bold text-xs px-2 py-1 rounded-lg border border-slate-700 cursor-pointer'
-              }, Array.from({ length: 12 }).map((_, idx) => h('option', { key: idx, value: idx }, new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(new Date(2026, idx, 1))))),
-              h('select', {
-                value: currentYear, onChange: e => setCurrentYear(Number(e.target.value)),
-                className: 'bg-slate-900 text-white font-mono font-bold text-xs px-2 py-1 rounded-lg border border-slate-700 cursor-pointer'
-              }, [2024, 2025, 2026, 2027, 2028, 2029, 2030].map(yr => h('option', { key: yr, value: yr }, yr))),
-              h('button', { onClick: () => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y + 1)) : setCurrentMonth(m => m + 1), className: 'px-2 py-1 hover:bg-slate-700 rounded-lg text-slate-200' }, '▶')
-            ),
-
-            h('span', { className: 'hidden lg:inline-flex font-mono text-xs font-bold bg-slate-950 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl shrink-0' }, `${liveClockString} WIB`),
-
-            isAdmin
-              ? h('button', { onClick: () => { setIsAdmin(false); notify('🔒 Mode Admin Dikunci'); }, className: 'bg-rose-500/20 text-rose-300 border border-rose-500/40 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0' }, `🔒 ${t.lockBtn}`)
-              : h('button', { onClick: () => setPinInputModal(true), className: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0' }, `🔑 ${t.loginBtn}`)
+                  className: 'btn',
+                  style: { padding: '5px 10px', background: displayMode === 'pc' ? '#2563EB' : 'transparent', color: displayMode === 'pc' ? '#FFF' : '#475569' }
+                }, `💻 ${t.modePC}`)
+              ),
+              h('div', { className: 'flex items-center gap-1' },
+                h('button', { className: 'btn btn-outline', onClick: () => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y - 1)) : setCurrentMonth(m => m - 1) }, '◀'),
+                h('select', { value: currentMonth, onChange: e => setCurrentMonth(Number(e.target.value)) },
+                  Array.from({ length: 12 }).map((_, idx) => h('option', { key: idx, value: idx }, new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(new Date(2026, idx, 1))))
+                ),
+                h('select', { value: currentYear, onChange: e => setCurrentYear(Number(e.target.value)) },
+                  [2024, 2025, 2026, 2027, 2028, 2029, 2030].map(yr => h('option', { key: yr, value: yr }, yr))
+                ),
+                h('button', { className: 'btn btn-outline', onClick: () => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y + 1)) : setCurrentMonth(m => m + 1) }, '▶')
+              ),
+              h('button', {
+                className: 'btn btn-outline',
+                onClick: () => { window.location.href = './index.html'; },
+                title: 'Kembali ke Lemurian Sanctuary'
+              }, '🌊 Personal Mode'),
+              isAdmin
+                ? h('button', { className: 'btn btn-subtle', onClick: () => { setIsAdmin(false); notify('🔒 Admin Terkunci'); } }, `🔒 ${t.lockBtn}`)
+                : h('button', { className: 'btn btn-outline', onClick: () => setPinInputModal(true) }, `🔑 ${t.loginBtn}`)
+            )
           )
         ),
 
         // TICKER BAR PROFESIONAL
-        h('div', { className: 'bg-slate-950 text-slate-200 border-b border-slate-800 py-2 overflow-hidden relative z-30 select-none text-xs' },
-          h('div', { className: 'ticker-track items-center gap-6' },
-            [1, 2].map(loopId => h('div', { key: loopId, className: 'flex items-center gap-6 shrink-0' },
-              h('span', { className: 'inline-flex items-center gap-1.5 bg-emerald-500/15 text-emerald-300 px-3 py-0.5 rounded-full border border-emerald-500/30 font-bold text-[11px]' }, '💼 Verified Live Streamer & Creator • Alisya'),
-              h('span', { className: 'inline-flex items-center gap-1.5 bg-slate-900 px-3 py-0.5 rounded-full border border-slate-700 font-bold text-[11px] text-amber-300' }, `${broadcastMetrics.badge} (${broadcastMetrics.freeSlots} Slot Kosong Minggu Ini)`),
-              h('span', { className: 'inline-flex items-center gap-1.5 text-slate-300 text-[11px]' }, `⏱️ Jam Terbang Terverifikasi: ${broadcastMetrics.totalHours}+ Jam Live Aktif`),
-              h('span', { className: 'inline-flex items-center gap-1.5 text-sky-300 text-[11px] font-semibold' }, `📌 Fokus: ${stickyNote}`)
+        h('div', { className: 'ticker-bar' },
+          h('div', { className: 'ticker-track' },
+            [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center gap-4' },
+              h('span', { style: { fontWeight: 800, color: '#38BDF8' } }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
+              h('span', null, '•'),
+              h('span', { style: { color: '#34D399', fontWeight: 700 } }, `${broadcastMetrics.badge} (${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan)`),
+              h('span', null, '•'),
+              h('span', null, `⏱️ Track Record: ${broadcastMetrics.totalHours}+ Jam Live Streaming Aktif`),
+              h('span', null, '•'),
+              h('span', { style: { color: '#FDE68A' } }, `📌 Fokus Operasional: ${stickyNote}`)
             ))
           )
         ),
 
-        // NAVIGASI TAB UTAMA
-        h('nav', { className: 'bg-slate-900/90 backdrop-blur border-b border-slate-800 px-3 md:px-6 py-2.5 flex items-center justify-between gap-2 overflow-x-auto scrollbar-none sticky top-[61px] z-30' },
-          h('div', { className: 'flex items-center gap-1.5 text-xs font-bold shrink-0' },
+        // NAVIGASI TAB
+        h('nav', { className: 'nav-bar' },
+          h('div', { className: 'flex items-center gap-2', style: { maxWidth: '1440px' } },
             [
               { id: 'agenda', icon: '📅', label: t.tabAgenda },
               { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
@@ -1054,69 +1245,84 @@
               { id: 'list', icon: '📋', label: t.tabList },
               { id: 'colors', icon: '🏷️', label: t.tabColors }
             ].map(tb => h('button', {
-              key: tb.id, onClick: () => setActiveTab(tb.id),
-              className: `px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shrink-0 ${activeTab === tb.id ? 'bg-emerald-500 text-slate-950 font-black shadow' : 'text-slate-300 hover:bg-slate-800'}`
-            }, h('span', null, tb.icon), h('span', null, tb.label)))
+              key: tb.id,
+              onClick: () => setActiveTab(tb.id),
+              className: `btn-tab ${activeTab === tb.id ? 'active' : ''}`
+            }, `${tb.icon} ${tb.label}`))
           ),
-          h('div', { className: 'flex items-center gap-2 shrink-0' },
-            h('button', { onClick: exportCSV, className: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold' }, `📥 ${t.btnExportCSV}`),
-            isAdmin && h('button', { onClick: () => handleOpenCreate(selectedDate), className: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black shadow' }, t.btnAddSch)
+          h('div', { className: 'flex items-center gap-2' },
+            h('button', { className: 'btn btn-outline', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
+            isAdmin && h('button', { className: 'btn btn-primary', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
           )
         ),
 
         // KONTEN UTAMA
-        h('main', { className: `flex-1 p-4 md:p-6 mx-auto w-full ${displayMode === 'mobile' ? 'max-w-lg space-y-4' : 'max-w-[1600px] space-y-6'}` },
+        h('main', { className: displayMode === 'mobile' ? 'container-mobile' : 'container' },
 
-          // TAB 1: AGENDA HARIAN, SLOT KOSONG & KALENDER
-          activeTab === 'agenda' && h('div', { id: 'work-agenda-capture', className: 'space-y-5' },
-            h('div', { className: 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-emerald-500/40 rounded-3xl p-4 md:p-6 shadow-xl space-y-3' },
+          // =================================================================
+          // TAB 1: DAILY AGENDA (FOKUS UTAMA JADWAL & WAKTU REAL-TIME)
+          // =================================================================
+          activeTab === 'agenda' && h('div', { id: 'work-agenda-capture', className: 'flex-col gap-4' },
+            // Banner Radar Utama
+            h('div', { className: 'radar-banner' },
               h('div', { className: 'flex flex-wrap items-center justify-between gap-3' },
-                h('div', { className: 'space-y-1' },
+                h('div', null,
                   h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                    h('span', { className: 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse' }),
-                    h('span', { className: 'text-[11px] font-black uppercase tracking-wider text-emerald-400' }, t.radarTitle),
-                    h('span', { className: `px-2.5 py-0.5 rounded-full text-[10px] border ${getDayScheduleDensity(selectedDate).badge}` }, getDayScheduleDensity(selectedDate).text)
+                    h('span', { className: 'dot-live' }),
+                    h('span', { style: { fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em', color: '#93C5FD' } }, t.radarTitle),
+                    h('span', { className: `badge ${dayDensity.cls}` }, dayDensity.text)
                   ),
-                  h('h2', { className: 'text-xl md:text-2xl font-black text-white' }, `${getHariNama(selectedDate)}, ${selectedDate}`),
-                  h('p', { className: 'text-xs text-slate-300' }, `${selectedDaySchedules.length} ${t.scheduledSessions} • ${selectedDaySchedules.filter(s => s.status !== 'Tidur').length} ${t.productiveActs} • ${availableSlotsForSelectedDate.length} ${t.slotsReady}`),
-                  shortBreakWarnings[selectedDate] && h('div', { className: 'inline-block bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-lg text-[11px] font-bold' }, t.shortBreakWarning)
+                  h('h2', { style: { fontSize: '22px', fontWeight: 800, marginTop: '6px' } }, `${getHariNama(selectedDate)}, ${selectedDate}`),
+                  h('p', { style: { fontSize: '12px', color: '#CBD5E1', marginTop: '4px' } },
+                    `${selectedDaySchedules.length} ${t.scheduledSessions} • ${selectedDaySchedules.filter(s => s.status !== 'Tidur').length} ${t.productiveActs} • ${availableSlotsForSelectedDate.length} ${t.slotsReady}`
+                  ),
+                  shortBreakWarnings[selectedDate] && h('div', { className: 'badge badge-amber', style: { marginTop: '8px' } }, t.shortBreakWarning)
                 ),
+                // Pintasan Lompat Tanggal & Share
                 h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                  h('div', { className: 'flex items-center gap-1 bg-slate-950/70 p-1 rounded-xl border border-slate-700 text-xs' },
-                    h('button', { onClick: () => jumpToOffset(0), className: 'px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold' }, t.today),
-                    h('button', { onClick: () => jumpToOffset(1), className: 'px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold' }, t.tomorrow),
-                    h('button', { onClick: () => jumpToOffset(2), className: 'px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold' }, t.dayAfter)
+                  h('div', { className: 'flex items-center gap-1', style: { background: 'rgba(255,255,255,0.1)', padding: '4px', borderRadius: '10px' } },
+                    h('span', { style: { fontSize: '11px', padding: '0 6px', color: '#CBD5E1', fontWeight: 700 } }, t.jump),
+                    h('button', { className: 'btn', style: { background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '5px 10px' }, onClick: () => jumpToOffset(0) }, t.today),
+                    h('button', { className: 'btn', style: { background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '5px 10px' }, onClick: () => jumpToOffset(1) }, t.tomorrow),
+                    h('button', { className: 'btn', style: { background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '5px 10px' }, onClick: () => jumpToOffset(2) }, t.dayAfter)
                   ),
-                  h('button', { onClick: () => exportElementAsPNG('work-agenda-capture', selectedDate), className: 'bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl text-xs font-bold border border-slate-600' }, `📸 ${t.btnSavePNG}`),
-                  h('button', { onClick: shareToWhatsApp, className: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-2 rounded-xl text-xs font-black shadow' }, `📲 ${t.btnShareWA}`)
+                  h('button', { className: 'btn btn-outline', onClick: () => exportElementAsPNG('work-agenda-capture', selectedDate) }, `📸 ${t.btnSavePNG}`),
+                  h('button', { className: 'btn btn-emerald', onClick: shareToWhatsApp }, `📲 ${t.btnShareWA}`),
+                  isAdmin && h('button', { className: 'btn btn-primary', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSession)
                 )
               ),
               renderLiveNowBanner()
             ),
 
-            h('div', { className: `grid grid-cols-1 ${displayMode === 'pc' ? 'lg:grid-cols-12' : ''} gap-5 items-start` },
-              h('div', { className: `${displayMode === 'pc' ? 'lg:col-span-5' : ''} space-y-4` },
-                h('div', { className: 'bg-slate-900 border border-emerald-500/40 rounded-3xl p-4 md:p-5 space-y-3 shadow-md' },
-                  h('div', { className: 'flex items-center justify-between' },
-                    h('span', { className: 'text-xs md:text-sm font-black text-emerald-400 flex items-center gap-1.5' }, h('span', null, '🟢'), h('span', null, t.availableTitle)),
-                    h('span', { className: 'text-[11px] font-bold text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30' }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
+            // Area 2 Kolom: Kiri (Slot Kosong + Kalender) & Kanan (Daftar Sesi Harian)
+            h('div', { className: `grid-agenda ${displayMode === 'pc' ? 'pc-mode' : ''}` },
+              // Kolom Kiri
+              h('div', { className: 'flex-col gap-4' },
+                // 1. Available Schedule (Slot Jam Kosong)
+                h('div', { className: 'card', style: { borderColor: '#A7F3D0', background: '#F0FDF4' } },
+                  h('div', { className: 'flex items-center justify-between', style: { marginBottom: '12px' } },
+                    h('span', { style: { fontSize: '13px', fontWeight: 800, color: '#065F46' } }, `🟢 ${t.availableTitle}`),
+                    h('span', { className: 'badge badge-live' }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
                   ),
                   availableSlotsForSelectedDate.length === 0
-                    ? h('div', { className: 'text-xs text-rose-400 font-bold py-2 text-center bg-rose-950/40 rounded-xl border border-rose-500/30' }, t.allSlotsFilled)
-                    : h('div', { className: 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2' },
+                    ? h('div', { className: 'badge badge-danger', style: { width: '100%', justifyContent: 'center', padding: '10px' } }, t.allSlotsFilled)
+                    : h('div', { className: 'grid-2' },
                         availableSlotsForSelectedDate.map(slot => h('button', {
-                          key: slot.label, onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
-                          className: 'bg-slate-950 hover:bg-slate-800 border border-emerald-500/30 text-emerald-200 font-mono text-xs font-bold p-2 rounded-xl transition flex items-center justify-between'
-                        }, h('span', null, `⏰ ${slot.start}-${slot.end}`), h('span', { className: 'text-emerald-400 font-black' }, '+')))
+                          key: slot.label,
+                          onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
+                          className: 'btn btn-outline font-mono',
+                          style: { justifyContent: 'space-between', borderColor: '#6EE7B7', color: '#065F46', background: '#FFFFFF' }
+                        }, h('span', null, `⏰ ${slot.start} - ${slot.end}`), h('span', { style: { fontWeight: 800, color: '#059669' } }, '+')))
                       )
                 ),
 
-                h('div', { className: 'bg-slate-900 border border-slate-800 rounded-3xl p-4 md:p-5 space-y-3 shadow-md' },
-                  h('div', { className: 'flex items-center justify-between' },
-                    h('span', { className: 'text-xs font-black text-slate-200 uppercase tracking-wider' }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
-                    h('button', { onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1)), className: 'text-xs font-bold text-emerald-400 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700' }, 'Next Day ❯')
+                // 2. Kalender Bulanan
+                h('div', { className: 'card' },
+                  h('div', { className: 'flex items-center justify-between', style: { marginBottom: '12px' } },
+                    h('span', { style: { fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#1E293B' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
+                    h('button', { className: 'btn btn-subtle', style: { padding: '4px 10px' }, onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1)) }, 'Next Day ❯')
                   ),
-                  h('div', { className: 'grid grid-cols-7 gap-1.5' },
+                  h('div', { className: 'grid-7' },
                     Array.from({ length: daysInMonth }).map((_, i) => {
                       const day = i + 1;
                       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -1126,17 +1332,23 @@
                       const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
                       const dayShifts = schedules.filter(s => s.date === dateStr);
                       return h('button', {
-                        key: day, onClick: () => setSelectedDate(dateStr),
-                        className: `py-2 px-1 rounded-xl flex flex-col items-center justify-center transition border relative ${
-                          isSelected ? 'bg-emerald-500 text-slate-950 font-black border-emerald-300 shadow-md scale-105'
-                          : isToday ? 'bg-emerald-950/80 text-emerald-300 border-emerald-400 font-black'
-                          : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-600'
-                        }`
+                        key: day,
+                        onClick: () => setSelectedDate(dateStr),
+                        style: {
+                          padding: '8px 4px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center',
+                          background: isSelected ? '#2563EB' : isToday ? '#EFF6FF' : '#F8FAFC',
+                          color: isSelected ? '#FFFFFF' : isToday ? '#1D4ED8' : '#334155',
+                          border: isSelected ? '1px solid #1D4ED8' : isToday ? '1.5px solid #3B82F6' : '1px solid #E2E8F0',
+                          fontWeight: isSelected || isToday ? 800 : 600
+                        }
                       },
-                        h('span', { className: `text-[8px] font-bold ${isSelected ? 'text-slate-900' : 'text-slate-400'}` }, dayName),
-                        h('span', { className: 'text-xs font-black mt-0.5' }, day),
-                        h('div', { className: 'flex gap-0.5 mt-1 h-1' },
-                          dayShifts.slice(0, 3).map((s, idx) => h('span', { key: idx, className: 'w-1 h-1 rounded-full', style: { backgroundColor: isSelected ? '#0F172A' : s.color } }))
+                        h('span', { style: { fontSize: '9px', opacity: 0.8 } }, dayName),
+                        h('span', { style: { fontSize: '13px', marginTop: '2px' } }, day),
+                        h('div', { className: 'flex gap-1', style: { marginTop: '4px', height: '4px' } },
+                          dayShifts.slice(0, 3).map((s, idx) => h('span', {
+                            key: idx,
+                            style: { width: '4px', height: '4px', borderRadius: '50%', background: isSelected ? '#FFFFFF' : s.color }
+                          }))
                         )
                       );
                     })
@@ -1144,52 +1356,75 @@
                 )
               ),
 
-              h('div', { className: `${displayMode === 'pc' ? 'lg:col-span-7' : ''} space-y-3` },
-                h('div', { className: 'flex items-center justify-between bg-slate-900 px-4 py-3 rounded-2xl border border-slate-800' },
-                  h('span', { className: 'text-xs font-black uppercase text-emerald-400 tracking-wider' }, `📡 ${t.sessionList} (${selectedDate}): ${selectedDaySchedules.length}`),
+              // Kolom Kanan: Daftar Sesi Jadwal Harian
+              h('div', { className: 'flex-col gap-3' },
+                h('div', { className: 'card flex items-center justify-between', style: { padding: '12px 18px' } },
+                  h('span', { style: { fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#1E293B' } },
+                    `📡 ${t.sessionList} (${selectedDate}): ${selectedDaySchedules.length}`
+                  ),
                   selectedDaySchedules.length > 0 && isAdmin && h('button', {
-                    onClick: () => { setCloneTargetDate(addDaysToDateStr(selectedDate, 1)); setCloneModalOpen(true); },
-                    className: 'bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-xl text-xs font-bold border border-slate-700'
+                    className: 'btn btn-subtle',
+                    onClick: () => { setCloneTargetDate(addDaysToDateStr(selectedDate, 1)); setCloneModalOpen(true); }
                   }, t.btnCloneDay)
                 ),
+
                 selectedDaySchedules.length === 0
-                  ? h('div', { className: 'bg-slate-900 rounded-3xl p-10 text-center border border-slate-800 space-y-2' },
-                      h('div', { className: 'text-4xl' }, '💼'),
-                      h('div', { className: 'font-extrabold text-sm text-white' }, t.noSchedule),
-                      h('p', { className: 'text-xs text-slate-400 max-w-sm mx-auto' }, t.noScheduleSub)
+                  ? h('div', { className: 'card', style: { textAlign: 'center', padding: '48px 20px' } },
+                      h('div', { style: { fontSize: '36px', marginBottom: '8px' } }, '💼'),
+                      h('div', { style: { fontSize: '15px', fontWeight: 800, color: '#0F172A' } }, t.noSchedule),
+                      h('p', { style: { fontSize: '12px', color: '#64748B', marginTop: '4px' } }, t.noScheduleSub)
                     )
                   : selectedDaySchedules.map(item => {
                       const brand = brands.find(b => b.id === item.brand_id);
                       const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
                       const timeState = getSessionTimeState(item);
+
                       return h('div', {
-                        key: item.id, onClick: () => isAdmin && handleOpenEdit(item),
-                        className: `bg-slate-900 rounded-2xl p-4 border flex items-start justify-between gap-3 relative overflow-hidden transition ${
-                          isCurrentlyLive ? 'border-emerald-400 ring-2 ring-emerald-500/30' : timeState === 'done' ? 'border-slate-800 opacity-75' : 'border-slate-800 hover:border-slate-700'
-                        } ${isAdmin ? 'cursor-pointer' : ''}`
+                        key: item.id,
+                        onClick: () => isAdmin && handleOpenEdit(item),
+                        className: 'card flex items-start justify-between gap-3',
+                        style: {
+                          position: 'relative', overflow: 'hidden', paddingLeft: '22px',
+                          borderColor: isCurrentlyLive ? '#10B981' : '#E2E8F0',
+                          boxShadow: isCurrentlyLive ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : undefined,
+                          opacity: timeState === 'done' && !isCurrentlyLive ? 0.78 : 1,
+                          cursor: isAdmin ? 'pointer' : 'default'
+                        }
                       },
-                        h('div', { className: 'w-2 absolute left-0 top-0 bottom-0', style: { backgroundColor: item.color } }),
-                        h('div', { className: 'space-y-1.5 pl-2 flex-1' },
+                        h('div', { style: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '7px', background: item.color } }),
+                        h('div', { className: 'flex-col gap-2', style: { flex: 1 } },
                           h('div', { className: 'flex flex-wrap items-center gap-2' },
-                            h('span', { className: 'font-mono text-xs font-black text-white bg-slate-950 border border-slate-700 px-2.5 py-0.5 rounded-lg' }, `⏰ ${item.start_time} - ${item.end_time}`),
-                            isCurrentlyLive && h('span', { className: 'bg-emerald-500 text-slate-950 text-[10px] font-mono font-black px-2 py-0.5 rounded-lg' }, `LIVE • -${liveTracker.activeItem.remainingHMS}`),
-                            !isCurrentlyLive && timeState === 'done' && h('span', { className: 'bg-slate-800 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-lg' }, t.badgeFinished),
-                            h('span', { className: 'text-[10px] font-black px-2.5 py-0.5 rounded-lg uppercase', style: { backgroundColor: item.color + '33', color: '#FFFFFF', border: `1px solid ${item.color}88` } }, item.status),
-                            h('span', { className: 'text-xs font-bold text-slate-300' }, `${brand?.emoji || ''} ${brand?.name || ''}`)
+                            h('span', { className: 'badge badge-neutral font-mono', style: { fontSize: '12px' } }, `⏰ ${item.start_time} - ${item.end_time}`),
+                            isCurrentlyLive && h('span', { className: 'badge badge-live font-mono' }, `🟢 LIVE NOW • -${liveTracker.activeItem.remainingHMS}`),
+                            !isCurrentlyLive && timeState === 'done' && h('span', { className: 'badge badge-neutral' }, t.badgeFinished),
+                            !isCurrentlyLive && timeState === 'upcoming' && h('span', { className: 'badge badge-blue' }, t.badgeUpcoming),
+                            h('span', {
+                              className: 'badge',
+                              style: { background: item.color + '35', color: '#0F172A', borderColor: item.color }
+                            }, item.status),
+                            h('span', { style: { fontSize: '12px', fontWeight: 700, color: '#475569' } }, `${brand?.emoji || ''} ${brand?.name || ''}`)
                           ),
-                          h('div', { className: 'font-black text-base text-white' }, item.title),
-                          Number(item.gmv) > 0 && h('div', { className: 'inline-block bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] font-black px-2.5 py-0.5 rounded-lg' }, `💰 GMV: Rp ${Number(item.gmv).toLocaleString('id-ID')}`),
-                          item.notes && h('div', { className: 'bg-slate-950/80 border border-slate-800 p-2 rounded-xl text-xs text-slate-300 italic' }, `📌 ${item.notes}`),
+                          h('div', { style: { fontSize: '16px', fontWeight: 800, color: '#0F172A' } }, item.title),
+                          Number(item.gmv) > 0 && h('div', { className: 'badge badge-live font-mono', style: { alignSelf: 'flex-start' } },
+                            `💰 GMV: Rp ${Number(item.gmv).toLocaleString('id-ID')}`
+                          ),
+                          item.notes && h('div', {
+                            style: { background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '8px 12px', borderRadius: '10px', fontSize: '12px', color: '#334155' }
+                          }, `📌 ${item.notes}`),
                           renderKontenChecklist(item)
                         ),
-                        h('div', { className: 'flex flex-col items-end gap-1.5 shrink-0' },
+                        h('div', { className: 'flex-col gap-2 items-end' },
                           h('button', {
-                            type: 'button', onClick: e => handleExportToGoogleCalendar(e, item),
-                            className: 'text-[10px] text-emerald-300 font-bold bg-slate-950 hover:bg-slate-800 border border-emerald-500/30 px-2.5 py-1 rounded-lg'
+                            type: 'button',
+                            className: 'btn btn-outline',
+                            style: { padding: '5px 10px', fontSize: '11px' },
+                            onClick: e => handleExportToGoogleCalendar(e, item)
                           }, '📅 GCal'),
                           isAdmin && h('button', {
-                            type: 'button', onClick: e => { e.stopPropagation(); handleDuplicate(item); },
-                            className: 'text-[10px] text-slate-300 font-bold bg-slate-800 px-2 py-1 rounded-lg'
+                            type: 'button',
+                            className: 'btn btn-subtle',
+                            style: { padding: '5px 10px', fontSize: '11px' },
+                            onClick: e => { e.stopPropagation(); handleDuplicate(item); }
                           }, t.copyBtn)
                         )
                       );
@@ -1198,164 +1433,172 @@
             )
           ),
 
-          // TAB 2: KALENDER SPREADSHEET
-          activeTab === 'calendar' && h('div', { className: 'space-y-4' },
-            h('div', { className: 'bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs' },
+          // =================================================================
+          // TAB 2: SPREADSHEET CALENDAR
+          // =================================================================
+          activeTab === 'calendar' && h('div', { className: 'flex-col gap-4' },
+            h('div', { className: 'card flex flex-wrap items-center justify-between gap-3' },
               h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                h('button', { onClick: shareSpreadsheetToWA, className: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2 rounded-xl font-black shadow' }, `📲 ${t.btnShareRekapWA}`),
-                h('button', { onClick: () => exportElementAsPNG('work-spreadsheet-capture', `${monthName}_${currentYear}`), className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl font-bold border border-slate-700' }, `📸 ${t.btnDownloadTablePNG}`)
+                h('button', { className: 'btn btn-emerald', onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
+                h('button', { className: 'btn btn-primary', onClick: () => exportElementAsPNG('work-spreadsheet-area', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
               ),
               h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                brands.map(b => h('span', { key: b.id, className: 'flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-bold text-slate-200' },
-                  h('span', { className: 'w-2.5 h-2.5 rounded-full', style: { backgroundColor: b.color } }),
+                brands.map(b => h('span', { key: b.id, className: 'badge badge-neutral' },
+                  h('span', { style: { width: '10px', height: '10px', borderRadius: '50%', background: b.color, display: 'inline-block' } }),
                   `${b.emoji} ${b.name}`
                 ))
               )
             ),
-
-            h('div', { id: 'work-spreadsheet-capture', className: 'bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl' },
-              h('div', { className: 'overflow-x-auto', style: { maxHeight: '75vh' } },
-                h('table', { className: 'w-full border-collapse text-xs select-none' },
-                  h('thead', null,
-                    h('tr', { className: 'bg-slate-950 text-emerald-400 sticky-header' },
-                      h('th', { className: 'sticky-col bg-slate-950 px-3 py-3 text-left font-black border-b border-r border-slate-800 min-w-[160px]' }, `💼 ${t.colDateTime}`),
-                      h('th', { className: 'bg-slate-950 px-2 py-3 text-center font-bold border-b border-r border-slate-800 min-w-[115px]' }, t.colDayStatus),
-                      TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'px-2 py-3 text-center font-mono font-bold border-b border-r border-slate-800 min-w-[100px] text-slate-300' }, slot.label))
-                    )
-                  ),
-                  h('tbody', null,
-                    Array.from({ length: daysInMonth }).map((_, i) => {
-                      const day = i + 1;
-                      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                      const dtObj = new Date(currentYear, currentMonth, day);
-                      const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
-                      const isToday = dateStr === realTodayStr;
-                      const density = getDayScheduleDensity(dateStr);
-
-                      return h('tr', { key: day, className: isToday ? 'today-row-highlight' : 'hover:bg-slate-800/40' },
-                        h('td', { className: 'sticky-col bg-slate-900 px-3 py-2 border-r border-b border-slate-800 font-bold whitespace-nowrap' },
-                          h('div', { className: 'flex items-center gap-2' },
-                            h('span', { className: 'text-sm font-black text-white w-5' }, day),
-                            h('span', { className: 'text-xs uppercase text-emerald-400' }, dayName),
-                            isToday && h('span', { className: 'bg-emerald-500 text-slate-950 text-[9px] font-black px-2 py-0.5 rounded-full ml-auto' }, t.todayBadge)
-                          )
-                        ),
-                        h('td', { className: 'border-r border-b border-slate-800 p-1.5 text-center whitespace-nowrap' },
-                          h('span', { className: `px-2 py-0.5 rounded-lg text-[10px] border ${density.badge}` }, density.text)
-                        ),
-                        TIME_SLOTS.map(slot => {
-                          const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                          const slotItems = schedules.filter(s => {
-                            if (s.date !== dateStr) return false;
-                            const st = timeToMinutes(s.start_time);
-                            let en = timeToMinutes(s.end_time);
-                            if (en <= st) en = 24 * 60;
-                            return st < eM && en > sM;
-                          });
-                          return h('td', {
-                            key: slot.label,
-                            onClick: () => slotItems.length > 0 ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`⏰ ${slotItems[0].start_time}-${slotItems[0].end_time}: ${slotItems[0].title}`)) : handleOpenCreate(dateStr, slot.start, slot.end),
-                            className: 'border-r border-b border-slate-800 p-1 align-top h-12 cursor-pointer hover:bg-slate-800/50'
-                          },
-                            slotItems.map(item => h('div', {
-                              key: item.id,
-                              className: 'p-1 rounded-lg font-bold text-[10px] text-slate-950 shadow-xs mb-0.5 truncate',
-                              style: { backgroundColor: item.color }
-                            }, item.title))
-                          );
-                        })
-                      );
-                    })
+            h('div', { id: 'work-spreadsheet-area', className: 'table-wrap' },
+              h('table', null,
+                h('thead', null,
+                  h('tr', null,
+                    h('th', { className: 'sticky-left', style: { minWidth: '170px', background: '#E2E8F0' } }, `💼 ${t.colDateTime}`),
+                    h('th', { style: { minWidth: '120px', textAlign: 'center' } }, t.colDayStatus),
+                    TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono', style: { minWidth: '105px', textAlign: 'center' } }, slot.label))
                   )
+                ),
+                h('tbody', null,
+                  Array.from({ length: daysInMonth }).map((_, i) => {
+                    const day = i + 1;
+                    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dtObj = new Date(currentYear, currentMonth, day);
+                    const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
+                    const isToday = dateStr === realTodayStr;
+                    const density = getDayScheduleDensity(dateStr);
+
+                    return h('tr', { key: day, className: isToday ? 'today-row' : '' },
+                      h('td', { className: 'sticky-left', style: { fontWeight: 800 } },
+                        h('div', { className: 'flex items-center gap-2' },
+                          h('span', { style: { fontSize: '14px', width: '22px' } }, day),
+                          h('span', { style: { color: '#2563EB', textTransform: 'uppercase' } }, dayName),
+                          isToday && h('span', { className: 'badge badge-blue', style: { marginLeft: 'auto', fontSize: '9px' } }, t.todayBadge)
+                        )
+                      ),
+                      h('td', { style: { textAlign: 'center' } },
+                        h('span', { className: `badge ${density.cls}` }, density.text)
+                      ),
+                      TIME_SLOTS.map(slot => {
+                        const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
+                        const slotItems = schedules.filter(s => {
+                          if (s.date !== dateStr) return false;
+                          const st = timeToMinutes(s.start_time);
+                          let en = timeToMinutes(s.end_time);
+                          if (en <= st) en = 24 * 60;
+                          return st < eM && en > sM;
+                        });
+                        return h('td', {
+                          key: slot.label,
+                          onClick: () => slotItems.length > 0 ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`⏰ ${slotItems[0].start_time}-${slotItems[0].end_time}: ${slotItems[0].title}`)) : handleOpenCreate(dateStr, slot.start, slot.end),
+                          style: { verticalAlign: 'top', height: '48px', cursor: 'pointer' }
+                        },
+                          slotItems.map(item => h('div', {
+                            key: item.id,
+                            style: {
+                              background: item.color, color: '#0F172A', padding: '4px 6px',
+                              borderRadius: '6px', fontSize: '10px', fontWeight: 800, marginBottom: '3px',
+                              border: '1px solid rgba(0,0,0,0.1)'
+                            }
+                          }, `${item.title} (${item.start_time}-${item.end_time})`))
+                        );
+                      })
+                    );
+                  })
                 )
               )
             )
           ),
 
+          // =================================================================
           // TAB 3: KPI & GRAFIK KERJA
-          activeTab === 'kpi' && h('div', { className: 'space-y-5' },
-            h('div', { className: 'bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3' },
-              h('div', { className: 'flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold' },
+          // =================================================================
+          activeTab === 'kpi' && h('div', { className: 'flex-col gap-4' },
+            h('div', { className: 'card flex flex-wrap items-center justify-between gap-3' },
+              h('div', { className: 'flex items-center gap-2 flex-wrap' },
                 ['daily', 'weekly', 'monthly', 'yearly'].map(p => h('button', {
-                  key: p, onClick: () => setStatPeriod(p),
-                  className: `px-3 py-1.5 rounded-lg capitalize ${statPeriod === p ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-400'}`
+                  key: p,
+                  onClick: () => setStatPeriod(p),
+                  className: `btn ${statPeriod === p ? 'btn-primary' : 'btn-subtle'}`,
+                  style: { textTransform: 'capitalize' }
                 }, p))
               ),
               (statPeriod === 'daily' || statPeriod === 'weekly') && h('input', {
-                type: 'date', value: customStatDate, onChange: e => setCustomStatDate(e.target.value),
-                className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-white'
+                type: 'date', value: customStatDate, onChange: e => setCustomStatDate(e.target.value)
               })
             ),
-            h('div', { className: 'grid grid-cols-2 md:grid-cols-5 gap-3' },
+            h('div', { className: 'grid-4' },
               [
-                { label: t.totalLive, val: stats.totalLive, sub: `${stats.totalLiveHours} ${t.hoursLive}`, cls: 'text-emerald-400' },
-                { label: t.takeKonten, val: stats.totalKonten, sub: `${stats.totalKontenHours} ${t.hoursProd}`, cls: 'text-purple-400' },
-                { label: t.sleepTime, val: stats.totalSleep, sub: `${stats.totalSleepHours} ${t.hoursSleep}`, cls: 'text-sky-400' },
-                { label: t.meTime, val: stats.totalMeTime, sub: 'Personal Sessions', cls: 'text-pink-400' },
-                { label: t.offDay, val: stats.totalOff, sub: 'Days Off', cls: 'text-rose-400' }
-              ].map((k, idx) => h('div', { key: idx, className: 'bg-slate-900 p-4 rounded-2xl border border-slate-800' },
-                h('div', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, k.label),
-                h('div', { className: `text-2xl font-black mt-1 ${k.cls}` }, k.val),
-                h('div', { className: 'text-[11px] text-slate-400 mt-1 font-semibold' }, k.sub)
+                { label: t.totalLive, val: stats.totalLive, sub: `${stats.totalLiveHours} ${t.hoursLive}`, color: '#059669' },
+                { label: t.takeKonten, val: stats.totalKonten, sub: `${stats.totalKontenHours} ${t.hoursProd}`, color: '#7C3AED' },
+                { label: t.sleepTime, val: stats.totalSleep, sub: `${stats.totalSleepHours} ${t.hoursSleep}`, color: '#2563EB' },
+                { label: t.offDay, val: stats.totalOff, sub: 'Full Days Off', color: '#DC2626' }
+              ].map((k, idx) => h('div', { key: idx, className: 'card' },
+                h('div', { style: { fontSize: '11px', fontWeight: 800, color: '#64748B' } }, k.label),
+                h('div', { style: { fontSize: '28px', fontWeight: 800, color: k.color, marginTop: '6px' } }, k.val),
+                h('div', { style: { fontSize: '12px', color: '#475569', marginTop: '4px', fontWeight: 600 } }, k.sub)
               ))
             ),
-            h('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-5' },
-              h('div', { className: 'bg-slate-900 p-5 rounded-2xl border border-slate-800' },
-                h('h3', { className: 'text-xs font-black text-slate-200 uppercase mb-3' }, t.propTitle),
-                h('div', { className: 'h-64 relative' }, h('canvas', { ref: donutCanvas }))
+            h('div', { className: 'grid-2', style: { gridTemplateColumns: displayMode === 'mobile' ? '1fr' : '1fr 1fr' } },
+              h('div', { className: 'card' },
+                h('h3', { style: { fontSize: '13px', fontWeight: 800, marginBottom: '12px' } }, t.propTitle),
+                h('div', { style: { height: '260px', position: 'relative' } }, h('canvas', { ref: donutCanvas }))
               ),
-              h('div', { className: 'bg-slate-900 p-5 rounded-2xl border border-slate-800' },
-                h('h3', { className: 'text-xs font-black text-slate-200 uppercase mb-3' }, t.barTitle),
-                h('div', { className: 'h-64 relative' }, h('canvas', { ref: barCanvas }))
+              h('div', { className: 'card' },
+                h('h3', { style: { fontSize: '13px', fontWeight: 800, marginBottom: '12px' } }, t.barTitle),
+                h('div', { style: { height: '260px', position: 'relative' } }, h('canvas', { ref: barCanvas }))
               )
             )
           ),
 
-          // TAB 4: DATABASE SEMUA JADWAL
-          activeTab === 'list' && h('div', { className: 'bg-slate-900 rounded-2xl border border-slate-800 p-4 md:p-6 space-y-4' },
-            h('div', { className: 'grid grid-cols-1 md:grid-cols-4 gap-2.5 text-xs' },
-              h('input', {
-                type: 'text', placeholder: t.searchPlaceholder, value: searchQuery, onChange: e => setSearchQuery(e.target.value),
-                className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white'
-              }),
-              h('select', { value: filterBrand, onChange: e => setFilterBrand(e.target.value), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white' },
-                h('option', { value: 'ALL' }, t.allCategories),
-                brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
-              ),
-              h('select', { value: filterStatus, onChange: e => setFilterStatus(e.target.value), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white' },
-                h('option', { value: 'ALL' }, t.allStatuses),
-                ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF'].map(st => h('option', { key: st, value: st }, st))
-              ),
-              h('input', { type: 'date', value: filterDate, onChange: e => setFilterDate(e.target.value), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white' })
+          // =================================================================
+          // TAB 4: DAFTAR LENGKAP SEMUA JADWAL
+          // =================================================================
+          activeTab === 'list' && h('div', { className: 'card flex-col gap-4' },
+            h('div', { className: 'flex flex-wrap items-center justify-between gap-2' },
+              h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
+              h('div', { className: 'flex flex-wrap items-center gap-2' },
+                h('input', { type: 'text', placeholder: t.searchPlaceholder, value: searchQuery, onChange: e => setSearchQuery(e.target.value) }),
+                h('select', { value: filterBrand, onChange: e => setFilterBrand(e.target.value) },
+                  h('option', { value: 'ALL' }, t.allCategories),
+                  brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
+                ),
+                h('select', { value: filterStatus, onChange: e => setFilterStatus(e.target.value) },
+                  h('option', { value: 'ALL' }, t.allStatuses),
+                  ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF'].map(st => h('option', { key: st, value: st }, st))
+                ),
+                h('input', { type: 'date', value: filterDate, onChange: e => setFilterDate(e.target.value) })
+              )
             ),
-            h('div', { className: 'overflow-x-auto' },
-              h('table', { className: 'w-full text-left text-xs' },
-                h('thead', { className: 'bg-slate-950 text-emerald-400 uppercase border-b border-slate-800' },
+            h('div', { className: 'table-wrap' },
+              h('table', null,
+                h('thead', null,
                   h('tr', null,
-                    h('th', { className: 'px-3 py-3' }, t.colDay),
-                    h('th', { className: 'px-3 py-3' }, t.colDate),
-                    h('th', { className: 'px-3 py-3' }, t.colHour),
-                    h('th', { className: 'px-3 py-3' }, t.colTitle),
-                    h('th', { className: 'px-3 py-3' }, t.colCategory),
-                    h('th', { className: 'px-3 py-3' }, t.colStatus),
-                    h('th', { className: 'px-3 py-3' }, t.colNotes),
-                    isAdmin && h('th', { className: 'px-3 py-3 text-right' }, t.colAction)
+                    h('th', null, t.colDay),
+                    h('th', null, t.colDate),
+                    h('th', null, t.colHour),
+                    h('th', null, t.colTitle),
+                    h('th', null, t.colCategory),
+                    h('th', null, t.colStatus),
+                    h('th', null, t.colNotes),
+                    isAdmin && h('th', null, t.colAction)
                   )
                 ),
-                h('tbody', { className: 'divide-y divide-slate-800' },
+                h('tbody', null,
                   filteredSchedules.map(s => {
                     const brand = brands.find(b => b.id === s.brand_id);
-                    return h('tr', { key: s.id, className: 'hover:bg-slate-800/40' },
-                      h('td', { className: 'px-3 py-2.5 font-bold text-slate-300' }, getHariNama(s.date)),
-                      h('td', { className: 'px-3 py-2.5 font-mono text-white' }, s.date),
-                      h('td', { className: 'px-3 py-2.5 font-mono text-emerald-400 font-bold' }, `${s.start_time} - ${s.end_time}`),
-                      h('td', { className: 'px-3 py-2.5 font-black text-white' }, s.title),
-                      h('td', { className: 'px-3 py-2.5 text-slate-300' }, `${brand?.emoji || ''} ${brand?.name || ''}`),
-                      h('td', { className: 'px-3 py-2.5' }, h('span', { className: 'px-2 py-0.5 rounded font-bold text-[10px] text-slate-950', style: { backgroundColor: s.color } }, s.status)),
-                      h('td', { className: 'px-3 py-2.5 text-slate-400 italic' }, s.notes || '-'),
-                      isAdmin && h('td', { className: 'px-3 py-2.5 text-right space-x-2 whitespace-nowrap' },
-                        h('button', { onClick: () => handleOpenEdit(s), className: 'text-emerald-400 font-bold hover:underline' }, t.editBtn),
-                        h('button', { onClick: () => handleDelete(s.id), className: 'text-rose-400 font-bold hover:underline' }, t.deleteBtn)
+                    return h('tr', { key: s.id },
+                      h('td', { style: { fontWeight: 700 } }, getHariNama(s.date)),
+                      h('td', { className: 'font-mono' }, s.date),
+                      h('td', { className: 'font-mono', style: { fontWeight: 700, color: '#2563EB' } }, `${s.start_time} - ${s.end_time}`),
+                      h('td', { style: { fontWeight: 800 } }, s.title),
+                      h('td', null, `${brand?.emoji || ''} ${brand?.name || ''}`),
+                      h('td', null, h('span', { className: 'badge', style: { background: s.color } }, s.status)),
+                      h('td', { style: { color: '#64748B' } }, s.notes || '-'),
+                      isAdmin && h('td', null,
+                        h('div', { className: 'flex gap-2' },
+                          h('button', { className: 'btn btn-subtle', onClick: () => handleOpenEdit(s) }, t.editBtn),
+                          h('button', { className: 'btn btn-outline', style: { color: '#DC2626' }, onClick: () => handleDelete(s.id) }, t.deleteBtn)
+                        )
                       )
                     );
                   })
@@ -1364,10 +1607,12 @@
             )
           ),
 
-          // TAB 5: KATEGORI & WARNA BRAND
-          activeTab === 'colors' && h('div', { className: 'bg-slate-900 rounded-2xl border border-slate-800 p-5 max-w-xl mx-auto space-y-3' },
-            h('h3', { className: 'font-black text-sm text-white' }, `🏷️ ${t.tabColors}`),
-            brands.map(b => h('div', { key: b.id, className: 'flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800' },
+          // =================================================================
+          // TAB 5: WARNA BRAND & KATEGORI
+          // =================================================================
+          activeTab === 'colors' && h('div', { className: 'card flex-col gap-3', style: { maxWidth: '600px', margin: '0 auto' } },
+            h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, `🏷️ ${t.tabColors}`),
+            brands.map(b => h('div', { key: b.id, className: 'flex items-center justify-between', style: { padding: '10px 14px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' } },
               h('div', { className: 'flex items-center gap-3' },
                 h('input', {
                   type: 'color', disabled: !isAdmin, value: b.color,
@@ -1376,112 +1621,109 @@
                     saveBrandsToCloud(brands.map(it => it.id === b.id ? { ...it, color: newColor } : it));
                     saveSchedulesToCloud(schedules.map(s => s.brand_id === b.id ? { ...s, color: newColor } : s));
                   },
-                  className: 'w-8 h-8 rounded cursor-pointer bg-transparent'
+                  style: { width: '36px', height: '36px', padding: '2px', cursor: 'pointer' }
                 }),
-                h('span', { className: 'font-bold text-xs text-white' }, `${b.emoji} ${b.name}`)
+                h('span', { style: { fontWeight: 800, fontSize: '13px' } }, `${b.emoji} ${b.name}`)
               ),
-              h('span', { className: 'font-mono text-xs text-slate-400' }, b.color)
+              h('span', { className: 'font-mono', style: { fontSize: '12px', color: '#64748B' } }, b.color)
             ))
           )
         ),
 
         // MODAL PIN ADMIN
-        pinInputModal && h('div', { className: 'fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4' },
-          h('div', { className: 'bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center space-y-4 shadow-2xl' },
-            h('h3', { className: 'font-black text-base text-white' }, '🔑 Admin Access'),
-            h('form', { onSubmit: handleVerifyPin, className: 'space-y-3' },
+        pinInputModal && h('div', { className: 'modal-backdrop' },
+          h('div', { className: 'modal-card', style: { maxWidth: '340px', textAlign: 'center' } },
+            h('h3', { style: { fontSize: '16px', fontWeight: 800, marginBottom: '12px' } }, '🔑 Login Admin'),
+            h('form', { onSubmit: handleVerifyPin, className: 'flex-col gap-3' },
               h('input', {
                 type: 'password', maxLength: 6, autoFocus: true, value: enteredPin,
                 onChange: e => { setEnteredPin(e.target.value); setPinError(false); },
-                placeholder: 'PIN Admin',
-                className: 'w-full text-center text-xl tracking-widest font-mono font-black bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-emerald-400'
+                placeholder: 'Masukkan PIN',
+                className: 'font-mono',
+                style: { textAlign: 'center', fontSize: '18px', letterSpacing: '0.2em' }
               }),
-              pinError && h('div', { className: 'text-rose-400 text-xs font-bold' }, 'PIN salah!'),
-              h('div', { className: 'flex gap-2' },
-                h('button', { type: 'button', onClick: () => setPinInputModal(false), className: 'w-1/2 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs' }, 'Batal'),
-                h('button', { type: 'submit', className: 'w-1/2 py-2 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs' }, 'Buka')
+              pinError && h('div', { style: { color: '#DC2626', fontSize: '12px', fontWeight: 700 } }, 'PIN salah!'),
+              h('div', { className: 'grid-2' },
+                h('button', { type: 'button', className: 'btn btn-subtle', style: { justifyContent: 'center' }, onClick: () => setPinInputModal(false) }, 'Batal'),
+                h('button', { type: 'submit', className: 'btn btn-primary', style: { justifyContent: 'center' } }, 'Buka Akses')
               )
             )
           )
         ),
 
         // MODAL CLONE DAY
-        cloneModalOpen && h('div', { className: 'fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4' },
-          h('div', { className: 'bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl' },
-            h('h3', { className: 'font-black text-base text-white' }, '📋 Salin Jadwal 1 Hari Penuh'),
-            h('form', { onSubmit: handleCloneFullDay, className: 'space-y-3 text-xs' },
-              h('input', { type: 'date', required: true, value: cloneTargetDate, onChange: e => setCloneTargetDate(e.target.value), className: 'w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-bold' }),
-              h('div', { className: 'flex gap-2' },
-                h('button', { type: 'button', onClick: () => setCloneModalOpen(false), className: 'w-1/2 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold' }, 'Batal'),
-                h('button', { type: 'submit', className: 'w-1/2 py-2 rounded-xl bg-emerald-500 text-slate-950 font-black' }, 'Salin Sekarang')
+        cloneModalOpen && h('div', { className: 'modal-backdrop' },
+          h('div', { className: 'modal-card flex-col gap-3', style: { maxWidth: '380px' } },
+            h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, '📋 Salin Semua Jadwal Hari Ini'),
+            h('form', { onSubmit: handleCloneFullDay, className: 'flex-col gap-3' },
+              h('input', { type: 'date', required: true, value: cloneTargetDate, onChange: e => setCloneTargetDate(e.target.value) }),
+              h('div', { className: 'grid-2' },
+                h('button', { type: 'button', className: 'btn btn-subtle', style: { justifyContent: 'center' }, onClick: () => setCloneModalOpen(false) }, 'Batal'),
+                h('button', { type: 'submit', className: 'btn btn-primary', style: { justifyContent: 'center' } }, 'Salin Sekarang')
               )
             )
           )
         ),
 
         // MODAL TAMBAH / EDIT JADWAL
-        modalOpen && h('div', { className: 'fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4' },
-          h('div', { className: 'bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-5 space-y-3 text-xs shadow-2xl' },
-            h('div', { className: 'flex justify-between items-center border-b border-slate-800 pb-2.5' },
-              h('h3', { className: 'font-black text-sm text-emerald-400' }, selectedSchedule ? '✏️ Edit Jadwal' : '➕ Tambah Jadwal Baru'),
-              h('button', { onClick: () => setModalOpen(false), className: 'text-slate-400 hover:text-white font-bold' }, '✕')
+        modalOpen && h('div', { className: 'modal-backdrop' },
+          h('div', { className: 'modal-card flex-col gap-3' },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1px solid #E2E8F0', paddingBottom: '10px' } },
+              h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, selectedSchedule ? '✏️ Edit Jadwal' : '➕ Tambah Jadwal Baru'),
+              h('button', { className: 'btn btn-subtle', onClick: () => setModalOpen(false) }, '✕')
             ),
-            h('div', { className: 'grid grid-cols-2 gap-1.5' },
+            h('div', { className: 'grid-2' },
               [
                 { b: 'b_momuung', name: 'Mom Uung', n: 1, st: '05:00', en: '13:00' },
                 { b: 'b_momuung', name: 'Mom Uung', n: 2, st: '11:00', en: '19:00' },
                 { b: 'b_aquapress', name: 'AquaPress', n: 1, st: '08:00', en: '12:00' },
                 { b: 'b_aquapress', name: 'AquaPress', n: 2, st: '12:00', en: '16:00' }
               ].map((p, idx) => h('button', {
-                key: idx, type: 'button', onClick: () => applyPresetShift(p.b, p.name, p.n, p.st, p.en),
-                className: 'bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-xl p-2 text-left'
-              }, h('div', { className: 'font-black text-emerald-400 text-[10px]' }, `Shift ${p.n} ${p.name}`), h('div', { className: 'font-mono text-[9px] text-slate-400' }, `${p.st} - ${p.en}`)))
+                key: idx, type: 'button', className: 'btn btn-outline',
+                onClick: () => applyPresetShift(p.b, p.name, p.n, p.st, p.en)
+              }, `⚡ Shift ${p.n} ${p.name} (${p.st}-${p.en})`))
             ),
-            h('form', { onSubmit: handleSave, className: 'space-y-3' },
+            h('form', { onSubmit: handleSave, className: 'flex-col gap-3' },
               h('input', {
-                type: 'text', required: true, placeholder: 'Nama Shift / Agenda...', value: formData.title,
-                onChange: e => setFormData({ ...formData, title: e.target.value }),
-                className: 'w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-bold'
+                type: 'text', required: true, placeholder: 'Judul Shift / Aktivitas...', value: formData.title,
+                onChange: e => setFormData({ ...formData, title: e.target.value })
               }),
-              h('div', { className: 'grid grid-cols-2 gap-2' },
-                h('select', {
-                  value: formData.brand_id, onChange: e => setFormData({ ...formData, brand_id: e.target.value }),
-                  className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold'
-                }, brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))),
-                h('select', {
-                  value: formData.status, onChange: e => setFormData({ ...formData, status: e.target.value }),
-                  className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold'
-                }, ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF', 'Sakit / Medis'].map(st => h('option', { key: st, value: st }, st)))
+              h('div', { className: 'grid-2' },
+                h('select', { value: formData.brand_id, onChange: e => setFormData({ ...formData, brand_id: e.target.value }) },
+                  brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
+                ),
+                h('select', { value: formData.status, onChange: e => setFormData({ ...formData, status: e.target.value }) },
+                  ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF', 'Sakit / Medis'].map(st => h('option', { key: st, value: st }, st))
+                )
               ),
-              h('div', { className: 'grid grid-cols-2 gap-2' },
-                h('input', { type: 'date', required: true, value: formData.date, onChange: e => setFormData({ ...formData, date: e.target.value }), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold' }),
-                !selectedSchedule && h('select', { value: repeatDays, onChange: e => setRepeatDays(Number(e.target.value)), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-emerald-400 font-bold' },
+              h('div', { className: 'grid-2' },
+                h('input', { type: 'date', required: true, value: formData.date, onChange: e => setFormData({ ...formData, date: e.target.value }) }),
+                !selectedSchedule && h('select', { value: repeatDays, onChange: e => setRepeatDays(Number(e.target.value)) },
                   [1, 2, 3, 5, 7].map(d => h('option', { key: d, value: d }, `Ulangi ${d} Hari`))
                 )
               ),
-              h('div', { className: 'grid grid-cols-2 gap-2' },
-                h('select', { value: formData.start_time, onChange: e => setFormData({ ...formData, start_time: e.target.value }), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold' },
+              h('div', { className: 'grid-2' },
+                h('select', { className: 'font-mono', value: formData.start_time, onChange: e => setFormData({ ...formData, start_time: e.target.value }) },
                   START_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm))
                 ),
-                h('select', { value: formData.end_time, onChange: e => setFormData({ ...formData, end_time: e.target.value }), className: 'bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold' },
+                h('select', { className: 'font-mono', value: formData.end_time, onChange: e => setFormData({ ...formData, end_time: e.target.value }) },
                   END_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm))
                 )
               ),
-              currentFormConflict && h('div', { className: 'bg-rose-950/80 border border-rose-500 text-rose-200 p-2.5 rounded-xl text-[11px] font-bold' },
+              currentFormConflict && h('div', { className: 'badge badge-danger', style: { padding: '8px 12px' } },
                 `⛔ Jam bentrok dengan "${currentFormConflict.title}" (${currentFormConflict.start_time}-${currentFormConflict.end_time})`
               ),
               h('textarea', {
                 rows: 2, placeholder: 'Catatan / Target GMV...', value: formData.notes,
-                onChange: e => setFormData({ ...formData, notes: e.target.value }),
-                className: 'w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white'
+                onChange: e => setFormData({ ...formData, notes: e.target.value })
               }),
-              h('div', { className: 'flex justify-between items-center pt-2' },
+              h('div', { className: 'flex items-center justify-between', style: { marginTop: '6px' } },
                 selectedSchedule
-                  ? h('button', { type: 'button', onClick: () => handleDelete(selectedSchedule.id), className: 'text-rose-400 font-bold hover:underline' }, '🗑️ Hapus')
+                  ? h('button', { type: 'button', className: 'btn btn-outline', style: { color: '#DC2626', borderColor: '#FCA5A5' }, onClick: () => handleDelete(selectedSchedule.id) }, '🗑️ Hapus')
                   : h('span'),
                 h('div', { className: 'flex gap-2' },
-                  h('button', { type: 'button', onClick: () => setModalOpen(false), className: 'px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold' }, 'Batal'),
-                  h('button', { type: 'submit', disabled: !!currentFormConflict, className: 'px-5 py-2 rounded-xl bg-emerald-500 text-slate-950 font-black disabled:opacity-40' }, 'Simpan ke Cloud')
+                  h('button', { type: 'button', className: 'btn btn-subtle', onClick: () => setModalOpen(false) }, 'Batal'),
+                  h('button', { type: 'submit', disabled: !!currentFormConflict, className: 'btn btn-primary' }, 'Simpan ke Cloud')
                 )
               )
             )
