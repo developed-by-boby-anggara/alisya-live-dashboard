@@ -2578,30 +2578,21 @@ function App() {
     return () => clearTimeout(thirtySecCallTimer);
   }, [hasEntered]);
 
-  // 🌊 SAAT PERTAMA MASUK WEB: LANGSUNG PUTAR 1 DARI 3 SUARA WELCOME SECARA ACAK
+// 🌊 SAAT PERTAMA MASUK WEB: LANGSUNG PUTAR 1 DARI 3 SUARA WELCOME (ANTI-TABRAKAN)
   const handleEnterTerminal = () => {
     setHasEntered(true);
 
-    // 1. Putar 1 dari 3 suara welcome secara acak dari folder ./SoundRafael/
-    try {
-      const randomWelcomeUrl = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
-      const welcomeAudio = new Audio(randomWelcomeUrl);
-      welcomeAudio.volume = 0.9;
-      if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.08;
-      welcomeAudio.onended = () => {
-        if (bgmAudioRef.current) bgmAudioRef.current.volume = 0.25;
-      };
-      welcomeAudio.play().catch(() => {});
-    } catch (e) {}
-
-    // 2. Pastikan BGM ikut berjalan lembut di latar belakang
+    // 1. Putar BGM lebih dulu di latar belakang
     if (bgmAudioRef.current && bgmAudioRef.current.paused) {
       bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
     } else if (!bgmAudioRef.current) {
       playTrack(currentTrackIdxRef.current);
     }
-  };
 
+    // 2. Putar suara welcome melalui saluran tunggal (otomatis berhenti jika kamu klik foto/telepon)
+    const randomWelcomeUrl = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
+    playExclusiveRafayelVoice(randomWelcomeUrl, 0.85);
+  };
   const toggleBGM = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
     if (!bgmAudioRef.current) {
@@ -2742,19 +2733,12 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
           if (next === prev) next = (prev + 1) % t.affirmations.length;
           return next;
         });
-        // Ikut mengacak stiker gambar bawah secara merata & anti-kembar saat tombol ditekan
         pickNextRadarSticker();
         triggerCuteSparkles();
 
-        // 🔊 Putar suara acak Sylus / Rafayel
-        try {
-          const randomVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
-          const audio = new Audio(randomVoice);
-        audio.volume = 0.20; 
-audio.play().catch(() => playNotificationChime());
-        } catch (err) {
-          playNotificationChime(); // Cadangan jika file belum ada
-        }
+        // 🔊 Putar suara acak Rafayel tanpa tabrakan (otomatis hentikan suara sebelumnya)
+        const randomVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
+        playExclusiveRafayelVoice(randomVoice, 0.55);
       };
 
       // State Mood, Hydration Log, Mekel Makan/Minum, Beauty Prep & Self-Reward per Tanggal
@@ -3774,7 +3758,7 @@ audio.play().catch(() => playNotificationChime());
     if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
     touchBubbleTimerRef.current = setTimeout(() => setRafayelTouchBubble(''), 6000);
 
-    // 3. Putar suara singkat acak dari seluruh koleksi di folder ./SoundRafael/
+    /// 3. Putar suara singkat acak melalui saluran tunggal (otomatis hentikan suara sebelumnya)
     const touchVoices = [
       "./SoundRafael/rafayel_call_missyou.mp3",
       "./SoundRafael/rafayel_call_chill.mp3",
@@ -3785,14 +3769,8 @@ audio.play().catch(() => playNotificationChime());
       "./SoundRafael/rafayel_call_rain.mp3",
       "./SoundRafael/rafayel_call_morning.mp3"
     ];
-    try {
-      const randomClip = touchVoices[Math.floor(Math.random() * touchVoices.length)];
-      const audio = new Audio(randomClip);
-      audio.volume = 0.45;
-      audio.play().catch(() => playNotificationChime());
-    } catch (e) {
-      playNotificationChime();
-    }
+    const randomClip = touchVoices[Math.floor(Math.random() * touchVoices.length)];
+    playExclusiveRafayelVoice(randomClip, 0.55);
 
     // 4. Tambah +1 Affinity Heart & efek kilau
     updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 }, true);
