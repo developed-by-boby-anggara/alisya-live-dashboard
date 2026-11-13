@@ -15,19 +15,23 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React 18 & ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Preconnect CDN -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+
+  <!-- React 18 & ReactDOM (Cloudflare CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
   <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- html2canvas untuk Export Gambar PNG -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <!-- Chart.js & html2canvas (Deferred) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <!-- Firebase SDK (Deferred) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js" defer></script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -865,7 +869,31 @@
       border-right-color: rgba(110, 78, 115, 0.28) !important;
     }
   </style>
-
+<!-- ⚡ MOBILE GPU & ZERO-LAG PERFORMANCE BOOSTER -->
+  <style id="mobile-gpu-booster">
+    @media (max-width: 1024px) {
+      body.cute-bg {
+        background-attachment: scroll !important;
+      }
+      #root .backdrop-blur,
+      #root .backdrop-blur-xs,
+      #root .backdrop-blur-sm,
+      #root .backdrop-blur-md,
+      #root .backdrop-blur-lg,
+      #root .bg-white,
+      #root .bg-white\/90,
+      #root .bg-white\/95,
+      #agenda-capture-area .bg-white\/15,
+      #mobile-agenda-capture .bg-white\/15 {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      #root .animate-ping,
+      #root .cute-float {
+        animation: none !important;
+      }
+    }
+  </style>
   
 </head>
 <body class="cute-bg text-slate-800 antialiased font-sans select-none pb-safe md:pb-8 transition-colors duration-200">
@@ -1911,7 +1939,14 @@ function App() {
       const [activeTab, setActiveTab] = useState('agenda');
       const [pcSubTab, setPcSubTab] = useState('agenda');
 
-      const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
+      const [schedules, setSchedules] = useState(() => {
+        try {
+          const cached = localStorage.getItem('alisya_schedules_cache');
+          return cached ? JSON.parse(cached) : INITIAL_SCHEDULES;
+        } catch (e) {
+          return INITIAL_SCHEDULES;
+        }
+      });
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
       const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress, Rajin Minum Air Putih & Sayang Mekel Terus! 🌸🐱✨");
       
@@ -1956,9 +1991,10 @@ function App() {
         const refSch = firebaseDb.ref('alisya_schedules');
         refSch.on('value', snap => {
           const val = snap.val();
-          if (val && Array.isArray(val)) setSchedules(val);
-          else refSch.set(INITIAL_SCHEDULES);
-        });
+         if (val && Array.isArray(val)) {
+            setSchedules(val);
+            try { localStorage.setItem('alisya_schedules_cache', JSON.stringify(val)); } catch (e) {}
+          }
 
         const refBrands = firebaseDb.ref('alisya_brands');
         refBrands.on('value', snap => {
