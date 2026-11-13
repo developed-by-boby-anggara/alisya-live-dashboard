@@ -2185,25 +2185,6 @@ function App() {
     return () => {};
   }, []);
 
-    const unlockAudio = () => {
-      if (bgmAudioRef.current && bgmAudioRef.current.paused) {
-        bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
-      } else if (!bgmAudioRef.current) {
-        playTrack(currentTrackIdxRef.current);
-      }
-      window.removeEventListener('click', unlockAudio);
-      window.removeEventListener('touchstart', unlockAudio);
-    };
-
-    window.addEventListener('click', unlockAudio, { once: true });
-    window.addEventListener('touchstart', unlockAudio, { once: true });
-
-    return () => {
-      window.removeEventListener('click', unlockAudio);
-      window.removeEventListener('touchstart', unlockAudio);
-    };
-  }, []);
-
   // 📞 SIMULASI INCOMING CALL / VOICE MESSAGE DARI RAFAYEL (SAAT MASUK WEB & MANUAL)
   const [rafayelCallModalOpen, setRafayelCallModalOpen] = useState(false);
   const [rafayelCallStatus, setRafayelCallStatus] = useState('ringing'); // 'ringing' | 'connected'
