@@ -15,19 +15,16 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React 18 & ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<!-- Preconnect CDN agar HP klien langsung terhubung seketika -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+
+  <!-- React 18 & ReactDOM (Cloudflare CDN - Stabil di Semua Operator HP) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
   <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-  <!-- html2canvas untuk Export Gambar PNG -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1260,14 +1257,18 @@
       background-color: #081528 !important;
     }
   </style>
-  <!-- ⚡ MOBILE GPU & PERFORMANCE BOOSTER -->
+ <!-- ⚡ MOBILE GPU & ZERO-LAG PERFORMANCE BOOSTER -->
   <style id="mobile-gpu-booster">
     @media (max-width: 1024px) {
-      /* Matikan fixed background yang bikin scroll patah-patah di HP */
+      /* 1. Matikan fixed background & layer cahaya yang bikin scroll patah-patah di HP */
       body.cute-bg {
         background-attachment: scroll !important;
       }
-      /* Ganti blur berat di setiap kartu menjadi warna solid semi-transparan cepat */
+      body.cute-bg::before,
+      .lemuria-ambient-layer {
+        display: none !important;
+      }
+      /* 2. Matikan backdrop-blur berlapis yang menguras GPU HP */
       #root .backdrop-blur,
       #root .backdrop-blur-xs,
       #root .backdrop-blur-sm,
@@ -1281,9 +1282,14 @@
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
       }
-      /* Kurangi gelembung animasi berlebih di HP agar baterai & RAM hemat */
-      .lemuria-bubble:nth-child(n+4) {
-        display: none !important;
+      /* 3. Hentikan animasi ping & float terus-menerus di HP agar CPU & baterai dingin */
+      #root .animate-ping,
+      #root .cute-float {
+        animation: none !important;
+      }
+      /* 4. Optimasi render kartu agar scroll HP mulus 60fps */
+      #mobile-agenda-capture > div {
+        contain: layout style;
       }
     }
   </style>
@@ -1362,7 +1368,7 @@
       { id: 'b_pribadi', name: 'Agenda Pribadi & OFF', emoji: '☕', color: '#EF4444' }
     ];
 
-    const INITIAL_S = [
+    const INITIAL_SCHEDULES = [
       { id: 's1', date: '2026-10-26', start_time: '14:00', end_time: '18:00', title: 'Shift 3 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#B6D7A8', notes: 'Target GMV 20 Juta' },
       { id: 's2', date: '2026-10-26', start_time: '10:00', end_time: '12:00', title: 'Meet Aya', brand_id: 'b_pribadi', status: 'Meeting', color: '#00FFFF', notes: 'Briefing Outfit' },
       { id: 's_sleep1', date: '2026-10-26', start_time: '23:00', end_time: '06:00', title: 'Istirahat Tidur Malam', brand_id: 'b_sleep', status: 'Tidur', color: '#6366F1', notes: 'Sleep hygiene 7 jam' },
