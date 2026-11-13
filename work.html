@@ -2,19 +2,21 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Alisya Work Schedule — Official Executive Portal 💼</title>
-  <meta name="theme-color" content="#FFFFFF">
+  <!-- Pinch-to-Zoom 2 Jari Aktif (user-scalable=yes, maximum-scale=5.0) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Alisya Work Schedule — Official Partner Portal 💼</title>
+  <meta name="theme-color" content="#06101E">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Preconnect Cepat -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <!-- React 18 Production (Tanpa Babel & Tanpa Tailwind CDN = Instan 0.1 Detik) -->
+  <!-- React 18 Production (Tanpa Babel = Buka Instan Tanpa Jeda) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
 
@@ -22,257 +24,423 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <!-- Chart.js & html2canvas (Deferred agar tidak menahan loading awal) -->
+  <!-- Chart.js & html2canvas -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <style>
     :root {
-      --bg-main: #F4F6F9;
-      --bg-card: #FFFFFF;
-      --bg-subtle: #F8FAFC;
-      --text-main: #0F172A;
-      --text-muted: #475569;
-      --text-light: #64748B;
-      --border-color: #E2E8F0;
-      --primary: #2563EB;
-      --primary-dark: #1D4ED8;
-      --primary-soft: #EFF6FF;
-      --emerald: #059669;
-      --emerald-soft: #ECFDF5;
-      --amber: #D97706;
-      --amber-soft: #FFFBEB;
-      --danger: #DC2626;
-      --danger-soft: #FEF2F2;
+      --bg-abyss: #050D1A;
+      --bg-navy: #09172B;
+      --bg-card: #0D1F38;
+      --bg-card-inner: #122947;
+      --border-teal: rgba(45, 212, 191, 0.35);
+      --border-subtle: rgba(148, 163, 184, 0.2);
+      --teal-accent: #2DD4BF;
+      --cyan-accent: #00F2FE;
+      --emerald-accent: #10B981;
+      --text-white: #F8FAFC;
+      --text-silver: #CBD5E1;
+      --text-muted: #94A3B8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
     body {
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-abyss);
+      background-image:
+        radial-gradient(circle at 12% 10%, rgba(45, 212, 191, 0.12), transparent 26rem),
+        radial-gradient(circle at 88% 18%, rgba(56, 189, 248, 0.10), transparent 28rem),
+        linear-gradient(180deg, #050D1A 0%, #09172B 55%, #050D1A 100%);
+      color: var(--text-white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 48px;
+      padding-bottom: 60px;
+      overflow-x: hidden;
     }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-    /* Layout & Utilitas Kerja Profesional */
-    .container { max-width: 1440px; margin: 0 auto; padding: 16px; }
-    .container-mobile { max-width: 540px; margin: 0 auto; padding: 12px; }
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    }
-    .header-bar {
-      background: #FFFFFF;
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 20px;
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #050D1A; }
+    ::-webkit-scrollbar-thumb { background: #1E3A5F; border-radius: 999px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Header & Navigasi */
+    .exec-header {
+      background: linear-gradient(110deg, #061224 0%, #0C223D 55%, #09192E 100%);
+      border-bottom: 1.5px solid var(--border-teal);
+      padding: 10px 14px;
       position: sticky;
       top: 0;
       z-index: 40;
-      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65);
     }
-    .nav-bar {
-      background: #FFFFFF;
-      border-bottom: 1px solid var(--border-color);
-      padding: 8px 20px;
-      position: sticky;
-      top: 61px;
-      z-index: 35;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      overflow-x: auto;
-    }
-    .ticker-bar {
-      background: #0F172A;
-      color: #F8FAFC;
-      padding: 8px 0;
+    .exec-ticker {
+      background: linear-gradient(90deg, #040B16, #091B32, #040B16);
+      border-bottom: 1px solid rgba(45, 212, 191, 0.28);
+      padding: 7px 0;
       overflow: hidden;
-      font-size: 12px;
-      border-bottom: 1px solid #1E293B;
+      font-size: 11px;
     }
-    @keyframes marqueeWork {
+    @keyframes tickerMove {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
     .ticker-track {
       display: flex;
       width: max-content;
-      gap: 28px;
-      animation: marqueeWork 35s linear infinite;
+      gap: 24px;
+      animation: tickerMove 36s linear infinite;
     }
     .ticker-track:hover { animation-play-state: paused; }
 
-    /* Grid & Flex */
+    .exec-nav {
+      background: rgba(6, 17, 33, 0.96);
+      border-bottom: 1.5px solid rgba(45, 212, 191, 0.25);
+      padding: 8px 12px;
+      position: sticky;
+      top: 58px;
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    /* Kartu & Kontainer */
+    .wrap-pc { max-width: 1520px; margin: 0 auto; padding: 18px; }
+    .wrap-hp { max-width: 540px; margin: 0 auto; padding: 10px; }
+
+    .exec-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-teal);
+      border-radius: 20px;
+      padding: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+    .radar-card {
+      background: linear-gradient(135deg, #061529 0%, #0C2644 52%, #081B33 100%);
+      border: 1.5px solid rgba(45, 212, 191, 0.55);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65), 0 0 20px rgba(45, 212, 191, 0.12);
+    }
+
+    /* Tombol & Input */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.16s ease;
+    }
+    button:active { transform: scale(0.96); }
+    .btn {
+      padding: 7px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-teal {
+      background: linear-gradient(135deg, #0D9488 0%, #0284C7 100%);
+      color: #FFFFFF;
+      border-color: #5EEAD4;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.3);
+    }
+    .btn-emerald {
+      background: #10B981;
+      color: #042F2E;
+      border-color: #6EE7B7;
+      font-weight: 900;
+    }
+    .btn-dark {
+      background: #0F243F;
+      color: #E2E8F0;
+      border-color: rgba(45, 212, 191, 0.35);
+    }
+    .btn-dark:hover { background: #163357; }
+    .nav-pill {
+      padding: 7px 13px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-silver);
+      background: transparent;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-pill.active {
+      background: linear-gradient(135deg, #0D9488 0%, #0284C7 100%);
+      color: #FFFFFF;
+      border: 1px solid #5EEAD4;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.35);
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+      background: #071426;
+      border: 1.5px solid rgba(45, 212, 191, 0.38);
+      border-radius: 11px;
+      padding: 7px 10px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--cyan-accent);
+      box-shadow: 0 0 10px rgba(45, 212, 191, 0.35);
+    }
+
+    /* Kalender 1 Baris Horizontal (Strip) */
+    .cal-strip {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 4px 2px 6px 2px;
+      scroll-behavior: smooth;
+    }
+    .cal-day-btn {
+      flex-shrink: 0;
+      width: 48px;
+      padding: 8px 4px;
+      border-radius: 14px;
+      background: #071426;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-silver);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .cal-day-btn.is-today {
+      border: 1.5px solid var(--cyan-accent);
+      background: rgba(45, 212, 191, 0.15);
+      box-shadow: 0 0 10px rgba(45, 212, 191, 0.25);
+    }
+    .cal-day-btn.is-selected {
+      background: linear-gradient(135deg, #0D9488 0%, #0369A1 100%);
+      border: 1.5px solid #5EEAD4;
+      color: #FFFFFF;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(45, 212, 191, 0.4);
+    }
+
+    /* ================================================================= */
+    /* 📊 MATRIKS SPREADSHEET HP & PC (PERSIS GAMBAR REFERENSI)          */
+    /* ================================================================= */
+    .matrix-shell {
+      background: #071324;
+      border: 1.5px solid rgba(45, 212, 191, 0.45);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
+    }
+    .matrix-legend {
+      background: #091C34;
+      padding: 8px 10px;
+      border-bottom: 1.5px solid rgba(45, 212, 191, 0.35);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    /* Tabel Matriks HP: Pas 1 Layar + Bisa Di-Zoom 2 Jari */
+    .matrix-table-hp {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      user-select: none;
+    }
+    .matrix-table-hp th {
+      background: #081B34;
+      color: #5EEAD4;
+      border: 1px solid rgba(45, 212, 191, 0.35);
+      padding: 4px 1px;
+      font-size: 6px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.15;
+    }
+    .matrix-table-hp td {
+      border: 1px solid rgba(45, 212, 191, 0.22);
+      height: 22px;
+      padding: 1.5px;
+      vertical-align: middle;
+      background: #0A1B32;
+    }
+    .matrix-table-hp tr:nth-child(even) td {
+      background: #08162A;
+    }
+    .matrix-table-hp td.col-date-hp {
+      background: #091B33 !important;
+      border-right: 1.5px solid #2DD4BF;
+      padding: 2px 3px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .matrix-table-hp td.col-status-hp {
+      background: #08172C !important;
+      padding: 1px 2px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* Highlight Baris Hari Ini (Aurora Glow) */
+    @keyframes todayGlow {
+      0%, 100% { box-shadow: inset 0 0 8px rgba(45, 212, 191, 0.45); }
+      50% { box-shadow: inset 0 0 14px rgba(0, 242, 254, 0.65); }
+    }
+    .row-today-glow td {
+      border-top: 1.5px solid #2DD4BF !important;
+      border-bottom: 1.5px solid #00F2FE !important;
+      animation: todayGlow 3s infinite;
+    }
+    .row-today-glow td.col-date-hp {
+      background: #0A2742 !important;
+      border-left: 2.5px solid #00F2FE !important;
+    }
+
+    /* Badge Status di Dalam Tabel HP */
+    .status-pill-hp {
+      display: block;
+      width: 100%;
+       truncate: true;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 5.5px;
+      font-weight: 900;
+      padding: 2px 2px;
+      border-radius: 4px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .st-full { background: linear-gradient(135deg, #7C3AED, #4F46E5); color: #FFFFFF; border: 1px solid #C084FC; }
+    .st-med { background: #FEF3C7; color: #78350F; border: 1px solid #F59E0B; }
+    .st-low { background: #064E3B; color: #6EE7B7; border: 1px solid #10B981; }
+    .st-free { background: #0F2942; color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .st-off { background: rgba(148, 163, 184, 0.2); color: #E2E8F0; border: 1px solid rgba(148, 163, 184, 0.45); }
+
+    /* Tabel Matriks PC */
+    .matrix-table-pc {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .matrix-table-pc th {
+      background: #081B34;
+      color: #5EEAD4;
+      border: 1px solid rgba(45, 212, 191, 0.35);
+      padding: 10px 8px;
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      font-weight: 900;
+    }
+    .matrix-table-pc td {
+      border: 1px solid rgba(45, 212, 191, 0.22);
+      padding: 5px;
+      vertical-align: top;
+      height: 52px;
+      background: #0A1B32;
+    }
+    .matrix-table-pc td.sticky-col-pc {
+      position: sticky;
+      left: 0;
+      z-index: 15;
+      background: #091B33;
+      border-right: 2px solid #2DD4BF;
+    }
+
+    /* Utilitas Flex & Grid */
     .flex { display: flex; }
     .flex-col { display: flex; flex-direction: column; }
     .items-center { align-items: center; }
     .items-start { align-items: flex-start; }
     .justify-between { justify-content: space-between; }
-    .justify-center { justify-content: center; }
     .flex-wrap { flex-wrap: wrap; }
     .gap-1 { gap: 4px; }
+    .gap-1-5 { gap: 6px; }
     .gap-2 { gap: 8px; }
     .gap-3 { gap: 12px; }
     .gap-4 { gap: 16px; }
-    .grid-agenda {
+
+    .agenda-layout {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 16px;
     }
     @media (min-width: 1024px) {
-      .grid-agenda.pc-mode {
-        grid-template-columns: 420px 1fr;
+      .agenda-layout.pc {
+        grid-template-columns: 430px 1fr;
       }
     }
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
-    .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 
-    /* Buttons & Inputs */
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.15s ease;
+    @keyframes pingDot {
+      0% { transform: scale(1); opacity: 0.9; }
+      80%, 100% { transform: scale(2.2); opacity: 0; }
     }
-    button:active { transform: scale(0.97); }
-    .btn {
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
+    .radar-dot-wrap {
+      position: relative;
       display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-primary { background: var(--primary); color: #FFFFFF; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-emerald { background: var(--emerald); color: #FFFFFF; }
-    .btn-emerald:hover { filter: brightness(0.95); }
-    .btn-outline { background: #FFFFFF; color: var(--text-main); border-color: #CBD5E1; }
-    .btn-outline:hover { background: var(--bg-subtle); border-color: #94A3B8; }
-    .btn-subtle { background: #F1F5F9; color: #334155; }
-    .btn-subtle:hover { background: #E2E8F0; }
-    .btn-tab {
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: transparent;
-      white-space: nowrap;
-    }
-    .btn-tab.active {
-      background: var(--primary);
-      color: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
-    }
-
-    input, select, textarea {
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      background: #FFFFFF;
-      border: 1px solid #CBD5E1;
-      border-radius: 10px;
-      padding: 8px 12px;
-      outline: none;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      border: 1px solid transparent;
-    }
-    .badge-live { background: #DCFCE7; color: #166534; border-color: #86EFAC; }
-    .badge-blue { background: #DBEAFE; color: #1E40AF; border-color: #93C5FD; }
-    .badge-amber { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
-    .badge-danger { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
-    .badge-neutral { background: #F1F5F9; color: #334155; border-color: #CBD5E1; }
-
-    /* Radar Executive Banner */
-    .radar-banner {
-      background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-      color: #FFFFFF;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-    }
-    .live-box {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 14px;
-    }
-    .progress-track {
-      width: 100%;
+      width: 8px;
       height: 8px;
-      background: rgba(255, 255, 255, 0.15);
+      flex-shrink: 0;
+    }
+    .radar-dot-ping {
+      position: absolute;
+      inset: 0;
       border-radius: 999px;
-      overflow: hidden;
-      margin-top: 6px;
+      background: #00F2FE;
+      animation: pingDot 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
     }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #10B981, #3B82F6);
-      transition: width 0.4s ease;
+    .radar-dot-core {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #2DD4BF;
     }
-
-    /* Table Spreadsheet */
-    .table-wrap { overflow-x: auto; max-height: 74vh; border: 1px solid var(--border-color); border-radius: 14px; background: #FFF; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
-    thead th { background: #F1F5F9; color: #1E293B; font-weight: 800; position: sticky; top: 0; z-index: 20; }
-    .sticky-left { position: sticky; left: 0; background: #FFFFFF; z-index: 15; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
-    tr.today-row td { background: #EFF6FF !important; border-top: 2px solid var(--primary); border-bottom: 2px solid var(--primary); }
 
     /* Modal */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px; z-index: 60;
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(3, 8, 18, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
     }
-    .modal-card {
-      background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 460px;
-      max-height: 90vh; overflow-y: auto; padding: 20px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
-    }
-
-    @keyframes pulseDot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.25); }
-    }
-    .dot-live {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: #10B981; display: inline-block;
-      animation: pulseDot 1.5s infinite;
+    .modal-box {
+      background: #081528;
+      border: 1.5px solid #2DD4BF;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+      color: #FFFFFF;
     }
   </style>
 </head>
 <body>
   <div id="root">
-    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F4F6F9;color:#0F172A;font-family:sans-serif;text-align:center;padding:20px;">
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#050D1A;color:#2DD4BF;font-family:sans-serif;text-align:center;padding:20px;">
       <div style="font-size:32px;margin-bottom:8px;">💼</div>
-      <div style="font-weight:800;font-size:14px;color:#0F172A;">MEMUAT WORK SCHEDULE ALISYA...</div>
-      <div style="font-size:12px;color:#64748B;margin-top:4px;">Menghubungkan ke Database Jadwal Real-Time</div>
+      <div style="font-weight:800;font-size:14px;color:#F8FAFC;letter-spacing:0.05em;">MEMUAT WORK SCHEDULE ALISYA...</div>
+      <div style="font-size:11px;color:#94A3B8;margin-top:5px;">Sinkronisasi Jadwal Real-Time</div>
     </div>
   </div>
 
@@ -280,14 +448,14 @@
     window.addEventListener('error', function(e) {
       var root = document.getElementById('root');
       if (root && root.innerText.indexOf('MEMUAT WORK SCHEDULE') !== -1) {
-        root.innerHTML = '<div style="padding:24px;color:#991B1B;background:#FEF2F2;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
+        root.innerHTML = '<div style="padding:24px;color:#FDA4AF;background:#050D1A;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
       }
     });
 
     const { useState, useEffect, useMemo, useRef } = React;
     const h = React.createElement;
 
-    // --- KONEKSI FIREBASE REALTIME DB (100% SINKRON DENGAN INDEX.HTML) ---
+    // --- KONEKSI FIREBASE REALTIME DB (SINKRON 100% DENGAN INDEX.HTML) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
       authDomain: "alisya-live-db.firebaseapp.com",
@@ -379,90 +547,92 @@
     const TRANSLATIONS = {
       id: {
         locale: 'id-ID',
-        portalSub: "Portal Jadwal Operasional Live & Ketersediaan Slot Real-Time",
-        modeHP: "Mode HP", modePC: "Mode PC", lockBtn: "Kunci", loginBtn: "Login Admin",
-        radarTitle: "RADAR JADWAL OPERATIONAL ALISYA (00:00 - 23:59 WIB)",
+        portalSub: "Official Live Broadcast & Content Production Schedule (Real-Time)",
+        modeHP: "HP", modePC: "PC", lockBtn: "Kunci", loginBtn: "Login",
+        radarTitle: "RADAR JADWAL ALISYA (00:00 - 23:59)",
         availableTitle: "Available Schedule (Slot Jam Kosong)",
-        allSlotsFilled: "⚠️ Semua slot jam pada tanggal ini sudah terisi penuh.",
-        slotsReady: "Slot Tersedia",
-        calendarTitle: "Kalender Bulanan",
-        sessionList: "Daftar Sesi Jadwal Harian",
-        noSchedule: "Tidak Ada Sesi Terjadwal",
-        noScheduleSub: "Seluruh slot waktu pada tanggal ini masih kosong / tersedia untuk kolaborasi & penjadwalan.",
-        btnShareWA: "Share WA", btnSavePNG: "Simpan PNG",
-        btnShareRekapWA: "Share Rekap Bulanan ke WA",
-        btnDownloadTablePNG: "Unduh Gambar Tabel (.PNG)",
+        allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
+        slotsReady: "Slot Siap Pakai",
+        calendarTitle: "Kalender Tanggal",
+        sessionList: "Daftar Sesi Jadwal",
+        noSchedule: "Tidak Ada Jadwal di Tanggal Ini 💼",
+        noScheduleSub: "Seluruh slot jam di tanggal ini masih kosong & tersedia untuk jadwal kerja.",
+        btnShareWA: "Share WA", btnSavePNG: "PNG",
+        btnShareRekapWA: "Share Rekap ke WA",
+        btnDownloadTablePNG: "Simpan PNG",
         btnAddSession: "+ Tambah Sesi", btnCloneDay: "📋 Salin 1 Hari",
         jump: "Lompat:", today: "Hari Ini", tomorrow: "Besok", dayAfter: "Lusa",
         tabAgenda: "Agenda Harian",
         tabSpreadsheet: "Kalender Spreadsheet",
-        tabKPI: "KPI & Diagram Grafik",
+        tabKPI: "KPI & Grafik",
         tabList: "Daftar Semua Jadwal",
-        tabColors: "Warna Brand & Kategori",
-        btnExportCSV: "Ekspor CSV", btnAddSch: "+ Tambah Jadwal",
+        tabColors: "Warna Brand",
+        btnExportCSV: "CSV", btnAddSch: "+ Tambah Jadwal",
         liveNowActive: "SEDANG BERLANGSUNG:",
-        liveNowIdle: "🟢 Saat ini tidak ada sesi yang sedang berlangsung (Standby)",
-        endsAt: "Habis Pukul", timeLeft: "Sisa Waktu Mundur:",
+        liveNowIdle: "✨ Saat ini tidak ada sesi yang sedang berlangsung",
+        endsAt: "Habis Pukul", timeLeft: "Sisa Waktu:",
         sessionProgress: "Progres Sesi Berjalan",
         nextUp: "Sesi Berikutnya:", progressToday: "Progres Total Agenda Hari Ini",
         completed: "Selesai", scheduledSessions: "Sesi Terjadwal", productiveActs: "Aktivitas Produktif",
-        colDateTime: "TANGGAL & HARI \\ JAM", colDayStatus: "STATUS HARI", todayBadge: "HARI INI",
-        statusFree: "🟢 FREE SLOT", statusLow: "🔵 LOW", statusMed: "🟡 MEDIUM", statusFull: "🔴 FULL SCHEDULE", statusOff: "⚪ LIBUR / OFF",
+        colDate: "Date", colStatus: "Status", colDateTime: "TANGGAL & HARI \\ JAM", colDayStatus: "STATUS HARI",
+        todayBadge: "HARI INI",
+        statusFree: "✨ FREE SLOT", statusLow: "🟢 LOW", statusMed: "⚡ MEDIUM", statusFull: "🔥 FULL SCH...", statusFullPC: "🔥 FULL SCHEDULE", statusOff: "☕ DAY OFF",
         allRegistered: "Semua Jadwal Terdaftar",
         searchPlaceholder: "🔍 Cari nama shift, brand, catatan...",
         allCategories: "Semua Kategori", allStatuses: "Semua Status",
-        colDay: "Hari", colDate: "Tanggal", colHour: "Jam Digital", colTitle: "Judul Shift / Agenda", colCategory: "Kategori", colStatus: "Status", colNotes: "Catatan", colAction: "Aksi",
+        colDay: "Hari", colHour: "Jam Digital", colTitle: "Judul Shift / Agenda", colCategory: "Kategori", colNotes: "Catatan", colAction: "Aksi",
         badgeFinished: "✅ SELESAI", badgeUpcoming: "⏳ AKAN DATANG", editBtn: "Edit", copyBtn: "📋 Salin", deleteBtn: "Hapus",
         shortBreakWarning: "⚠️ Jeda istirahat antar shift terlalu singkat (<5 jam)!",
-        totalLive: "TOTAL SHIFT LIVE", takeKonten: "TAKE KONTEN VIDEO", sleepTime: "JAM ISTIRAHAT", meTime: "ME TIME", offDay: "HARI LIBUR / OFF",
+        totalLive: "TOTAL SHIFT LIVE", takeKonten: "TAKE KONTEN VIDEO", sleepTime: "JAM ISTIRAHAT", offDay: "HARI LIBUR / OFF",
         hoursLive: "Jam Streaming", hoursProd: "Jam Produksi", hoursSleep: "Jam Istirahat",
-        propTitle: "PROPORSI WAKTU KERJA", barTitle: "BEBAN AKTIVITAS PER KATEGORI"
+        propTitle: "PROPORSI WAKTU ALISYA", barTitle: "BEBAN AKTIVITAS PER KATEGORI"
       },
       en: {
         locale: 'en-US',
-        portalSub: "Official Live Broadcast Schedule & Real-Time Slot Availability",
-        modeHP: "Mobile", modePC: "PC Mode", lockBtn: "Lock", loginBtn: "Admin Login",
-        radarTitle: "ALISYA'S OPERATIONAL SCHEDULE RADAR (00:00 - 23:59 WIB)",
+        portalSub: "Official Live Broadcast & Content Production Schedule (Real-Time)",
+        modeHP: "Mobile", modePC: "PC", lockBtn: "Lock", loginBtn: "Login",
+        radarTitle: "ALISYA'S SCHEDULE RADAR (00:00 - 23:59)",
         availableTitle: "Available Schedule (Empty Time Slots)",
-        allSlotsFilled: "⚠️ All time slots for this date are fully booked.",
+        allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
         slotsReady: "Slots Available",
-        calendarTitle: "Monthly Calendar",
-        sessionList: "Daily Scheduled Sessions",
-        noSchedule: "No Sessions Scheduled",
-        noScheduleSub: "All time slots on this date are currently empty and open for booking.",
-        btnShareWA: "Share WA", btnSavePNG: "Save PNG",
-        btnShareRekapWA: "Share Monthly Recap to WA",
-        btnDownloadTablePNG: "Download Table Image (.PNG)",
+        calendarTitle: "Date Calendar",
+        sessionList: "Schedule Session List",
+        noSchedule: "No Schedule for this Date 💼",
+        noScheduleSub: "All time slots on this date are currently empty and available.",
+        btnShareWA: "Share WA", btnSavePNG: "PNG",
+        btnShareRekapWA: "Share Recap to WA",
+        btnDownloadTablePNG: "Save PNG",
         btnAddSession: "+ Add Session", btnCloneDay: "📋 Clone Day",
         jump: "Jump:", today: "Today", tomorrow: "Tomorrow", dayAfter: "Day After",
         tabAgenda: "Daily Agenda",
         tabSpreadsheet: "Spreadsheet Calendar",
         tabKPI: "KPI & Charts",
-        tabList: "Complete Schedule List",
+        tabList: "Schedule List",
         tabColors: "Brand Colors",
-        btnExportCSV: "Export CSV", btnAddSch: "+ Add Schedule",
+        btnExportCSV: "CSV", btnAddSch: "+ Add Schedule",
         liveNowActive: "LIVE NOW:",
-        liveNowIdle: "🟢 No active session at this moment (Standby)",
+        liveNowIdle: "✨ No active session at this moment",
         endsAt: "Ends At", timeLeft: "Countdown:",
         sessionProgress: "Current Session Progress",
         nextUp: "Next Session:", progressToday: "Today's Total Agenda Progress",
         completed: "Completed", scheduledSessions: "Scheduled Sessions", productiveActs: "Productive Activities",
-        colDateTime: "DATE & DAY \\ TIME", colDayStatus: "DAY STATUS", todayBadge: "TODAY",
-        statusFree: "🟢 FREE SLOT", statusLow: "🔵 LOW", statusMed: "🟡 MEDIUM", statusFull: "🔴 FULL SCHEDULE", statusOff: "⚪ DAY OFF",
+        colDate: "Date", colStatus: "Status", colDateTime: "DATE & DAY \\ TIME", colDayStatus: "DAY STATUS",
+        todayBadge: "TODAY",
+        statusFree: "✨ FREE SLOT", statusLow: "🟢 LOW", statusMed: "⚡ MEDIUM", statusFull: "🔥 FULL SCH...", statusFullPC: "🔥 FULL SCHEDULE", statusOff: "☕ DAY OFF",
         allRegistered: "All Registered Schedules",
         searchPlaceholder: "🔍 Search shift title, brand, notes...",
         allCategories: "All Categories", allStatuses: "All Statuses",
-        colDay: "Day", colDate: "Date", colHour: "Time (24H)", colTitle: "Shift / Activity Title", colCategory: "Category", colStatus: "Status", colNotes: "Notes", colAction: "Action",
+        colDay: "Day", colHour: "Time (24H)", colTitle: "Shift / Activity Title", colCategory: "Category", colNotes: "Notes", colAction: "Action",
         badgeFinished: "✅ DONE", badgeUpcoming: "⏳ UPCOMING", editBtn: "Edit", copyBtn: "📋 Copy", deleteBtn: "Delete",
         shortBreakWarning: "⚠️ Short break between shifts (<5 hours)!",
-        totalLive: "TOTAL LIVE SHIFTS", takeKonten: "VIDEO CONTENT SHOOT", sleepTime: "REST TIME", meTime: "ME TIME", offDay: "DAY OFF",
+        totalLive: "TOTAL LIVE SHIFTS", takeKonten: "VIDEO CONTENT SHOOT", sleepTime: "REST TIME", offDay: "DAY OFF",
         hoursLive: "Streaming Hours", hoursProd: "Production Hours", hoursSleep: "Rest Hours",
-        propTitle: "WORK TIME PROPORTION", barTitle: "ACTIVITY LOAD PER CATEGORY"
+        propTitle: "ALISYA TIME PROPORTION", barTitle: "ACTIVITY LOAD PER CATEGORY"
       }
     };
 
     function WorkApp() {
-      // Mesin Detik Real-Time (Berdetak setiap 1 detik untuk Countdown & Jam Digital)
+      // 1. MESIN WAKTU DETIK REAL-TIME (BERDETAK TIAP 1 DETIK)
       const [nowTime, setNowTime] = useState(() => new Date());
       useEffect(() => {
         const timer = setInterval(() => setNowTime(new Date()), 1000);
@@ -493,8 +663,18 @@
 
       const [activeTab, setActiveTab] = useState('agenda');
       const [selectedDate, setSelectedDate] = useState(realTodayStr);
+      const prevRealTodayRef = useRef(realTodayStr);
+
       const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
       const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
+
+      // Otomatis pindah hari saat lewat jam 00:00 tengah malam
+      useEffect(() => {
+        if (prevRealTodayRef.current !== realTodayStr) {
+          prevRealTodayRef.current = realTodayStr;
+          setSelectedDate(realTodayStr);
+        }
+      }, [realTodayStr]);
 
       useEffect(() => {
         if (selectedDate) {
@@ -503,6 +683,15 @@
         }
       }, [selectedDate]);
 
+      // Auto-scroll strip kalender 1 baris ke tanggal yang dipilih / hari ini
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          const el = document.getElementById(`work-cal-day-${selectedDate}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 250);
+        return () => clearTimeout(timer);
+      }, [selectedDate, currentMonth, activeTab, displayMode]);
+
       const [schedules, setSchedules] = useState(() => {
         try {
           const cached = localStorage.getItem('alisya_schedules_cache');
@@ -510,7 +699,7 @@
         } catch (e) { return INITIAL_SCHEDULES; }
       });
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
-      const [stickyNote, setStickyNote] = useState("Jadwal Operasional Live Streaming & Produksi Konten Alisya.");
+      const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress!");
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -542,7 +731,7 @@
       const [toast, setToast] = useState('');
       const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
-      // Sinkronisasi Real-Time Firebase (100% Terhubung Otomatis dengan index.html)
+      // 2. SINKRONISASI REAL-TIME FIREBASE (100% SAMA DENGAN INDEX.HTML)
       useEffect(() => {
         if (!firebaseDb) return;
         const refSch = firebaseDb.ref('alisya_schedules');
@@ -591,6 +780,7 @@
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
+      // 3. STATUS WAKTU SESI & STATUS KEPADATAN HARI REAL-TIME
       const getSessionTimeState = (item) => {
         if (item.date < realTodayStr) return 'done';
         if (item.date > realTodayStr) return 'upcoming';
@@ -603,7 +793,6 @@
         return 'upcoming';
       };
 
-      // Mesin Countdown Real-Time per Detik (Sama Persis dengan index.html)
       const liveTracker = useMemo(() => {
         const todayList = schedules
           .filter(s => s.date === realTodayStr && s.status !== 'OFF' && s.status !== 'SAKIT' && s.status !== 'Sakit / Medis' && s.brand_id !== 'b_sakit')
@@ -712,18 +901,19 @@
         });
       }, [selectedDaySchedules]);
 
-      const getDayScheduleDensity = (dateStr) => {
+      // Status Kepadatan Hari (Persis Gambar Referensi: FULL SCH, MEDIUM, LOW, DAY OFF, FREE SLOT)
+      const getDayScheduleDensity = (dateStr, isCompact = false) => {
         const dayShifts = schedules.filter(s => s.date === dateStr);
-        if (dayShifts.length === 0) return { text: t.statusFree, cls: 'badge-live' };
-        if (dayShifts.some(s => s.status === 'OFF')) return { text: t.statusOff, cls: 'badge-neutral' };
+        if (dayShifts.length === 0) return { text: t.statusFree, cls: 'st-free' };
+        if (dayShifts.some(s => s.status === 'OFF' || s.brand_id === 'b_pribadi')) return { text: t.statusOff, cls: 'st-off' };
         let prodHours = 0;
         dayShifts.forEach(s => {
           if (s.status !== 'Tidur' && s.brand_id !== 'b_sleep') prodHours += calculateDurationHours(s.start_time, s.end_time);
         });
-        if (prodHours >= 10) return { text: t.statusFull, cls: 'badge-danger' };
-        if (prodHours >= 8) return { text: t.statusMed, cls: 'badge-amber' };
-        if (prodHours > 0) return { text: t.statusLow, cls: 'badge-blue' };
-        return { text: t.statusFree, cls: 'badge-live' };
+        if (prodHours >= 10) return { text: isCompact ? t.statusFull : t.statusFullPC, cls: 'st-full' };
+        if (prodHours >= 6) return { text: t.statusMed, cls: 'st-med' };
+        if (prodHours > 0) return { text: t.statusLow, cls: 'st-low' };
+        return { text: t.statusFree, cls: 'st-free' };
       };
 
       const existingSchedulesOnFormDate = useMemo(() => {
@@ -774,7 +964,7 @@
       const shareToWhatsApp = () => {
         const todayItems = selectedDaySchedules;
         const hari = getHariNama(selectedDate);
-        let text = `💼 *ALISYA WORK SCHEDULE* 💼\n🗓️ ${hari}, ${selectedDate}\n\n`;
+        let text = `💼 *${t.radarTitle}* 💼\n🗓️ ${hari}, ${selectedDate}\n\n`;
         if (todayItems.length === 0) text += `🟢 ${t.noSchedule}\n`;
         else {
           todayItems.forEach((s, idx) => {
@@ -809,11 +999,11 @@
       const exportElementAsPNG = async (elementId, filenameLabel) => {
         const el = document.getElementById(elementId);
         if (!el || typeof html2canvas === 'undefined') { notify('⚠️ Sedang memuat modul gambar...'); return; }
-        notify('📸 Memproses gambar jadwal...');
+        notify('📸 Memproses gambar tabel...');
         try {
-          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#F4F6F9' });
+          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#050D1A' });
           const link = document.createElement('a');
-          link.download = `Alisya_Work_Schedule_${filenameLabel}.png`;
+          link.download = `Alisya_Schedule_${filenameLabel}.png`;
           link.href = canvas.toDataURL('image/png');
           link.click();
           notify('✅ Gambar (.PNG) berhasil diunduh!');
@@ -831,11 +1021,11 @@
         const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
         const link = document.createElement("a");
         link.setAttribute("href", encodeURI(csvContent));
-        link.setAttribute("download", `Alisya_Work_Schedule_${currentYear}_${currentMonth + 1}.csv`);
+        link.setAttribute("download", `Alisya_Schedule_${currentYear}_${currentMonth + 1}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        notify('📥 File CSV (Excel) berhasil diunduh!');
+        notify('📥 CSV berhasil diunduh!');
       };
 
       const handleExportToGoogleCalendar = (e, item) => {
@@ -899,46 +1089,54 @@
         setModalOpen(true);
       };
 
-      // Komponen Banner Live Now & Countdown Real-Time
-      const renderLiveNowBanner = () => h('div', { className: 'live-box' },
-        h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { fontSize: '12px' } },
+      // Banner Live Now & Countdown Real-Time
+      const renderLiveNowBanner = () => h('div', {
+        style: {
+          background: 'rgba(0, 0, 0, 0.35)', border: '1px solid rgba(45, 212, 191, 0.25)',
+          borderRadius: '16px', padding: '12px', marginTop: '12px'
+        }
+      },
+        h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { fontSize: '11px' } },
           liveTracker.activeItem
             ? h('div', { className: 'flex flex-wrap items-center gap-2' },
-                h('span', { className: 'flex items-center gap-2', style: { fontWeight: 800, color: '#34D399', fontSize: '13px' } },
-                  h('span', { className: 'dot-live' }),
+                h('span', { className: 'flex items-center gap-1-5', style: { fontWeight: 900, color: '#34D399', fontSize: '12px' } },
+                  h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
                   `${t.liveNowActive} ${liveTracker.activeItem.title}`
                 ),
-                h('span', { className: 'font-mono', style: { background: 'rgba(255,255,255,0.12)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px' } },
+                h('span', { className: 'font-mono', style: { background: 'rgba(255,255,255,0.12)', padding: '3px 8px', borderRadius: '8px', color: '#E2E8F0', fontWeight: 700 } },
                   `⏰ ${liveTracker.activeItem.start_time} - ${liveTracker.activeItem.end_time} (${t.endsAt} ${liveTracker.activeItem.end_time})`
                 ),
-                h('span', { className: 'font-mono', style: { background: '#10B981', color: '#064E3B', fontWeight: 800, padding: '4px 10px', borderRadius: '8px', fontSize: '12px' } },
+                h('span', { className: 'font-mono', style: { background: '#10B981', color: '#042F2E', fontWeight: 900, padding: '3px 9px', borderRadius: '8px' } },
                   `⏳ ${t.timeLeft} ${liveTracker.activeItem.remainingHMS}`
                 )
               )
-            : h('span', { style: { color: '#CBD5E1', fontWeight: 600 } }, t.liveNowIdle),
-          liveTracker.nextItem && h('div', { className: 'flex items-center gap-2', style: { background: 'rgba(245, 158, 11, 0.18)', border: '1px solid rgba(251, 191, 36, 0.35)', padding: '4px 10px', borderRadius: '10px', color: '#FDE68A', fontSize: '11px', fontWeight: 700 } },
+            : h('span', { style: { color: '#CBD5E1', fontWeight: 700 } }, t.liveNowIdle),
+          liveTracker.nextItem && h('div', {
+            className: 'flex items-center gap-1-5',
+            style: { background: 'rgba(245, 158, 11, 0.18)', border: '1px solid rgba(251, 191, 36, 0.35)', padding: '4px 9px', borderRadius: '10px', color: '#FDE68A', fontWeight: 700 }
+          },
             h('span', null, `⏭️ ${t.nextUp}`),
-            h('span', { style: { color: '#FFFFFF', fontWeight: 800 } }, liveTracker.nextItem.title),
+            h('span', { style: { color: '#FFFFFF', fontWeight: 900 } }, liveTracker.nextItem.title),
             h('span', { className: 'font-mono' }, `(${liveTracker.nextItem.start_time})`),
-            h('span', { className: 'font-mono', style: { background: 'rgba(0,0,0,0.35)', padding: '2px 6px', borderRadius: '6px', fontWeight: 800 } }, `-${liveTracker.nextItem.startsInHMS}`)
+            h('span', { className: 'font-mono', style: { background: 'rgba(0,0,0,0.45)', padding: '2px 6px', borderRadius: '6px', fontWeight: 900 } }, `-${liveTracker.nextItem.startsInHMS}`)
           )
         ),
-        liveTracker.activeItem && h('div', { style: { marginTop: '10px' } },
-          h('div', { className: 'flex justify-between', style: { fontSize: '11px', color: '#A7F3D0', fontWeight: 700 } },
+        liveTracker.activeItem && h('div', { style: { marginTop: '8px' } },
+          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#6EE7B7', fontWeight: 700, marginBottom: '4px' } },
             h('span', null, `⚡ ${t.sessionProgress}: ${liveTracker.activeItem.title}`),
             h('span', { className: 'font-mono' }, `${liveTracker.activeItem.sessionPct}%`)
           ),
-          h('div', { className: 'progress-track' },
-            h('div', { className: 'progress-fill', style: { width: `${liveTracker.activeItem.sessionPct}%` } })
+          h('div', { style: { width: '100%', height: '6px', background: 'rgba(0,0,0,0.45)', borderRadius: '999px', overflow: 'hidden' } },
+            h('div', { style: { width: `${liveTracker.activeItem.sessionPct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #00F2FE)' } })
           )
         ),
-        h('div', { style: { marginTop: '10px' } },
-          h('div', { className: 'flex justify-between', style: { fontSize: '11px', color: '#CBD5E1', fontWeight: 700 } },
+        h('div', { style: { marginTop: '8px' } },
+          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#CBD5E1', fontWeight: 700, marginBottom: '4px' } },
             h('span', null, `📅 ${t.progressToday} (${realTodayStr})`),
-            h('span', { className: 'font-mono', style: { color: '#38BDF8' } }, `${liveTracker.progressPct}% ${t.completed}`)
+            h('span', { className: 'font-mono', style: { color: '#5EEAD4' } }, `${liveTracker.progressPct}% ${t.completed}`)
           ),
-          h('div', { className: 'progress-track' },
-            h('div', { className: 'progress-fill', style: { width: `${liveTracker.progressPct}%` } })
+          h('div', { style: { width: '100%', height: '7px', background: 'rgba(0,0,0,0.45)', borderRadius: '999px', overflow: 'hidden' } },
+            h('div', { style: { width: `${liveTracker.progressPct}%`, height: '100%', background: 'linear-gradient(90deg, #0D9488, #38BDF8, #8B5CF6)' } })
           )
         )
       );
@@ -951,15 +1149,15 @@
           { key: 'edit', label: '2. Editing' },
           { key: 'upload', label: '3. Done Upload' }
         ];
-        return h('div', { className: 'flex flex-wrap items-center gap-2', style: { marginTop: '8px' }, onClick: e => e.stopPropagation() },
+        return h('div', { className: 'flex flex-wrap items-center gap-1-5', style: { marginTop: '8px' }, onClick: e => e.stopPropagation() },
           steps.map(st => h('button', {
             key: st.key, type: 'button', onClick: e => handleToggleChecklist(e, item.id, st.key),
             className: 'btn',
             style: {
-              padding: '4px 10px', fontSize: '11px',
-              background: cl[st.key] ? '#059669' : '#F1F5F9',
-              color: cl[st.key] ? '#FFFFFF' : '#475569',
-              borderColor: cl[st.key] ? '#047857' : '#CBD5E1'
+              padding: '4px 9px', fontSize: '10px',
+              background: cl[st.key] ? '#10B981' : '#0E223D',
+              color: cl[st.key] ? '#042F2E' : '#CBD5E1',
+              borderColor: cl[st.key] ? '#6EE7B7' : 'rgba(148,163,184,0.3)'
             }
           }, `${cl[st.key] ? '✅' : '⬜'} ${st.label}`))
         );
@@ -1039,14 +1237,14 @@
           donutInst.current = new Chart(donutCanvas.current, {
             type: 'doughnut',
             data: {
-              labels: ['LIVE', 'Konten', 'Rest', 'Personal', 'OFF', 'Meeting'],
+              labels: ['LIVE', 'Konten', 'Rest', 'Me Time', 'OFF', 'Meeting'],
               datasets: [{
                 data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
-                backgroundColor: ['#059669', '#7C3AED', '#2563EB', '#DB2777', '#DC2626', '#0891B2'],
-                borderWidth: 2, borderColor: '#FFFFFF'
+                backgroundColor: ['#2DD4BF', '#A855F7', '#3B82F6', '#F472B6', '#F43F5E', '#38BDF8'],
+                borderWidth: 2, borderColor: '#0D1F38'
               }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#E2E8F0' } } } }
           });
         }
         if (barCanvas.current) {
@@ -1055,9 +1253,16 @@
             type: 'bar',
             data: {
               labels: stats.perBrand.map(b => b.name),
-              datasets: [{ label: 'Total Sesi / Shift', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#2563EB', borderRadius: 6 }]
+              datasets: [{ label: 'Total Shift / Sesi', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#2DD4BF', borderRadius: 6 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              scales: {
+                x: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(148,163,184,0.15)' } },
+                y: { beginAtZero: true, ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(148,163,184,0.15)' } }
+              },
+              plugins: { legend: { labels: { color: '#E2E8F0' } } }
+            }
           });
         }
       }, [activeTab, stats]);
@@ -1066,7 +1271,7 @@
         e.preventDefault();
         if (enteredPin === adminPin) {
           setIsAdmin(true); setPinInputModal(false); setEnteredPin(''); setPinError(false);
-          notify('🔓 Mode Admin Aktif!');
+          notify('🔓 Admin Access Unlocked!');
         } else { setPinError(true); }
       };
 
@@ -1090,7 +1295,7 @@
         if (selectedSchedule) {
           if (currentFormConflict) { notify(`⛔ Bentrok dengan "${currentFormConflict.title}"!`); return; }
           saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
-          notify('✅ Jadwal berhasil diperbarui!');
+          notify('✨ Jadwal berhasil diperbarui!');
         } else {
           const newItems = [];
           const count = Number(repeatDays) || 1;
@@ -1143,382 +1348,477 @@
         notify(`✅ ${cloned.length} sesi berhasil disalin ke ${cloneTargetDate}!`);
       };
 
-      const dayDensity = getDayScheduleDensity(selectedDate);
+      const dayDensity = getDayScheduleDensity(selectedDate, false);
 
       return h('div', null,
         toast && h('div', {
           style: {
             position: 'fixed', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 80,
-            background: '#0F172A', color: '#FFFFFF', padding: '10px 20px', borderRadius: '999px',
-            fontSize: '12px', fontWeight: 800, boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+            background: '#0D9488', color: '#FFFFFF', padding: '10px 20px', borderRadius: '999px',
+            fontSize: '12px', fontWeight: 900, border: '1.5px solid #5EEAD4', boxShadow: '0 10px 25px rgba(0,0,0,0.6)'
           }
         }, `💼 ${toast}`),
 
-        // HEADER EXECUTIVE PORTAL
-        h('header', { className: 'header-bar' },
-          h('div', { className: 'flex flex-wrap items-center justify-between gap-3', style: { maxWidth: '1440px', margin: '0 auto' } },
-            h('div', { className: 'flex items-center gap-3' },
+        // HEADER EXECUTIVE WORK MODE
+        h('header', { className: 'exec-header' },
+          h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { maxWidth: '1520px', margin: '0 auto' } },
+            h('div', { className: 'flex items-center gap-2' },
               h('div', {
                 style: {
-                  width: '42px', height: '42px', borderRadius: '12px', background: '#EFF6FF',
-                  border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px'
+                  width: '40px', height: '40px', borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(45,212,191,0.2), rgba(2,132,199,0.25))',
+                  border: '1px solid #2DD4BF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'
                 }
               }, '💼'),
               h('div', null,
-                h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                  h('h1', { style: { fontSize: '16px', fontWeight: 800, color: '#0F172A' } }, 'Alisya Work Schedule'),
-                  h('span', { className: 'badge badge-blue font-mono' }, 'EXECUTIVE WORK MODE'),
+                h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
+                  h('h1', { style: { fontSize: '15px', fontWeight: 900, color: '#FFFFFF' } }, 'Alisya Work Schedule'),
+                  h('button', {
+                    className: 'btn btn-dark',
+                    style: { padding: '3px 8px', fontSize: '10px', color: '#5EEAD4' },
+                    onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1)),
+                    title: 'Geser ke tanggal berikutnya'
+                  }, '💼 ❯'),
+                  h('span', {
+                    className: 'font-mono',
+                    style: { background: 'rgba(45,212,191,0.15)', color: '#5EEAD4', border: '1px solid rgba(45,212,191,0.4)', padding: '2px 8px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
+                  }, 'WORK MODE'),
                   isAdmin
-                    ? h('span', { className: 'badge badge-amber' }, '👑 ADMIN ACTIVE')
-                    : h('span', { className: 'badge badge-neutral' }, '👀 CLIENT & PARTNER VIEW')
+                    ? h('span', { style: { background: '#FDE047', color: '#0F172A', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 900 } }, '👑 ADMIN')
+                    : h('span', { style: { background: 'rgba(255,255,255,0.1)', color: '#CBD5E1', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 700 } }, '👀 PARTNER')
                 ),
-                h('p', { style: { fontSize: '11px', color: '#64748B', marginTop: '2px', fontWeight: 500 } }, t.portalSub)
+                h('p', { style: { fontSize: '10px', color: '#94A3B8', marginTop: '2px' } }, t.portalSub)
               )
             ),
 
             // Toolbar Kanan
-            h('div', { className: 'flex items-center gap-2 flex-wrap' },
-              h('span', { className: 'badge badge-live font-mono', style: { fontSize: '12px', padding: '6px 12px' } },
-                h('span', { className: 'dot-live' }),
-                `${liveClockString} WIB`
+            h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
+              h('span', {
+                className: 'font-mono flex items-center gap-1-5',
+                style: { background: 'rgba(0,0,0,0.45)', color: '#34D399', border: '1px solid rgba(16,185,129,0.35)', padding: '5px 10px', borderRadius: '11px', fontSize: '11px', fontWeight: 800 }
+              },
+                h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
+                `${liveClockString}`
               ),
               h('select', { value: lang, onChange: e => handleSetLang(e.target.value) },
                 h('option', { value: 'id' }, '🇮🇩 ID'),
                 h('option', { value: 'en' }, '🇬🇧 EN')
               ),
-              h('div', { className: 'flex items-center gap-1', style: { background: '#F1F5F9', padding: '3px', borderRadius: '10px', border: '1px solid #CBD5E1' } },
+              h('button', {
+                className: 'btn btn-dark',
+                onClick: () => { window.location.href = './index.html'; },
+                title: 'Kembali ke Lemurian Sanctuary'
+              }, '🌊 Lemuria'),
+              h('div', { className: 'flex items-center', style: { background: 'rgba(0,0,0,0.35)', padding: '2px', borderRadius: '11px', border: '1px solid rgba(255,255,255,0.15)' } },
                 h('button', {
                   onClick: () => setDisplayMode('mobile'),
                   className: 'btn',
-                  style: { padding: '5px 10px', background: displayMode === 'mobile' ? '#2563EB' : 'transparent', color: displayMode === 'mobile' ? '#FFF' : '#475569' }
-                }, `📱 ${t.modeHP}`),
+                  style: { padding: '4px 8px', background: displayMode === 'mobile' ? '#0D9488' : 'transparent', color: '#FFF' }
+                }, '📱'),
                 h('button', {
                   onClick: () => setDisplayMode('pc'),
                   className: 'btn',
-                  style: { padding: '5px 10px', background: displayMode === 'pc' ? '#2563EB' : 'transparent', color: displayMode === 'pc' ? '#FFF' : '#475569' }
-                }, `💻 ${t.modePC}`)
+                  style: { padding: '4px 8px', background: displayMode === 'pc' ? '#0D9488' : 'transparent', color: '#FFF' }
+                }, '💻')
               ),
               h('div', { className: 'flex items-center gap-1' },
-                h('button', { className: 'btn btn-outline', onClick: () => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y - 1)) : setCurrentMonth(m => m - 1) }, '◀'),
+                h('button', { className: 'btn btn-dark', style: { padding: '5px 8px' }, onClick: () => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y - 1)) : setCurrentMonth(m => m - 1) }, '◀'),
                 h('select', { value: currentMonth, onChange: e => setCurrentMonth(Number(e.target.value)) },
                   Array.from({ length: 12 }).map((_, idx) => h('option', { key: idx, value: idx }, new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(new Date(2026, idx, 1))))
                 ),
-                h('select', { value: currentYear, onChange: e => setCurrentYear(Number(e.target.value)) },
+                h('select', { className: 'font-mono', value: currentYear, onChange: e => setCurrentYear(Number(e.target.value)) },
                   [2024, 2025, 2026, 2027, 2028, 2029, 2030].map(yr => h('option', { key: yr, value: yr }, yr))
                 ),
-                h('button', { className: 'btn btn-outline', onClick: () => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y + 1)) : setCurrentMonth(m => m + 1) }, '▶')
+                h('button', { className: 'btn btn-dark', style: { padding: '5px 8px' }, onClick: () => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y + 1)) : setCurrentMonth(m => m + 1) }, '▶')
               ),
-              h('button', {
-                className: 'btn btn-outline',
-                onClick: () => { window.location.href = './index.html'; },
-                title: 'Kembali ke Lemurian Sanctuary'
-              }, '🌊 Personal Mode'),
               isAdmin
-                ? h('button', { className: 'btn btn-subtle', onClick: () => { setIsAdmin(false); notify('🔒 Admin Terkunci'); } }, `🔒 ${t.lockBtn}`)
-                : h('button', { className: 'btn btn-outline', onClick: () => setPinInputModal(true) }, `🔑 ${t.loginBtn}`)
+                ? h('button', { className: 'btn btn-dark', onClick: () => { setIsAdmin(false); notify('🔒 Locked'); } }, '🔒')
+                : h('button', { className: 'btn btn-teal', onClick: () => setPinInputModal(true) }, `🔑 ${t.loginBtn}`)
             )
           )
         ),
 
-        // TICKER BAR PROFESIONAL
-        h('div', { className: 'ticker-bar' },
+        // TICKER BAR
+        h('div', { className: 'exec-ticker' },
           h('div', { className: 'ticker-track' },
             [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center gap-4' },
-              h('span', { style: { fontWeight: 800, color: '#38BDF8' } }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
-              h('span', null, '•'),
-              h('span', { style: { color: '#34D399', fontWeight: 700 } }, `${broadcastMetrics.badge} (${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan)`),
-              h('span', null, '•'),
-              h('span', null, `⏱️ Track Record: ${broadcastMetrics.totalHours}+ Jam Live Streaming Aktif`),
-              h('span', null, '•'),
-              h('span', { style: { color: '#FDE68A' } }, `📌 Fokus Operasional: ${stickyNote}`)
+              h('span', { style: { fontWeight: 900, color: '#5EEAD4' } }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
+              h('span', { style: { color: '#34D399', fontWeight: 800 } }, `${broadcastMetrics.badge} (${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan)`),
+              h('span', { style: { color: '#FDE68A', fontWeight: 700 } }, `⏱️ Jam Terbang: ${broadcastMetrics.totalHours}+ Jam Live Aktif`),
+              h('span', { style: { color: '#CBD5E1' } }, `📌 Fokus: ${stickyNote}`)
             ))
           )
         ),
 
         // NAVIGASI TAB
-        h('nav', { className: 'nav-bar' },
-          h('div', { className: 'flex items-center gap-2', style: { maxWidth: '1440px' } },
-            [
-              { id: 'agenda', icon: '📅', label: t.tabAgenda },
-              { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
-              { id: 'kpi', icon: '📈', label: t.tabKPI },
-              { id: 'list', icon: '📋', label: t.tabList },
-              { id: 'colors', icon: '🏷️', label: t.tabColors }
-            ].map(tb => h('button', {
-              key: tb.id,
-              onClick: () => setActiveTab(tb.id),
-              className: `btn-tab ${activeTab === tb.id ? 'active' : ''}`
-            }, `${tb.icon} ${tb.label}`))
-          ),
-          h('div', { className: 'flex items-center gap-2' },
-            h('button', { className: 'btn btn-outline', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
-            isAdmin && h('button', { className: 'btn btn-primary', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
-          )
+        h('nav', { className: 'exec-nav no-scrollbar' },
+          [
+            { id: 'agenda', icon: '📅', label: t.tabAgenda },
+            { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
+            { id: 'kpi', icon: '📈', label: t.tabKPI },
+            { id: 'list', icon: '📋', label: t.tabList },
+            { id: 'colors', icon: '🎨', label: t.tabColors }
+          ].map(tb => h('button', {
+            key: tb.id,
+            onClick: () => setActiveTab(tb.id),
+            className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`
+          }, `${tb.icon} ${tb.label}`)),
+          h('button', { className: 'btn btn-dark', style: { marginLeft: 'auto' }, onClick: exportCSV }, `📥 ${t.btnExportCSV}`)
         ),
 
         // KONTEN UTAMA
-        h('main', { className: displayMode === 'mobile' ? 'container-mobile' : 'container' },
+        h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
 
           // =================================================================
-          // TAB 1: DAILY AGENDA (FOKUS UTAMA JADWAL & WAKTU REAL-TIME)
+          // TAB 1: AGENDA HARIAN (DENGAN KALENDER 1 BARIS HORIZONTAL)
           // =================================================================
-          activeTab === 'agenda' && h('div', { id: 'work-agenda-capture', className: 'flex-col gap-4' },
-            // Banner Radar Utama
-            h('div', { className: 'radar-banner' },
-              h('div', { className: 'flex flex-wrap items-center justify-between gap-3' },
-                h('div', null,
-                  h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                    h('span', { className: 'dot-live' }),
-                    h('span', { style: { fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em', color: '#93C5FD' } }, t.radarTitle),
-                    h('span', { className: `badge ${dayDensity.cls}` }, dayDensity.text)
-                  ),
-                  h('h2', { style: { fontSize: '22px', fontWeight: 800, marginTop: '6px' } }, `${getHariNama(selectedDate)}, ${selectedDate}`),
-                  h('p', { style: { fontSize: '12px', color: '#CBD5E1', marginTop: '4px' } },
-                    `${selectedDaySchedules.length} ${t.scheduledSessions} • ${selectedDaySchedules.filter(s => s.status !== 'Tidur').length} ${t.productiveActs} • ${availableSlotsForSelectedDate.length} ${t.slotsReady}`
-                  ),
-                  shortBreakWarnings[selectedDate] && h('div', { className: 'badge badge-amber', style: { marginTop: '8px' } }, t.shortBreakWarning)
+          activeTab === 'agenda' && h('div', { id: 'work-agenda-capture', className: 'flex-col gap-3' },
+            // 1. Kartu Radar Utama
+            h('div', { className: 'radar-card' },
+              h('div', { className: 'flex flex-wrap items-center justify-between gap-2' },
+                h('div', { className: 'flex items-center gap-1-5' },
+                  h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
+                  h('span', { style: { fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', color: '#5EEAD4' } }, t.radarTitle)
                 ),
-                // Pintasan Lompat Tanggal & Share
-                h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                  h('div', { className: 'flex items-center gap-1', style: { background: 'rgba(255,255,255,0.1)', padding: '4px', borderRadius: '10px' } },
-                    h('span', { style: { fontSize: '11px', padding: '0 6px', color: '#CBD5E1', fontWeight: 700 } }, t.jump),
-                    h('button', { className: 'btn', style: { background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '5px 10px' }, onClick: () => jumpToOffset(0) }, t.today),
-                    h('button', { className: 'btn', style: { background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '5px 10px' }, onClick: () => jumpToOffset(1) }, t.tomorrow),
-                    h('button', { className: 'btn', style: { background: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '5px 10px' }, onClick: () => jumpToOffset(2) }, t.dayAfter)
-                  ),
-                  h('button', { className: 'btn btn-outline', onClick: () => exportElementAsPNG('work-agenda-capture', selectedDate) }, `📸 ${t.btnSavePNG}`),
-                  h('button', { className: 'btn btn-emerald', onClick: shareToWhatsApp }, `📲 ${t.btnShareWA}`),
-                  isAdmin && h('button', { className: 'btn btn-primary', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSession)
+                h('div', { className: 'flex items-center gap-1-5' },
+                  h('button', { className: 'btn btn-dark', onClick: () => exportElementAsPNG('work-agenda-capture', selectedDate) }, `📸 ${t.btnSavePNG}`),
+                  h('button', { className: 'btn btn-emerald', onClick: shareToWhatsApp }, `📲 ${t.btnShareWA}`)
                 )
               ),
-              renderLiveNowBanner()
+
+              h('div', { className: 'flex items-center justify-between gap-2', style: { marginTop: '10px' } },
+                h('h2', { style: { fontSize: displayMode === 'mobile' ? '17px' : '22px', fontWeight: 900, color: '#FFFFFF' } }, `${getHariNama(selectedDate)}, ${selectedDate}`),
+                h('span', { className: `status-pill-hp ${dayDensity.cls}`, style: { width: 'auto', fontSize: '10px', padding: '4px 10px', borderRadius: '999px' } }, dayDensity.text)
+              ),
+              h('p', { style: { fontSize: '11px', color: '#CBD5E1', marginTop: '4px' } },
+                `${selectedDaySchedules.length} ${t.scheduledSessions} • ${selectedDaySchedules.filter(s => s.status !== 'Tidur').length} ${t.productiveActs}`
+              ),
+              shortBreakWarnings[selectedDate] && h('div', { style: { marginTop: '6px', fontSize: '10px', background: 'rgba(245,158,11,0.2)', color: '#FDE68A', padding: '4px 8px', borderRadius: '8px', fontWeight: 700 } }, t.shortBreakWarning),
+
+              renderLiveNowBanner(),
+
+              h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.12)' } },
+                h('div', { className: 'flex items-center gap-1-5' },
+                  h('span', { style: { fontSize: '10px', color: '#94A3B8', fontWeight: 700 } }, t.jump),
+                  h('button', { className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px' }, onClick: () => jumpToOffset(0) }, t.today),
+                  h('button', { className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px' }, onClick: () => jumpToOffset(1) }, t.tomorrow),
+                  h('button', { className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px' }, onClick: () => jumpToOffset(2) }, t.dayAfter)
+                ),
+                selectedDaySchedules.length > 0 && isAdmin && h('button', {
+                  className: 'btn btn-teal', style: { padding: '4px 10px', fontSize: '10px' },
+                  onClick: () => { setCloneTargetDate(addDaysToDateStr(selectedDate, 1)); setCloneModalOpen(true); }
+                }, t.btnCloneDay)
+              )
             ),
 
-            // Area 2 Kolom: Kiri (Slot Kosong + Kalender) & Kanan (Daftar Sesi Harian)
-            h('div', { className: `grid-agenda ${displayMode === 'pc' ? 'pc-mode' : ''}` },
-              // Kolom Kiri
-              h('div', { className: 'flex-col gap-4' },
-                // 1. Available Schedule (Slot Jam Kosong)
-                h('div', { className: 'card', style: { borderColor: '#A7F3D0', background: '#F0FDF4' } },
-                  h('div', { className: 'flex items-center justify-between', style: { marginBottom: '12px' } },
-                    h('span', { style: { fontSize: '13px', fontWeight: 800, color: '#065F46' } }, `🟢 ${t.availableTitle}`),
-                    h('span', { className: 'badge badge-live' }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
-                  ),
-                  availableSlotsForSelectedDate.length === 0
-                    ? h('div', { className: 'badge badge-danger', style: { width: '100%', justifyContent: 'center', padding: '10px' } }, t.allSlotsFilled)
-                    : h('div', { className: 'grid-2' },
-                        availableSlotsForSelectedDate.map(slot => h('button', {
-                          key: slot.label,
-                          onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
-                          className: 'btn btn-outline font-mono',
-                          style: { justifyContent: 'space-between', borderColor: '#6EE7B7', color: '#065F46', background: '#FFFFFF' }
-                        }, h('span', null, `⏰ ${slot.start} - ${slot.end}`), h('span', { style: { fontWeight: 800, color: '#059669' } }, '+')))
-                      )
-                ),
-
-                // 2. Kalender Bulanan
-                h('div', { className: 'card' },
-                  h('div', { className: 'flex items-center justify-between', style: { marginBottom: '12px' } },
-                    h('span', { style: { fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#1E293B' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
-                    h('button', { className: 'btn btn-subtle', style: { padding: '4px 10px' }, onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1)) }, 'Next Day ❯')
-                  ),
-                  h('div', { className: 'grid-7' },
-                    Array.from({ length: daysInMonth }).map((_, i) => {
-                      const day = i + 1;
-                      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                      const isSelected = selectedDate === dateStr;
-                      const isToday = dateStr === realTodayStr;
-                      const dtObj = new Date(currentYear, currentMonth, day);
-                      const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
-                      const dayShifts = schedules.filter(s => s.date === dateStr);
-                      return h('button', {
-                        key: day,
-                        onClick: () => setSelectedDate(dateStr),
-                        style: {
-                          padding: '8px 4px', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center',
-                          background: isSelected ? '#2563EB' : isToday ? '#EFF6FF' : '#F8FAFC',
-                          color: isSelected ? '#FFFFFF' : isToday ? '#1D4ED8' : '#334155',
-                          border: isSelected ? '1px solid #1D4ED8' : isToday ? '1.5px solid #3B82F6' : '1px solid #E2E8F0',
-                          fontWeight: isSelected || isToday ? 800 : 600
-                        }
-                      },
-                        h('span', { style: { fontSize: '9px', opacity: 0.8 } }, dayName),
-                        h('span', { style: { fontSize: '13px', marginTop: '2px' } }, day),
-                        h('div', { className: 'flex gap-1', style: { marginTop: '4px', height: '4px' } },
-                          dayShifts.slice(0, 3).map((s, idx) => h('span', {
-                            key: idx,
-                            style: { width: '4px', height: '4px', borderRadius: '50%', background: isSelected ? '#FFFFFF' : s.color }
-                          }))
-                        )
-                      );
-                    })
-                  )
+            // 2. KALENDER TANGGAL 1 BARIS HORIZONTAL (BISA DI-SWIPE & NEXT ❯)
+            h('div', { className: 'exec-card', style: { padding: '12px' } },
+              h('div', { className: 'flex items-center justify-between', style: { marginBottom: '8px' } },
+                h('span', { style: { fontSize: '11px', fontWeight: 900, color: '#5EEAD4', textTransform: 'uppercase' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
+                h('div', { className: 'flex items-center gap-1' },
+                  h('button', {
+                    className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px', color: '#5EEAD4' },
+                    onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, -1))
+                  }, '❮ Prev'),
+                  h('button', {
+                    className: 'btn btn-dark', style: { padding: '4px 9px', fontSize: '10px', color: '#5EEAD4' },
+                    onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1))
+                  }, 'Next ❯')
                 )
               ),
+              h('div', { className: 'cal-strip no-scrollbar' },
+                Array.from({ length: daysInMonth }).map((_, i) => {
+                  const day = i + 1;
+                  const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  const isSelected = selectedDate === dateStr;
+                  const isToday = dateStr === realTodayStr;
+                  const dtObj = new Date(currentYear, currentMonth, day);
+                  const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
+                  const dayShifts = schedules.filter(s => s.date === dateStr);
 
-              // Kolom Kanan: Daftar Sesi Jadwal Harian
-              h('div', { className: 'flex-col gap-3' },
-                h('div', { className: 'card flex items-center justify-between', style: { padding: '12px 18px' } },
-                  h('span', { style: { fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: '#1E293B' } },
-                    `📡 ${t.sessionList} (${selectedDate}): ${selectedDaySchedules.length}`
-                  ),
-                  selectedDaySchedules.length > 0 && isAdmin && h('button', {
-                    className: 'btn btn-subtle',
-                    onClick: () => { setCloneTargetDate(addDaysToDateStr(selectedDate, 1)); setCloneModalOpen(true); }
-                  }, t.btnCloneDay)
-                ),
-
-                selectedDaySchedules.length === 0
-                  ? h('div', { className: 'card', style: { textAlign: 'center', padding: '48px 20px' } },
-                      h('div', { style: { fontSize: '36px', marginBottom: '8px' } }, '💼'),
-                      h('div', { style: { fontSize: '15px', fontWeight: 800, color: '#0F172A' } }, t.noSchedule),
-                      h('p', { style: { fontSize: '12px', color: '#64748B', marginTop: '4px' } }, t.noScheduleSub)
+                  return h('button', {
+                    key: day,
+                    id: `work-cal-day-${dateStr}`,
+                    onClick: () => setSelectedDate(dateStr),
+                    className: `cal-day-btn ${isSelected ? 'is-selected' : isToday ? 'is-today' : ''}`
+                  },
+                    h('span', { style: { fontSize: '9px', fontWeight: 700, opacity: 0.85 } }, dayName),
+                    h('span', { style: { fontSize: '14px', fontWeight: 900, marginTop: '2px' } }, day),
+                    h('div', { className: 'flex gap-1', style: { marginTop: '4px', height: '4px' } },
+                      dayShifts.slice(0, 3).map((s, idx) => h('span', {
+                        key: idx,
+                        style: { width: '4px', height: '4px', borderRadius: '999px', background: isSelected ? '#FFFFFF' : s.color }
+                      }))
                     )
-                  : selectedDaySchedules.map(item => {
-                      const brand = brands.find(b => b.id === item.brand_id);
-                      const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
-                      const timeState = getSessionTimeState(item);
-
-                      return h('div', {
-                        key: item.id,
-                        onClick: () => isAdmin && handleOpenEdit(item),
-                        className: 'card flex items-start justify-between gap-3',
-                        style: {
-                          position: 'relative', overflow: 'hidden', paddingLeft: '22px',
-                          borderColor: isCurrentlyLive ? '#10B981' : '#E2E8F0',
-                          boxShadow: isCurrentlyLive ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : undefined,
-                          opacity: timeState === 'done' && !isCurrentlyLive ? 0.78 : 1,
-                          cursor: isAdmin ? 'pointer' : 'default'
-                        }
-                      },
-                        h('div', { style: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '7px', background: item.color } }),
-                        h('div', { className: 'flex-col gap-2', style: { flex: 1 } },
-                          h('div', { className: 'flex flex-wrap items-center gap-2' },
-                            h('span', { className: 'badge badge-neutral font-mono', style: { fontSize: '12px' } }, `⏰ ${item.start_time} - ${item.end_time}`),
-                            isCurrentlyLive && h('span', { className: 'badge badge-live font-mono' }, `🟢 LIVE NOW • -${liveTracker.activeItem.remainingHMS}`),
-                            !isCurrentlyLive && timeState === 'done' && h('span', { className: 'badge badge-neutral' }, t.badgeFinished),
-                            !isCurrentlyLive && timeState === 'upcoming' && h('span', { className: 'badge badge-blue' }, t.badgeUpcoming),
-                            h('span', {
-                              className: 'badge',
-                              style: { background: item.color + '35', color: '#0F172A', borderColor: item.color }
-                            }, item.status),
-                            h('span', { style: { fontSize: '12px', fontWeight: 700, color: '#475569' } }, `${brand?.emoji || ''} ${brand?.name || ''}`)
-                          ),
-                          h('div', { style: { fontSize: '16px', fontWeight: 800, color: '#0F172A' } }, item.title),
-                          Number(item.gmv) > 0 && h('div', { className: 'badge badge-live font-mono', style: { alignSelf: 'flex-start' } },
-                            `💰 GMV: Rp ${Number(item.gmv).toLocaleString('id-ID')}`
-                          ),
-                          item.notes && h('div', {
-                            style: { background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '8px 12px', borderRadius: '10px', fontSize: '12px', color: '#334155' }
-                          }, `📌 ${item.notes}`),
-                          renderKontenChecklist(item)
-                        ),
-                        h('div', { className: 'flex-col gap-2 items-end' },
-                          h('button', {
-                            type: 'button',
-                            className: 'btn btn-outline',
-                            style: { padding: '5px 10px', fontSize: '11px' },
-                            onClick: e => handleExportToGoogleCalendar(e, item)
-                          }, '📅 GCal'),
-                          isAdmin && h('button', {
-                            type: 'button',
-                            className: 'btn btn-subtle',
-                            style: { padding: '5px 10px', fontSize: '11px' },
-                            onClick: e => { e.stopPropagation(); handleDuplicate(item); }
-                          }, t.copyBtn)
-                        )
-                      );
-                    })
-              )
-            )
-          ),
-
-          // =================================================================
-          // TAB 2: SPREADSHEET CALENDAR
-          // =================================================================
-          activeTab === 'calendar' && h('div', { className: 'flex-col gap-4' },
-            h('div', { className: 'card flex flex-wrap items-center justify-between gap-3' },
-              h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                h('button', { className: 'btn btn-emerald', onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
-                h('button', { className: 'btn btn-primary', onClick: () => exportElementAsPNG('work-spreadsheet-area', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
-              ),
-              h('div', { className: 'flex items-center gap-2 flex-wrap' },
-                brands.map(b => h('span', { key: b.id, className: 'badge badge-neutral' },
-                  h('span', { style: { width: '10px', height: '10px', borderRadius: '50%', background: b.color, display: 'inline-block' } }),
-                  `${b.emoji} ${b.name}`
-                ))
+                  );
+                })
               )
             ),
-            h('div', { id: 'work-spreadsheet-area', className: 'table-wrap' },
-              h('table', null,
-                h('thead', null,
-                  h('tr', null,
-                    h('th', { className: 'sticky-left', style: { minWidth: '170px', background: '#E2E8F0' } }, `💼 ${t.colDateTime}`),
-                    h('th', { style: { minWidth: '120px', textAlign: 'center' } }, t.colDayStatus),
-                    TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono', style: { minWidth: '105px', textAlign: 'center' } }, slot.label))
-                  )
-                ),
-                h('tbody', null,
-                  Array.from({ length: daysInMonth }).map((_, i) => {
-                    const day = i + 1;
-                    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const dtObj = new Date(currentYear, currentMonth, day);
-                    const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
-                    const isToday = dateStr === realTodayStr;
-                    const density = getDayScheduleDensity(dateStr);
 
-                    return h('tr', { key: day, className: isToday ? 'today-row' : '' },
-                      h('td', { className: 'sticky-left', style: { fontWeight: 800 } },
-                        h('div', { className: 'flex items-center gap-2' },
-                          h('span', { style: { fontSize: '14px', width: '22px' } }, day),
-                          h('span', { style: { color: '#2563EB', textTransform: 'uppercase' } }, dayName),
-                          isToday && h('span', { className: 'badge badge-blue', style: { marginLeft: 'auto', fontSize: '9px' } }, t.todayBadge)
-                        )
-                      ),
-                      h('td', { style: { textAlign: 'center' } },
-                        h('span', { className: `badge ${density.cls}` }, density.text)
-                      ),
-                      TIME_SLOTS.map(slot => {
-                        const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                        const slotItems = schedules.filter(s => {
-                          if (s.date !== dateStr) return false;
-                          const st = timeToMinutes(s.start_time);
-                          let en = timeToMinutes(s.end_time);
-                          if (en <= st) en = 24 * 60;
-                          return st < eM && en > sM;
-                        });
-                        return h('td', {
-                          key: slot.label,
-                          onClick: () => slotItems.length > 0 ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`⏰ ${slotItems[0].start_time}-${slotItems[0].end_time}: ${slotItems[0].title}`)) : handleOpenCreate(dateStr, slot.start, slot.end),
-                          style: { verticalAlign: 'top', height: '48px', cursor: 'pointer' }
-                        },
-                          slotItems.map(item => h('div', {
-                            key: item.id,
+            // 3. AVAILABLE SCHEDULE (SLOT JAM KOSONG)
+            h('div', { className: 'exec-card', style: { background: '#06182C', borderColor: 'rgba(45,212,191,0.5)' } },
+              h('div', { className: 'flex items-center justify-between', style: { marginBottom: '8px' } },
+                h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#5EEAD4' } }, `🟢 ${t.availableTitle}`),
+                h('span', { style: { fontSize: '10px', fontWeight: 800, background: 'rgba(45,212,191,0.15)', color: '#5EEAD4', padding: '2px 8px', borderRadius: '999px' } }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
+              ),
+              availableSlotsForSelectedDate.length === 0
+                ? h('div', { style: { fontSize: '11px', color: '#FDA4AF', fontWeight: 700, padding: '4px 0' } }, t.allSlotsFilled)
+                : h('div', { className: 'cal-strip no-scrollbar' },
+                    availableSlotsForSelectedDate.map(slot => h('button', {
+                      key: slot.label,
+                      onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
+                      className: 'btn btn-dark font-mono',
+                      style: { flexShrink: 0, color: '#5EEAD4', borderColor: 'rgba(45,212,191,0.45)' }
+                    }, `+ ${slot.start}-${slot.end}`))
+                  )
+            ),
+
+            // 4. DAFTAR SESI JADWAL HARIAN
+            h('div', { className: 'flex-col gap-2-5', style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+              selectedDaySchedules.length === 0
+                ? h('div', { className: 'exec-card', style: { textAlign: 'center', padding: '36px 16px' } },
+                    h('div', { style: { fontSize: '34px', marginBottom: '6px' } }, '💼'),
+                    h('div', { style: { fontSize: '14px', fontWeight: 900, color: '#FFFFFF' } }, t.noSchedule),
+                    h('p', { style: { fontSize: '11px', color: '#94A3B8', marginTop: '4px' } }, t.noScheduleSub)
+                  )
+                : selectedDaySchedules.map(item => {
+                    const brand = brands.find(b => b.id === item.brand_id);
+                    const isCurrentlyLive = liveTracker.activeItem && liveTracker.activeItem.id === item.id;
+                    const timeState = getSessionTimeState(item);
+
+                    return h('div', {
+                      key: item.id,
+                      onClick: () => isAdmin && handleOpenEdit(item),
+                      className: 'exec-card flex items-start justify-between gap-3',
+                      style: {
+                        position: 'relative', overflow: 'hidden', paddingLeft: '20px',
+                        borderColor: isCurrentlyLive ? '#00F2FE' : 'rgba(45,212,191,0.35)',
+                        boxShadow: isCurrentlyLive ? '0 0 18px rgba(0,242,254,0.45)' : undefined,
+                        opacity: timeState === 'done' && !isCurrentlyLive ? 0.78 : 1
+                      }
+                    },
+                      h('div', { style: { position: 'absolute', left: 0, top: 0, bottom: 0, width: '7px', background: item.color } }),
+                      h('div', { style: { flex: 1 } },
+                        h('div', { className: 'flex flex-wrap items-center gap-1-5' },
+                          h('span', {
+                            className: 'font-mono',
+                            style: { background: '#101E35', color: '#00F2FE', border: '1px solid rgba(45,212,191,0.45)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 900 }
+                          }, `⏰ ${item.start_time} - ${item.end_time}`),
+                          isCurrentlyLive && h('span', {
+                            className: 'font-mono',
+                            style: { background: '#10B981', color: '#042F2E', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 900 }
+                          }, `LIVE • -${liveTracker.activeItem.remainingHMS}`),
+                          !isCurrentlyLive && timeState === 'done' && h('span', {
+                            style: { background: '#0E223D', color: '#94A3B8', padding: '3px 8px', borderRadius: '8px', fontSize: '9px', fontWeight: 800 }
+                          }, t.badgeFinished),
+                          h('span', {
                             style: {
-                              background: item.color, color: '#0F172A', padding: '4px 6px',
-                              borderRadius: '6px', fontSize: '10px', fontWeight: 800, marginBottom: '3px',
-                              border: '1px solid rgba(0,0,0,0.1)'
+                              background: item.color + '33', color: '#FFFFFF', border: `1px solid ${item.color}99`,
+                              padding: '2px 8px', borderRadius: '8px', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase'
                             }
-                          }, `${item.title} (${item.start_time}-${item.end_time})`))
-                        );
-                      })
+                          }, item.status),
+                          h('span', { style: { fontSize: '11px', fontWeight: 700, color: '#E2E8F0' } }, `${brand?.emoji || ''} ${brand?.name || ''}`)
+                        ),
+                        h('div', { style: { fontSize: '15px', fontWeight: 900, color: '#FFFFFF', marginTop: '6px' } }, item.title),
+                        Number(item.gmv) > 0 && h('div', {
+                          className: 'font-mono',
+                          style: { display: 'inline-block', marginTop: '5px', background: 'rgba(6,78,59,0.7)', border: '1px solid rgba(52,211,153,0.4)', color: '#6EE7B7', padding: '2px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 800 }
+                        }, `💰 GMV: Rp ${Number(item.gmv).toLocaleString('id-ID')}`),
+                        item.notes && h('div', {
+                          style: { marginTop: '6px', background: 'rgba(14,31,53,0.85)', border: '1px solid rgba(45,212,191,0.25)', padding: '6px 10px', borderRadius: '10px', fontSize: '11px', color: '#CBD5E1', fontStyle: 'italic' }
+                        }, `📌 ${item.notes}`),
+                        renderKontenChecklist(item)
+                      ),
+                      h('div', { className: 'flex-col gap-1-5 items-end' },
+                        h('button', {
+                          type: 'button', className: 'btn btn-dark', style: { padding: '4px 8px', fontSize: '9px', color: '#5EEAD4' },
+                          onClick: e => handleExportToGoogleCalendar(e, item)
+                        }, '📅 GCal'),
+                        isAdmin && h('button', {
+                          type: 'button', className: 'btn btn-dark', style: { padding: '4px 8px', fontSize: '9px' },
+                          onClick: e => { e.stopPropagation(); handleDuplicate(item); }
+                        }, '📋')
+                      )
                     );
                   })
-                )
-              )
             )
           ),
 
           // =================================================================
-          // TAB 3: KPI & GRAFIK KERJA
+          // TAB 2: KALENDER SPREADSHEET (PERSIS GAMBAR REFERENSI + BISA ZOOM)
           // =================================================================
-          activeTab === 'kpi' && h('div', { className: 'flex-col gap-4' },
-            h('div', { className: 'card flex flex-wrap items-center justify-between gap-3' },
-              h('div', { className: 'flex items-center gap-2 flex-wrap' },
+          activeTab === 'calendar' && h('div', { className: 'flex-col gap-3' },
+            h('div', { className: 'flex items-center justify-between gap-2' },
+              h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
+              h('button', { className: 'btn btn-teal', style: { flex: 1, padding: '9px' }, onClick: () => exportElementAsPNG('work-matrix-capture', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
+            ),
+
+            h('div', { id: 'work-matrix-capture', className: 'matrix-shell' },
+              // Legend Kategori di Atas Matriks
+              h('div', { className: 'matrix-legend' },
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#5EEAD4', textTransform: 'uppercase' } }, `🗓️ ${monthName} ${currentYear}`),
+                h('div', { className: 'flex flex-wrap items-center gap-1-5' },
+                  brands.map(b => h('span', {
+                    key: b.id,
+                    className: 'flex items-center gap-1',
+                    style: { fontSize: '8px', fontWeight: 800, background: '#0E243E', color: '#E2E8F0', padding: '2px 6px', borderRadius: '6px', border: '1px solid rgba(45,212,191,0.35)' }
+                  },
+                    h('span', { style: { width: '8px', height: '8px', borderRadius: '2px', background: b.color } }),
+                    b.name
+                  ))
+                )
+              ),
+
+              // Mode HP: Matriks Kotak Penuh 1 Layar Persis Gambar Referensi (Bisa Pinch-Zoom 2 Jari)
+              displayMode === 'mobile'
+                ? h('div', { style: { width: '100%', overflow: 'hidden' } },
+                    h('table', { className: 'matrix-table-hp' },
+                      h('thead', null,
+                        h('tr', null,
+                          h('th', { style: { width: '48px', textAlign: 'left', paddingLeft: '4px', fontSize: '7.5px' } }, `🌊 ${t.colDate}`),
+                          h('th', { style: { width: '52px', fontSize: '7.5px' } }, t.colStatus),
+                          TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono' },
+                            h('div', null, `${slot.start}/`),
+                            h('div', null, slot.end)
+                          ))
+                        )
+                      ),
+                      h('tbody', null,
+                        Array.from({ length: daysInMonth }).map((_, i) => {
+                          const day = i + 1;
+                          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                          const dtObj = new Date(currentYear, currentMonth, day);
+                          const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
+                          const isToday = dateStr === realTodayStr;
+                          const density = getDayScheduleDensity(dateStr, true);
+
+                          return h('tr', { key: day, className: isToday ? 'row-today-glow' : '' },
+                            h('td', {
+                              className: 'col-date-hp',
+                              onClick: () => { setSelectedDate(dateStr); setActiveTab('agenda'); }
+                            },
+                              h('div', { className: 'flex items-center gap-1' },
+                                isToday && h('span', { className: 'radar-dot-wrap', style: { width: '6px', height: '6px' } },
+                                  h('span', { className: 'radar-dot-ping' }),
+                                  h('span', { className: 'radar-dot-core', style: { width: '6px', height: '6px' } })
+                                ),
+                                h('span', { style: { fontSize: '8.5px', fontWeight: 900, color: '#FFFFFF', width: '12px', textAlign: 'right' } }, day),
+                                h('span', { style: { fontSize: '7px', fontWeight: 800, color: '#5EEAD4', textTransform: 'uppercase' } }, dayName)
+                              )
+                            ),
+                            h('td', { className: 'col-status-hp' },
+                              h('span', { className: `status-pill-hp ${density.cls}` }, density.text)
+                            ),
+                            TIME_SLOTS.map(slot => {
+                              const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
+                              const slotItems = schedules.filter(s => {
+                                if (s.date !== dateStr) return false;
+                                const st = timeToMinutes(s.start_time);
+                                let en = timeToMinutes(s.end_time);
+                                if (en <= st) en = 24 * 60;
+                                return st < eM && en > sM;
+                              });
+                              return h('td', {
+                                key: slot.label,
+                                onClick: () => {
+                                  if (slotItems.length > 0) {
+                                    const it = slotItems[0];
+                                    if (isAdmin) handleOpenEdit(it);
+                                    else notify(`⏰ ${it.start_time}-${it.end_time}: ${it.title} [${it.status}]`);
+                                  } else {
+                                    handleOpenCreate(dateStr, slot.start, slot.end);
+                                  }
+                                }
+                              },
+                                slotItems.length > 0 && h('div', { style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1px' } },
+                                  slotItems.map(item => h('div', {
+                                    key: item.id,
+                                    style: {
+                                      width: '100%', flex: 1, minHeight: '15px', borderRadius: '3px',
+                                      background: item.color, border: '1px solid rgba(0,0,0,0.25)'
+                                    }
+                                  }))
+                                )
+                              );
+                            })
+                          );
+                        })
+                      )
+                    )
+                  )
+                : /* Mode PC: Tabel Lebar Lengkap Dengan Teks Judul Shift */
+                  h('div', { style: { overflowX: 'auto', maxHeight: '75vh' } },
+                    h('table', { className: 'matrix-table-pc' },
+                      h('thead', null,
+                        h('tr', null,
+                          h('th', { className: 'sticky-col-pc', style: { minWidth: '170px', textAlign: 'left' } }, `💼 ${t.colDateTime}`),
+                          h('th', { style: { minWidth: '125px' } }, t.colDayStatus),
+                          TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono', style: { minWidth: '105px' } }, slot.label))
+                        )
+                      ),
+                      h('tbody', null,
+                        Array.from({ length: daysInMonth }).map((_, i) => {
+                          const day = i + 1;
+                          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                          const dtObj = new Date(currentYear, currentMonth, day);
+                          const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'long' }).format(dtObj);
+                          const isToday = dateStr === realTodayStr;
+                          const density = getDayScheduleDensity(dateStr, false);
+
+                          return h('tr', { key: day, className: isToday ? 'row-today-glow' : '' },
+                            h('td', { className: 'sticky-col-pc' },
+                              h('div', { className: 'flex items-center gap-2' },
+                                isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
+                                h('span', { style: { fontSize: '14px', fontWeight: 900, color: '#FFFFFF' } }, day),
+                                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#5EEAD4', textTransform: 'uppercase' } }, dayName)
+                              )
+                            ),
+                            h('td', { style: { textAlign: 'center', verticalAlign: 'middle' } },
+                              h('span', { className: `status-pill-hp ${density.cls}`, style: { fontSize: '9px', padding: '4px 8px', borderRadius: '8px' } }, density.text)
+                            ),
+                            TIME_SLOTS.map(slot => {
+                              const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
+                              const slotItems = schedules.filter(s => {
+                                if (s.date !== dateStr) return false;
+                                const st = timeToMinutes(s.start_time);
+                                let en = timeToMinutes(s.end_time);
+                                if (en <= st) en = 24 * 60;
+                                return st < eM && en > sM;
+                              });
+                              return h('td', {
+                                key: slot.label,
+                                onClick: () => slotItems.length > 0 ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`⏰ ${slotItems[0].start_time}-${slotItems[0].end_time}: ${slotItems[0].title}`)) : handleOpenCreate(dateStr, slot.start, slot.end),
+                                style: { cursor: 'pointer' }
+                              },
+                                slotItems.map(item => h('div', {
+                                  key: item.id,
+                                  style: {
+                                    background: item.color, color: '#0F172A', padding: '4px 6px',
+                                    borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px'
+                                  }
+                                },
+                                  h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, item.title),
+                                  h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.8 } }, `${item.start_time}-${item.end_time}`)
+                                ))
+                              );
+                            })
+                          );
+                        })
+                      )
+                    )
+                  )
+            )
+          ),
+
+          // =================================================================
+          // TAB 3: KPI & GRAFIK
+          // =================================================================
+          activeTab === 'kpi' && h('div', { className: 'flex-col gap-3' },
+            h('div', { className: 'exec-card flex flex-wrap items-center justify-between gap-2' },
+              h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
                 ['daily', 'weekly', 'monthly', 'yearly'].map(p => h('button', {
-                  key: p,
-                  onClick: () => setStatPeriod(p),
-                  className: `btn ${statPeriod === p ? 'btn-primary' : 'btn-subtle'}`,
+                  key: p, onClick: () => setStatPeriod(p),
+                  className: `btn ${statPeriod === p ? 'btn-teal' : 'btn-dark'}`,
                   style: { textTransform: 'capitalize' }
                 }, p))
               ),
@@ -1526,94 +1826,84 @@
                 type: 'date', value: customStatDate, onChange: e => setCustomStatDate(e.target.value)
               })
             ),
-            h('div', { className: 'grid-4' },
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' } },
               [
-                { label: t.totalLive, val: stats.totalLive, sub: `${stats.totalLiveHours} ${t.hoursLive}`, color: '#059669' },
-                { label: t.takeKonten, val: stats.totalKonten, sub: `${stats.totalKontenHours} ${t.hoursProd}`, color: '#7C3AED' },
-                { label: t.sleepTime, val: stats.totalSleep, sub: `${stats.totalSleepHours} ${t.hoursSleep}`, color: '#2563EB' },
-                { label: t.offDay, val: stats.totalOff, sub: 'Full Days Off', color: '#DC2626' }
-              ].map((k, idx) => h('div', { key: idx, className: 'card' },
-                h('div', { style: { fontSize: '11px', fontWeight: 800, color: '#64748B' } }, k.label),
-                h('div', { style: { fontSize: '28px', fontWeight: 800, color: k.color, marginTop: '6px' } }, k.val),
-                h('div', { style: { fontSize: '12px', color: '#475569', marginTop: '4px', fontWeight: 600 } }, k.sub)
+                { label: t.totalLive, val: stats.totalLive, sub: `≈ ${stats.totalLiveHours} ${t.hoursLive}`, color: '#34D399' },
+                { label: t.takeKonten, val: stats.totalKonten, sub: `≈ ${stats.totalKontenHours} ${t.hoursProd}`, color: '#C084FC' },
+                { label: t.sleepTime, val: stats.totalSleep, sub: `≈ ${stats.totalSleepHours} ${t.hoursSleep}`, color: '#60A5FA' },
+                { label: t.offDay, val: stats.totalOff, sub: 'Days Off', color: '#FB7185' }
+              ].map((k, idx) => h('div', { key: idx, className: 'exec-card' },
+                h('div', { style: { fontSize: '10px', fontWeight: 800, color: '#94A3B8' } }, k.label),
+                h('div', { style: { fontSize: '26px', fontWeight: 900, color: k.color, marginTop: '4px' } }, k.val),
+                h('div', { style: { fontSize: '11px', color: '#CBD5E1', marginTop: '4px', fontWeight: 700 } }, k.sub)
               ))
             ),
-            h('div', { className: 'grid-2', style: { gridTemplateColumns: displayMode === 'mobile' ? '1fr' : '1fr 1fr' } },
-              h('div', { className: 'card' },
-                h('h3', { style: { fontSize: '13px', fontWeight: 800, marginBottom: '12px' } }, t.propTitle),
-                h('div', { style: { height: '260px', position: 'relative' } }, h('canvas', { ref: donutCanvas }))
-              ),
-              h('div', { className: 'card' },
-                h('h3', { style: { fontSize: '13px', fontWeight: 800, marginBottom: '12px' } }, t.barTitle),
-                h('div', { style: { height: '260px', position: 'relative' } }, h('canvas', { ref: barCanvas }))
-              )
+            h('div', { className: 'exec-card' },
+              h('h3', { style: { fontSize: '12px', fontWeight: 900, color: '#5EEAD4', marginBottom: '10px' } }, `🍩 ${t.propTitle}`),
+              h('div', { style: { height: '220px', position: 'relative' } }, h('canvas', { ref: donutCanvas }))
+            ),
+            h('div', { className: 'exec-card' },
+              h('h3', { style: { fontSize: '12px', fontWeight: 900, color: '#5EEAD4', marginBottom: '10px' } }, `📊 ${t.barTitle}`),
+              h('div', { style: { height: '220px', position: 'relative' } }, h('canvas', { ref: barCanvas }))
             )
           ),
 
           // =================================================================
-          // TAB 4: DAFTAR LENGKAP SEMUA JADWAL
+          // TAB 4: DAFTAR SEMUA JADWAL
           // =================================================================
-          activeTab === 'list' && h('div', { className: 'card flex-col gap-4' },
-            h('div', { className: 'flex flex-wrap items-center justify-between gap-2' },
-              h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
-              h('div', { className: 'flex flex-wrap items-center gap-2' },
-                h('input', { type: 'text', placeholder: t.searchPlaceholder, value: searchQuery, onChange: e => setSearchQuery(e.target.value) }),
-                h('select', { value: filterBrand, onChange: e => setFilterBrand(e.target.value) },
-                  h('option', { value: 'ALL' }, t.allCategories),
-                  brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
-                ),
-                h('select', { value: filterStatus, onChange: e => setFilterStatus(e.target.value) },
-                  h('option', { value: 'ALL' }, t.allStatuses),
-                  ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF'].map(st => h('option', { key: st, value: st }, st))
-                ),
-                h('input', { type: 'date', value: filterDate, onChange: e => setFilterDate(e.target.value) })
+          activeTab === 'list' && h('div', { className: 'exec-card flex-col gap-3' },
+            h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
+              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
+              isAdmin && h('button', { className: 'btn btn-teal', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
+            ),
+            h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : 'repeat(3, 1fr)', gap: '8px' } },
+              h('input', { type: 'text', placeholder: t.searchPlaceholder, value: searchQuery, onChange: e => setSearchQuery(e.target.value) }),
+              h('select', { value: filterBrand, onChange: e => setFilterBrand(e.target.value) },
+                h('option', { value: 'ALL' }, t.allCategories),
+                brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
+              ),
+              h('select', { value: filterStatus, onChange: e => setFilterStatus(e.target.value) },
+                h('option', { value: 'ALL' }, t.allStatuses),
+                ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF'].map(st => h('option', { key: st, value: st }, st))
               )
             ),
-            h('div', { className: 'table-wrap' },
-              h('table', null,
-                h('thead', null,
-                  h('tr', null,
-                    h('th', null, t.colDay),
-                    h('th', null, t.colDate),
-                    h('th', null, t.colHour),
-                    h('th', null, t.colTitle),
-                    h('th', null, t.colCategory),
-                    h('th', null, t.colStatus),
-                    h('th', null, t.colNotes),
-                    isAdmin && h('th', null, t.colAction)
+            h('div', { className: 'flex-col gap-2', style: { marginTop: '6px' } },
+              filteredSchedules.map(s => {
+                const brand = brands.find(b => b.id === s.brand_id);
+                return h('div', {
+                  key: s.id,
+                  style: {
+                    background: '#081528', border: '1px solid rgba(45,212,191,0.3)', borderRadius: '14px',
+                    padding: '10px 12px', borderLeft: `5px solid ${s.color}`
+                  }
+                },
+                  h('div', { className: 'flex items-center justify-between' },
+                    h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#5EEAD4' } }, `${getHariNama(s.date)}, ${s.date}`),
+                    h('span', { className: 'font-mono', style: { fontSize: '11px', fontWeight: 900, color: '#FFFFFF' } }, `${s.start_time} - ${s.end_time}`)
+                  ),
+                  h('div', { style: { fontSize: '13px', fontWeight: 900, color: '#FFFFFF', marginTop: '3px' } }, s.title),
+                  h('div', { className: 'flex items-center justify-between', style: { marginTop: '4px', fontSize: '10px', color: '#94A3B8' } },
+                    h('span', null, `${brand?.emoji || ''} ${brand?.name || ''} • [${s.status}]`),
+                    isAdmin && h('div', { className: 'flex gap-2' },
+                      h('button', { className: 'btn btn-dark', style: { padding: '2px 7px', fontSize: '9px' }, onClick: () => handleOpenEdit(s) }, t.editBtn),
+                      h('button', { className: 'btn btn-dark', style: { padding: '2px 7px', fontSize: '9px', color: '#FDA4AF' }, onClick: () => handleDelete(s.id) }, t.deleteBtn)
+                    )
                   )
-                ),
-                h('tbody', null,
-                  filteredSchedules.map(s => {
-                    const brand = brands.find(b => b.id === s.brand_id);
-                    return h('tr', { key: s.id },
-                      h('td', { style: { fontWeight: 700 } }, getHariNama(s.date)),
-                      h('td', { className: 'font-mono' }, s.date),
-                      h('td', { className: 'font-mono', style: { fontWeight: 700, color: '#2563EB' } }, `${s.start_time} - ${s.end_time}`),
-                      h('td', { style: { fontWeight: 800 } }, s.title),
-                      h('td', null, `${brand?.emoji || ''} ${brand?.name || ''}`),
-                      h('td', null, h('span', { className: 'badge', style: { background: s.color } }, s.status)),
-                      h('td', { style: { color: '#64748B' } }, s.notes || '-'),
-                      isAdmin && h('td', null,
-                        h('div', { className: 'flex gap-2' },
-                          h('button', { className: 'btn btn-subtle', onClick: () => handleOpenEdit(s) }, t.editBtn),
-                          h('button', { className: 'btn btn-outline', style: { color: '#DC2626' }, onClick: () => handleDelete(s.id) }, t.deleteBtn)
-                        )
-                      )
-                    );
-                  })
-                )
-              )
+                );
+              })
             )
           ),
 
           // =================================================================
-          // TAB 5: WARNA BRAND & KATEGORI
+          // TAB 5: WARNA BRAND
           // =================================================================
-          activeTab === 'colors' && h('div', { className: 'card flex-col gap-3', style: { maxWidth: '600px', margin: '0 auto' } },
-            h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, `🏷️ ${t.tabColors}`),
-            brands.map(b => h('div', { key: b.id, className: 'flex items-center justify-between', style: { padding: '10px 14px', background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0' } },
-              h('div', { className: 'flex items-center gap-3' },
+          activeTab === 'colors' && h('div', { className: 'exec-card flex-col gap-2-5', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, `🎨 ${t.tabColors}`),
+            brands.map(b => h('div', {
+              key: b.id, className: 'flex items-center justify-between',
+              style: { background: '#081528', padding: '10px 12px', borderRadius: '14px', border: '1px solid rgba(45,212,191,0.3)' }
+            },
+              h('div', { className: 'flex items-center gap-2' },
                 h('input', {
                   type: 'color', disabled: !isAdmin, value: b.color,
                   onChange: e => {
@@ -1621,74 +1911,74 @@
                     saveBrandsToCloud(brands.map(it => it.id === b.id ? { ...it, color: newColor } : it));
                     saveSchedulesToCloud(schedules.map(s => s.brand_id === b.id ? { ...s, color: newColor } : s));
                   },
-                  style: { width: '36px', height: '36px', padding: '2px', cursor: 'pointer' }
+                  style: { width: '34px', height: '34px', padding: '2px', cursor: 'pointer' }
                 }),
-                h('span', { style: { fontWeight: 800, fontSize: '13px' } }, `${b.emoji} ${b.name}`)
+                h('span', { style: { fontSize: '12px', fontWeight: 800 } }, `${b.emoji} ${b.name}`)
               ),
-              h('span', { className: 'font-mono', style: { fontSize: '12px', color: '#64748B' } }, b.color)
+              h('span', { className: 'font-mono', style: { fontSize: '11px', color: '#94A3B8' } }, b.color)
             ))
           )
         ),
 
         // MODAL PIN ADMIN
-        pinInputModal && h('div', { className: 'modal-backdrop' },
-          h('div', { className: 'modal-card', style: { maxWidth: '340px', textAlign: 'center' } },
-            h('h3', { style: { fontSize: '16px', fontWeight: 800, marginBottom: '12px' } }, '🔑 Login Admin'),
-            h('form', { onSubmit: handleVerifyPin, className: 'flex-col gap-3' },
+        pinInputModal && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { maxWidth: '320px', textAlign: 'center' } },
+            h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#5EEAD4', marginBottom: '12px' } }, '🔑 Admin Access'),
+            h('form', { onSubmit: handleVerifyPin, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', {
                 type: 'password', maxLength: 6, autoFocus: true, value: enteredPin,
                 onChange: e => { setEnteredPin(e.target.value); setPinError(false); },
                 placeholder: 'Masukkan PIN',
                 className: 'font-mono',
-                style: { textAlign: 'center', fontSize: '18px', letterSpacing: '0.2em' }
+                style: { textAlign: 'center', fontSize: '18px', letterSpacing: '0.25em' }
               }),
-              pinError && h('div', { style: { color: '#DC2626', fontSize: '12px', fontWeight: 700 } }, 'PIN salah!'),
-              h('div', { className: 'grid-2' },
-                h('button', { type: 'button', className: 'btn btn-subtle', style: { justifyContent: 'center' }, onClick: () => setPinInputModal(false) }, 'Batal'),
-                h('button', { type: 'submit', className: 'btn btn-primary', style: { justifyContent: 'center' } }, 'Buka Akses')
+              pinError && h('div', { style: { color: '#FDA4AF', fontSize: '11px', fontWeight: 800 } }, 'PIN salah!'),
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('button', { type: 'button', className: 'btn btn-dark', onClick: () => setPinInputModal(false) }, 'Batal'),
+                h('button', { type: 'submit', className: 'btn btn-teal' }, 'Buka Akses')
               )
             )
           )
         ),
 
         // MODAL CLONE DAY
-        cloneModalOpen && h('div', { className: 'modal-backdrop' },
-          h('div', { className: 'modal-card flex-col gap-3', style: { maxWidth: '380px' } },
-            h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, '📋 Salin Semua Jadwal Hari Ini'),
-            h('form', { onSubmit: handleCloneFullDay, className: 'flex-col gap-3' },
+        cloneModalOpen && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px' } },
+            h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, '📋 Salin Jadwal 1 Hari Penuh'),
+            h('form', { onSubmit: handleCloneFullDay, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', { type: 'date', required: true, value: cloneTargetDate, onChange: e => setCloneTargetDate(e.target.value) }),
-              h('div', { className: 'grid-2' },
-                h('button', { type: 'button', className: 'btn btn-subtle', style: { justifyContent: 'center' }, onClick: () => setCloneModalOpen(false) }, 'Batal'),
-                h('button', { type: 'submit', className: 'btn btn-primary', style: { justifyContent: 'center' } }, 'Salin Sekarang')
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('button', { type: 'button', className: 'btn btn-dark', onClick: () => setCloneModalOpen(false) }, 'Batal'),
+                h('button', { type: 'submit', className: 'btn btn-teal' }, 'Salin Sekarang')
               )
             )
           )
         ),
 
         // MODAL TAMBAH / EDIT JADWAL
-        modalOpen && h('div', { className: 'modal-backdrop' },
-          h('div', { className: 'modal-card flex-col gap-3' },
-            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1px solid #E2E8F0', paddingBottom: '10px' } },
-              h('h3', { style: { fontSize: '15px', fontWeight: 800 } }, selectedSchedule ? '✏️ Edit Jadwal' : '➕ Tambah Jadwal Baru'),
-              h('button', { className: 'btn btn-subtle', onClick: () => setModalOpen(false) }, '✕')
+        modalOpen && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1px solid rgba(45,212,191,0.3)', paddingBottom: '8px' } },
+              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#5EEAD4' } }, selectedSchedule ? '✏️ Edit Jadwal' : '✨ Tambah Jadwal Baru'),
+              h('button', { className: 'btn btn-dark', onClick: () => setModalOpen(false) }, '✕')
             ),
-            h('div', { className: 'grid-2' },
+            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
               [
                 { b: 'b_momuung', name: 'Mom Uung', n: 1, st: '05:00', en: '13:00' },
                 { b: 'b_momuung', name: 'Mom Uung', n: 2, st: '11:00', en: '19:00' },
                 { b: 'b_aquapress', name: 'AquaPress', n: 1, st: '08:00', en: '12:00' },
                 { b: 'b_aquapress', name: 'AquaPress', n: 2, st: '12:00', en: '16:00' }
               ].map((p, idx) => h('button', {
-                key: idx, type: 'button', className: 'btn btn-outline',
+                key: idx, type: 'button', className: 'btn btn-dark',
                 onClick: () => applyPresetShift(p.b, p.name, p.n, p.st, p.en)
               }, `⚡ Shift ${p.n} ${p.name} (${p.st}-${p.en})`))
             ),
-            h('form', { onSubmit: handleSave, className: 'flex-col gap-3' },
+            h('form', { onSubmit: handleSave, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', {
                 type: 'text', required: true, placeholder: 'Judul Shift / Aktivitas...', value: formData.title,
                 onChange: e => setFormData({ ...formData, title: e.target.value })
               }),
-              h('div', { className: 'grid-2' },
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('select', { value: formData.brand_id, onChange: e => setFormData({ ...formData, brand_id: e.target.value }) },
                   brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
                 ),
@@ -1696,13 +1986,13 @@
                   ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF', 'Sakit / Medis'].map(st => h('option', { key: st, value: st }, st))
                 )
               ),
-              h('div', { className: 'grid-2' },
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('input', { type: 'date', required: true, value: formData.date, onChange: e => setFormData({ ...formData, date: e.target.value }) }),
                 !selectedSchedule && h('select', { value: repeatDays, onChange: e => setRepeatDays(Number(e.target.value)) },
                   [1, 2, 3, 5, 7].map(d => h('option', { key: d, value: d }, `Ulangi ${d} Hari`))
                 )
               ),
-              h('div', { className: 'grid-2' },
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('select', { className: 'font-mono', value: formData.start_time, onChange: e => setFormData({ ...formData, start_time: e.target.value }) },
                   START_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm))
                 ),
@@ -1710,20 +2000,20 @@
                   END_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm))
                 )
               ),
-              currentFormConflict && h('div', { className: 'badge badge-danger', style: { padding: '8px 12px' } },
+              currentFormConflict && h('div', { style: { background: 'rgba(244,63,94,0.2)', border: '1px solid #F43F5E', color: '#FDA4AF', padding: '8px', borderRadius: '10px', fontSize: '11px', fontWeight: 800 } },
                 `⛔ Jam bentrok dengan "${currentFormConflict.title}" (${currentFormConflict.start_time}-${currentFormConflict.end_time})`
               ),
               h('textarea', {
                 rows: 2, placeholder: 'Catatan / Target GMV...', value: formData.notes,
                 onChange: e => setFormData({ ...formData, notes: e.target.value })
               }),
-              h('div', { className: 'flex items-center justify-between', style: { marginTop: '6px' } },
+              h('div', { className: 'flex items-center justify-between', style: { marginTop: '4px' } },
                 selectedSchedule
-                  ? h('button', { type: 'button', className: 'btn btn-outline', style: { color: '#DC2626', borderColor: '#FCA5A5' }, onClick: () => handleDelete(selectedSchedule.id) }, '🗑️ Hapus')
+                  ? h('button', { type: 'button', className: 'btn btn-dark', style: { color: '#FDA4AF' }, onClick: () => handleDelete(selectedSchedule.id) }, '🗑️ Hapus')
                   : h('span'),
                 h('div', { className: 'flex gap-2' },
-                  h('button', { type: 'button', className: 'btn btn-subtle', onClick: () => setModalOpen(false) }, 'Batal'),
-                  h('button', { type: 'submit', disabled: !!currentFormConflict, className: 'btn btn-primary' }, 'Simpan ke Cloud')
+                  h('button', { type: 'button', className: 'btn btn-dark', onClick: () => setModalOpen(false) }, 'Batal'),
+                  h('button', { type: 'submit', disabled: !!currentFormConflict, className: 'btn btn-teal' }, 'Simpan ke Cloud')
                 )
               )
             )
