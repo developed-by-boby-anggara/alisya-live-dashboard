@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Pinch-to-Zoom 2 Jari Aktif (user-scalable=yes, maximum-scale=5.0) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>Alisya Work Schedule — Executive Partner Suite 💼</title>
   <meta name="theme-color" content="#121110">
@@ -12,11 +11,8 @@
   <!-- Preconnect Cepat -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <!-- React 18 Production (Tanpa Babel = Buka Instan 0.1 Detik) -->
+  <!-- React 18 Production (Ringan & Instan Tanpa Babel / Tanpa Tailwind CDN) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
 
@@ -24,26 +20,23 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <!-- Chart.js & html2canvas -->
+  <!-- Chart.js & html2canvas (Deferred agar tidak menahan pembukaan halaman) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <style>
     :root {
-      /* 🏛️ TEMA EKSKLUSIF: EXECUTIVE OBSIDIAN & CHAMPAGNE GOLD */
       --bg-obsidian: #121110;
       --bg-charcoal: #1A1816;
       --bg-espresso: #23201D;
       --bg-elevated: #2C2824;
       --gold-primary: #D4AF37;
       --gold-bright: #F5D77F;
-      --gold-soft: rgba(212, 175, 55, 0.16);
-      --border-gold: rgba(212, 175, 55, 0.34);
+      --border-gold: rgba(212, 175, 55, 0.36);
       --border-warm: rgba(255, 248, 235, 0.12);
       --text-ivory: #FAF8F5;
       --text-sand: #D6D1C7;
       --text-taupe: #9E9689;
-      --emerald-live: #10B981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -51,23 +44,22 @@
     body {
       background-color: var(--bg-obsidian);
       background-image:
-        radial-gradient(circle at 15% 0%, rgba(212, 175, 55, 0.09), transparent 32rem),
-        radial-gradient(circle at 85% 15%, rgba(180, 130, 70, 0.07), transparent 32rem);
+        radial-gradient(circle at 15% 0%, rgba(212, 175, 55, 0.09), transparent 30rem),
+        radial-gradient(circle at 85% 15%, rgba(180, 130, 70, 0.07), transparent 30rem);
       color: var(--text-ivory);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       padding-bottom: 60px;
       overflow-x: hidden;
     }
 
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #121110; }
     ::-webkit-scrollbar-thumb { background: #3D362E; border-radius: 999px; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Header & Navigasi */
     .exec-header {
       background: #171513;
       border-bottom: 1.5px solid var(--border-gold);
@@ -75,7 +67,7 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65);
     }
     .exec-ticker {
       background: #0D0C0B;
@@ -94,14 +86,12 @@
       gap: 26px;
       animation: tickerMove 36s linear infinite;
     }
-    .ticker-track:hover { animation-play-state: paused; }
-
     .exec-nav {
       background: #161412;
       border-bottom: 1.5px solid rgba(212, 175, 55, 0.22);
       padding: 8px 12px;
       position: sticky;
-      top: 58px;
+      top: 56px;
       z-index: 35;
       display: flex;
       align-items: center;
@@ -109,36 +99,34 @@
       overflow-x: auto;
     }
 
-    /* Kontainer & Kartu Solid */
-    .wrap-pc { max-width: 1520px; margin: 0 auto; padding: 18px; }
+    .wrap-pc { max-width: 1500px; margin: 0 auto; padding: 18px; }
     .wrap-hp { max-width: 540px; margin: 0 auto; padding: 10px; }
 
     .exec-card {
       background: var(--bg-charcoal);
       border: 1.5px solid var(--border-gold);
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 14px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     }
     .radar-card {
       background: linear-gradient(135deg, #1E1B18 0%, #27221D 52%, #191614 100%);
       border: 1.5px solid rgba(212, 175, 55, 0.58);
-      border-radius: 22px;
-      padding: 16px;
-      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(245, 215, 127, 0.15);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
     }
 
-    /* Tombol & Input */
     button {
       font-family: inherit;
       cursor: pointer;
       border: 1px solid transparent;
-      transition: all 0.16s ease;
+      transition: transform 0.12s ease, background 0.15s ease;
     }
     button:active { transform: scale(0.96); }
     .btn {
       padding: 7px 12px;
-      border-radius: 12px;
+      border-radius: 11px;
       font-size: 11px;
       font-weight: 800;
       display: inline-flex;
@@ -152,7 +140,6 @@
       color: #121110;
       border-color: #F5D77F;
       font-weight: 900;
-      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.28);
     }
     .btn-emerald {
       background: #10B981;
@@ -165,11 +152,9 @@
       color: var(--text-ivory);
       border-color: rgba(212, 175, 55, 0.32);
     }
-    .btn-dark:hover { background: var(--bg-elevated); }
-
     .nav-pill {
       padding: 7px 13px;
-      border-radius: 12px;
+      border-radius: 11px;
       font-size: 11px;
       font-weight: 800;
       color: var(--text-sand);
@@ -182,7 +167,6 @@
       color: #121110;
       border: 1px solid #F5D77F;
       font-weight: 900;
-      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.32);
     }
 
     input, select, textarea {
@@ -192,16 +176,11 @@
       color: var(--text-ivory);
       background: #141210;
       border: 1.5px solid rgba(212, 175, 55, 0.35);
-      border-radius: 11px;
+      border-radius: 10px;
       padding: 7px 10px;
       outline: none;
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--gold-bright);
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-    }
 
-    /* Kalender 1 Baris Horizontal (Strip) */
     .cal-strip {
       display: flex;
       gap: 7px;
@@ -213,7 +192,7 @@
       flex-shrink: 0;
       width: 48px;
       padding: 8px 4px;
-      border-radius: 14px;
+      border-radius: 13px;
       background: #141210;
       border: 1px solid var(--border-warm);
       color: var(--text-sand);
@@ -221,7 +200,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
     .cal-day-btn.is-today {
       border: 1.5px solid var(--gold-bright);
@@ -232,19 +210,14 @@
       background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
       border: 1.5px solid #FFF3C4;
       color: #121110;
-      transform: scale(1.05);
-      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
+      transform: scale(1.04);
     }
 
-    /* ================================================================= */
-    /* 📊 MATRIKS SPREADSHEET HP & PC (SOLID ESPRESSO & GOLD)            */
-    /* ================================================================= */
     .matrix-shell {
       background: #161412;
       border: 1.5px solid rgba(212, 175, 55, 0.48);
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
     }
     .matrix-legend {
       background: #1F1C19;
@@ -256,7 +229,6 @@
       justify-content: space-between;
       gap: 6px;
     }
-    /* Tabel Matriks HP: Pas 1 Layar + Bisa Di-Zoom 2 Jari */
     .matrix-table-hp {
       width: 100%;
       table-layout: fixed;
@@ -280,9 +252,7 @@
       vertical-align: middle;
       background: #1A1816;
     }
-    .matrix-table-hp tr:nth-child(even) td {
-      background: #151311;
-    }
+    .matrix-table-hp tr:nth-child(even) td { background: #151311; }
     .matrix-table-hp td.col-date-hp {
       background: #1F1C18 !important;
       border-right: 1.5px solid var(--gold-primary);
@@ -296,8 +266,6 @@
       text-align: center;
       overflow: hidden;
     }
-
-    /* Highlight Baris Hari Ini (Gold Shimmer) */
     .row-today-glow td {
       border-top: 1.5px solid var(--gold-bright) !important;
       border-bottom: 1.5px solid var(--gold-primary) !important;
@@ -308,7 +276,6 @@
       border-left: 2.5px solid var(--gold-bright) !important;
     }
 
-    /* Badge Status di Dalam Tabel HP */
     .status-pill-hp {
       display: block;
       width: 100%;
@@ -320,7 +287,6 @@
       padding: 2px 2px;
       border-radius: 4px;
       line-height: 1;
-      letter-spacing: -0.02em;
     }
     .st-full { background: linear-gradient(135deg, #9333EA, #6D28D9); color: #FFFFFF; border: 1px solid #D8B4FE; }
     .st-med { background: #FEF3C7; color: #78350F; border: 1px solid #F59E0B; }
@@ -328,38 +294,21 @@
     .st-free { background: #26221C; color: #F5D77F; border: 1px solid rgba(212, 175, 55, 0.45); }
     .st-off { background: rgba(148, 163, 184, 0.18); color: #E2E8F0; border: 1px solid rgba(148, 163, 184, 0.4); }
 
-    /* Tabel Matriks PC */
-    .matrix-table-pc {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-    }
+    .matrix-table-pc { width: 100%; border-collapse: collapse; font-size: 11px; }
     .matrix-table-pc th {
-      background: #221E1A;
-      color: var(--gold-bright);
+      background: #221E1A; color: var(--gold-bright);
       border: 1px solid rgba(212, 175, 55, 0.35);
-      padding: 10px 8px;
-      position: sticky;
-      top: 0;
-      z-index: 25;
-      font-weight: 900;
+      padding: 10px 8px; position: sticky; top: 0; z-index: 25; font-weight: 900;
     }
     .matrix-table-pc td {
       border: 1px solid rgba(255, 248, 235, 0.14);
-      padding: 5px;
-      vertical-align: top;
-      height: 52px;
-      background: #1A1816;
+      padding: 5px; vertical-align: top; height: 52px; background: #1A1816;
     }
     .matrix-table-pc td.sticky-col-pc {
-      position: sticky;
-      left: 0;
-      z-index: 15;
-      background: #1F1C18;
-      border-right: 2px solid var(--gold-primary);
+      position: sticky; left: 0; z-index: 15;
+      background: #1F1C18; border-right: 2px solid var(--gold-primary);
     }
 
-    /* Utilitas Flex & Grid */
     .flex { display: flex; }
     .flex-col { display: flex; flex-direction: column; }
     .items-center { align-items: center; }
@@ -370,80 +319,29 @@
     .gap-1-5 { gap: 6px; }
     .gap-2 { gap: 8px; }
     .gap-3 { gap: 12px; }
-    .gap-4 { gap: 16px; }
 
-    @keyframes pingDot {
-      0% { transform: scale(1); opacity: 0.9; }
-      80%, 100% { transform: scale(2.2); opacity: 0; }
-    }
-    .radar-dot-wrap {
-      position: relative;
-      display: inline-flex;
-      width: 8px;
-      height: 8px;
-      flex-shrink: 0;
-    }
-    .radar-dot-ping {
-      position: absolute;
-      inset: 0;
-      border-radius: 999px;
-      background: #F5D77F;
-      animation: pingDot 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-    }
-    .radar-dot-core {
-      position: relative;
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #10B981;
-    }
+    .radar-dot-wrap { position: relative; display: inline-flex; width: 8px; height: 8px; flex-shrink: 0; }
+    .radar-dot-core { width: 8px; height: 8px; border-radius: 999px; background: #10B981; box-shadow: 0 0 8px #10B981; }
 
-    /* Modal */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 60;
+      position: fixed; inset: 0; z-index: 60;
       background: rgba(10, 9, 8, 0.82);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
+      display: flex; align-items: center; justify-content: center; padding: 14px;
     }
     .modal-box {
-      background: #1A1816;
-      border: 1.5px solid var(--gold-primary);
-      border-radius: 22px;
-      width: 100%;
-      max-width: 440px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 18px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.92);
-      color: var(--text-ivory);
+      background: #1A1816; border: 1.5px solid var(--gold-primary);
+      border-radius: 20px; width: 100%; max-width: 440px;
+      max-height: 90vh; overflow-y: auto; padding: 18px; color: var(--text-ivory);
     }
   </style>
 </head>
 <body>
-  <div id="root">
-    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#121110;color:#F5D77F;font-family:sans-serif;text-align:center;padding:20px;">
-      <div style="font-size:32px;margin-bottom:8px;">💼</div>
-      <div style="font-weight:800;font-size:14px;color:#FAF8F5;letter-spacing:0.06em;">MEMUAT WORK SCHEDULE ALISYA...</div>
-      <div style="font-size:11px;color:#9E9689;margin-top:5px;">Executive Partner Suite • Real-Time Sync</div>
-    </div>
-  </div>
+  <div id="root"></div>
 
   <script>
-    window.addEventListener('error', function(e) {
-      var root = document.getElementById('root');
-      if (root && root.innerText.indexOf('MEMUAT WORK SCHEDULE') !== -1) {
-        root.innerHTML = '<div style="padding:24px;color:#FDA4AF;background:#121110;min-height:100vh;font-family:monospace;font-size:12px;"><b>⚠️ Gagal Memuat Halaman:</b><br><br>' + (e.message || 'Script Error') + '</div>';
-      }
-    });
-
     const { useState, useEffect, useMemo, useRef } = React;
     const h = React.createElement;
 
-    // --- KONEKSI FIREBASE REALTIME DB (SINKRON 100% DENGAN INDEX.HTML) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
       authDomain: "alisya-live-db.firebaseapp.com",
@@ -458,9 +356,7 @@
     try {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       firebaseDb = firebase.database();
-    } catch (err) {
-      console.error("Firebase init error:", err);
-    }
+    } catch (err) {}
 
     const REQUIRED_CATEGORIES = [
       { id: 'b_momuung', name: 'Mom Uung', emoji: '🍼', color: '#B6D7A8' },
@@ -536,26 +432,25 @@
       id: {
         locale: 'id-ID',
         portalSub: "Executive Broadcast & Content Schedule • Real-Time Sync",
-        modeHP: "HP", modePC: "PC", lockBtn: "Kunci", loginBtn: "Login",
+        loginBtn: "Login",
         radarTitle: "RADAR JADWAL OPERASIONAL ALISYA (00:00 - 23:59)",
         availableTitle: "Available Schedule (Slot Jam Kosong)",
         allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
         slotsReady: "Slot Siap Pakai",
         calendarTitle: "Kalender Tanggal",
-        sessionList: "Daftar Sesi Jadwal",
         noSchedule: "Tidak Ada Jadwal di Tanggal Ini 💼",
         noScheduleSub: "Seluruh slot jam di tanggal ini masih kosong & tersedia untuk jadwal kerja.",
         btnShareWA: "Share WA", btnSavePNG: "PNG",
         btnShareRekapWA: "Share Rekap ke WA",
         btnDownloadTablePNG: "Simpan PNG",
-        btnAddSession: "+ Tambah Sesi", btnCloneDay: "📋 Salin 1 Hari",
+        btnAddSch: "+ Tambah Jadwal", btnCloneDay: "📋 Salin 1 Hari",
         jump: "Lompat:", today: "Hari Ini", tomorrow: "Besok", dayAfter: "Lusa",
         tabAgenda: "Agenda Harian",
         tabSpreadsheet: "Kalender Spreadsheet",
         tabKPI: "KPI & Grafik",
         tabList: "Daftar Semua Jadwal",
         tabColors: "Warna Brand",
-        btnExportCSV: "CSV", btnAddSch: "+ Tambah Jadwal",
+        btnExportCSV: "CSV",
         liveNowActive: "SEDANG BERLANGSUNG:",
         liveNowIdle: "✨ Saat ini tidak ada sesi yang sedang berlangsung (Standby)",
         endsAt: "Habis Pukul", timeLeft: "Sisa Waktu:",
@@ -563,13 +458,11 @@
         nextUp: "Sesi Berikutnya:", progressToday: "Progres Total Agenda Hari Ini",
         completed: "Selesai", scheduledSessions: "Sesi Terjadwal", productiveActs: "Aktivitas Produktif",
         colDate: "Date", colStatus: "Status", colDateTime: "TANGGAL & HARI \\ JAM", colDayStatus: "STATUS HARI",
-        todayBadge: "HARI INI",
         statusFree: "✨ FREE SLOT", statusLow: "🟢 LOW", statusMed: "⚡ MEDIUM", statusFull: "🔥 FULL SCH...", statusFullPC: "🔥 FULL SCHEDULE", statusOff: "☕ DAY OFF",
         allRegistered: "Semua Jadwal Terdaftar",
         searchPlaceholder: "🔍 Cari nama shift, brand, catatan...",
         allCategories: "Semua Kategori", allStatuses: "Semua Status",
-        colDay: "Hari", colHour: "Jam Digital", colTitle: "Judul Shift / Agenda", colCategory: "Kategori", colNotes: "Catatan", colAction: "Aksi",
-        badgeFinished: "✅ SELESAI", badgeUpcoming: "⏳ AKAN DATANG", editBtn: "Edit", copyBtn: "📋 Salin", deleteBtn: "Hapus",
+        badgeFinished: "✅ SELESAI", editBtn: "Edit", deleteBtn: "Hapus",
         shortBreakWarning: "⚠️ Jeda istirahat antar shift terlalu singkat (<5 jam)!",
         totalLive: "TOTAL SHIFT LIVE", takeKonten: "TAKE KONTEN VIDEO", sleepTime: "JAM ISTIRAHAT", offDay: "HARI LIBUR / OFF",
         hoursLive: "Jam Streaming", hoursProd: "Jam Produksi", hoursSleep: "Jam Istirahat",
@@ -578,26 +471,25 @@
       en: {
         locale: 'en-US',
         portalSub: "Executive Broadcast & Content Schedule • Real-Time Sync",
-        modeHP: "Mobile", modePC: "PC", lockBtn: "Lock", loginBtn: "Login",
+        loginBtn: "Login",
         radarTitle: "ALISYA'S OPERATIONAL SCHEDULE RADAR (00:00 - 23:59)",
         availableTitle: "Available Schedule (Empty Time Slots)",
         allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
         slotsReady: "Slots Available",
         calendarTitle: "Date Calendar",
-        sessionList: "Schedule Session List",
         noSchedule: "No Schedule for this Date 💼",
         noScheduleSub: "All time slots on this date are currently empty and available.",
         btnShareWA: "Share WA", btnSavePNG: "PNG",
         btnShareRekapWA: "Share Recap to WA",
         btnDownloadTablePNG: "Save PNG",
-        btnAddSession: "+ Add Session", btnCloneDay: "📋 Clone Day",
+        btnAddSch: "+ Add Schedule", btnCloneDay: "📋 Clone Day",
         jump: "Jump:", today: "Today", tomorrow: "Tomorrow", dayAfter: "Day After",
         tabAgenda: "Daily Agenda",
         tabSpreadsheet: "Spreadsheet Calendar",
         tabKPI: "KPI & Charts",
         tabList: "Schedule List",
         tabColors: "Brand Colors",
-        btnExportCSV: "CSV", btnAddSch: "+ Add Schedule",
+        btnExportCSV: "CSV",
         liveNowActive: "LIVE NOW:",
         liveNowIdle: "✨ No active session at this moment (Standby)",
         endsAt: "Ends At", timeLeft: "Countdown:",
@@ -605,13 +497,11 @@
         nextUp: "Next Session:", progressToday: "Today's Total Agenda Progress",
         completed: "Completed", scheduledSessions: "Scheduled Sessions", productiveActs: "Productive Activities",
         colDate: "Date", colStatus: "Status", colDateTime: "DATE & DAY \\ TIME", colDayStatus: "DAY STATUS",
-        todayBadge: "TODAY",
         statusFree: "✨ FREE SLOT", statusLow: "🟢 LOW", statusMed: "⚡ MEDIUM", statusFull: "🔥 FULL SCH...", statusFullPC: "🔥 FULL SCHEDULE", statusOff: "☕ DAY OFF",
         allRegistered: "All Registered Schedules",
         searchPlaceholder: "🔍 Search shift title, brand, notes...",
         allCategories: "All Categories", allStatuses: "All Statuses",
-        colDay: "Day", colHour: "Time (24H)", colTitle: "Shift / Activity Title", colCategory: "Category", colNotes: "Notes", colAction: "Action",
-        badgeFinished: "✅ DONE", badgeUpcoming: "⏳ UPCOMING", editBtn: "Edit", copyBtn: "📋 Copy", deleteBtn: "Delete",
+        badgeFinished: "✅ DONE", editBtn: "Edit", deleteBtn: "Delete",
         shortBreakWarning: "⚠️ Short break between shifts (<5 hours)!",
         totalLive: "TOTAL LIVE SHIFTS", takeKonten: "VIDEO CONTENT SHOOT", sleepTime: "REST TIME", offDay: "DAY OFF",
         hoursLive: "Streaming Hours", hoursProd: "Production Hours", hoursSleep: "Rest Hours",
@@ -620,7 +510,6 @@
     };
 
     function WorkApp() {
-      // 1. MESIN WAKTU DETIK REAL-TIME (BERDETAK TIAP 1 DETIK)
       const [nowTime, setNowTime] = useState(() => new Date());
       useEffect(() => {
         const timer = setInterval(() => setNowTime(new Date()), 1000);
@@ -674,7 +563,7 @@
         const timer = setTimeout(() => {
           const el = document.getElementById(`work-cal-day-${selectedDate}`);
           if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }, 250);
+        }, 180);
         return () => clearTimeout(timer);
       }, [selectedDate, currentMonth, activeTab, displayMode]);
 
@@ -701,7 +590,6 @@
       const [searchQuery, setSearchQuery] = useState('');
       const [filterBrand, setFilterBrand] = useState('ALL');
       const [filterStatus, setFilterStatus] = useState('ALL');
-      const [filterDate, setFilterDate] = useState('');
 
       const [modalOpen, setModalOpen] = useState(false);
       const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -715,9 +603,8 @@
       });
 
       const [toast, setToast] = useState('');
-      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
+      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3200); };
 
-      // 2. SINKRONISASI REAL-TIME FIREBASE (100% SAMA DENGAN INDEX.HTML)
       useEffect(() => {
         if (!firebaseDb) return;
         const refSch = firebaseDb.ref('alisya_schedules');
@@ -766,7 +653,6 @@
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
-      // 3. STATUS WAKTU SESI & STATUS KEPADATAN HARI REAL-TIME
       const getSessionTimeState = (item) => {
         if (item.date < realTodayStr) return 'done';
         if (item.date > realTodayStr) return 'upcoming';
@@ -996,7 +882,7 @@
       };
 
       const exportCSV = () => {
-        const headers = [t.colDay, t.colDate, "Start", "End", t.colTitle, t.colCategory, t.colStatus, t.colNotes];
+        const headers = ["Day", "Date", "Start", "End", "Title", "Category", "Status", "Notes"];
         const rows = schedules.map(s => [
           `"${getHariNama(s.date)}"`, s.date, s.start_time, s.end_time,
           `"${(s.title || '').replace(/"/g, '""')}"`,
@@ -1074,22 +960,21 @@
         setModalOpen(true);
       };
 
-      // Banner Live Now & Countdown Real-Time
       const renderLiveNowBanner = () => h('div', {
         style: {
           background: '#141210', border: '1px solid rgba(212, 175, 55, 0.32)',
-          borderRadius: '16px', padding: '12px', marginTop: '12px'
+          borderRadius: '15px', padding: '12px', marginTop: '12px'
         }
       },
         h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { fontSize: '11px' } },
           liveTracker.activeItem
             ? h('div', { className: 'flex flex-wrap items-center gap-2' },
                 h('span', { className: 'flex items-center gap-1-5', style: { fontWeight: 900, color: '#34D399', fontSize: '12px' } },
-                  h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
+                  h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
                   `${t.liveNowActive} ${liveTracker.activeItem.title}`
                 ),
                 h('span', { className: 'font-mono', style: { background: '#23201D', padding: '3px 8px', borderRadius: '8px', color: '#FAF8F5', fontWeight: 700, border: '1px solid rgba(212,175,55,0.25)' } },
-                  `⏰ ${liveTracker.activeItem.start_time} - ${liveTracker.activeItem.end_time} (${t.endsAt} ${liveTracker.activeItem.end_time})`
+                  `⏰ ${liveTracker.activeItem.start_time} - ${liveTracker.activeItem.end_time}`
                 ),
                 h('span', { className: 'font-mono', style: { background: '#D4AF37', color: '#121110', fontWeight: 900, padding: '3px 9px', borderRadius: '8px' } },
                   `⏳ ${t.timeLeft} ${liveTracker.activeItem.remainingHMS}`
@@ -1104,15 +989,6 @@
             h('span', { style: { color: '#FFFFFF', fontWeight: 900 } }, liveTracker.nextItem.title),
             h('span', { className: 'font-mono' }, `(${liveTracker.nextItem.start_time})`),
             h('span', { className: 'font-mono', style: { background: 'rgba(0,0,0,0.55)', padding: '2px 6px', borderRadius: '6px', fontWeight: 900 } }, `-${liveTracker.nextItem.startsInHMS}`)
-          )
-        ),
-        liveTracker.activeItem && h('div', { style: { marginTop: '8px' } },
-          h('div', { className: 'flex justify-between', style: { fontSize: '10px', color: '#F5D77F', fontWeight: 700, marginBottom: '4px' } },
-            h('span', null, `⚡ ${t.sessionProgress}: ${liveTracker.activeItem.title}`),
-            h('span', { className: 'font-mono' }, `${liveTracker.activeItem.sessionPct}%`)
-          ),
-          h('div', { style: { width: '100%', height: '6px', background: '#26221E', borderRadius: '999px', overflow: 'hidden' } },
-            h('div', { style: { width: `${liveTracker.activeItem.sessionPct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #D4AF37)' } })
           )
         ),
         h('div', { style: { marginTop: '8px' } },
@@ -1202,7 +1078,6 @@
         return schedules.filter(s => {
           if (filterBrand !== 'ALL' && s.brand_id !== filterBrand) return false;
           if (filterStatus !== 'ALL' && s.status !== filterStatus) return false;
-          if (filterDate && s.date !== filterDate) return false;
           if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
             const bName = brands.find(b => b.id === s.brand_id)?.name.toLowerCase() || '';
@@ -1210,7 +1085,7 @@
           }
           return true;
         }).sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
-      }, [schedules, filterBrand, filterStatus, filterDate, searchQuery, brands]);
+      }, [schedules, filterBrand, filterStatus, searchQuery, brands]);
 
       const donutCanvas = useRef(null), barCanvas = useRef(null);
       const donutInst = useRef(null), barInst = useRef(null);
@@ -1344,45 +1219,37 @@
           }
         }, `💼 ${toast}`),
 
-        // HEADER EXECUTIVE WORK MODE
         h('header', { className: 'exec-header' },
-          h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { maxWidth: '1520px', margin: '0 auto' } },
+          h('div', { className: 'flex flex-wrap items-center justify-between gap-2', style: { maxWidth: '1500px', margin: '0 auto' } },
             h('div', { className: 'flex items-center gap-2' },
               h('div', {
                 style: {
-                  width: '40px', height: '40px', borderRadius: '12px',
+                  width: '38px', height: '38px', borderRadius: '11px',
                   background: 'linear-gradient(135deg, rgba(212,175,55,0.22), rgba(184,134,11,0.28))',
-                  border: '1px solid #D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'
+                  border: '1px solid #D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px'
                 }
               }, '💼'),
               h('div', null,
                 h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
-                  h('h1', { style: { fontSize: '15px', fontWeight: 900, color: '#FAF8F5' } }, 'Alisya Work Schedule'),
-                  h('button', {
-                    className: 'btn btn-dark',
-                    style: { padding: '3px 8px', fontSize: '10px', color: '#F5D77F' },
-                    onClick: () => setSelectedDate(addDaysToDateStr(selectedDate, 1)),
-                    title: 'Geser ke tanggal berikutnya'
-                  }, '💼 ❯'),
+                  h('h1', { style: { fontSize: '14px', fontWeight: 900, color: '#FAF8F5' } }, 'Alisya Work Schedule'),
                   h('span', {
                     className: 'font-mono',
-                    style: { background: 'rgba(212,175,55,0.16)', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.45)', padding: '2px 8px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
-                  }, 'EXECUTIVE SUITE'),
+                    style: { background: 'rgba(212,175,55,0.16)', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.45)', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
+                  }, 'WORK SUITE'),
                   isAdmin
                     ? h('span', { style: { background: '#F5D77F', color: '#121110', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 900 } }, '👑 ADMIN')
                     : h('span', { style: { background: '#23201D', color: '#D6D1C7', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 700, border: '1px solid rgba(212,175,55,0.25)' } }, '👀 PARTNER')
                 ),
-                h('p', { style: { fontSize: '10px', color: '#9E9689', marginTop: '2px' } }, t.portalSub)
+                h('p', { style: { fontSize: '10px', color: '#9E9689', marginTop: '1px' } }, t.portalSub)
               )
             ),
 
-            // Toolbar Kanan
             h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
               h('span', {
                 className: 'font-mono flex items-center gap-1-5',
-                style: { background: '#121110', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.4)', padding: '5px 10px', borderRadius: '11px', fontSize: '11px', fontWeight: 800 }
+                style: { background: '#121110', color: '#F5D77F', border: '1px solid rgba(212,175,55,0.4)', padding: '5px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 800 }
               },
-                h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
+                h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
                 `${liveClockString}`
               ),
               h('select', { value: lang, onChange: e => handleSetLang(e.target.value) },
@@ -1391,10 +1258,9 @@
               ),
               h('button', {
                 className: 'btn btn-dark',
-                onClick: () => { window.location.href = './index.html'; },
-                title: 'Kembali ke Lemurian Sanctuary'
+                onClick: () => { window.location.href = './index.html'; }
               }, '🌊 Lemuria'),
-              h('div', { className: 'flex items-center', style: { background: '#121110', padding: '2px', borderRadius: '11px', border: '1px solid rgba(212,175,55,0.3)' } },
+              h('div', { className: 'flex items-center', style: { background: '#121110', padding: '2px', borderRadius: '10px', border: '1px solid rgba(212,175,55,0.3)' } },
                 h('button', {
                   onClick: () => setDisplayMode('mobile'),
                   className: 'btn',
@@ -1423,7 +1289,6 @@
           )
         ),
 
-        // TICKER BAR
         h('div', { className: 'exec-ticker' },
           h('div', { className: 'ticker-track' },
             [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center gap-4' },
@@ -1435,7 +1300,6 @@
           )
         ),
 
-        // NAVIGASI TAB
         h('nav', { className: 'exec-nav no-scrollbar' },
           [
             { id: 'agenda', icon: '📅', label: t.tabAgenda },
@@ -1451,19 +1315,14 @@
           h('button', { className: 'btn btn-dark', style: { marginLeft: 'auto' }, onClick: exportCSV }, `📥 ${t.btnExportCSV}`)
         ),
 
-        // KONTEN UTAMA
         h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
 
-          // =================================================================
-          // TAB 1: AGENDA HARIAN (DENGAN KALENDER 1 BARIS HORIZONTAL)
-          // =================================================================
           activeTab === 'agenda' && h('div', { id: 'work-agenda-capture', className: 'flex-col gap-3' },
-            // 1. Kartu Radar Utama
             h('div', { className: 'radar-card' },
               h('div', { className: 'flex flex-wrap items-center justify-between gap-2' },
                 h('div', { className: 'flex items-center gap-1-5' },
-                  h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
-                  h('span', { style: { fontSize: '10px', fontWeight: 900, letterSpacing: '0.08em', color: '#F5D77F' } }, t.radarTitle)
+                  h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
+                  h('span', { style: { fontSize: '10px', fontWeight: 900, letterSpacing: '0.06em', color: '#F5D77F' } }, t.radarTitle)
                 ),
                 h('div', { className: 'flex items-center gap-1-5' },
                   h('button', { className: 'btn btn-dark', onClick: () => exportElementAsPNG('work-agenda-capture', selectedDate) }, `📸 ${t.btnSavePNG}`),
@@ -1496,7 +1355,7 @@
               )
             ),
 
-            // 2. KALENDER TANGGAL 1 BARIS HORIZONTAL (BISA DI-SWIPE & NEXT ❯)
+            // Kalender 1 Baris Horizontal
             h('div', { className: 'exec-card', style: { padding: '12px' } },
               h('div', { className: 'flex items-center justify-between', style: { marginBottom: '8px' } },
                 h('span', { style: { fontSize: '11px', fontWeight: 900, color: '#F5D77F', textTransform: 'uppercase' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
@@ -1540,7 +1399,7 @@
               )
             ),
 
-            // 3. AVAILABLE SCHEDULE (SLOT JAM KOSONG)
+            // Slot Jam Kosong
             h('div', { className: 'exec-card', style: { background: '#171E19', borderColor: 'rgba(16,185,129,0.45)' } },
               h('div', { className: 'flex items-center justify-between', style: { marginBottom: '8px' } },
                 h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#6EE7B7' } }, `🟢 ${t.availableTitle}`),
@@ -1558,7 +1417,7 @@
                   )
             ),
 
-            // 4. DAFTAR SESI JADWAL HARIAN
+            // Daftar Sesi Harian
             h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               selectedDaySchedules.length === 0
                 ? h('div', { className: 'exec-card', style: { textAlign: 'center', padding: '36px 16px' } },
@@ -1578,7 +1437,6 @@
                       style: {
                         position: 'relative', overflow: 'hidden', paddingLeft: '20px',
                         borderColor: isCurrentlyLive ? '#F5D77F' : 'rgba(212,175,55,0.34)',
-                        boxShadow: isCurrentlyLive ? '0 0 18px rgba(212,175,55,0.35)' : undefined,
                         opacity: timeState === 'done' && !isCurrentlyLive ? 0.78 : 1
                       }
                     },
@@ -1629,9 +1487,7 @@
             )
           ),
 
-          // =================================================================
-          // TAB 2: KALENDER SPREADSHEET (PERSIS GAMBAR REFERENSI + BISA ZOOM)
-          // =================================================================
+          // TAB 2: KALENDER SPREADSHEET
           activeTab === 'calendar' && h('div', { className: 'flex-col gap-3' },
             h('div', { className: 'flex items-center justify-between gap-2' },
               h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
@@ -1639,7 +1495,6 @@
             ),
 
             h('div', { id: 'work-matrix-capture', className: 'matrix-shell' },
-              // Legend Kategori di Atas Matriks
               h('div', { className: 'matrix-legend' },
                 h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#F5D77F', textTransform: 'uppercase' } }, `🗓️ ${monthName} ${currentYear}`),
                 h('div', { className: 'flex flex-wrap items-center gap-1-5' },
@@ -1654,7 +1509,6 @@
                 )
               ),
 
-              // Mode HP: Matriks Kotak Penuh 1 Layar Persis Gambar Referensi (Bisa Pinch-Zoom 2 Jari)
               displayMode === 'mobile'
                 ? h('div', { style: { width: '100%', overflow: 'hidden' } },
                     h('table', { className: 'matrix-table-hp' },
@@ -1684,7 +1538,6 @@
                             },
                               h('div', { className: 'flex items-center gap-1' },
                                 isToday && h('span', { className: 'radar-dot-wrap', style: { width: '6px', height: '6px' } },
-                                  h('span', { className: 'radar-dot-ping' }),
                                   h('span', { className: 'radar-dot-core', style: { width: '6px', height: '6px' } })
                                 ),
                                 h('span', { style: { fontSize: '8.5px', fontWeight: 900, color: '#FAF8F5', width: '12px', textAlign: 'right' } }, day),
@@ -1731,8 +1584,7 @@
                       )
                     )
                   )
-                : /* Mode PC: Tabel Lebar Lengkap Dengan Teks Judul Shift */
-                  h('div', { style: { overflowX: 'auto', maxHeight: '75vh' } },
+                : h('div', { style: { overflowX: 'auto', maxHeight: '75vh' } },
                     h('table', { className: 'matrix-table-pc' },
                       h('thead', null,
                         h('tr', null,
@@ -1753,7 +1605,7 @@
                           return h('tr', { key: day, className: isToday ? 'row-today-glow' : '' },
                             h('td', { className: 'sticky-col-pc' },
                               h('div', { className: 'flex items-center gap-2' },
-                                isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-ping' }), h('span', { className: 'radar-dot-core' })),
+                                isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
                                 h('span', { style: { fontSize: '14px', fontWeight: 900, color: '#FAF8F5' } }, day),
                                 h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#F5D77F', textTransform: 'uppercase' } }, dayName)
                               )
@@ -1795,9 +1647,6 @@
             )
           ),
 
-          // =================================================================
-          // TAB 3: KPI & GRAFIK
-          // =================================================================
           activeTab === 'kpi' && h('div', { className: 'flex-col gap-3' },
             h('div', { className: 'exec-card flex flex-wrap items-center justify-between gap-2' },
               h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
@@ -1833,9 +1682,6 @@
             )
           ),
 
-          // =================================================================
-          // TAB 4: DAFTAR SEMUA JADWAL
-          // =================================================================
           activeTab === 'list' && h('div', { className: 'exec-card flex-col gap-3' },
             h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
               h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
@@ -1879,10 +1725,7 @@
             )
           ),
 
-          // =================================================================
-          // TAB 5: WARNA BRAND
-          // =================================================================
-          activeTab === 'colors' && h('div', { className: 'exec-card flex-col gap-2-5', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
+          activeTab === 'colors' && h('div', { className: 'exec-card', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
             h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, `🎨 ${t.tabColors}`),
             brands.map(b => h('div', {
               key: b.id, className: 'flex items-center justify-between',
@@ -1905,7 +1748,6 @@
           )
         ),
 
-        // MODAL PIN ADMIN
         pinInputModal && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '320px', textAlign: 'center' } },
             h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#F5D77F', marginBottom: '12px' } }, '🔑 Admin Access'),
@@ -1926,7 +1768,6 @@
           )
         ),
 
-        // MODAL CLONE DAY
         cloneModalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#F5D77F' } }, '📋 Salin Jadwal 1 Hari Penuh'),
@@ -1940,7 +1781,6 @@
           )
         ),
 
-        // MODAL TAMBAH / EDIT JADWAL
         modalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
             h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1px solid rgba(212,175,55,0.3)', paddingBottom: '8px' } },
