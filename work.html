@@ -123,7 +123,30 @@
       box-shadow: 0 12px 30px rgba(131, 24, 67, 0.28);
       color: #FFFFFF;
     }
-
+/* 🚨 V2.7: Animasi Banner Siaga 15 Menit & Kolom Jam Aktif Spreadsheet */
+    @keyframes standbyPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55), 0 10px 25px rgba(180, 83, 9, 0.35); }
+      50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0), 0 10px 30px rgba(180, 83, 9, 0.55); }
+    }
+    .standby-alert-banner {
+      background: linear-gradient(135deg, #78350F 0%, #B45309 50%, #991B1B 100%);
+      border: 2px solid #FDE047;
+      border-radius: 20px;
+      padding: 15px 18px;
+      color: #FFFFFF;
+      animation: standbyPulse 2s infinite;
+    }
+    .active-time-col-header {
+      background: #059669 !important;
+      color: #FFFFFF !important;
+      border: 2px solid #A7F3D0 !important;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
+    }
+    .active-time-col-cell {
+      background: rgba(16, 185, 129, 0.12) !important;
+      border-left: 2px dashed #10B981 !important;
+      border-right: 2px dashed #10B981 !important;
+    }
     /* Banner Panduan Booking Klien */
     .guide-banner {
       background: linear-gradient(135deg, #FFF0F6 0%, #FCE7F3 100%);
@@ -705,7 +728,41 @@
       const [repeatDays, setRepeatDays] = useState(1);
       const [cloneModalOpen, setCloneModalOpen] = useState(false);
       const [cloneTargetDate, setCloneTargetDate] = useState(() => addDaysToDateStr(realTodayStr, 1));
+// 🚨 V2.7: State Ceklis Persiapan Studio (15 Menit Sebelum Mulai) & Slot Jam Aktif
+      const [standbyChecklist, setStandbyChecklist] = useState({
+        mic: false,
+        lighting: false,
+        internet: false,
+        product: false
+      });
 
+      const currentActiveSlotLabel = useMemo(() => {
+        const nowMin = nowTime.getHours() * 60 + nowTime.getMinutes();
+        const found = TIME_SLOTS.find(slot => {
+          const sM = timeToMinutes(slot.start);
+          const eM = timeToMinutes(slot.end);
+          return nowMin >= sM && nowMin < eM;
+        });
+        return found ? found.label : null;
+      }, [nowTime]);
+
+      // 🎯 V2.7: Auto-Scroll ke Baris Hari Ini & Kolom Jam Aktif saat buka Tab Kalender Spreadsheet
+      useEffect(() => {
+        if (activeTab !== 'calendar') return;
+        const timer = setTimeout(() => {
+          const todayRowEl = document.getElementById(`matrix-row-${realTodayStr}`);
+          if (todayRowEl) {
+            todayRowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          if (displayMode === 'pc' && currentActiveSlotLabel) {
+            const activeColEl = document.getElementById(`matrix-col-${currentActiveSlotLabel}`);
+            if (activeColEl) {
+              activeColEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+          }
+        }, 250);
+        return () => clearTimeout(timer);
+      }, [activeTab, displayMode, realTodayStr, currentActiveSlotLabel]);
       // 🚀 V2.2: STATE BOOKING WHATSAPP & POPUP PANDUAN CARA BOOKING
       const ADMIN_WA_NUMBER = "6285159440579";
       const [bookingModalOpen, setBookingModalOpen] = useState(false);
@@ -1194,6 +1251,7 @@
       };
 
      // 🚀 V2.2: Kirim Format Booking ke WhatsApp 085159440579 (100% Bersih Tanpa Emoji Rusak)
+// ⏳ V2.3: Kirim Booking ke WA + Otomatis Kunci Slot sebagai "PENDING" di Firebase
       const handleSendBookingWA = (e) => {
         e.preventDefault();
         if (currentBookingConflict) {
@@ -1204,6 +1262,24 @@
         const brandText = bookingData.clientName.trim() || 'Brand / Partner';
         const noteText = bookingData.notes.trim() || '-';
 
+        // 1. Buat item jadwal berstatus PENDING agar slot langsung terkunci bagi klien lain
+        const pendingItem = {
+          id: 'sch_pending_' + Date.now(),
+          date: bookingData.date,
+          start_time: bookingData.start_time,
+          end_time: bookingData.end_time,
+          title: `[WAITING] ${brandText} — ${bookingData.collabType}`,
+          brand_id: brands[0]?.id || 'b_momuung',
+          status: 'PENDING',
+          color: '#F59E0B',
+          notes: `Pengajuan WA (${brandText}): ${noteText}`,
+          gmv: '',
+          checklist: { shoot: false, edit: false, upload: false }
+        };
+
+        saveSchedulesToCloud([...schedules, pendingItem]);
+
+        // 2. Kirim pesan resmi ke WhatsApp Admin
         const msg =
           `*PENGAJUAN BOOKING JADWAL ALISYA*\n` +
           `────────────────────────\n` +
@@ -1213,14 +1289,44 @@
           `• *Slot Waktu :* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
           `• *Jenis Kolaborasi :* ${bookingData.collabType}\n` +
           `• *Catatan / Brief :* ${noteText}\n` +
+          `• *Status Sistem :* Slot Otomatis Masuk Antrean Konfirmasi (Hold)\n` +
           `────────────────────────\n` +
           `Mohon konfirmasinya untuk penguncian jadwal di atas. Terima kasih.`;
 
         window.open(`https://api.whatsapp.com/send?phone=${ADMIN_WA_NUMBER}&text=${encodeURIComponent(msg)}`, '_blank');
         setBookingModalOpen(false);
-        notify('Membuka WhatsApp untuk mengirim pengajuan jadwal...');
+        notify('⏳ Slot otomatis dikunci sementara (Waiting Confirmation) & membuka WhatsApp...');
       };
 
+      // ✅ V2.3: Fungsi Admin 1-Klik Terima Booking Pending Menjadi Jadwal Resmi
+      const handleApprovePending = (e, item) => {
+        e.stopPropagation();
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
+        const isKonten = cleanTitle.toLowerCase().includes('video') || cleanTitle.toLowerCase().includes('affiliate');
+        const isMeeting = cleanTitle.toLowerCase().includes('meeting') || cleanTitle.toLowerCase().includes('briefing');
+        const nextStatus = isKonten ? 'Konten' : isMeeting ? 'Meeting' : 'LIVE';
+        const nextColor = isKonten ? '#8B5CF6' : isMeeting ? '#00FFFF' : '#10B981';
+
+        const updated = schedules.map(s => s.id === item.id ? {
+          ...s,
+          title: cleanTitle,
+          status: nextStatus,
+          color: nextColor
+        } : s);
+        saveSchedulesToCloud(updated);
+        notify(`✅ Booking "${cleanTitle}" resmi dikonfirmasi menjadi jadwal [${nextStatus}]!`);
+      };
+
+      // ❌ V2.3: Fungsi Admin 1-Klik Tolak / Batalkan Booking Pending (Buka Kembali Slot)
+      const handleRejectPending = (e, item) => {
+        e.stopPropagation();
+        if (!isAdmin) { setPinInputModal(true); return; }
+        if (confirm(`Tolak pengajuan "${item.title}" dan buka kembali slot jam ${item.start_time}-${item.end_time}?`)) {
+          saveSchedulesToCloud(schedules.filter(s => s.id !== item.id));
+          notify('🔓 Pengajuan ditolak & slot jam kembali kosong (Available).');
+        }
+      };
       const handleOpenEdit = (sch) => {
         if (!isAdmin) {
           notify(`🔒 Slot Pkl ${sch.start_time}-${sch.end_time} sudah terisi oleh "${sch.title}". Silakan pilih slot jam yang masih kosong!`);
@@ -1670,7 +1776,50 @@ h('span', { style: { color: '#F472B6' } }, '•')
 
         // KONTEN UTAMA (PEMBUKA MAIN YANG TADI TERHAPUS)
         h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
-
+// 🚨 V2.7: SMART 15-MINUTE STUDIO STANDBY BANNER (MUNCUL OTOMATIS H-15 MENIT)
+          liveTracker.nextItem && liveTracker.nextItem.startsInMin <= 15 && liveTracker.nextItem.startsInMin > 0 && h('div', {
+            className: 'standby-alert-banner',
+            style: { marginBottom: '16px' }
+          },
+            h('div', { className: 'flex flex-wrap items-center justify-between gap-2' },
+              h('div', null,
+                h('div', { className: 'flex items-center gap-2 flex-wrap' },
+                  h('span', { style: { background: '#FDE047', color: '#78350F', fontSize: '10px', fontWeight: 900, padding: '2px 9px', borderRadius: '999px' } }, '🚨 STUDIO STANDBY MODE • H-15 MENIT'),
+                  h('span', { className: 'font-mono', style: { fontSize: '12px', fontWeight: 900, color: '#FEF08A' } }, `Mulai Pkl ${liveTracker.nextItem.start_time} WIB`)
+                ),
+                h('h3', { style: { fontSize: '16px', fontWeight: 900, marginTop: '4px', color: '#FFFFFF' } },
+                  `Persiapan Sesi: "${liveTracker.nextItem.title}"`
+                )
+              ),
+              h('div', {
+                className: 'font-mono',
+                style: { background: 'rgba(0,0,0,0.45)', border: '1.5px solid #FDE047', padding: '6px 14px', borderRadius: '14px', fontSize: '16px', fontWeight: 900, color: '#FDE047' }
+              }, `⏳ -${liveTracker.nextItem.startsInHMS}`)
+            ),
+            h('div', { style: { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.22)' } },
+              h('div', { style: { fontSize: '10.5px', fontWeight: 800, color: '#FEF08A', marginBottom: '6px' } }, '✅ CEKLIS CEPAT PERSIAPAN STUDIO SEBELUM ON-AIR:'),
+              h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)', gap: '6px' } },
+                [
+                  { key: 'mic', label: '🎙️ Cek Mic & Audio' },
+                  { key: 'lighting', label: '💡 Cek Lighting & Kamera' },
+                  { key: 'internet', label: '📶 Cek WiFi / Koneksi' },
+                  { key: 'product', label: '💧 Air Minum & Sample' }
+                ].map(chk => h('button', {
+                  key: chk.key,
+                  type: 'button',
+                  onClick: () => setStandbyChecklist(prev => ({ ...prev, [chk.key]: !prev[chk.key] })),
+                  className: 'btn',
+                  style: {
+                    justifyContent: 'space-between',
+                    background: standbyChecklist[chk.key] ? '#10B981' : 'rgba(0,0,0,0.35)',
+                    color: '#FFFFFF',
+                    borderColor: standbyChecklist[chk.key] ? '#A7F3D0' : 'rgba(255,255,255,0.3)',
+                    padding: '6px 10px', fontSize: '10.5px'
+                  }
+                }, h('span', null, chk.label), h('span', null, standbyChecklist[chk.key] ? '✅' : '⬜')))
+              )
+            )
+          ),
           // 💡 V2.2: BANNER PEMBERITAHUAN CARA BOOKING VIA WHATSAPP
           showGuideBanner && !isAdmin && h('div', { className: 'guide-banner', style: { marginBottom: '16px' } },
             h('div', { className: 'flex items-start justify-between gap-2' },
@@ -1867,7 +2016,32 @@ h('span', { style: { color: '#F472B6' } }, '•')
                               item.notes && h('div', {
                                 style: { marginTop: '6px', background: '#FFF0F6', border: '1px solid #F9A8D4', padding: '7px 11px', borderRadius: '10px', fontSize: '11.5px', color: '#701A46', fontStyle: 'italic' }
                               }, `📌 ${item.notes}`),
-                              renderKontenChecklist(item)
+                              renderKontenChecklist(item),
+                              // ⏳ V2.3: Badge & Tombol Konfirmasi Admin untuk Jadwal Berstatus PENDING
+                              item.status === 'PENDING' && h('div', {
+                                style: {
+                                  marginTop: '8px', background: '#FFFBEB', border: '1.5px solid #F59E0B',
+                                  padding: '8px 10px', borderRadius: '12px', display: 'flex',
+                                  alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px'
+                                },
+                                onClick: e => e.stopPropagation()
+                              },
+                                h('span', { style: { fontSize: '11px', fontWeight: 900, color: '#B45309' } },
+                                  '⏳ WAITING CONFIRMATION (Slot Dikunci Sementara)'
+                                ),
+                                isAdmin && h('div', { className: 'flex gap-1-5' },
+                                  h('button', {
+                                    type: 'button', className: 'btn btn-emerald',
+                                    style: { padding: '4px 10px', fontSize: '10px' },
+                                    onClick: e => handleApprovePending(e, item)
+                                  }, '✅ Terima Jadwal'),
+                                h('button', {
+                                    type: 'button', className: 'btn btn-soft',
+                                    style: { padding: '4px 10px', fontSize: '10px', color: '#E11D48', borderColor: '#FDA4AF' },
+                                    onClick: e => handleRejectPending(e, item)
+                                  }, '❌ Tolak & Buka Slot')
+                                )
+                              )
                             ),
                             h('div', { className: 'flex-col gap-1-5 items-end' },
                               h('button', {
@@ -1992,7 +2166,32 @@ h('span', { style: { color: '#F472B6' } }, '•')
                             item.notes && h('div', {
                               style: { marginTop: '5px', background: '#FFF0F6', border: '1px solid #F9A8D4', padding: '5px 9px', borderRadius: '8px', fontSize: '10.5px', color: '#701A46', fontStyle: 'italic' }
                             }, `📌 ${item.notes}`),
-                            renderKontenChecklist(item)
+                            renderKontenChecklist(item),
+                              // ⏳ V2.3: Badge & Tombol Konfirmasi Admin untuk Jadwal Berstatus PENDING
+                              item.status === 'PENDING' && h('div', {
+                                style: {
+                                  marginTop: '8px', background: '#FFFBEB', border: '1.5px solid #F59E0B',
+                                  padding: '8px 10px', borderRadius: '12px', display: 'flex',
+                                  alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px'
+                                },
+                                onClick: e => e.stopPropagation()
+                              },
+                                h('span', { style: { fontSize: '11px', fontWeight: 900, color: '#B45309' } },
+                                  '⏳ WAITING CONFIRMATION (Slot Dikunci Sementara)'
+                                ),
+                                isAdmin && h('div', { className: 'flex gap-1-5' },
+                                  h('button', {
+                                    type: 'button', className: 'btn btn-emerald',
+                                    style: { padding: '4px 10px', fontSize: '10px' },
+                                    onClick: e => handleApprovePending(e, item)
+                                  }, '✅ Terima Jadwal'),
+                                 h('button', {
+                                    type: 'button', className: 'btn btn-soft',
+                                    style: { padding: '4px 10px', fontSize: '10px', color: '#E11D48', borderColor: '#FDA4AF' },
+                                    onClick: e => handleRejectPending(e, item)
+                                  }, '❌ Tolak & Buka Slot')
+                                )
+                              )
                           ),
                           h('button', {
                             type: 'button', className: 'btn btn-soft', style: { padding: '4px 8px', fontSize: '9px' },
@@ -2005,7 +2204,6 @@ h('span', { style: { color: '#F472B6' } }, '•')
 
           // =================================================================
           // TAB 2: KALENDER SPREADSHEET (SOLID PINK & BISA ZOOM 2 JARI)
-          // =================================================================
           activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('div', { className: 'flex items-center justify-between gap-2' },
               h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
@@ -2108,7 +2306,15 @@ h('span', { style: { color: '#F472B6' } }, '•')
                         h('tr', null,
                           h('th', { className: 'sticky-col-pc', style: { minWidth: '170px', textAlign: 'left', background: '#9D174D' } }, `🌸 ${t.colDateTime}`),
                           h('th', { style: { minWidth: '125px' } }, t.colDayStatus),
-                          TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono', style: { minWidth: '105px' } }, slot.label))
+                         TIME_SLOTS.map(slot => {
+                            const isCurrentSlot = slot.label === currentActiveSlotLabel;
+                            return h('th', {
+                              key: slot.label,
+                              id: `matrix-col-${slot.label}`,
+                              className: `font-mono ${isCurrentSlot ? 'active-time-col-header' : ''}`,
+                              style: { minWidth: '105px' }
+                            }, isCurrentSlot ? `🟢 ${slot.label}` : slot.label);
+                          })
                         )
                       ),
                       h('tbody', null,
@@ -2120,7 +2326,7 @@ h('span', { style: { color: '#F472B6' } }, '•')
                           const isToday = dateStr === realTodayStr;
                           const density = getDayScheduleDensity(dateStr, false);
 
-                          return h('tr', { key: day, className: isToday ? 'row-today-glow' : '' },
+                          return h('tr', { key: day, id: `matrix-row-${dateStr}`, className: isToday ? 'row-today-glow' : '' },
                             h('td', { className: 'sticky-col-pc' },
                               h('div', { className: 'flex items-center gap-2' },
                                 isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
