@@ -699,6 +699,17 @@
       const [selectedSchedule, setSelectedSchedule] = useState(null);
       const [repeatDays, setRepeatDays] = useState(1);
       const [cloneModalOpen, setCloneModalOpen] = useState(false);
+      // 🚀 V2.1: STATE BOOKING WHATSAPP KLIEN / BRAND (KE NOMOR 085159440579)
+   const ADMIN_WA_NUMBER = "6285159440579";
+   const [bookingModalOpen, setBookingModalOpen] = useState(false);
+   const [bookingData, setBookingData] = useState({
+     date: realTodayStr,
+     start_time: '10:00',
+     end_time: '12:00',
+     clientName: '',
+     collabType: 'Live Streaming Session',
+     notes: ''
+   });
       const [cloneTargetDate, setCloneTargetDate] = useState(() => addDaysToDateStr(realTodayStr, 1));
       const [formData, setFormData] = useState({
         id: '', date: realTodayStr, start_time: '10:00', end_time: '12:00',
@@ -1034,38 +1045,55 @@
         notify('✅ Progres konten diperbarui!');
       };
 
-      const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        const targetDate = dateStr || selectedDate;
-        const smartSlot = findFirstFreeSlotOnDate(targetDate, slotStart, slotEnd);
-        setSelectedSchedule(null);
-        setRepeatDays(1);
-        setFormData({
-          id: 'sch_' + Date.now(), date: targetDate, start_time: smartSlot.start, end_time: smartSlot.end,
-          title: '', brand_id: brands[0]?.id || 'b_momuung', status: 'LIVE',
-          color: brands[0]?.color || '#B6D7A8', notes: '', gmv: '',
-          checklist: { shoot: false, edit: false, upload: false }
-        });
-        setModalOpen(true);
-      };
+     const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
+     const targetDate = dateStr || selectedDate;
+     const smartSlot = findFirstFreeSlotOnDate(targetDate, slotStart, slotEnd);
 
-      const handleOpenEdit = (sch) => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        setSelectedSchedule(sch);
-        setRepeatDays(1);
-        setFormData({ ...sch, checklist: sch.checklist || { shoot: false, edit: false, upload: false } });
-        setModalOpen(true);
-      };
+     // 🚀 V2.1: Jika yang klik adalah Klien/Partner (bukan Admin), buka Popup Booking WA!
+     if (!isAdmin) {
+       setBookingData({
+         date: targetDate,
+         start_time: smartSlot.start,
+         end_time: smartSlot.end,
+         clientName: '',
+         collabType: 'Live Streaming Session',
+         notes: ''
+       });
+       setBookingModalOpen(true);
+       return;
+     }
 
-      const handleDuplicate = (sch) => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        const freeSlot = findFirstFreeSlotOnDate(sch.date, sch.start_time, sch.end_time);
-        setSelectedSchedule(null);
-        setRepeatDays(1);
-        setFormData({ ...sch, id: 'sch_' + Date.now(), title: sch.title + ' (Copy)', start_time: freeSlot.start, end_time: freeSlot.end });
-        setModalOpen(true);
-      };
+     setSelectedSchedule(null);
+     setRepeatDays(1);
+     setFormData({
+       id: 'sch_' + Date.now(), date: targetDate, start_time: smartSlot.start, end_time: smartSlot.end,
+       title: '', brand_id: brands[0]?.id || 'b_momuung', status: 'LIVE',
+       color: brands[0]?.color || '#B6D7A8', notes: '', gmv: '',
+       checklist: { shoot: false, edit: false, upload: false }
+     });
+     setModalOpen(true);
+   };
 
+   // 🚀 V2.1: Fungsi Kirim Format Booking ke WhatsApp 085159440579
+   const handleSendBookingWA = (e) => {
+     e.preventDefault();
+     const hari = getHariNama(bookingData.date);
+     const brandText = bookingData.clientName.trim() || 'Brand / Partner';
+     const noteText = bookingData.notes.trim() || '-';
+
+     const msg =
+       `Halo Alisya / Management 🌸💼\n` +
+       `Saya dari *${brandText}* ingin melakukan booking slot jadwal kerja dengan rincian berikut:\n\n` +
+       `🗓️ *Hari & Tanggal:* ${hari}, ${bookingData.date}\n` +
+       `⏰ *Slot Waktu:* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
+       `🎯 *Jenis Kolaborasi:* ${bookingData.collabType}\n` +
+       `📝 *Catatan / Brief Singkat:* ${noteText}\n\n` +
+       `Apakah slot jadwal tersebut masih tersedia? Terima kasih! 🙏`;
+
+     window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+     setBookingModalOpen(false);
+     notify('📲 Membuka WhatsApp untuk mengirim pengajuan jadwal...');
+   };
       // Banner Live Now & Countdown Real-Time
       const renderLiveNowBanner = () => h('div', {
         style: {
@@ -1358,7 +1386,7 @@
                   h('span', {
                     className: 'font-mono',
                     style: { background: 'rgba(255,255,255,0.2)', color: '#FCE7F3', border: '1px solid rgba(255,255,255,0.4)', padding: '2px 8px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
-                  }, 'WORK MODE'),
+                 }, 'WORK MODE V2.1'),
                   isAdmin
                     ? h('span', { style: { background: '#FDE047', color: '#831843', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 900 } }, '👑 ADMIN')
                     : h('span', { style: { background: 'rgba(0,0,0,0.25)', color: '#FCE7F3', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 700 } }, '👀 PARTNER')
@@ -1437,9 +1465,11 @@
             onClick: () => setActiveTab(tb.id),
             className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`
           }, `${tb.icon} ${tb.label}`)),
-          h('button', { className: 'btn btn-soft', style: { marginLeft: 'auto' }, onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
-          isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
-        ),
+         h('button', { className: 'btn btn-soft', style: { marginLeft: 'auto' }, onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
+       !isAdmin && h('button', {
+         className: 'btn btn-emerald',
+         onClick: () => handleOpenCreate(selectedDate, '10:00', '12:00')
+       }, '📲 Booking WA'),
 
         // KONTEN UTAMA
         h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
@@ -2013,7 +2043,95 @@
             ))
           )
         ),
+// 🚀 V2.1: MODAL POPUP BOOKING SLOT WHATSAPP (KHUSUS KLIEN & BRAND)
+     bookingModalOpen && h('div', { className: 'modal-overlay' },
+       h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+         h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
+           h('div', null,
+             h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase', letterSpacing: '0.06em' } }, '🌸 OFFICIAL PARTNER BOOKING • V2.1'),
+             h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '📲 Pengajuan Slot Jadwal via WhatsApp')
+           ),
+           h('button', { className: 'btn btn-soft', onClick: () => setBookingModalOpen(false) }, '✕')
+         ),
 
+         // Kotak Info Slot yang Dipilih
+         h('div', {
+           style: {
+             background: '#FCE7F3', border: '1.5px solid #F472B6', borderRadius: '14px',
+             padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px'
+           }
+         },
+           h('div', null,
+             h('div', { style: { fontSize: '10px', fontWeight: 800, color: '#9D174D' } }, 'TANGGAL TERPILIH:'),
+             h('div', { style: { fontSize: '13px', fontWeight: 900, color: '#4A0424' } }, `${getHariNama(bookingData.date)}, ${bookingData.date}`)
+           ),
+           h('div', {
+             className: 'font-mono',
+             style: { background: '#FFFFFF', color: '#065F46', border: '1.5px solid #10B981', padding: '5px 10px', borderRadius: '10px', fontSize: '12px', fontWeight: 900 }
+           }, `⏰ ${bookingData.start_time} - ${bookingData.end_time} WIB`)
+         ),
+
+         // Form Pengajuan Klien
+         h('form', { onSubmit: handleSendBookingWA, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+           h('div', null,
+             h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Nama Brand / Agensi / PIC *'),
+             h('input', {
+               type: 'text', required: true, autoFocus: true,
+               placeholder: 'Contoh: Brand Mom Uung / Kak Rina...',
+               value: bookingData.clientName,
+               onChange: e => setBookingData({ ...bookingData, clientName: e.target.value }),
+               style: { width: '100%' }
+             })
+           ),
+
+           h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+             h('div', null,
+               h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jam Mulai (WIB)'),
+               h('select', {
+                 className: 'font-mono', style: { width: '100%' },
+                 value: bookingData.start_time,
+                 onChange: e => setBookingData({ ...bookingData, start_time: e.target.value })
+               }, START_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm)))
+             ),
+             h('div', null,
+               h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jam Selesai (WIB)'),
+               h('select', {
+                 className: 'font-mono', style: { width: '100%' },
+                 value: bookingData.end_time,
+                 onChange: e => setBookingData({ ...bookingData, end_time: e.target.value })
+               }, END_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm)))
+             )
+           ),
+
+           h('div', null,
+             h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jenis Kerjasama / Sesi'),
+             h('select', {
+               style: { width: '100%' },
+               value: bookingData.collabType,
+               onChange: e => setBookingData({ ...bookingData, collabType: e.target.value })
+             },
+               ['Live Streaming Session', 'Take Video Affiliate (TikTok/Shopee)', 'Briefing / Meeting Online', 'Event / Brand Campaign'].map(tp => h('option', { key: tp, value: tp }, tp))
+             )
+           ),
+
+           h('div', null,
+             h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Catatan Tambahan / Target Produk (Opsional)'),
+             h('textarea', {
+               rows: 2,
+               placeholder: 'Tulis detail singkat produk atau request khusus...',
+               value: bookingData.notes,
+               onChange: e => setBookingData({ ...bookingData, notes: e.target.value }),
+               style: { width: '100%' }
+             })
+           ),
+
+           h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '8px', marginTop: '4px' } },
+             h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setBookingModalOpen(false) }, 'Batal'),
+             h('button', { type: 'submit', className: 'btn btn-emerald', style: { padding: '10px 14px', fontSize: '12px' } }, '📲 Kirim ke WA Alisya')
+           )
+         )
+       )
+     ),
         // MODAL PIN ADMIN
         pinInputModal && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '320px', textAlign: 'center' } },
