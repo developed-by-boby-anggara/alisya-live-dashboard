@@ -2072,17 +2072,10 @@ function App() {
   const [hasEntered, setHasEntered] = useState(false);
   const bgmAudioRef = useRef(null);
 
-  // Daftar 7 lagu di folder audio GitHub
-  const BGM_PLAYLIST = [
-    "./audio/bgm1.mp3",
-    "./audio/bgm2.mp3",
-    "./audio/bgm3.mp3",
-    "./audio/bgm4.mp3",
-    "./audio/bgm5.mp3",
-    "./audio/bgm6.mp3",
-    "./audio/bgm7.mp3"
-  ];
-
+ // Hanya menggunakan 1 lagu bgm2.mp3 agar ringan & langsung berputar berulang kali
+const BGM_PLAYLIST = [
+  "./audio/bgm2.mp3"
+];
   // Penanda lagu yang sedang diputar
   const currentTrackIdxRef = useRef(Math.floor(Math.random() * BGM_PLAYLIST.length));
 
@@ -2117,75 +2110,28 @@ function App() {
     "./img/rafael1.jpg"
   ];
 
-  // Fungsi utama pemutar lagu
-  const playTrack = (index) => {
+ // Fungsi utama pemutar BGM tunggal bgm2.mp3 (Auto-Loop)
+  const playTrack = () => {
     try {
-      if (!BGM_PLAYLIST || BGM_PLAYLIST.length === 0) return;
-
-      // Pastikan urutan selalu berputar (looping)
-      let validIndex = (index + BGM_PLAYLIST.length) % BGM_PLAYLIST.length;
-      currentTrackIdxRef.current = validIndex;
-      const trackUrl = BGM_PLAYLIST[validIndex];
-
       if (!bgmAudioRef.current) {
-        const audio = new Audio(trackUrl);
+        const audio = new Audio("./audio/bgm2.mp3");
+        audio.loop = true;
         audio.volume = 0.25;
-        audio.preload = "none";
+        audio.preload = "auto";
         bgmAudioRef.current = audio;
-      } else {
-        bgmAudioRef.current.src = trackUrl;
       }
-
-      // Jika lagu selesai, otomatis putar lagu berikutnya
-      bgmAudioRef.current.onended = () => {
-        handleNextTrack();
-      };
-
-      // Sinkronkan indikator tombol
+      // Jangan nyalakan BGM jika suara Rafayel sedang berbicara
+      if (callVoiceAudioRef.current && !callVoiceAudioRef.current.paused) {
+        return;
+      }
       bgmAudioRef.current.onplay = () => setBgmPlaying(true);
       bgmAudioRef.current.onpause = () => setBgmPlaying(false);
-
       const playPromise = bgmAudioRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.then(() => {
-          setBgmPlaying(true);
-        }).catch(err => {
-          console.log("Autoplay ditahan browser HP, menunggu sentuhan layar:", err);
-        });
+        playPromise.then(() => setBgmPlaying(true)).catch(() => {});
       }
-    } catch (e) {
-      console.log("Error BGM:", e);
-    }
+    } catch (e) {}
   };
-
- // ⏭️ Fungsi Lagu Berikutnya (100% Random & Anti-Duplikat Lagu Sebelumnya)
-  const handleNextTrack = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    const total = BGM_PLAYLIST.length;
-    if (total <= 1) {
-      playTrack(0);
-      return;
-    }
-    let nextIdx;
-    do {
-      nextIdx = Math.floor(Math.random() * total);
-    } while (nextIdx === currentTrackIdxRef.current);
-    playTrack(nextIdx);
-  };
-
-  // ⏮️ Fungsi Lagu Sebelumnya
-  const handlePrevTrack = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    const prevIdx = (currentTrackIdxRef.current - 1 + BGM_PLAYLIST.length) % BGM_PLAYLIST.length;
-    playTrack(prevIdx);
-  };
-
-// 🌟 Musik baru dimuat setelah pengguna klik tombol masuk Lemuria
-  useEffect(() => {
-    return () => {};
-  }, []);
-
-  // 📞 SIMULASI INCOMING CALL / VOICE MESSAGE DARI RAFAYEL (SAAT MASUK WEB & MANUAL)
   const [rafayelCallModalOpen, setRafayelCallModalOpen] = useState(false);
   const [rafayelCallStatus, setRafayelCallStatus] = useState('ringing'); // 'ringing' | 'connected'
   const [rafayelCallSeconds, setRafayelCallSeconds] = useState(0);
@@ -2504,107 +2450,102 @@ function App() {
     }
   }, [rafayelCallModalOpen, rafayelCallStatus]);
 
- // 🎙️ PENGENDALI SUARA TUNGGAL RAFAYEL (ANTI-TABRAKAN / OTOMATIS STOP SUARA SEBELUMNYA)
-  const stopCurrentRafayelVoice = () => {
+ // 🎙️ PENGENDALI SUARA TUNGGAL MUTLAK (SAAT 1 SUARA MENYALA, SEMUA SUARA LAIN & BGM MATI TOTAL)
+  const stopAllOtherSounds = () => {
     try {
+      // 1. Matikan suara bicara/welcome/telepon Rafayel sebelumnya jika sedang bunyi
       if (callVoiceAudioRef.current) {
+        callVoiceAudioRef.current.onended = null;
         callVoiceAudioRef.current.pause();
         callVoiceAudioRef.current.currentTime = 0;
         callVoiceAudioRef.current = null;
       }
+      // 2. Matikan dering telepon jika sedang berdering
+      if (ringtoneIntervalRef.current) {
+        clearInterval(ringtoneIntervalRef.current);
+        ringtoneIntervalRef.current = null;
+      }
+      // 3. Matikan (Pause) suara background musik (bgm2.mp3) agar tidak bertabrakan sama sekali
+      if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
+        bgmAudioRef.current.pause();
+        setBgmPlaying(false);
+      }
     } catch (e) {}
   };
 
-  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.65) => {
+  const resumeBackgroundMusic = () => {
     try {
-      // 1. Hentikan suara Rafayel sebelumnya jika masih berbicara
-      stopCurrentRafayelVoice();
-
-      // 2. Kecilkan BGM sedikit agar suara Rafayel terdengar jernih
-      if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
-        bgmAudioRef.current.volume = 0.06;
+      // Nyalakan kembali bgm2.mp3 hanya setelah suara Rafayel benar-benar selesai bicara
+      if (bgmAudioRef.current && bgmAudioRef.current.paused) {
+        bgmAudioRef.current.volume = 0.25;
+        bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
+      } else if (!bgmAudioRef.current) {
+        playTrack();
       }
+    } catch (e) {}
+  };
 
-      // 3. Putar suara baru di saluran tunggal
+  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.8) => {
+    try {
+      // Hentikan SEMUA suara yang sedang berjalan (suara welcome, suara klik sebelumnya, dering, maupun BGM)
+      stopAllOtherSounds();
+
+      // Putar suara baru sendirian (jernih 100% tanpa tabrakan)
       const voice = new Audio(audioUrl);
       voice.volume = volumeLevel;
       callVoiceAudioRef.current = voice;
 
+      // Begitu suara bicara ini selesai, baru putar kembali BGM latar
       voice.onended = () => {
         if (callVoiceAudioRef.current === voice) {
           callVoiceAudioRef.current = null;
         }
-        if (bgmAudioRef.current) {
-          bgmAudioRef.current.volume = 0.25;
-        }
+        resumeBackgroundMusic();
       };
 
       voice.play().catch(() => {
-        playNotificationChime();
+        resumeBackgroundMusic();
       });
     } catch (e) {
-      playNotificationChime();
+      resumeBackgroundMusic();
     }
   };
 
-  // Terima panggilan Rafayel & putar file suara dari GitHub (Otomatis hentikan suara lain)
+  // Terima panggilan Rafayel & putar file suara (Otomatis matikan dering, suara lain & BGM)
   const handleAcceptRafayelCall = () => {
-    playCallActionTone(true);
+    stopAllOtherSounds();
     setRafayelCallStatus('connected');
     setRafayelCallSeconds(0);
 
     const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
-    playExclusiveRafayelVoice(scenario.audioUrl, 0.65);
+    playExclusiveRafayelVoice(scenario.audioUrl, 0.85);
   };
 
-  // Tutup / Akhiri panggilan Rafayel
+  // Tutup / Akhiri panggilan Rafayel (Matikan suara telepon & nyalakan kembali BGM)
   const handleEndRafayelCall = () => {
-    playCallActionTone(false);
-    stopCurrentRafayelVoice();
-    if (bgmAudioRef.current) {
-      bgmAudioRef.current.volume = 0.25;
-    }
+    stopAllOtherSounds();
     setRafayelCallModalOpen(false);
     setRafayelCallStatus('ringing');
     setRafayelCallSeconds(0);
+    resumeBackgroundMusic();
   };
 
   // ⏱️ TIMER OTOMATIS 30 DETIK SETELAH MASUK WEB: MUNCULKAN PANGGILAN REAL-TIME RAFAYEL
   useEffect(() => {
     if (!hasEntered) return;
     const thirtySecCallTimer = setTimeout(() => {
+      // Saat telepon masuk berdering, matikan suara lain & BGM agar dering tidak tabrakan
+      stopAllOtherSounds();
       triggerIncomingRafayelCall();
-    }, 30000); // 30.000 ms = 30 detik setelah masuk web
+    }, 30000);
     return () => clearTimeout(thirtySecCallTimer);
   }, [hasEntered]);
 
-// 🌊 SAAT PERTAMA MASUK WEB: LANGSUNG PUTAR 1 DARI 3 SUARA WELCOME (ANTI-TABRAKAN)
+  // 🌊 SAAT PERTAMA MASUK WEB: MATIKAN SUARA LAIN & PUTAR SUARA WELCOME SAMPAI SELESAI BARU BGM NYALA
   const handleEnterTerminal = () => {
     setHasEntered(true);
-
-    // 1. Putar BGM lebih dulu di latar belakang
-    if (bgmAudioRef.current && bgmAudioRef.current.paused) {
-      bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
-    } else if (!bgmAudioRef.current) {
-      playTrack(currentTrackIdxRef.current);
-    }
-
-    // 2. Putar suara welcome melalui saluran tunggal (otomatis berhenti jika kamu klik foto/telepon)
     const randomWelcomeUrl = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
     playExclusiveRafayelVoice(randomWelcomeUrl, 0.85);
-  };
-  const toggleBGM = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (!bgmAudioRef.current) {
-      playTrack(currentTrackIdxRef.current);
-      return;
-    }
-    if (bgmAudioRef.current.paused) {
-      bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(console.error);
-    } else {
-      bgmAudioRef.current.pause();
-      setBgmPlaying(false);
-    }
   };
 
       // State 2 Bahasa Utama (id & en)
@@ -5963,56 +5904,7 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
                <span className="rafayel-phone-vibrate">📞</span>
                <span className="hidden xl:inline">{lang === 'en' ? 'Rafayel Call' : 'Call Rafayel'}</span>
              </button>
-
-                {/* BGM Controller Ringkas: Prev ⏮️, Play/Pause 🔊, Next ⏭️ */}
-             <div className={`flex items-center gap-0.5 bg-black/30 p-0.5 rounded-xl md:rounded-2xl border transition shrink-0 ${bgmPlaying ? 'border-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'border-white/15'}`}>
-               {/* Tombol Lagu Sebelumnya */}
-               <button
-                 type="button"
-                 onClick={handlePrevTrack}
-                 className="px-1.5 py-1 text-slate-300 hover:text-white rounded-lg active:scale-90 transition text-xs font-bold"
-                 title="Lagu Sebelumnya"
-               >
-                 ⏮️
-               </button>
-
-               {/* Tombol Play/Pause Utama */}
-               <button
-                 type="button"
-                 onClick={toggleBGM}
-                 className={`px-2 md:px-2.5 py-1 rounded-lg md:rounded-xl text-xs font-black transition flex items-center gap-1 ${bgmPlaying ? 'bg-purple-600/50 text-purple-100 shadow-xs' : 'text-slate-400 hover:text-slate-200'}`}
-                 title="Play / Pause BGM"
-               >
-                 <span>{bgmPlaying ? '🔊' : '🔇'}</span>
-                 <span className="hidden xl:inline">{bgmPlaying ? 'BGM ON' : 'BGM OFF'}</span>
-               </button>
-
-               {/* Tombol Lagu Berikutnya */}
-               <button
-                 type="button"
-                 onClick={handleNextTrack}
-                 className="px-1.5 py-1 text-slate-300 hover:text-white rounded-lg active:scale-90 transition text-xs font-bold"
-                 title="Lagu Berikutnya"
-               >
-                 ⏭️
-               </button>
-             </div>
-
-                {/* Switch Mode HP / PC */}
-                <div className="flex items-center bg-black/30 p-1 rounded-xl md:rounded-2xl border border-white/15 shadow-inner">
-                  <button
-                    onClick={() => handleSetDisplayMode('mobile')}
-                    className={`px-2.5 py-1 rounded-lg md:rounded-xl text-xs font-black transition ${displayMode === 'mobile' ? 'bg-pink-100 text-maroon shadow-xs' : 'text-rose-100 hover:text-white'}`}
-                  >
-                    📱
-                  </button>
-                  <button
-                    onClick={() => handleSetDisplayMode('pc')}
-                    className={`px-2.5 py-1 rounded-lg md:rounded-xl text-xs font-black transition ${displayMode === 'pc' ? 'bg-pink-100 text-maroon shadow-xs' : 'text-rose-100 hover:text-white'}`}
-                  >
-                    💻
-                  </button>
-                </div>
+                
               </div>
 
               {/* Pemilih Bulan & Tahun */}
