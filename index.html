@@ -4485,7 +4485,50 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
         if (statPeriod === 'yearly') return `${t.yearLabel} ${customStatYear}`;
         return '';
       }, [statPeriod, customStatDate, customStatMonth, customStatYear, t]);
+// 🔔 DETEKSI REAL-TIME ANTREAN BOOKING WA DARI WORK.HTML
+      const pendingBookingsList = useMemo(() => {
+        return schedules
+          .filter(s => s.status === 'PENDING')
+          .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
+      }, [schedules]);
 
+      const prevPendingCountRef = useRef(pendingBookingsList.length);
+      useEffect(() => {
+        if (pendingBookingsList.length > prevPendingCountRef.current) {
+          playNotificationChime();
+          notify(`🔔 [MO'S ATELIER]: Ada ${pendingBookingsList.length} Pengajuan Booking WA Baru dari Klien!`);
+        }
+        prevPendingCountRef.current = pendingBookingsList.length;
+      }, [pendingBookingsList.length]);
+
+      // ✅ Fungsi 1-Klik ACC / Tolak langsung dari index.html
+      const handleQuickApproveFromIndex = (item) => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
+        const isKonten = cleanTitle.toLowerCase().includes('video') || cleanTitle.toLowerCase().includes('affiliate');
+        const isMeeting = cleanTitle.toLowerCase().includes('meeting') || cleanTitle.toLowerCase().includes('briefing');
+        const nextStatus = isKonten ? 'Konten' : isMeeting ? 'Meeting' : 'LIVE';
+        const nextColor = isKonten ? '#8B5CF6' : isMeeting ? '#00FFFF' : '#B6D7A8';
+
+        const updated = schedules.map(s => s.id === item.id ? {
+          ...s,
+          title: cleanTitle,
+          status: nextStatus,
+          color: nextColor
+        } : s);
+        saveSchedulesToCloud(updated);
+        triggerCuteSparkles();
+        playNotificationChime();
+        notify(`✅ Jadwal "${cleanTitle}" resmi di-ACC menjadi [${nextStatus}]!`);
+      };
+
+      const handleQuickRejectFromIndex = (item) => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        if (confirm(`Tolak pengajuan "${item.title}" dan buka kembali slot jam ${item.start_time}-${item.end_time}?`)) {
+          saveSchedulesToCloud(schedules.filter(s => s.id !== item.id));
+          notify('🔓 Pengajuan ditolak & slot jam kembali kosong.');
+        }
+      };
       const filteredSchedules = useMemo(() => {
         return schedules.filter(s => {
           if (filterBrand !== 'ALL' && s.brand_id !== filterBrand) return false;
@@ -5514,7 +5557,72 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
        </div>
      );
    };
+// 🔔 BANNER NOTIFIKASI ANTREAN WA DI INDEX.HTML (KHUSUS OWNER)
+      const renderPendingQueueAlert = () => {
+        if (pendingBookingsList.length === 0) return null;
+        return (
+          <div className="bg-gradient-to-r from-amber-950/90 via-[#2A1215]/95 to-rose-950/90 border-2 border-amber-400 rounded-3xl p-4 shadow-[0_0_25px_rgba(245,158,11,0.35)] space-y-3 animate-pulse">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-full shadow">
+                  🔔 {pendingBookingsList.length} ANTREAN BOOKING WA BARU
+                </span>
+                <span className="text-xs font-extrabold text-amber-200">
+                  🎨 [Rafayel]: "Nona Pengawal, ada klien yang mengajukan jadwal di Work Mode!"
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => { window.location.href = "./work.html"; }}
+                className="bg-white/15 hover:bg-white/25 text-amber-200 border border-amber-300/40 px-3 py-1 rounded-xl text-[10px] font-black transition"
+              >
+                💼 Buka Work Mode ❯
+              </button>
+            </div>
 
+            <div className="space-y-2">
+              {pendingBookingsList.map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="bg-black/45 border border-amber-400/50 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-mono font-black text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-400/40">
+                        #{idx + 1} • 🗓️ {getHariNama(item.date)}, {item.date}
+                      </span>
+                      <span className="text-[11px] font-mono font-black text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-400/40">
+                        ⏰ {item.start_time} - {item.end_time} WIB
+                      </span>
+                    </div>
+                    <div className="text-xs font-black text-white pt-0.5">{item.title}</div>
+                    {item.notes && (
+                      <div className="text-[10px] text-amber-100/90 italic">📝 {item.notes}</div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleQuickApproveFromIndex(item)}
+                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-[10px] px-3 py-1.5 rounded-xl shadow active:scale-95 transition"
+                    >
+                      ✅ ACC Jadwal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickRejectFromIndex(item)}
+                      className="bg-rose-600/80 hover:bg-rose-600 text-white font-black text-[10px] px-2.5 py-1.5 rounded-xl border border-rose-400/50 active:scale-95 transition"
+                    >
+                      ❌ Tolak
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
       // 🌟 KOMPONEN BANNER LIVE NOW DENGAN COUNTDOWN DETIK REAL-TIME & INFO JAM HABIS
       const renderLiveNowBanner = () => (
         <div className="bg-black/30 rounded-2xl p-3.5 border border-white/15 space-y-3 mt-2 shadow-inner">
@@ -6071,6 +6179,7 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
                 {/* AGENDA HARIAN PC */}
                 {pcSubTab === 'agenda' && (
                  <div id="agenda-capture-area" className="space-y-6">
+                   {renderPendingQueueAlert()}
                     {/* 1. RADAR JADWAL LIVE & LOMPAT HARI (PALING ATAS) */}
                     <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-6 shadow-lg space-y-3 border-2 border-pink-300/30 relative overflow-hidden isolate">
                       {renderRadarBgSlideshow()}
@@ -6894,6 +7003,7 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
               <div className="p-4 space-y-4 max-w-lg w-full mx-auto">
                 {activeTab === 'agenda' && (
                   <div id="mobile-agenda-capture" className="space-y-4">
+                    {renderPendingQueueAlert()}
                     {/* 1. RADAR JADWAL LIVE & LOMPAT HARI (PALING ATAS) */}
                     <div className="bg-gradient-to-r from-maroon via-[#8A1432] to-rose-900 text-white rounded-3xl p-4 shadow-lg space-y-2.5 border-2 border-pink-300/30 relative overflow-hidden isolate">
                       {renderRadarBgSlideshow()}
