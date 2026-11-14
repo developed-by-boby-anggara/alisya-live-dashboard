@@ -124,6 +124,15 @@
       color: #FFFFFF;
     }
 
+    /* Banner Panduan Booking Klien */
+    .guide-banner {
+      background: linear-gradient(135deg, #FFF0F6 0%, #FCE7F3 100%);
+      border: 2px solid #EC4899;
+      border-radius: 20px;
+      padding: 14px 16px;
+      box-shadow: 0 6px 18px rgba(219, 39, 119, 0.12);
+    }
+
     .agenda-grid-pc {
       display: grid;
       grid-template-columns: 440px 1fr;
@@ -140,7 +149,8 @@
       border: 1.5px solid transparent;
       transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
     }
-    button:active { transform: scale(0.96); }
+    button:active:not(:disabled) { transform: scale(0.96); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn {
       padding: 7px 12px;
       border-radius: 12px;
@@ -172,7 +182,7 @@
       border-color: #F472B6;
       font-weight: 800;
     }
-    .btn-soft:hover { background: #FBCFE8; }
+    .btn-soft:hover:not(:disabled) { background: #FBCFE8; }
     .btn-header {
       background: rgba(255, 255, 255, 0.18);
       color: #FFFFFF;
@@ -213,6 +223,11 @@
     input:focus, select:focus, textarea:focus {
       border-color: #9D174D;
       box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.18);
+    }
+    select option:disabled {
+      background-color: #FFE4E6;
+      color: #9F1239;
+      font-style: italic;
     }
     .exec-header select {
       background: rgba(0, 0, 0, 0.28);
@@ -410,7 +425,7 @@
     }
     .modal-box {
       background: #FFF0F6; border: 2px solid #EC4899;
-      border-radius: 22px; width: 100%; max-width: 440px;
+      border-radius: 22px; width: 100%; max-width: 460px;
       max-height: 90vh; overflow-y: auto; padding: 18px; color: var(--text-dark);
       box-shadow: 0 20px 50px rgba(131, 24, 67, 0.35);
     }
@@ -516,13 +531,13 @@
         portalSub: "Portal Jadwal Kerja & Ketersediaan Slot Siaran Real-Time",
         loginBtn: "Login",
         radarTitle: "RADAR JADWAL OPERASIONAL ALISYA (00:00 - 23:59)",
-        availableTitle: "Available Schedule (Slot Jam Kosong)",
-        allSlotsFilled: "⚠️ Semua slot jam di tanggal ini sudah terisi penuh!",
-        slotsReady: "Slot Siap Pakai",
+        availableTitle: "Available Schedule (Slot Jam Kosong — Klik untuk Booking WA)",
+        allSlotsFilled: "🔒 Semua slot jam di tanggal ini sudah terisi penuh! Silakan pilih tanggal lain.",
+        slotsReady: "Slot Tersedia",
         calendarTitle: "Kalender Tanggal",
-        sessionList: "Daftar Sesi Jadwal Harian",
-        noSchedule: "Tidak Ada Jadwal di Tanggal Ini 🌸",
-        noScheduleSub: "Seluruh slot jam di tanggal ini masih kosong & tersedia untuk jadwal kerja.",
+        sessionList: "Daftar Sesi Jadwal Terisi",
+        noSchedule: "Seluruh Slot Jam Kosong & Tersedia 🌸",
+        noScheduleSub: "Belum ada sesi terjadwal di tanggal ini. Klik tombol slot hijau atau tombol Booking WA untuk menjadwalkan sesi.",
         btnShareWA: "Share WA", btnSavePNG: "PNG",
         btnShareRekapWA: "Share Rekap ke WA",
         btnDownloadTablePNG: "Simpan PNG",
@@ -545,11 +560,15 @@
         allRegistered: "Semua Jadwal Terdaftar",
         searchPlaceholder: "🔍 Cari nama shift, brand, catatan...",
         allCategories: "Semua Kategori", allStatuses: "Semua Status",
-        badgeFinished: "✅ SELESAI", badgeUpcoming: "⏳ AKAN DATANG", editBtn: "Edit", deleteBtn: "Hapus",
+        badgeFinished: "✅ SELESAI", badgeUpcoming: "⏳ TERJADWAL", editBtn: "Edit", deleteBtn: "Hapus",
         shortBreakWarning: "⚠️ Jeda istirahat antar shift terlalu singkat (<5 jam)!",
         totalLive: "TOTAL SHIFT LIVE", takeKonten: "TAKE KONTEN VIDEO", sleepTime: "JAM ISTIRAHAT", offDay: "HARI LIBUR / OFF",
         hoursLive: "Jam Streaming", hoursProd: "Jam Produksi", hoursSleep: "Jam Istirahat",
-        propTitle: "PROPORSI WAKTU ALISYA", barTitle: "BEBAN AKTIVITAS PER KATEGORI"
+        propTitle: "PROPORSI WAKTU ALISYA", barTitle: "BEBAN AKTIVITAS PER KATEGORI",
+        guideTitle: "💡 Cara Booking Slot Jadwal Kerja Alisya via WhatsApp",
+        guideStep1: "1. Pilih Tanggal di Kalender (pastikan status hari bukan FULL SCHEDULE / DAY OFF).",
+        guideStep2: "2. Klik salah satu kotak hijau di 'Available Schedule (Slot Jam Kosong)' atau tombol '📲 Booking WA'.",
+        guideStep3: "3. Isi Nama Brand & pilih jam yang tersedia (jam yang sudah terisi otomatis terkunci 🔒), lalu klik 'Kirim ke WA Alisya'."
       },
       en: {
         locale: 'en-US',
@@ -557,13 +576,13 @@
         portalSub: "Official Broadcast & Content Schedule • Real-Time Sync",
         loginBtn: "Login",
         radarTitle: "ALISYA'S OPERATIONAL SCHEDULE RADAR (00:00 - 23:59)",
-        availableTitle: "Available Schedule (Empty Time Slots)",
-        allSlotsFilled: "⚠️ All time slots for this date are fully booked!",
-        slotsReady: "Slots Available",
+        availableTitle: "Available Schedule (Empty Time Slots — Click to Book via WA)",
+        allSlotsFilled: "🔒 All time slots for this date are fully booked! Please select another date.",
+        slotsReady: "Slots Open",
         calendarTitle: "Date Calendar",
-        sessionList: "Daily Scheduled Sessions",
-        noSchedule: "No Schedule for this Date 🌸",
-        noScheduleSub: "All time slots on this date are currently empty and available.",
+        sessionList: "Booked Sessions List",
+        noSchedule: "All Time Slots Are Open & Available 🌸",
+        noScheduleSub: "No sessions booked on this date yet. Click any green slot button to book via WhatsApp.",
         btnShareWA: "Share WA", btnSavePNG: "PNG",
         btnShareRekapWA: "Share Recap to WA",
         btnDownloadTablePNG: "Save PNG",
@@ -586,11 +605,15 @@
         allRegistered: "All Registered Schedules",
         searchPlaceholder: "🔍 Search shift title, brand, notes...",
         allCategories: "All Categories", allStatuses: "All Statuses",
-        badgeFinished: "✅ DONE", badgeUpcoming: "⏳ UPCOMING", editBtn: "Edit", deleteBtn: "Delete",
+        badgeFinished: "✅ DONE", badgeUpcoming: "⏳ BOOKED", editBtn: "Edit", deleteBtn: "Delete",
         shortBreakWarning: "⚠️ Short break between shifts (<5 hours)!",
         totalLive: "TOTAL LIVE SHIFTS", takeKonten: "VIDEO CONTENT SHOOT", sleepTime: "REST TIME", offDay: "DAY OFF",
         hoursLive: "Streaming Hours", hoursProd: "Production Hours", hoursSleep: "Rest Hours",
-        propTitle: "ALISYA TIME PROPORTION", barTitle: "ACTIVITY LOAD PER CATEGORY"
+        propTitle: "ALISYA TIME PROPORTION", barTitle: "ACTIVITY LOAD PER CATEGORY",
+        guideTitle: "💡 How to Book Alisya's Schedule Slot via WhatsApp",
+        guideStep1: "1. Select a date on the Calendar (make sure the day is not FULL SCHEDULE / DAY OFF).",
+        guideStep2: "2. Click any green slot button under 'Available Schedule' or click '📲 Book via WA'.",
+        guideStep3: "3. Enter your Brand Name & pick an open time (occupied hours are automatically locked 🔒), then send to WhatsApp."
       }
     };
 
@@ -683,9 +706,11 @@
       const [cloneModalOpen, setCloneModalOpen] = useState(false);
       const [cloneTargetDate, setCloneTargetDate] = useState(() => addDaysToDateStr(realTodayStr, 1));
 
-      // 🚀 V2.1: STATE BOOKING WHATSAPP KLIEN / BRAND (KE NOMOR 085159440579)
+      // 🚀 V2.2: STATE BOOKING WHATSAPP & POPUP PANDUAN CARA BOOKING
       const ADMIN_WA_NUMBER = "6285159440579";
       const [bookingModalOpen, setBookingModalOpen] = useState(false);
+      const [guideModalOpen, setGuideModalOpen] = useState(false);
+      const [showGuideBanner, setShowGuideBanner] = useState(true);
       const [bookingData, setBookingData] = useState({
         date: realTodayStr,
         start_time: '10:00',
@@ -702,7 +727,7 @@
       });
 
       const [toast, setToast] = useState('');
-      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3200); };
+      const notify = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3400); };
 
       useEffect(() => {
         if (!firebaseDb) return;
@@ -862,6 +887,8 @@
       }, [schedules, selectedDate]);
 
       const availableSlotsForSelectedDate = useMemo(() => {
+        const isDayOff = selectedDaySchedules.some(s => s.status === 'OFF');
+        if (isDayOff) return [];
         return TIME_SLOTS.filter(slot => {
           const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
           return !selectedDaySchedules.some(s => {
@@ -887,6 +914,55 @@
         return { text: t.statusFree, cls: 'st-free' };
       };
 
+      // =====================================================================
+      // 🔒 V2.2: PROTEKSI ANTI-DOUBLE BOOKING UNTUK POPUP KLIEN & ADMIN
+      // =====================================================================
+      const schedulesOnBookingDate = useMemo(() => {
+        return schedules
+          .filter(s => s.date === bookingData.date)
+          .sort((a, b) => a.start_time.localeCompare(b.start_time));
+      }, [schedules, bookingData.date]);
+
+      // Cek apakah satu titik Jam Mulai sudah dipakai jadwal lain
+      const getBookingStartConflict = (timeCandidate) => {
+        const candMin = timeToMinutes(timeCandidate);
+        return schedulesOnBookingDate.find(s => {
+          if (s.status === 'OFF') return true;
+          const sStart = timeToMinutes(s.start_time);
+          let sEnd = timeToMinutes(s.end_time);
+          if (sEnd <= sStart) sEnd = 24 * 60;
+          return candMin >= sStart && candMin < sEnd;
+        });
+      };
+
+      // Cek apakah titik Jam Selesai menabrak jadwal lain atau <= Jam Mulai
+      const getBookingEndConflict = (endCandidate) => {
+        const startMin = timeToMinutes(bookingData.start_time);
+        const endMin = timeToMinutes(endCandidate);
+        if (endMin <= startMin) return { title: 'Harus > ' + bookingData.start_time, isOrderError: true };
+        return schedulesOnBookingDate.find(s => {
+          if (s.status === 'OFF') return true;
+          const sStart = timeToMinutes(s.start_time);
+          let sEnd = timeToMinutes(s.end_time);
+          if (sEnd <= sStart) sEnd = 24 * 60;
+          return startMin < sEnd && endMin > sStart;
+        });
+      };
+
+      // Cek apakah rentang waktu yang dipilih klien saat ini bentrok
+      const currentBookingConflict = useMemo(() => {
+        const sMin = timeToMinutes(bookingData.start_time);
+        const eMin = timeToMinutes(bookingData.end_time);
+        if (eMin <= sMin) return { title: 'Jam Selesai harus lebih besar dari Jam Mulai', start_time: bookingData.start_time, end_time: bookingData.end_time };
+        return schedulesOnBookingDate.find(s => {
+          if (s.status === 'OFF') return true;
+          const exS = timeToMinutes(s.start_time);
+          let exE = timeToMinutes(s.end_time);
+          if (exE <= exS) exE = 24 * 60;
+          return sMin < exE && eMin > exS;
+        });
+      }, [bookingData.start_time, bookingData.end_time, schedulesOnBookingDate]);
+
       const existingSchedulesOnFormDate = useMemo(() => {
         return schedules
           .filter(s => s.date === formData.date && (!selectedSchedule || s.id !== selectedSchedule.id))
@@ -909,6 +985,7 @@
 
       const findFirstFreeSlotOnDate = (dateStr, prefStart = '10:00', prefEnd = '12:00') => {
         const dayList = schedules.filter(s => s.date === dateStr);
+        if (dayList.some(s => s.status === 'OFF')) return null;
         const isFree = (st, en) => {
           const sM = timeToMinutes(st), eM = timeToMinutes(en);
           return !dayList.some(item => {
@@ -922,7 +999,7 @@
         for (const slot of TIME_SLOTS) {
           if (isFree(slot.start, slot.end)) return { start: slot.start, end: slot.end };
         }
-        return { start: prefStart, end: prefEnd };
+        return null;
       };
 
       const jumpToOffset = (days) => {
@@ -1028,12 +1105,16 @@
         notify('✅ Progres konten diperbarui!');
       };
 
+      // 🚀 V2.2: Buka Modal Booking WA (Hanya Mengizinkan Slot yang Benar-Benar Kosong)
       const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
         const targetDate = dateStr || selectedDate;
         const smartSlot = findFirstFreeSlotOnDate(targetDate, slotStart, slotEnd);
 
-        // 🚀 V2.1: Jika Klien / Partner (bukan Admin), buka Popup Booking WA!
         if (!isAdmin) {
+          if (!smartSlot) {
+            notify('🔒 Maaf, seluruh slot pada tanggal ini sudah terisi penuh / libur. Silakan pilih tanggal lain!');
+            return;
+          }
           setBookingData({
             date: targetDate,
             start_time: smartSlot.start,
@@ -1046,10 +1127,11 @@
           return;
         }
 
+        const adminSlot = smartSlot || { start: slotStart, end: slotEnd };
         setSelectedSchedule(null);
         setRepeatDays(1);
         setFormData({
-          id: 'sch_' + Date.now(), date: targetDate, start_time: smartSlot.start, end_time: smartSlot.end,
+          id: 'sch_' + Date.now(), date: targetDate, start_time: adminSlot.start, end_time: adminSlot.end,
           title: '', brand_id: brands[0]?.id || 'b_momuung', status: 'LIVE',
           color: brands[0]?.color || '#B6D7A8', notes: '', gmv: '',
           checklist: { shoot: false, edit: false, upload: false }
@@ -1057,21 +1139,25 @@
         setModalOpen(true);
       };
 
-      // 🚀 V2.1: Fungsi Kirim Format Booking ke WhatsApp 085159440579
+      // 🚀 V2.2: Kirim Format Booking ke WhatsApp 085159440579 (Dengan Pengecekan Anti-Bentrok)
       const handleSendBookingWA = (e) => {
         e.preventDefault();
+        if (currentBookingConflict) {
+          notify(`⛔ Tidak dapat mem-booking! Jam tersebut bentrok dengan "${currentBookingConflict.title}".`);
+          return;
+        }
         const hari = getHariNama(bookingData.date);
         const brandText = bookingData.clientName.trim() || 'Brand / Partner';
         const noteText = bookingData.notes.trim() || '-';
 
         const msg =
           `Halo Alisya / Management 🌸💼\n` +
-          `Saya dari *${brandText}* ingin melakukan booking slot jadwal kerja dengan rincian berikut:\n\n` +
+          `Saya dari *${brandText}* ingin melakukan booking slot jadwal kerja yang *Tersedia (Available)* dengan rincian berikut:\n\n` +
           `🗓️ *Hari & Tanggal:* ${hari}, ${bookingData.date}\n` +
           `⏰ *Slot Waktu:* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
           `🎯 *Jenis Kolaborasi:* ${bookingData.collabType}\n` +
           `📝 *Catatan / Brief Singkat:* ${noteText}\n\n` +
-          `Apakah slot jadwal tersebut masih tersedia? Terima kasih! 🙏`;
+          `Mohon konfirmasinya untuk penguncian jadwal di atas. Terima kasih! 🙏`;
 
         window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
         setBookingModalOpen(false);
@@ -1079,7 +1165,10 @@
       };
 
       const handleOpenEdit = (sch) => {
-        if (!isAdmin) { setPinInputModal(true); return; }
+        if (!isAdmin) {
+          notify(`🔒 Slot Pkl ${sch.start_time}-${sch.end_time} sudah terisi oleh "${sch.title}". Silakan pilih slot jam yang masih kosong!`);
+          return;
+        }
         setSelectedSchedule(sch);
         setRepeatDays(1);
         setFormData({ ...sch, checklist: sch.checklist || { shoot: false, edit: false, upload: false } });
@@ -1088,7 +1177,7 @@
 
       const handleDuplicate = (sch) => {
         if (!isAdmin) { setPinInputModal(true); return; }
-        const freeSlot = findFirstFreeSlotOnDate(sch.date, sch.start_time, sch.end_time);
+        const freeSlot = findFirstFreeSlotOnDate(sch.date, sch.start_time, sch.end_time) || { start: sch.start_time, end: sch.end_time };
         setSelectedSchedule(null);
         setRepeatDays(1);
         setFormData({ ...sch, id: 'sch_' + Date.now(), title: sch.title + ' (Copy)', start_time: freeSlot.start, end_time: freeSlot.end });
@@ -1386,7 +1475,7 @@
                   h('span', {
                     className: 'font-mono',
                     style: { background: 'rgba(255,255,255,0.2)', color: '#FCE7F3', border: '1px solid rgba(255,255,255,0.4)', padding: '2px 8px', borderRadius: '999px', fontSize: '9px', fontWeight: 800 }
-                  }, 'WORK MODE V2.1'),
+                  }, 'WORK MODE V2.2'),
                   isAdmin
                     ? h('span', { style: { background: '#FDE047', color: '#831843', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 900 } }, '👑 ADMIN')
                     : h('span', { style: { background: 'rgba(0,0,0,0.25)', color: '#FCE7F3', padding: '2px 7px', borderRadius: '999px', fontSize: '9px', fontWeight: 700 } }, '👀 PARTNER')
@@ -1452,7 +1541,7 @@
           )
         ),
 
-        // NAVIGASI TAB
+        // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
         h('nav', { className: 'exec-nav no-scrollbar' },
           [
             { id: 'agenda', icon: '📅', label: t.tabAgenda },
@@ -1465,16 +1554,49 @@
             onClick: () => setActiveTab(tb.id),
             className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`
           }, `${tb.icon} ${tb.label}`)),
-          h('button', { className: 'btn btn-soft', style: { marginLeft: 'auto' }, onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
+          h('button', {
+            className: 'btn btn-soft',
+            style: { marginLeft: 'auto' },
+            onClick: () => setGuideModalOpen(true)
+          }, '💡 Cara Booking'),
+          h('button', { className: 'btn btn-soft', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
           !isAdmin && h('button', {
             className: 'btn btn-emerald',
-            onClick: () => handleOpenCreate(selectedDate, '10:00', '12:00')
-          }, '📲 Booking WA'),
+            disabled: availableSlotsForSelectedDate.length === 0,
+            onClick: () => {
+              const firstOpen = availableSlotsForSelectedDate[0];
+              if (firstOpen) handleOpenCreate(selectedDate, firstOpen.start, firstOpen.end);
+              else notify('🔒 Tanggal ini sudah penuh! Silakan pilih tanggal lain.');
+            }
+          }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking WA'),
           isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
         ),
 
         // KONTEN UTAMA
         h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
+
+          // =================================================================
+          // 💡 V2.2: BANNER PEMBERITAHUAN CARA BOOKING VIA WHATSAPP
+          // =================================================================
+          showGuideBanner && !isAdmin && h('div', { className: 'guide-banner', style: { marginBottom: '16px' } },
+            h('div', { className: 'flex items-start justify-between gap-2' },
+              h('div', { style: { flex: 1 } },
+                h('div', { className: 'flex items-center gap-2 flex-wrap', style: { marginBottom: '6px' } },
+                  h('span', { style: { background: '#DB2777', color: '#FFFFFF', fontSize: '10px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, 'INFO KLIEN & BRAND'),
+                  h('h3', { style: { fontSize: '13px', fontWeight: 900, color: '#831843' } }, t.guideTitle)
+                ),
+                h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(3, 1fr)' : '1fr', gap: '8px', fontSize: '11px', fontWeight: 700, color: '#4A0424' } },
+                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep1),
+                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep2),
+                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep3)
+                )
+              ),
+              h('div', { className: 'flex flex-col gap-1 items-end' },
+                h('button', { className: 'btn btn-soft', style: { padding: '4px 8px', fontSize: '10px' }, onClick: () => setShowGuideBanner(false) }, 'Tutup ✕'),
+                h('button', { className: 'btn btn-pink', style: { padding: '5px 10px', fontSize: '10px' }, onClick: () => setGuideModalOpen(true) }, '📖 Detail')
+              )
+            )
+          ),
 
           // =================================================================
           // TAB 1: AGENDA HARIAN (PC = GRID KOTAK 2 KOLOM | HP = STRIP 1 BARIS)
@@ -1498,7 +1620,7 @@
                 h('span', { className: `status-pill-hp ${dayDensity.cls}`, style: { width: 'auto', fontSize: '10.5px', padding: '4px 12px', borderRadius: '999px' } }, dayDensity.text)
               ),
               h('p', { style: { fontSize: '11.5px', color: '#FCE7F3', marginTop: '4px', fontWeight: 600 } },
-                `${selectedDaySchedules.length} ${t.scheduledSessions} • ${selectedDaySchedules.filter(s => s.status !== 'Tidur').length} ${t.productiveActs}`
+                `${selectedDaySchedules.length} ${t.scheduledSessions} • ${availableSlotsForSelectedDate.length} ${t.slotsReady}`
               ),
               shortBreakWarnings[selectedDate] && h('div', { style: { marginTop: '6px', fontSize: '10.5px', background: 'rgba(254,243,199,0.22)', color: '#FDE047', padding: '4px 10px', borderRadius: '8px', fontWeight: 800, display: 'inline-block' } }, t.shortBreakWarning),
 
@@ -1526,22 +1648,22 @@
                     // Available Schedule PC (Grid 2 Kolom)
                     h('div', { className: 'exec-card', style: { background: '#ECFDF5', borderColor: '#6EE7B7' } },
                       h('div', { className: 'flex items-center justify-between', style: { marginBottom: '10px' } },
-                        h('span', { style: { fontSize: '13px', fontWeight: 900, color: '#065F46' } }, `🟢 ${t.availableTitle}`),
+                        h('span', { style: { fontSize: '12.5px', fontWeight: 900, color: '#065F46' } }, `🟢 ${t.availableTitle}`),
                         h('span', { style: { fontSize: '10.5px', fontWeight: 800, background: '#D1FAE5', color: '#065F46', padding: '3px 10px', borderRadius: '999px', border: '1px solid #6EE7B7' } }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
                       ),
                       availableSlotsForSelectedDate.length === 0
-                        ? h('div', { style: { fontSize: '11.5px', color: '#BE123C', fontWeight: 800, padding: '8px', textAlign: 'center', background: '#FFE4E6', borderRadius: '10px' } }, t.allSlotsFilled)
+                        ? h('div', { style: { fontSize: '11.5px', color: '#BE123C', fontWeight: 800, padding: '10px', textAlign: 'center', background: '#FFE4E6', borderRadius: '10px', border: '1px solid #FDA4AF' } }, t.allSlotsFilled)
                         : h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' } },
                             availableSlotsForSelectedDate.map(slot => h('button', {
                               key: slot.label,
                               onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
                               className: 'btn font-mono',
-                              style: { justifyContent: 'space-between', background: '#FFFFFF', color: '#065F46', borderColor: '#6EE7B7', padding: '8px 10px' }
-                            }, h('span', null, `⏰ ${slot.start} - ${slot.end}`), h('span', { style: { fontWeight: 900, color: '#059669' } }, isAdmin ? '+' : '📲 WA')))
+                              style: { justifyContent: 'space-between', background: '#FFFFFF', color: '#065F46', borderColor: '#10B981', padding: '8px 10px' }
+                            }, h('span', null, `⏰ ${slot.start} - ${slot.end}`), h('span', { style: { fontWeight: 900, color: '#059669' } }, isAdmin ? '+' : '📲 Book')))
                           )
                     ),
 
-                    // Kalender Kotak 7 Kolom (Seperti Kalender Pada Umumnya)
+                    // Kalender Kotak 7 Kolom (PC)
                     h('div', { className: 'exec-card' },
                       h('div', { className: 'flex items-center justify-between', style: { marginBottom: '12px' } },
                         h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#831843', textTransform: 'uppercase' } }, `🗓️ ${t.calendarTitle} (${monthName} ${currentYear})`),
@@ -1580,15 +1702,22 @@
                     )
                   ),
 
-                  // KOLOM KANAN PC: Daftar Sesi Jadwal Harian
+                  // KOLOM KANAN PC: Daftar Sesi Jadwal Harian (Sudah Terisi / Terkunci)
                   h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
                     h('div', { className: 'exec-card flex items-center justify-between', style: { padding: '12px 18px' } },
                       h('span', { style: { fontSize: '12.5px', fontWeight: 900, color: '#831843', textTransform: 'uppercase' } },
-                        `📡 ${t.sessionList} (${selectedDate}): ${selectedDaySchedules.length}`
+                        `🔒 ${t.sessionList} (${selectedDate}): ${selectedDaySchedules.length}`
                       ),
                       isAdmin
                         ? h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
-                        : h('button', { className: 'btn btn-emerald', onClick: () => handleOpenCreate(selectedDate, '10:00', '12:00') }, '📲 Booking Slot via WA')
+                        : h('button', {
+                            className: 'btn btn-emerald',
+                            disabled: availableSlotsForSelectedDate.length === 0,
+                            onClick: () => {
+                              const firstOpen = availableSlotsForSelectedDate[0];
+                              if (firstOpen) handleOpenCreate(selectedDate, firstOpen.start, firstOpen.end);
+                            }
+                          }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking Slot Kosong via WA')
                     ),
                     selectedDaySchedules.length === 0
                       ? h('div', { className: 'exec-card', style: { textAlign: 'center', padding: '48px 20px' } },
@@ -1603,7 +1732,7 @@
 
                           return h('div', {
                             key: item.id,
-                            onClick: () => isAdmin && handleOpenEdit(item),
+                            onClick: () => handleOpenEdit(item),
                             className: 'exec-card flex items-start justify-between gap-3',
                             style: {
                               position: 'relative', overflow: 'hidden', paddingLeft: '22px',
@@ -1618,7 +1747,7 @@
                                 h('span', {
                                   className: 'font-mono',
                                   style: { background: '#FCE7F3', color: '#831843', border: '1px solid #F472B6', padding: '3px 9px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 900 }
-                                }, `⏰ ${item.start_time} - ${item.end_time}`),
+                                }, `🔒 ${item.start_time} - ${item.end_time}`),
                                 isCurrentlyLive && h('span', {
                                   className: 'font-mono',
                                   style: { background: '#10B981', color: '#FFFFFF', padding: '3px 9px', borderRadius: '8px', fontSize: '10.5px', fontWeight: 900 }
@@ -1627,8 +1756,8 @@
                                   style: { background: '#F1F5F9', color: '#475569', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 800, border: '1px solid #CBD5E1' }
                                 }, t.badgeFinished),
                                 !isCurrentlyLive && timeState === 'upcoming' && h('span', {
-                                  style: { background: '#FEF3C7', color: '#92400E', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 800, border: '1px solid #FDE68A' }
-                                }, t.badgeUpcoming),
+                                  style: { background: '#FFE4E6', color: '#9F1239', padding: '3px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 800, border: '1px solid #FDA4AF' }
+                                }, '🔒 BOOKED / TERISI'),
                                 h('span', {
                                   style: {
                                     background: item.color, color: '#0F172A', border: '1px solid rgba(0,0,0,0.15)',
@@ -1707,13 +1836,13 @@
                       h('span', { style: { fontSize: '10px', fontWeight: 800, background: '#D1FAE5', color: '#065F46', padding: '2px 8px', borderRadius: '999px' } }, `${availableSlotsForSelectedDate.length} ${t.slotsReady}`)
                     ),
                     availableSlotsForSelectedDate.length === 0
-                      ? h('div', { style: { fontSize: '11px', color: '#BE123C', fontWeight: 800 } }, t.allSlotsFilled)
+                      ? h('div', { style: { fontSize: '11px', color: '#BE123C', fontWeight: 800, background: '#FFE4E6', padding: '8px', borderRadius: '10px', textAlign: 'center' } }, t.allSlotsFilled)
                       : h('div', { className: 'cal-strip-hp no-scrollbar' },
                           availableSlotsForSelectedDate.map(slot => h('button', {
                             key: slot.label,
                             onClick: () => handleOpenCreate(selectedDate, slot.start, slot.end),
                             className: 'btn font-mono',
-                            style: { flexShrink: 0, background: '#FFFFFF', color: '#065F46', borderColor: '#6EE7B7' }
+                            style: { flexShrink: 0, background: '#FFFFFF', color: '#065F46', borderColor: '#10B981' }
                           }, `${isAdmin ? '+' : '📲'} ${slot.start}-${slot.end}`))
                         )
                   ),
@@ -1732,7 +1861,7 @@
 
                         return h('div', {
                           key: item.id,
-                          onClick: () => isAdmin && handleOpenEdit(item),
+                          onClick: () => handleOpenEdit(item),
                           className: 'exec-card flex items-start justify-between gap-2',
                           style: {
                             position: 'relative', overflow: 'hidden', paddingLeft: '18px',
@@ -1747,7 +1876,7 @@
                               h('span', {
                                 className: 'font-mono',
                                 style: { background: '#FCE7F3', color: '#831843', border: '1px solid #F472B6', padding: '2px 7px', borderRadius: '7px', fontSize: '10.5px', fontWeight: 900 }
-                              }, `⏰ ${item.start_time} - ${item.end_time}`),
+                              }, `🔒 ${item.start_time} - ${item.end_time}`),
                               isCurrentlyLive && h('span', {
                                 className: 'font-mono',
                                 style: { background: '#10B981', color: '#FFFFFF', padding: '2px 7px', borderRadius: '7px', fontSize: '9.5px', fontWeight: 900 }
@@ -1755,6 +1884,9 @@
                               !isCurrentlyLive && timeState === 'done' && h('span', {
                                 style: { background: '#F1F5F9', color: '#475569', padding: '2px 7px', borderRadius: '7px', fontSize: '9px', fontWeight: 800 }
                               }, t.badgeFinished),
+                              !isCurrentlyLive && timeState === 'upcoming' && h('span', {
+                                style: { background: '#FFE4E6', color: '#9F1239', padding: '2px 7px', borderRadius: '7px', fontSize: '9px', fontWeight: 800 }
+                              }, '🔒 TERISI'),
                               h('span', {
                                 style: {
                                   background: item.color, color: '#0F172A', border: '1px solid rgba(0,0,0,0.15)',
@@ -1855,7 +1987,7 @@
                                   if (slotItems.length > 0) {
                                     const it = slotItems[0];
                                     if (isAdmin) handleOpenEdit(it);
-                                    else notify(`⏰ ${it.start_time}-${it.end_time}: ${it.title} [${it.status}]`);
+                                    else notify(`🔒 Slot ${it.start_time}-${it.end_time} sudah terisi: ${it.title} [${it.status}]. Pilih kotak putih yang kosong!`);
                                   } else {
                                     handleOpenCreate(dateStr, slot.start, slot.end);
                                   }
@@ -1917,7 +2049,9 @@
                               });
                               return h('td', {
                                 key: slot.label,
-                                onClick: () => slotItems.length > 0 ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`⏰ ${slotItems[0].start_time}-${slotItems[0].end_time}: ${slotItems[0].title}`)) : handleOpenCreate(dateStr, slot.start, slot.end),
+                                onClick: () => slotItems.length > 0
+                                  ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`🔒 Slot ${slotItems[0].start_time}-${slotItems[0].end_time} sudah terisi: ${slotItems[0].title}. Pilih kotak kosong!`))
+                                  : handleOpenCreate(dateStr, slot.start, slot.end),
                                 style: { cursor: 'pointer' }
                               },
                                 slotItems.map(item => h('div', {
@@ -1928,7 +2062,7 @@
                                     border: '1px solid rgba(0,0,0,0.18)'
                                   }
                                 },
-                                  h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, item.title),
+                                  h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `🔒 ${item.title}`),
                                   h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.85 } }, `${item.start_time}-${item.end_time}`)
                                 ))
                               );
@@ -2006,7 +2140,7 @@
                 },
                   h('div', { className: 'flex items-center justify-between' },
                     h('span', { style: { fontSize: '11.5px', fontWeight: 900, color: '#9D174D' } }, `${getHariNama(s.date)}, ${s.date}`),
-                    h('span', { className: 'font-mono', style: { fontSize: '11.5px', fontWeight: 900, color: '#4A0424', background: '#FCE7F3', padding: '2px 8px', borderRadius: '6px' } }, `${s.start_time} - ${s.end_time}`)
+                    h('span', { className: 'font-mono', style: { fontSize: '11.5px', fontWeight: 900, color: '#4A0424', background: '#FCE7F3', padding: '2px 8px', borderRadius: '6px' } }, `🔒 ${s.start_time} - ${s.end_time}`)
                   ),
                   h('div', { style: { fontSize: '14px', fontWeight: 900, color: '#4A0424', marginTop: '4px' } }, s.title),
                   h('div', { className: 'flex items-center justify-between', style: { marginTop: '4px', fontSize: '11px', color: '#701A46', fontWeight: 700 } },
@@ -2045,16 +2179,57 @@
           )
         ),
 
-        // 🚀 V2.1: MODAL POPUP BOOKING SLOT WHATSAPP (KHUSUS KLIEN & BRAND)
-        bookingModalOpen && h('div', { className: 'modal-overlay' },
+        // =================================================================
+        // 💡 V2.2: MODAL POPUP PANDUAN CARA BOOKING VIA WHATSAPP
+        // =================================================================
+        guideModalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
+              h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843' } }, '💡 Panduan Booking Jadwal Alisya via WA'),
+              h('button', { className: 'btn btn-soft', onClick: () => setGuideModalOpen(false) }, '✕')
+            ),
+            h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px', color: '#4A0424', lineHeight: 1.5 } },
+              h('div', { style: { background: '#FFFFFF', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid #F9A8D4' } },
+                h('div', { style: { fontWeight: 900, color: '#DB2777', marginBottom: '2px' } }, 'Langkah 1: Pilih Tanggal di Kalender'),
+                h('div', null, 'Klik tanggal yang diinginkan pada Kalender. Pastikan status hari masih memiliki slot kosong (bukan FULL SCHEDULE atau DAY OFF).')
+              ),
+              h('div', { style: { background: '#FFFFFF', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid #F9A8D4' } },
+                h('div', { style: { fontWeight: 900, color: '#059669', marginBottom: '2px' } }, 'Langkah 2: Klik Slot Jam Kosong (Hijau)'),
+                h('div', null, 'Pada bagian "🟢 Available Schedule", klik tombol jam kosong yang tersedia (misal: 10:00 - 12:00). Slot yang sudah terisi otomatis terkunci (🔒) dan tidak bisa dipilih.')
+              ),
+              h('div', { style: { background: '#FFFFFF', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid #F9A8D4' } },
+                h('div', { style: { fontWeight: 900, color: '#831843', marginBottom: '2px' } }, 'Langkah 3: Isi Nama Brand & Kirim ke WhatsApp'),
+                h('div', null, 'Masukkan Nama Brand/Agensi, pilih jenis kolaborasi (Live Streaming / Konten Affiliate / Meeting), lalu tekan tombol "📲 Kirim ke WA Alisya".')
+              )
+            ),
+            h('div', { className: 'flex justify-between gap-2', style: { marginTop: '4px' } },
+              h('button', { className: 'btn btn-soft', style: { flex: 1 }, onClick: () => setGuideModalOpen(false) }, 'Mengerti'),
+              !isAdmin && availableSlotsForSelectedDate.length > 0 && h('button', {
+                className: 'btn btn-emerald', style: { flex: 1.5 },
+                onClick: () => {
+                  setGuideModalOpen(false);
+                  const firstOpen = availableSlotsForSelectedDate[0];
+                  if (firstOpen) handleOpenCreate(selectedDate, firstOpen.start, firstOpen.end);
+                }
+              }, '📲 Coba Booking Sekarang')
+            )
+          )
+        ),
+
+        // =================================================================
+        // 🚀 V2.2: MODAL POPUP BOOKING SLOT WHATSAPP (ANTI-DOUBLE BOOKING)
+        // =================================================================
+        bookingModalOpen && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '11px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
               h('div', null,
-                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase', letterSpacing: '0.06em' } }, '🌸 OFFICIAL PARTNER BOOKING • V2.1'),
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase', letterSpacing: '0.06em' } }, '🌸 OFFICIAL PARTNER BOOKING • V2.2'),
                 h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '📲 Pengajuan Slot Jadwal via WhatsApp')
               ),
               h('button', { className: 'btn btn-soft', onClick: () => setBookingModalOpen(false) }, '✕')
             ),
+
+            // Kotak Info Tanggal & Jam
             h('div', {
               style: {
                 background: '#FCE7F3', border: '1.5px solid #F472B6', borderRadius: '14px',
@@ -2067,9 +2242,30 @@
               ),
               h('div', {
                 className: 'font-mono',
-                style: { background: '#FFFFFF', color: '#065F46', border: '1.5px solid #10B981', padding: '5px 10px', borderRadius: '10px', fontSize: '12px', fontWeight: 900 }
+                style: {
+                  background: '#FFFFFF',
+                  color: currentBookingConflict ? '#BE123C' : '#065F46',
+                  border: `1.5px solid ${currentBookingConflict ? '#E11D48' : '#10B981'}`,
+                  padding: '5px 10px', borderRadius: '10px', fontSize: '12px', fontWeight: 900
+                }
               }, `⏰ ${bookingData.start_time} - ${bookingData.end_time} WIB`)
             ),
+
+            // Daftar Jam yang Sudah Terisi di Tanggal Ini (Supaya Klien Tahu)
+            h('div', { style: { background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '12px', padding: '8px 10px' } },
+              h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#831843', marginBottom: '4px' } }, '🔒 JAM YANG SUDAH TERISI (TIDAK BISA DI-BOOKING):'),
+              schedulesOnBookingDate.length === 0
+                ? h('div', { style: { fontSize: '11px', color: '#059669', fontWeight: 800 } }, '✨ Seluruh jam pada tanggal ini masih kosong & bebas dipilih!')
+                : h('div', { className: 'flex flex-wrap gap-1' },
+                    schedulesOnBookingDate.map(s => h('span', {
+                      key: s.id,
+                      className: 'font-mono',
+                      style: { fontSize: '10px', fontWeight: 800, background: '#FFE4E6', color: '#9F1239', border: '1px solid #FDA4AF', padding: '2px 7px', borderRadius: '6px' }
+                    }, `🔒 ${s.start_time}-${s.end_time} (${s.title})`))
+                  )
+            ),
+
+            // Form Pengajuan Klien (Dropdown Jam Terisi Otomatis Terkunci / Disabled)
             h('form', { onSubmit: handleSendBookingWA, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('div', null,
                 h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Nama Brand / Agensi / PIC *'),
@@ -2081,14 +2277,24 @@
                   style: { width: '100%' }
                 })
               ),
+
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('div', null,
-                  h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jam Mulai (WIB)'),
+                  h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jam Mulai (Hanya Slot Kosong)'),
                   h('select', {
                     className: 'font-mono', style: { width: '100%' },
                     value: bookingData.start_time,
                     onChange: e => setBookingData({ ...bookingData, start_time: e.target.value })
-                  }, START_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm)))
+                  },
+                    START_TIME_OPTIONS.map(tm => {
+                      const conflict = getBookingStartConflict(tm);
+                      return h('option', {
+                        key: tm,
+                        value: tm,
+                        disabled: !!conflict
+                      }, conflict ? `🔒 ${tm} (Terisi: ${conflict.title})` : `🟢 ${tm} WIB`);
+                    })
+                  )
                 ),
                 h('div', null,
                   h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jam Selesai (WIB)'),
@@ -2096,9 +2302,26 @@
                     className: 'font-mono', style: { width: '100%' },
                     value: bookingData.end_time,
                     onChange: e => setBookingData({ ...bookingData, end_time: e.target.value })
-                  }, END_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm)))
+                  },
+                    END_TIME_OPTIONS.map(tm => {
+                      const conflict = getBookingEndConflict(tm);
+                      return h('option', {
+                        key: tm,
+                        value: tm,
+                        disabled: !!conflict
+                      }, conflict
+                        ? (conflict.isOrderError ? `⛔ ${tm}` : `🔒 ${tm} (Tabrakan: ${conflict.title})`)
+                        : `🟢 ${tm} WIB`);
+                    })
+                  )
                 )
               ),
+
+              // Peringatan Jika Rentang Jam Bentrok
+              currentBookingConflict && h('div', {
+                style: { background: '#FFE4E6', border: '1.5px solid #E11D48', color: '#9F1239', padding: '8px 10px', borderRadius: '10px', fontSize: '11px', fontWeight: 800 }
+              }, `⛔ Slot tidak tersedia! Rentang jam ini bertabrakan dengan jadwal "${currentBookingConflict.title}" (${currentBookingConflict.start_time}-${currentBookingConflict.end_time}). Silakan pilih jam yang bertanda 🟢!`),
+
               h('div', null,
                 h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Jenis Kerjasama / Sesi'),
                 h('select', {
@@ -2109,6 +2332,7 @@
                   ['Live Streaming Session', 'Take Video Affiliate (TikTok/Shopee)', 'Briefing / Meeting Online', 'Event / Brand Campaign'].map(tp => h('option', { key: tp, value: tp }, tp))
                 )
               ),
+
               h('div', null,
                 h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Catatan Tambahan / Target Produk (Opsional)'),
                 h('textarea', {
@@ -2119,9 +2343,15 @@
                   style: { width: '100%' }
                 })
               ),
+
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '8px', marginTop: '4px' } },
                 h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setBookingModalOpen(false) }, 'Batal'),
-                h('button', { type: 'submit', className: 'btn btn-emerald', style: { padding: '10px 14px', fontSize: '12px' } }, '📲 Kirim ke WA Alisya')
+                h('button', {
+                  type: 'submit',
+                  disabled: !!currentBookingConflict,
+                  className: 'btn btn-emerald',
+                  style: { padding: '10px 14px', fontSize: '12px' }
+                }, currentBookingConflict ? '🔒 Jam Sudah Terisi' : '📲 Kirim ke WA Alisya')
               )
             )
           )
@@ -2162,7 +2392,7 @@
           )
         ),
 
-        // MODAL TAMBAH / EDIT JADWAL
+        // MODAL TAMBAH / EDIT JADWAL (ADMIN)
         modalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
             h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
