@@ -1469,7 +1469,12 @@
 
         return { totalLive, totalOff, totalMeeting, totalSleep, totalMeTime, totalKonten, totalLiveHours, totalSleepHours, totalKontenHours, totalGMV, perBrand };
       }, [filteredByStatPeriod, brands]);
-
+// ⏳ V2.3+: Daftar Khusus Semua Pengajuan Booking WA yang Menunggu ACC Admin
+      const pendingBookingsList = useMemo(() => {
+        return schedules
+          .filter(s => s.status === 'PENDING')
+          .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
+      }, [schedules]);
       const filteredSchedules = useMemo(() => {
         return schedules.filter(s => {
           if (filterBrand !== 'ALL' && s.brand_id !== filterBrand) return false;
@@ -1743,18 +1748,28 @@ h('span', { style: { color: '#F472B6' } }, '•')
           )
         ),
 
-        // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
+// NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
         h('nav', { className: 'exec-nav no-scrollbar' },
           [
             { id: 'agenda', icon: '📅', label: t.tabAgenda },
             { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
             { id: 'kpi', icon: '📈', label: t.tabKPI },
             { id: 'list', icon: '📋', label: t.tabList },
-            { id: 'colors', icon: '🎨', label: t.tabColors }
+            { id: 'colors', icon: '🎨', label: t.tabColors },
+            ...(isAdmin ? [{
+              id: 'pending',
+              icon: '⏳',
+              label: lang === 'en'
+                ? `WA Queue (${pendingBookingsList.length})`
+                : `Antrean WA (${pendingBookingsList.length})`
+            }] : [])
           ].map(tb => h('button', {
             key: tb.id,
             onClick: () => setActiveTab(tb.id),
-            className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`
+            className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`,
+            style: tb.id === 'pending' && pendingBookingsList.length > 0 && activeTab !== 'pending'
+              ? { background: '#FEF3C7', color: '#92400E', borderColor: '#F59E0B', fontWeight: 900 }
+              : {}
           }, `${tb.icon} ${tb.label}`)),
           h('button', {
             className: 'btn btn-soft',
@@ -2454,7 +2469,7 @@ h('span', { style: { color: '#F472B6' } }, '•')
             )
           ),
 
-          // TAB 5: WARNA BRAND
+         // TAB 5: WARNA BRAND
           activeTab === 'colors' && h('div', { className: 'exec-card', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
             h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#831843' } }, `🎨 ${t.tabColors}`),
             brands.map(b => h('div', {
@@ -2475,6 +2490,79 @@ h('span', { style: { color: '#F472B6' } }, '•')
               ),
               h('span', { className: 'font-mono', style: { fontSize: '11.5px', color: '#9D174D', fontWeight: 800 } }, b.color)
             ))
+          ),
+
+          // =================================================================
+          // ⏳ TAB 6 (KHUSUS ADMIN): DAFTAR TUNGGU BOOKING WA (ACC / TOLAK)
+          // =================================================================
+          activeTab === 'pending' && isAdmin && h('div', { className: 'exec-card', style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+            h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#B45309', background: '#FEF3C7', padding: '2px 8px', borderRadius: '999px', border: '1px solid #F59E0B' } }, '👑 ADMIN APPROVAL CENTER'),
+                h('h3', { style: { fontSize: '16px', fontWeight: 900, color: '#831843', marginTop: '4px' } },
+                  `⏳ Daftar Tunggu Pengajuan Booking WhatsApp (${pendingBookingsList.length} Antrean)`
+                ),
+                h('p', { style: { fontSize: '11.5px', color: '#701A46', marginTop: '2px' } },
+                  'Semua klien yang telah mengisi form & klik Kirim ke WA otomatis masuk ke daftar ini. Klik Terima (ACC) untuk mengesahkan jadwal atau Tolak untuk membuka kembali slot.'
+                )
+              ),
+              pendingBookingsList.length > 0 && h('span', {
+                className: 'font-mono',
+                style: { background: '#FFFBEB', color: '#B45309', border: '1.5px solid #F59E0B', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: 900 }
+              }, `🔔 ${pendingBookingsList.length} Menunggu Konfirmasi`)
+            ),
+
+            pendingBookingsList.length === 0
+              ? h('div', { style: { textAlign: 'center', padding: '44px 20px', background: '#FFFFFF', borderRadius: '16px', border: '1.5px dashed #F9A8D4' } },
+                  h('div', { style: { fontSize: '36px', marginBottom: '8px' } }, '✨'),
+                  h('div', { style: { fontSize: '14px', fontWeight: 900, color: '#4A0424' } }, 'Tidak Ada Antrean Booking Saat Ini'),
+                  h('p', { style: { fontSize: '11.5px', color: '#831843', marginTop: '4px' } }, 'Seluruh pengajuan jadwal dari klien via WhatsApp sudah kamu konfirmasi (ACC) atau belum ada pengajuan baru.')
+                )
+              : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+                  pendingBookingsList.map((item, idx) => h('div', {
+                    key: item.id,
+                    style: {
+                      background: '#FFFFFF', border: '2px solid #F59E0B', borderRadius: '16px',
+                      padding: '14px 16px', display: 'flex', flexDirection: displayMode === 'mobile' ? 'column' : 'row',
+                      alignItems: displayMode === 'mobile' ? 'stretch' : 'center',
+                      justifyContent: 'space-between', gap: '12px',
+                      boxShadow: '0 4px 14px rgba(245, 158, 11, 0.12)'
+                    }
+                  },
+                    h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', gap: '5px' } },
+                      h('div', { className: 'flex items-center gap-2 flex-wrap' },
+                        h('span', { style: { background: '#FEF3C7', color: '#92400E', border: '1px solid #F59E0B', fontSize: '10px', fontWeight: 900, padding: '2px 8px', borderRadius: '8px' } }, `ANTREAN #${idx + 1}`),
+                        h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#9D174D' } }, `🗓️ ${getHariNama(item.date)}, ${item.date}`),
+                        h('span', { className: 'font-mono', style: { background: '#FCE7F3', color: '#831843', border: '1px solid #F472B6', padding: '2px 8px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 900 } }, `⏰ ${item.start_time} - ${item.end_time} WIB`)
+                      ),
+                      h('div', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, item.title),
+                      item.notes && h('div', {
+                        style: { background: '#FFFBEB', border: '1px solid #FDE68A', padding: '6px 10px', borderRadius: '10px', fontSize: '11.5px', color: '#78350F', fontWeight: 700 }
+                      }, `📝 ${item.notes}`)
+                    ),
+
+                    h('div', { className: 'flex items-center gap-2 flex-wrap', style: { justifyContent: 'flex-end' } },
+                      h('button', {
+                        type: 'button',
+                        className: 'btn btn-emerald',
+                        style: { padding: '9px 14px', fontSize: '11.5px' },
+                        onClick: e => handleApprovePending(e, item)
+                      }, '✅ ACC / Terima Jadwal'),
+                      h('button', {
+                        type: 'button',
+                        className: 'btn btn-soft',
+                        style: { padding: '9px 12px', fontSize: '11.5px' },
+                        onClick: () => handleOpenEdit(item)
+                      }, '✏️ Edit / Atur Brand'),
+                      h('button', {
+                        type: 'button',
+                        className: 'btn btn-soft',
+                        style: { padding: '9px 12px', fontSize: '11.5px', background: '#FFE4E6', color: '#BE123C', borderColor: '#FDA4AF' },
+                        onClick: e => handleRejectPending(e, item)
+                      }, '❌ Tolak & Buka Slot')
+                    )
+                  ))
+                )
           )
         ),
 
