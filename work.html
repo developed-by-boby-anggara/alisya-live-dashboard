@@ -1009,18 +1009,23 @@
         setSelectedDate(str);
       };
 
-      const shareToWhatsApp = () => {
+     const shareToWhatsApp = () => {
         const todayItems = selectedDaySchedules;
         const hari = getHariNama(selectedDate);
-        let text = `🌸 *${t.radarTitle}* 🌸\n🗓️ ${hari}, ${selectedDate}\n\n`;
-        if (todayItems.length === 0) text += `🟢 ${t.noSchedule}\n`;
-        else {
+        let text = `*ALISYA WORK SCHEDULE (OFFICIAL)*\n` +
+                   `Tanggal : ${hari}, ${selectedDate}\n` +
+                   `────────────────────────\n\n`;
+        if (todayItems.length === 0) {
+          text += `Status : ${t.noSchedule.replace(/[^\x00-\x7F]/g, '').trim()}\n`;
+        } else {
           todayItems.forEach((s, idx) => {
             const b = brands.find(br => br.id === s.brand_id);
-            text += `${idx + 1}. *${s.start_time} - ${s.end_time}* : ${s.title}\n   🏷️ ${b ? b.name : '-'} | 📌 ${s.status}\n\n`;
+            text += `${idx + 1}. *${s.start_time} - ${s.end_time} WIB* — ${s.title}\n` +
+                    `   ▪ Brand/Kategori : ${b ? b.name : '-'}\n` +
+                    `   ▪ Status : [${s.status}]\n\n`;
           });
         }
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
       };
 
       const shareSpreadsheetToWA = () => {
@@ -1030,20 +1035,23 @@
             return y === currentYear && m === (currentMonth + 1);
           })
           .sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
-        let text = `🌸 *ALISYA WORK SCHEDULE (${monthName} ${currentYear})* 🌸\n\n`;
-        if (monthItems.length === 0) text += `${t.noSchedule}\n`;
-        else {
+        let text = `*REKAP JADWAL KERJA ALISYA (${monthName.toUpperCase()} ${currentYear})*\n` +
+                   `────────────────────────\n\n`;
+        if (monthItems.length === 0) {
+          text += `${t.noSchedule.replace(/[^\x00-\x7F]/g, '').trim()}\n`;
+        } else {
           const grouped = {};
           monthItems.forEach(it => { if (!grouped[it.date]) grouped[it.date] = []; grouped[it.date].push(it); });
           Object.keys(grouped).forEach(dt => {
-            text += `📅 *${getHariNama(dt)}, ${dt}*:\n`;
-            grouped[dt].forEach(it => { text += ` • ⏰ ${it.start_time}-${it.end_time} | *${it.title}* [${it.status}]\n`; });
+            text += `*${getHariNama(dt)}, ${dt}*\n`;
+            grouped[dt].forEach(it => {
+              text += ` • ${it.start_time} - ${it.end_time} WIB | *${it.title}* [${it.status}]\n`;
+            });
             text += `\n`;
           });
         }
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
       };
-
       const exportElementAsPNG = async (elementId, filenameLabel) => {
         const el = document.getElementById(elementId);
         if (!el || typeof html2canvas === 'undefined') { notify('⚠️ Sedang memuat modul gambar...'); return; }
@@ -1139,11 +1147,11 @@
         setModalOpen(true);
       };
 
-      // 🚀 V2.2: Kirim Format Booking ke WhatsApp 085159440579 (Dengan Pengecekan Anti-Bentrok)
+     // 🚀 V2.2: Kirim Format Booking ke WhatsApp 085159440579 (100% Bersih Tanpa Emoji Rusak)
       const handleSendBookingWA = (e) => {
         e.preventDefault();
         if (currentBookingConflict) {
-          notify(`⛔ Tidak dapat mem-booking! Jam tersebut bentrok dengan "${currentBookingConflict.title}".`);
+          notify(`Tidak dapat mem-booking! Jam tersebut bentrok dengan "${currentBookingConflict.title}".`);
           return;
         }
         const hari = getHariNama(bookingData.date);
@@ -1151,17 +1159,20 @@
         const noteText = bookingData.notes.trim() || '-';
 
         const msg =
-          `Halo Alisya / Management 🌸💼\n` +
-          `Saya dari *${brandText}* ingin melakukan booking slot jadwal kerja yang *Tersedia (Available)* dengan rincian berikut:\n\n` +
-          `🗓️ *Hari & Tanggal:* ${hari}, ${bookingData.date}\n` +
-          `⏰ *Slot Waktu:* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
-          `🎯 *Jenis Kolaborasi:* ${bookingData.collabType}\n` +
-          `📝 *Catatan / Brief Singkat:* ${noteText}\n\n` +
-          `Mohon konfirmasinya untuk penguncian jadwal di atas. Terima kasih! 🙏`;
+          `*PENGAJUAN BOOKING JADWAL ALISYA*\n` +
+          `────────────────────────\n` +
+          `Halo Alisya / Management,\n` +
+          `Saya dari *${brandText}* ingin mengajukan booking slot jadwal kerja yang *Tersedia (Available)* dengan rincian berikut:\n\n` +
+          `• *Hari & Tanggal :* ${hari}, ${bookingData.date}\n` +
+          `• *Slot Waktu :* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
+          `• *Jenis Kolaborasi :* ${bookingData.collabType}\n` +
+          `• *Catatan / Brief :* ${noteText}\n` +
+          `────────────────────────\n` +
+          `Mohon konfirmasinya untuk penguncian jadwal di atas. Terima kasih.`;
 
-        window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=${ADMIN_WA_NUMBER}&text=${encodeURIComponent(msg)}`, '_blank');
         setBookingModalOpen(false);
-        notify('📲 Membuka WhatsApp untuk mengirim pengajuan jadwal...');
+        notify('Membuka WhatsApp untuk mengirim pengajuan jadwal...');
       };
 
       const handleOpenEdit = (sch) => {
