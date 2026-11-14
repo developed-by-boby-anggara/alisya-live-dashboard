@@ -829,24 +829,57 @@
         return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
       }, [schedules, realTodayStr, nowTime]);
 
-      const broadcastMetrics = useMemo(() => {
+     const broadcastMetrics = useMemo(() => {
         let completedLiveHours = 0;
+        let completedLiveSessions = 0;
+        let monthLiveHours = 0;
+        let monthLiveSessions = 0;
+        let todayWorkHours = 0;
+        let todayTotalSessions = 0;
+
+        const [curY, curM] = realTodayStr.split('-').map(Number);
+
         schedules.forEach(s => {
+          const dur = calculateDurationHours(s.start_time, s.end_time);
+          const isProductive = s.status !== 'Tidur' && s.brand_id !== 'b_sleep' && s.status !== 'OFF' && s.status !== 'SAKIT' && s.status !== 'Sakit / Medis' && s.brand_id !== 'b_sakit';
+
+          // 1. Hitung total jam kerja & sesi hari ini secara real-time
+          if (s.date === realTodayStr && isProductive) {
+            todayWorkHours += dur;
+            todayTotalSessions++;
+          }
+
+          // 2. Hitung akumulasi jam LIVE bulan berjalan & sepanjang waktu
           if (s.status === 'LIVE') {
+            const [sY, sM] = s.date.split('-').map(Number);
+            if (sY === curY && sM === curM) {
+              monthLiveHours += dur;
+              monthLiveSessions++;
+            }
             const state = getSessionTimeState(s);
             if (s.date < realTodayStr || (s.date === realTodayStr && state === 'done')) {
-              completedLiveHours += calculateDurationHours(s.start_time, s.end_time);
+              completedLiveHours += dur;
+              completedLiveSessions++;
             }
           }
         });
+
+        todayWorkHours = Math.round(todayWorkHours * 10) / 10;
+        monthLiveHours = Math.round(monthLiveHours * 10) / 10;
         const totalHours = 480 + Math.round(completedLiveHours);
 
+        // 3. Hitung ketersediaan slot 7 hari ke depan secara presisi
         let totalPrimeSlots = 0, occupiedPrimeSlots = 0;
         for (let i = 0; i < 7; i++) {
           const dStr = addDaysToDateStr(realTodayStr, i);
-          const dayList = schedules.filter(s => s.date === dStr && s.status !== 'OFF');
+          const dayList = schedules.filter(s => s.date === dStr);
+          const isDayOff = dayList.some(s => s.status === 'OFF');
           TIME_SLOTS.forEach(slot => {
             totalPrimeSlots++;
+            if (isDayOff) {
+              occupiedPrimeSlots++;
+              return;
+            }
             const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
             const isBusy = dayList.some(s => {
               const st = timeToMinutes(s.start_time);
@@ -857,12 +890,25 @@
             if (isBusy) occupiedPrimeSlots++;
           });
         }
-        const freeSlots = Math.max(0, totalPrimeSlots - occupiedPrimeSlots);
-        let badge = '🟢 Schedule Active';
-        if (freeSlots <= 10) badge = '🔒 Fully Booked This Week';
-        else if (freeSlots <= 28) badge = '⚡ Limited Slots Remaining';
 
-        return { totalHours, freeSlots, badge };
+        const freeSlots = Math.max(0, totalPrimeSlots - occupiedPrimeSlots);
+        const bookedPct = totalPrimeSlots > 0 ? Math.round((occupiedPrimeSlots / totalPrimeSlots) * 100) : 0;
+
+        let badge = '🟢 OPEN FOR BOOKING';
+        if (freeSlots <= 10) badge = '🔒 FULLY BOOKED THIS WEEK';
+        else if (freeSlots <= 28) badge = '⚡ LIMITED SLOTS AVAILABLE';
+
+        return {
+          totalHours,
+          completedLiveSessions,
+          monthLiveHours,
+          monthLiveSessions,
+          todayWorkHours,
+          todayTotalSessions,
+          freeSlots,
+          bookedPct,
+          badge
+        };
       }, [schedules, realTodayStr, nowTime]);
 
       const shortBreakWarnings = useMemo(() => {
@@ -1540,75 +1586,56 @@
           )
         ),
 
-        // TICKER BAR
+      // TICKER BAR PROFESIONAL REAL-TIME (TANPA TEKS PERSONAL MEKEL/AIR)
         h('div', { className: 'exec-ticker' },
           h('div', { className: 'ticker-track' },
             [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center gap-4' },
-              h('span', { style: { fontWeight: 900, color: '#FDE047' } }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
-              h('span', { style: { color: '#6EE7B7', fontWeight: 800 } }, `${broadcastMetrics.badge} (${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan)`),
-              h('span', { style: { color: '#FFFFFF', fontWeight: 700 } }, `⏱️ Jam Terbang: ${broadcastMetrics.totalHours}+ Jam Live Aktif`),
-              h('span', { style: { color: '#FBCFE8' } }, `📌 Fokus: ${stickyNote}`)
+              // 1. Identitas Resmi
+              h('span', {
+                style: {
+                  background: '#9D174D', color: '#FDE047', fontWeight: 900,
+                  padding: '2px 10px', borderRadius: '999px', border: '1px solid #F472B6',
+                  letterSpacing: '0.04em'
+                }
+              }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
+
+              // 2. Highlight Utama: Ketersediaan Slot 7 Hari ke Depan (Real-Time)
+              h('span', {
+                style: {
+                  background: broadcastMetrics.freeSlots <= 28 ? 'rgba(253, 224, 71, 0.18)' : 'rgba(16, 185, 129, 0.2)',
+                  color: broadcastMetrics.freeSlots <= 28 ? '#FDE047' : '#6EE7B7',
+                  border: `1px solid ${broadcastMetrics.freeSlots <= 28 ? '#FACC15' : '#34D399'}`,
+                  padding: '2px 10px', borderRadius: '999px', fontWeight: 900
+                }
+              }, `${broadcastMetrics.badge}: Sisa ${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan (${broadcastMetrics.bookedPct}% Terisi)`),
+
+              // 3. Status Live / Jam Kerja Hari Ini (Real-Time)
+              liveTracker.activeItem
+                ? h('span', { style: { color: '#6EE7B7', fontWeight: 900 } },
+                    `🟢 ON-AIR SEKARANG: ${liveTracker.activeItem.title} (${liveTracker.activeItem.start_time}-${liveTracker.activeItem.end_time} WIB • Sisa ${liveTracker.activeItem.remainingHMS})`
+                  )
+                : h('span', { style: { color: '#FFFFFF', fontWeight: 800 } },
+                    `📅 Beban Kerja Hari Ini (${realTodayStr}): ${broadcastMetrics.todayWorkHours} Jam Aktif (${broadcastMetrics.todayTotalSessions} Sesi Terjadwal)`
+                  ),
+
+              // 4. Performa Bulan Berjalan (Real-Time)
+              h('span', { style: { color: '#FBCFE8', fontWeight: 800 } },
+                `📊 Jadwal Live Bulan ${monthName}: ${broadcastMetrics.monthLiveHours} Jam Streaming (${broadcastMetrics.monthLiveSessions} Sesi Live)`
+              ),
+
+              // 5. Total Jam Terbang Live Selama Ini (Terverifikasi)
+              h('span', {
+                style: {
+                  background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF',
+                  padding: '2px 10px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.25)',
+                  fontWeight: 900
+                }
+              }, `⏱️ Total Jam Terbang Terverifikasi: ${broadcastMetrics.totalHours}+ Jam Live On`),
+
+              h('span', { style: { color: '#F472B6' } }, '•')
             ))
           )
         ),
-
-        // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
-        h('nav', { className: 'exec-nav no-scrollbar' },
-          [
-            { id: 'agenda', icon: '📅', label: t.tabAgenda },
-            { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
-            { id: 'kpi', icon: '📈', label: t.tabKPI },
-            { id: 'list', icon: '📋', label: t.tabList },
-            { id: 'colors', icon: '🎨', label: t.tabColors }
-          ].map(tb => h('button', {
-            key: tb.id,
-            onClick: () => setActiveTab(tb.id),
-            className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`
-          }, `${tb.icon} ${tb.label}`)),
-          h('button', {
-            className: 'btn btn-soft',
-            style: { marginLeft: 'auto' },
-            onClick: () => setGuideModalOpen(true)
-          }, '💡 Cara Booking'),
-          h('button', { className: 'btn btn-soft', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
-          !isAdmin && h('button', {
-            className: 'btn btn-emerald',
-            disabled: availableSlotsForSelectedDate.length === 0,
-            onClick: () => {
-              const firstOpen = availableSlotsForSelectedDate[0];
-              if (firstOpen) handleOpenCreate(selectedDate, firstOpen.start, firstOpen.end);
-              else notify('🔒 Tanggal ini sudah penuh! Silakan pilih tanggal lain.');
-            }
-          }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking WA'),
-          isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
-        ),
-
-        // KONTEN UTAMA
-        h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
-
-          // =================================================================
-          // 💡 V2.2: BANNER PEMBERITAHUAN CARA BOOKING VIA WHATSAPP
-          // =================================================================
-          showGuideBanner && !isAdmin && h('div', { className: 'guide-banner', style: { marginBottom: '16px' } },
-            h('div', { className: 'flex items-start justify-between gap-2' },
-              h('div', { style: { flex: 1 } },
-                h('div', { className: 'flex items-center gap-2 flex-wrap', style: { marginBottom: '6px' } },
-                  h('span', { style: { background: '#DB2777', color: '#FFFFFF', fontSize: '10px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, 'INFO KLIEN & BRAND'),
-                  h('h3', { style: { fontSize: '13px', fontWeight: 900, color: '#831843' } }, t.guideTitle)
-                ),
-                h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(3, 1fr)' : '1fr', gap: '8px', fontSize: '11px', fontWeight: 700, color: '#4A0424' } },
-                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep1),
-                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep2),
-                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep3)
-                )
-              ),
-              h('div', { className: 'flex flex-col gap-1 items-end' },
-                h('button', { className: 'btn btn-soft', style: { padding: '4px 8px', fontSize: '10px' }, onClick: () => setShowGuideBanner(false) }, 'Tutup ✕'),
-                h('button', { className: 'btn btn-pink', style: { padding: '5px 10px', fontSize: '10px' }, onClick: () => setGuideModalOpen(true) }, '📖 Detail')
-              )
-            )
-          ),
-
           // =================================================================
           // TAB 1: AGENDA HARIAN (PC = GRID KOTAK 2 KOLOM | HP = STRIP 1 BARIS)
           // =================================================================
