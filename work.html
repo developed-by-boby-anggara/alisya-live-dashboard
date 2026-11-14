@@ -829,7 +829,7 @@
         return { activeItem, nextItem, progressPct, totalToday: todayList.length, completedCount };
       }, [schedules, realTodayStr, nowTime]);
 
-     const broadcastMetrics = useMemo(() => {
+    const broadcastMetrics = useMemo(() => {
         let completedLiveHours = 0;
         let completedLiveSessions = 0;
         let monthLiveHours = 0;
@@ -1632,13 +1632,68 @@
                 }
               }, `⏱️ Total Jam Terbang Terverifikasi: ${broadcastMetrics.totalHours}+ Jam Live On`),
 
-              h('span', { style: { color: '#F472B6' } }, '•')
+h('span', { style: { color: '#F472B6' } }, '•')
             ))
           )
         ),
+
+        // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
+        h('nav', { className: 'exec-nav no-scrollbar' },
+          [
+            { id: 'agenda', icon: '📅', label: t.tabAgenda },
+            { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
+            { id: 'kpi', icon: '📈', label: t.tabKPI },
+            { id: 'list', icon: '📋', label: t.tabList },
+            { id: 'colors', icon: '🎨', label: t.tabColors }
+          ].map(tb => h('button', {
+            key: tb.id,
+            onClick: () => setActiveTab(tb.id),
+            className: `nav-pill ${activeTab === tb.id ? 'active' : ''}`
+          }, `${tb.icon} ${tb.label}`)),
+          h('button', {
+            className: 'btn btn-soft',
+            style: { marginLeft: 'auto' },
+            onClick: () => setGuideModalOpen(true)
+          }, '💡 Cara Booking'),
+          h('button', { className: 'btn btn-soft', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
+          !isAdmin && h('button', {
+            className: 'btn btn-emerald',
+            disabled: availableSlotsForSelectedDate.length === 0,
+            onClick: () => {
+              const firstOpen = availableSlotsForSelectedDate[0];
+              if (firstOpen) handleOpenCreate(selectedDate, firstOpen.start, firstOpen.end);
+              else notify('🔒 Tanggal ini sudah penuh! Silakan pilih tanggal lain.');
+            }
+          }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking WA'),
+          isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
+        ),
+
+        // KONTEN UTAMA (PEMBUKA MAIN YANG TADI TERHAPUS)
+        h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
+
+          // 💡 V2.2: BANNER PEMBERITAHUAN CARA BOOKING VIA WHATSAPP
+          showGuideBanner && !isAdmin && h('div', { className: 'guide-banner', style: { marginBottom: '16px' } },
+            h('div', { className: 'flex items-start justify-between gap-2' },
+              h('div', { style: { flex: 1 } },
+                h('div', { className: 'flex items-center gap-2 flex-wrap', style: { marginBottom: '6px' } },
+                  h('span', { style: { background: '#DB2777', color: '#FFFFFF', fontSize: '10px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, 'INFO KLIEN & BRAND'),
+                  h('h3', { style: { fontSize: '13px', fontWeight: 900, color: '#831843' } }, t.guideTitle)
+                ),
+                h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(3, 1fr)' : '1fr', gap: '8px', fontSize: '11px', fontWeight: 700, color: '#4A0424' } },
+                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep1),
+                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep2),
+                  h('div', { style: { background: '#FFFFFF', padding: '8px 10px', borderRadius: '11px', border: '1px solid #F9A8D4' } }, t.guideStep3)
+                )
+              ),
+              h('div', { className: 'flex flex-col gap-1 items-end' },
+                h('button', { className: 'btn btn-soft', style: { padding: '4px 8px', fontSize: '10px' }, onClick: () => setShowGuideBanner(false) }, 'Tutup ✕'),
+                h('button', { className: 'btn btn-pink', style: { padding: '5px 10px', fontSize: '10px' }, onClick: () => setGuideModalOpen(true) }, '📖 Detail')
+              )
+            )
+          ),
+
           // =================================================================
           // TAB 1: AGENDA HARIAN (PC = GRID KOTAK 2 KOLOM | HP = STRIP 1 BARIS)
-          // =================================================================
           activeTab === 'agenda' && h('div', { id: 'work-agenda-capture', style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
             // 1. Kartu Radar Utama
             h('div', { className: 'radar-card' },
