@@ -2446,32 +2446,38 @@ const BGM_PLAYLIST = [
    return () => clearInterval(typingInterval);
 }, [rafayelCallModalOpen, rafayelCallStatus, currentCallScenario, lang]);
 
-// Efek nada dering berulang & timer durasi saat panggilan tersambung
-useEffect(() => {
-  if (!rafayelCallModalOpen) {
-    if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
-    if (callVoiceAudioRef.current) {
-      callVoiceAudioRef.current.pause();
-      callVoiceAudioRef.current.currentTime = 0;
+// ⌨️ SUBTITLE MENGETIK OTOMATIS (Menyesuaikan Durasi Asli File Audio 100% Pas)
+  useEffect(() => {
+    if (!rafayelCallModalOpen || rafayelCallStatus !== 'connected') {
+      setTypedTranscript('');
+      return;
     }
-    return;
-  }
+    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+    const fullText = lang === 'en' ? scenario.transcriptEn : scenario.transcriptId;
+    setTypedTranscript('');
 
-    if (rafayelCallStatus === 'ringing') {
-      ringtoneIntervalRef.current = setInterval(() => {
-        playLemurianRingtonePulse();
-      }, 2400);
-      return () => clearInterval(ringtoneIntervalRef.current);
+    let charIndex = 0;
+    
+    // Ambil durasi asli file audio (.mp3) jika sudah siap, default ke 4.5 detik jika meleset
+    let audioDuration = 4.5;
+    if (callVoiceAudioRef.current && !isNaN(callVoiceAudioRef.current.duration) && callVoiceAudioRef.current.duration > 0) {
+      audioDuration = callVoiceAudioRef.current.duration;
     }
 
-    if (rafayelCallStatus === 'connected') {
-      if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
-      const timer = setInterval(() => {
-        setRafayelCallSeconds(prev => prev + 1);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [rafayelCallModalOpen, rafayelCallStatus]);
+    // Hitung kecepatan milidetik per huruf secara otomatis agar pas dengan durasi suara
+    const totalMillis = audioDuration * 1000;
+    const intervalTime = Math.max(12, totalMillis / fullText.length);
+
+    const typingInterval = setInterval(() => {
+      charIndex++;
+      setTypedTranscript(fullText.slice(0, charIndex));
+      if (charIndex >= fullText.length) {
+        clearInterval(typingInterval);
+      }
+    }, intervalTime);
+
+    return () => clearInterval(typingInterval);
+  }, [rafayelCallModalOpen, rafayelCallStatus, currentCallScenario, lang]);
 
  // 🎙️ PENGENDALI SUARA TUNGGAL MUTLAK (SAAT 1 SUARA MENYALA, SEMUA SUARA LAIN & BGM MATI TOTAL)
   const stopAllOtherSounds = () => {
@@ -2533,36 +2539,43 @@ useEffect(() => {
       resumeBackgroundMusic();
     }
   };
-// Terima panggilan Rafayel & putar file suara (Otomatis matikan dering, suara lain & BGM)
-const handleAcceptRafayelCall = () => {
-  // 🔀 LANGSUNG GANTI SKENARIO & SUARA SAAT TERSAMBUNG (TANPA DERING ULANG)
+// 🔀 Ganti Skenario & Suara Seketika Saat Tombol Switch Ditekan (Tanpa Dering Ulang)
   const handleSwitchRafayelCall = () => {
-    stopAllOtherSounds();
+    // 1. Matikan suara audio Rafayel yang sedang berjalan saat ini
+    if (callVoiceAudioRef.current) {
+      callVoiceAudioRef.current.pause();
+      callVoiceAudioRef.current.currentTime = 0;
+      callVoiceAudioRef.current = null;
+    }
+
+    // 2. Pindah ke indeks skenario berikutnya secara melingkar
     const nextIdx = (currentCallScenario + 1) % RAFAYEL_CALL_SCENARIOS.length;
     setCurrentCallScenario(nextIdx);
     setRafayelCallStatus('connected');
     setRafayelCallSeconds(0);
+    setTypedTranscript(''); // Reset teks subtitle
 
+    // 3. Ambil data skenario baru dan putar audionya langsung
     const nextScenario = RAFAYEL_CALL_SCENARIOS[nextIdx];
-    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85);
-  };
-  stopAllOtherSounds();
-  setRafayelCallStatus('connected');
-  setRafayelCallSeconds(0);
+    
+    try {
+      const voice = new Audio(nextScenario.audioUrl);
+      voice.volume = 0.85;
+      callVoiceAudioRef.current = voice;
 
-  const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
-  playExclusiveRafayelVoice(scenario.audioUrl, 0.85);
-};
- // 🔀 LANGSUNG GANTI SKENARIO & SUARA SAAT TERSAMBUNG (TANPA DERING ULANG)
-  const handleSwitchRafayelCall = () => {
-    stopAllOtherSounds();
-    const nextIdx = (currentCallScenario + 1) % RAFAYEL_CALL_SCENARIOS.length;
-    setCurrentCallScenario(nextIdx);
-    setRafayelCallStatus('connected');
-    setRafayelCallSeconds(0);
+      voice.onended = () => {
+        if (callVoiceAudioRef.current === voice) {
+          callVoiceAudioRef.current = null;
+        }
+        resumeBackgroundMusic();
+      };
 
-    const nextScenario = RAFAYEL_CALL_SCENARIOS[nextIdx];
-    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85);
+      voice.play().catch(() => {
+        resumeBackgroundMusic();
+      });
+    } catch (e) {
+      resumeBackgroundMusic();
+    }
   };
 
   // Tutup / Akhiri panggilan Rafayel (Matikan suara telepon & nyalakan kembali BGM)
