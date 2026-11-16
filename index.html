@@ -3712,19 +3712,6 @@ const touchVoices = [
     if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
     touchBubbleTimerRef.current = setTimeout(() => setRafayelTouchBubble(''), 6000);
 
-    /// 3. Putar suara singkat acak melalui saluran tunggal (otomatis hentikan suara sebelumnya)
-  const touchVoices = [
-      "./RafaelSound/Bisikan rafael Bisikan Rafayel.mp3",
-      "./RafaelSound/rafael_2. .mp3",
-      "./RafaelSound/rafayel_call_missyou.mp3",
-      "./RafaelSound/rafayel_call_chill.mp3",
-      "./RafaelSound/rafayel_call_proud.mp3",
-      "./RafaelSound/rafayel_call_boost.mp3",
-      "./RafaelSound/rafayel_call_jealous.mp3",
-      "./RafaelSound/rafayel_call_treat..mp3",
-      "./RafaelSound/rafayel_call_rain.mp3",
-      "./RafaelSound/rafayel_call_morning.mp3"
-    ];
     const randomClip = touchVoices[Math.floor(Math.random() * touchVoices.length)];
     playExclusiveRafayelVoice(randomClip, 0.55);
 
