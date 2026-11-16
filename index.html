@@ -2535,6 +2535,17 @@ useEffect(() => {
   };
 // Terima panggilan Rafayel & putar file suara (Otomatis matikan dering, suara lain & BGM)
 const handleAcceptRafayelCall = () => {
+  // 🔀 LANGSUNG GANTI SKENARIO & SUARA SAAT TERSAMBUNG (TANPA DERING ULANG)
+  const handleSwitchRafayelCall = () => {
+    stopAllOtherSounds();
+    const nextIdx = (currentCallScenario + 1) % RAFAYEL_CALL_SCENARIOS.length;
+    setCurrentCallScenario(nextIdx);
+    setRafayelCallStatus('connected');
+    setRafayelCallSeconds(0);
+
+    const nextScenario = RAFAYEL_CALL_SCENARIOS[nextIdx];
+    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85);
+  };
   stopAllOtherSounds();
   setRafayelCallStatus('connected');
   setRafayelCallSeconds(0);
