@@ -2139,18 +2139,18 @@ const BGM_PLAYLIST = [
   const callVoiceAudioRef = useRef(null);
   const ringtoneIntervalRef = useRef(null);
 
-  // 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./RafaelSound/)
+ // 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./soundrafael/)
   const RAFAYEL_WELCOME_VOICES = [
-    "./RafaelSound/welcome1.mp3",
-    "./RafaelSound/rafayel_call_welcome.mp3",
-    "./RafaelSound/rafayel_call_welcome2.mp3"
+    "./soundrafael/welcome1.mp3",
+    "./soundrafael/rafayel_call_welcome.mp3",
+    "./soundrafael/rafayel_call_welcome2.mp3"
   ];
 
-  // 📞 DAFTAR LENGKAP SKENARIO PANGGILAN SUARA REAL-TIME RAFAYEL (FOLDER: ./RafaelSound/)
+  // 📞 DAFTAR LENGKAP SKENARIO PANGGILAN SUARA REAL-TIME RAFAYEL (FOLDER: ./soundrafael/)
   const RAFAYEL_CALL_SCENARIOS = [
     {
       key: "boost",
-      audioUrl: "./RafaelSound/rafayel_call_boost.mp3",
+      audioUrl: "./soundrafael/rafayel_call_boost.mp3",
       tagId: "Transmisi Semangat • Mode Siaran",
       tagEn: "Broadcast Boost • On-Air Standby",
       titleId: "Rafayel • Pre-Stream Pep Talk",
@@ -2162,7 +2162,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "hydrate",
-      audioUrl: "./RafaelSound/rafayel_call_hydrate2.mp3",
+      audioUrl: "./soundrafael/rafayel_call_hydrate.mp3",
       tagId: "Panggilan Darurat • Cek Hidrasi",
       tagEn: "Priority Call • Hydration Check",
       titleId: "Rafayel • Master Artist's Order",
@@ -2174,7 +2174,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "chill",
-      audioUrl: "./RafaelSound/rafayel_call_chills.mp3",
+      audioUrl: "./soundrafael/rafayel_call_chill.mp3",
       tagId: "Panggilan Santai • Jam Kosong",
       tagEn: "Break Time Call • VIP Privilege",
       titleId: "Rafayel • Mo's Atelier VIP",
@@ -2186,7 +2186,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "night",
-      audioUrl: "./RafaelSound/rafayel_call_night2.mp3",
+      audioUrl: "./soundrafael/rafayel_call_night2.mp3",
       tagId: "Panggilan Malam • Larangan Begadang",
       tagEn: "Night Call • Studio Aesthetic Alert",
       titleId: "Rafayel • Late Night Curfew",
@@ -2198,7 +2198,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "morning",
-      audioUrl: "./RafaelSound/rafayel_call_morning.mp3",
+      audioUrl: "./soundrafael/rafayel_call_morning.mp3",
       tagId: "Panggilan Pagi • Sarapan Bersama",
       tagEn: "Morning Call • Royal Breakfast",
       titleId: "Rafayel • Morning Wake-Up Call",
@@ -2210,7 +2210,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "jealous",
-      audioUrl: "./RafaelSound/rafayel_call_jealous2.mp3",
+      audioUrl: "./soundrafael/rafayel_call_jealous.mp3",
       tagId: "Panggilan Protes • Harga Diri Seniman",
       tagEn: "Pouting Call • Making The Great Rafayel Wait",
       titleId: "Rafayel • Pouting & Jealous",
@@ -2222,7 +2222,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "treat",
-      audioUrl: "./RafaelSound/rafayel_call_treat2.mp3",
+      audioUrl: "./soundrafael/rafayel_call_treat2.mp3",
       tagId: "Perintah Bos • Kartu Hitam Tanpa Batas",
       tagEn: "Boss's Black Card • Unlimited Dessert",
       titleId: "Rafayel • Black Card Treat",
@@ -2234,7 +2234,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "rain",
-      audioUrl: "./RafaelSound/rafayel_call_rain.mp3",
+      audioUrl: "./soundrafael/rafayel_call_rain.mp3",
       tagId: "Prioritas Utama • Tangan Berharga Seniman",
       tagEn: "Top Priority • Precious Artist's Hands",
       titleId: "Rafayel • Rainy Studio Mood",
@@ -2246,7 +2246,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "proud",
-      audioUrl: "./RafaelSound/rafayel_call_proud.mp3",
+      audioUrl: "./soundrafael/rafayel_call_proud.mp3",
       tagId: "Panggilan Apresiasi • Selera Sempurna",
       tagEn: "Celebration Call • Impeccable Taste",
       titleId: "Rafayel • Secretly Proud of You",
@@ -2258,7 +2258,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "dayoff",
-      audioUrl: "./RafaelSound/rafayel_call_dayoff2.mp3",
+      audioUrl: "./soundrafael/rafayel_call_dayoff.mp3",
       tagId: "Panggilan Hari Libur • Kehormatan Besar",
       tagEn: "Day Off Call • Graced by My Presence",
       titleId: "Rafayel • Claiming Your Day Off",
@@ -2270,7 +2270,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "missyou",
-      audioUrl: "./RafaelSound/rafayel_call_missyou.mp3",
+      audioUrl: "./soundrafael/rafayel_call_missyou.mp3",
       tagId: "Panggilan Jual Mahal • Ngaku Kangen Duluan",
       tagEn: "Haughty Call • Admit You Missed Me",
       titleId: "Rafayel • Definitely Not Missing You",
@@ -2282,7 +2282,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "lullaby",
-      audioUrl: "./RafaelSound/rafayel_call_lullaby.mp3",
+      audioUrl: "./soundrafael/rafayel_call_lullaby.mp3",
       tagId: "Panggilan Pengantar Tidur • Mimpikan Aku",
       tagEn: "Lullaby Call • Dream About Me",
       titleId: "Rafayel • Midnight Ocean Whisper",
@@ -2294,7 +2294,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "rest",
-      audioUrl: "./RafaelSound/rafayel_call_rest.mp3",
+      audioUrl: "./soundrafael/rafayel_call_rest.mp3",
       tagId: "Panggilan Istirahat • Hak Istimewa VIP",
       tagEn: "Rest Order • Exclusive VIP Shoulder",
       titleId: "Rafayel • Mandatory Rest Order",
@@ -2306,7 +2306,7 @@ const BGM_PLAYLIST = [
     },
     {
       key: "live_end",
-      audioUrl: "./RafaelSound/live-end1.mp3",
+      audioUrl: "./soundrafael/live-end.mp3",
       tagId: "Sesi Siaran Selesai • Tagihan Waktu",
       tagEn: "Stream Wrapped • Expensive Waiting Time",
       titleId: "Rafayel • Stream Finally Over",
@@ -2663,16 +2663,16 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
       };
 
 const touchVoices = [
-      "./RafaelSound/bisikan-rafael.mp3",
-      "./RafaelSound/rafael-2.mp3",
-      "./RafaelSound/rafayel_call_missyou.mp3",
-      "./RafaelSound/rafayel_call_chills.mp3",
-      "./RafaelSound/rafayel_call_proud.mp3",
-      "./RafaelSound/rafayel_call_boost.mp3",
-      "./RafaelSound/rafayel_call_jealous2.mp3",
-      "./RafaelSound/rafayel_call_treat2.mp3",
-      "./RafaelSound/rafayel_call_rain.mp3",
-      "./RafaelSound/rafayel_call_morning.mp3"
+      "./soundrafael/bisikan-rafael.mp3",
+      "./soundrafael/rafael-2.mp3",
+      "./soundrafael/rafayel_call_missyou.mp3",
+      "./soundrafael/rafayel_call_chill.mp3",
+      "./soundrafael/rafayel_call_proud.mp3",
+      "./soundrafael/rafayel_call_boost.mp3",
+      "./soundrafael/rafayel_call_jealous.mp3",
+      "./soundrafael/rafayel_call_treat2.mp3",
+      "./soundrafael/rafayel_call_rain.mp3",
+      "./soundrafael/rafayel_call_morning.mp3"
     ];
 
       const handleBoostMood = () => {
