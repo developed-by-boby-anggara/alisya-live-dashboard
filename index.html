@@ -2136,10 +2136,11 @@ const BGM_PLAYLIST = [
   const [rafayelCallStatus, setRafayelCallStatus] = useState('ringing'); // 'ringing' | 'connected'
   const [rafayelCallSeconds, setRafayelCallSeconds] = useState(0);
   const [currentCallScenario, setCurrentCallScenario] = useState(0);
+  const [typedTranscript, setTypedTranscript] = useState('');
   const callVoiceAudioRef = useRef(null);
   const ringtoneIntervalRef = useRef(null);
 
- // 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./soundrafael/)
+// 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./soundrafael/)
   const RAFAYEL_WELCOME_VOICES = [
     "./soundrafael/welcome1.mp3",
     "./soundrafael/rafayel_call_welcome.mp3",
@@ -2422,16 +2423,39 @@ const BGM_PLAYLIST = [
     playLemurianRingtonePulse();
   };
 
-  // Efek nada dering berulang & timer durasi saat panggilan tersambung
+ // ⌨️ EFEK SUBTITLE MENGETIK OTOMATIS MENGIKUTI DURASI SUARA RAFAYEL
   useEffect(() => {
-    if (!rafayelCallModalOpen) {
-      if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
-      if (callVoiceAudioRef.current) {
-        callVoiceAudioRef.current.pause();
-        callVoiceAudioRef.current.currentTime = 0;
-      }
+    if (!rafayelCallModalOpen || rafayelCallStatus !== 'connected') {
+      setTypedTranscript('');
       return;
     }
+    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+    const fullText = lang === 'en' ? scenario.transcriptEn : scenario.transcriptId;
+    setTypedTranscript('');
+
+    let charIndex = 0;
+    // Kecepatan ketik menyesuaikan panjang kalimat & durasi audio (~42ms per huruf)
+    const typingInterval = setInterval(() => {
+      charIndex++;
+      setTypedTranscript(fullText.slice(0, charIndex));
+      if (charIndex >= fullText.length) {
+        clearInterval(typingInterval);
+      }
+    }, 42);
+
+   return () => clearInterval(typingInterval);
+}, [rafayelCallModalOpen, rafayelCallStatus, currentCallScenario, lang]);
+
+// Efek nada dering berulang & timer durasi saat panggilan tersambung
+useEffect(() => {
+  if (!rafayelCallModalOpen) {
+    if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
+    if (callVoiceAudioRef.current) {
+      callVoiceAudioRef.current.pause();
+      callVoiceAudioRef.current.currentTime = 0;
+    }
+    return;
+  }
 
     if (rafayelCallStatus === 'ringing') {
       ringtoneIntervalRef.current = setInterval(() => {
@@ -2509,15 +2533,25 @@ const BGM_PLAYLIST = [
       resumeBackgroundMusic();
     }
   };
+// Terima panggilan Rafayel & putar file suara (Otomatis matikan dering, suara lain & BGM)
+const handleAcceptRafayelCall = () => {
+  stopAllOtherSounds();
+  setRafayelCallStatus('connected');
+  setRafayelCallSeconds(0);
 
-  // Terima panggilan Rafayel & putar file suara (Otomatis matikan dering, suara lain & BGM)
-  const handleAcceptRafayelCall = () => {
+  const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
+  playExclusiveRafayelVoice(scenario.audioUrl, 0.85);
+};
+ // 🔀 LANGSUNG GANTI SKENARIO & SUARA SAAT TERSAMBUNG (TANPA DERING ULANG)
+  const handleSwitchRafayelCall = () => {
     stopAllOtherSounds();
+    const nextIdx = (currentCallScenario + 1) % RAFAYEL_CALL_SCENARIOS.length;
+    setCurrentCallScenario(nextIdx);
     setRafayelCallStatus('connected');
     setRafayelCallSeconds(0);
 
-    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
-    playExclusiveRafayelVoice(scenario.audioUrl, 0.85);
+    const nextScenario = RAFAYEL_CALL_SCENARIOS[nextIdx];
+    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85);
   };
 
   // Tutup / Akhiri panggilan Rafayel (Matikan suara telepon & nyalakan kembali BGM)
@@ -2661,19 +2695,22 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
         setSparkles(batch);
         setTimeout(() => setSparkles([]), 1650);
       };
-
+const LND_VOICE_CLIPS = [
+  "./soundrafael/bisikan-rafael.mp3",
+  "./soundrafael/rafael-2.mp3"
+];
 const touchVoices = [
-      "./soundrafael/bisikan-rafael.mp3",
-      "./soundrafael/rafael-2.mp3",
-      "./soundrafael/rafayel_call_missyou.mp3",
-      "./soundrafael/rafayel_call_chill.mp3",
-      "./soundrafael/rafayel_call_proud.mp3",
-      "./soundrafael/rafayel_call_boost.mp3",
-      "./soundrafael/rafayel_call_jealous.mp3",
-      "./soundrafael/rafayel_call_treat2.mp3",
-      "./soundrafael/rafayel_call_rain.mp3",
-      "./soundrafael/rafayel_call_morning.mp3"
-    ];
+   "./soundrafael/bisikan-rafael.mp3",
+   "./soundrafael/rafael-2.mp3",
+   "./soundrafael/rafayel_call_missyou.mp3",
+   "./soundrafael/rafayel_call_chill.mp3",
+   "./soundrafael/rafayel_call_proud.mp3",
+   "./soundrafael/rafayel_call_boost.mp3",
+   "./soundrafael/rafayel_call_jealous.mp3",
+   "./soundrafael/rafayel_call_treat2.mp3",
+   "./soundrafael/rafayel_call_rain.mp3",
+   "./soundrafael/rafayel_call_morning.mp3"
+ ];
 
       const handleBoostMood = () => {
         setQuoteIdx(prev => {
