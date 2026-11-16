@@ -2139,7 +2139,7 @@ const BGM_PLAYLIST = [
   const callVoiceAudioRef = useRef(null);
   const ringtoneIntervalRef = useRef(null);
 
-// 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./RafaelSound/)
+  // 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./RafaelSound/)
   const RAFAYEL_WELCOME_VOICES = [
     "./RafaelSound/welcome1.mp3",
     "./RafaelSound/rafayel_call_welcome.mp3",
@@ -2317,7 +2317,6 @@ const BGM_PLAYLIST = [
       transcriptEn: "Oh, you're finally done? Do you know how much my time costs per minute, Alisya? I could've painted three masterpieces while waiting for your broadcast to end. You owe me big time tonight."
     }
   ];
-
  // 📞 EFEK SUARA PANGGILAN KHAS LOVE AND DEEPSPACE (LINKON CITY PHONE UI)
   const playLemurianRingtonePulse = () => {
     try {
@@ -2663,23 +2662,18 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
         setTimeout(() => setSparkles([]), 1650);
       };
 
- const LND_VOICE_CLIPS = [
-  "./RafaelSound/bisikan-rafael.mp3",
-  "./RafaelSound/rafael-2.mp3"
-];
-
 const touchVoices = [
-  "./RafaelSound/bisikan-rafael.mp3",
-  "./RafaelSound/rafael-2.mp3",
-  "./RafaelSound/rafayel_call_missyou.mp3",
-  "./RafaelSound/rafayel_call_chills.mp3",
-  "./RafaelSound/rafayel_call_proud.mp3",
-  "./RafaelSound/rafayel_call_boost.mp3",
-  "./RafaelSound/rafayel_call_jealous2.mp3",
-  "./RafaelSound/rafayel_call_treat2.mp3",
-  "./RafaelSound/rafayel_call_rain.mp3",
-  "./RafaelSound/rafayel_call_morning.mp3"
-];
+      "./RafaelSound/bisikan-rafael.mp3",
+      "./RafaelSound/rafael-2.mp3",
+      "./RafaelSound/rafayel_call_missyou.mp3",
+      "./RafaelSound/rafayel_call_chills.mp3",
+      "./RafaelSound/rafayel_call_proud.mp3",
+      "./RafaelSound/rafayel_call_boost.mp3",
+      "./RafaelSound/rafayel_call_jealous2.mp3",
+      "./RafaelSound/rafayel_call_treat2.mp3",
+      "./RafaelSound/rafayel_call_rain.mp3",
+      "./RafaelSound/rafayel_call_morning.mp3"
+    ];
 
       const handleBoostMood = () => {
         setQuoteIdx(prev => {
