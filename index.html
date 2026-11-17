@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https:// alisya-live-db-default-rtdb.asia-southeast1.firebasedatabase.app" crossorigin>
+  <link rel="preconnect" href="https://alisya-live-db-default-rtdb.asia-southeast1.firebasedatabase.app" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -1320,7 +1320,7 @@
     });
   </script>
 
-<script id="alisya-jsx-source" type="text/plain">
+<script type="text/babel">
     
     const { useState, useEffect, useMemo, useRef } = React;
 
@@ -8512,52 +8512,13 @@ const handleTouchRafayel = (source = 'header') => {
     root.render(<App />);
 
     // 📲 REGISTRASI BACKGROUND SERVICE WORKER UNTUK HP
-    if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then((reg) => console.log('Service Worker Latar Belakang Aktif:', reg.scope))
           .catch((err) => console.error('Gagal aktivasi Service Worker:', err));
       });
     }
-  </script>
-
-  <!-- ⚡ MESIN FAST-BOOT CACHE: Buka Web Instan Tanpa Kompilasi Ulang -->
-  <script>
-    (function() {
-      var el = document.getElementById('alisya-jsx-source');
-      if (!el) return;
-      var src = el.textContent;
-
-      // Buat sidik jari (hash) otomatis dari isi kode kamu
-      var h = 5381;
-      for (var i = 0; i < src.length; i++) {
-        h = ((h << 5) + h) + src.charCodeAt(i);
-      }
-      var currentHash = src.length + '_' + (h >>> 0).toString(36);
-      var cacheKey = 'alisya_compiled_js_cache';
-      var hashKey = 'alisya_compiled_js_hash';
-      var compiledCode = null;
-
-      // Jika kode belum berubah, langsung ambil hasil jadi dari memori (0.01 detik!)
-      try {
-        if (localStorage.getItem(hashKey) === currentHash) {
-          compiledCode = localStorage.getItem(cacheKey);
-        }
-      } catch (e) {}
-
-      // Jika baru pertama kali buka atau habis edit di GitHub, terjemahkan lalu simpan
-      if (!compiledCode) {
-        compiledCode = Babel.transform(src, { presets: ['react'] }).code;
-        try {
-          localStorage.setItem(cacheKey, compiledCode);
-          localStorage.setItem(hashKey, currentHash);
-        } catch (e) {}
-      }
-
-      var runner = document.createElement('script');
-      runner.text = compiledCode;
-      document.body.appendChild(runner);
-    })();
   </script>
 </body>
 </html>
