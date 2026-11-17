@@ -252,15 +252,16 @@
     #mobile-spreadsheet-capture tbody tr:not(.today-active-glow) {
       background-color: #081528 !important;
     }
-    #spreadsheet-capture-area tbody td:nth-child(n+3),
-    #mobile-spreadsheet-capture tbody td:nth-child(n+3) {
-      background-color: #0A1B32 !important;
-      border-color: rgba(45, 212, 191, 0.22) !important;
-    }
-    #spreadsheet-capture-area tbody td:nth-child(n+3):hover,
-    #mobile-spreadsheet-capture tbody td:nth-child(n+3):hover {
-      background-color: #112A4A !important;
-    }
+  #spreadsheet-capture-area tbody td:nth-child(n+3),
+ #mobile-spreadsheet-capture tbody td:nth-child(n+3) {
+   background-color: #081629 !important;
+   border-right: 1px solid rgba(45, 212, 191, 0.22) !important;
+   border-bottom: 1px solid rgba(45, 212, 191, 0.22) !important;
+ }
+ #spreadsheet-capture-area tbody td:nth-child(n+3):hover,
+ #mobile-spreadsheet-capture tbody td:nth-child(n+3):hover {
+   background-color: #102847 !important;
+ }
   </style>
 
  <!-- ===================================================================== -->
@@ -3613,6 +3614,23 @@ const handleBoostMood = () => {
           </React.Fragment>
         );
       };
+  // 👁️ DETEKTOR KONTRAS WARNA TEKS OTOMATIS UNTUK KOTAK SPREADSHEET
+      const getContrastTextForHex = (hexColor) => {
+        const raw = (hexColor || '#B6D7A8').trim().replace('#', '');
+        const fullHex = raw.length === 3 ? raw.split('').map(c => c + c).join('') : raw;
+        const r = parseInt(fullHex.substring(0, 2), 16) || 0;
+        const g = parseInt(fullHex.substring(2, 4), 16) || 0;
+        const b = parseInt(fullHex.substring(4, 6), 16) || 0;
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        const isDarkBg = luminance < 0.56;
+
+        return {
+          text: isDarkBg ? '#FFFFFF' : '#090D16',
+          subText: isDarkBg ? '#F1F5F9' : '#1E293B',
+          border: isDarkBg ? '1px solid rgba(255, 255, 255, 0.35)' : '1.5px solid rgba(9, 13, 22, 0.28)',
+          shadow: isDarkBg ? '0 1px 2px rgba(0, 0, 0, 0.65)' : 'none'
+        };
+      };
       const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
       const monthName = useMemo(() => new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(currentYear, currentMonth, 1)), [currentYear, currentMonth, t.locale]);
 
@@ -5850,7 +5868,591 @@ const handleTouchRafayel = (source = 'header') => {
           </div>
         );
       };
+// 🔍 STATE & MESIN ANALISIS REAL-TIME: CEK SLOT, ISTIRAHAT & WAKTU BOBO
+      const [simMode, setSimMode] = useState('single');
+      const [simStartDate, setSimStartDate] = useState('');
+      const [simEndDate, setSimEndDate] = useState('');
+      const [simStartTime, setSimStartTime] = useState('00:00');
+      const [simEndTime, setSimEndTime] = useState('00:00');
+      const [simTravelVal, setSimTravelVal] = useState('30');
+      const [simTravelUnit, setSimTravelUnit] = useState('minutes');
 
+      const simTravelMin = useMemo(() => {
+        const num = parseFloat(String(simTravelVal).replace(',', '.'));
+        if (isNaN(num) || num < 0) return 0;
+        return simTravelUnit === 'hours' ? Math.round(num * 60) : Math.round(num);
+      }, [simTravelVal, simTravelUnit]);
+
+      const isCompleteDate = (str) => /^\d{4}-\d{2}-\d{2}$/.test(str || '');
+      const isValidTimeStr = (tStr) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(tStr || '');
+
+      const formatManualTimeInput = (raw) => {
+        const cleaned = raw.replace(/[^\d:]/g, '');
+        if (/^\d{4}$/.test(cleaned)) {
+          return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}`;
+        }
+        return cleaned.slice(0, 5);
+      };
+
+      const minToHHMM = (mins) => {
+        const clamped = Math.max(0, Math.min(1440, Math.round(mins)));
+        if (clamped === 1440) return '23:59';
+        const hh = String(Math.floor(clamped / 60)).padStart(2, '0');
+        const mm = String(clamped % 60).padStart(2, '0');
+        return `${hh}:${mm}`;
+      };
+
+      const handleResetSimulator = () => {
+        setSimStartDate('');
+        setSimEndDate('');
+        setSimStartTime('00:00');
+        setSimEndTime('00:00');
+        setSimTravelVal('30');
+        setSimTravelUnit('minutes');
+      };
+
+      const renderDMYSelector = (dateVal, onChangeVal) => {
+        const [yPart = '', mPart = '', dPart = ''] = (dateVal || '').split('-');
+        const maxDays = (yPart && mPart)
+          ? new Date(Number(yPart), Number(mPart), 0).getDate()
+          : (mPart ? new Date(2024, Number(mPart), 0).getDate() : 31);
+
+        const updateDateParts = (ny, nm, nd) => {
+          if (!ny && !nm && !nd) { onChangeVal(''); return; }
+          const limit = (ny && nm)
+            ? new Date(Number(ny), Number(nm), 0).getDate()
+            : (nm ? new Date(2024, Number(nm), 0).getDate() : 31);
+          const validD = nd ? String(Math.min(Number(nd), limit)).padStart(2, '0') : '';
+          onChangeVal(`${ny}-${nm}-${validD}`);
+        };
+
+        return (
+          <div className="grid grid-cols-3 gap-1.5">
+            <select
+              value={dPart}
+              onChange={e => updateDateParts(yPart, mPart, e.target.value)}
+              className="w-full px-2 py-1.5 text-xs font-bold rounded-xl"
+            >
+              <option value="">Tgl</option>
+              {Array.from({ length: maxDays }).map((_, idx) => {
+                const dd = String(idx + 1).padStart(2, '0');
+                return <option key={dd} value={dd}>{dd}</option>;
+              })}
+            </select>
+            <select
+              value={mPart}
+              onChange={e => updateDateParts(yPart, e.target.value, dPart)}
+              className="w-full px-2 py-1.5 text-xs font-bold rounded-xl"
+            >
+              <option value="">Bulan</option>
+              {Array.from({ length: 12 }).map((_, idx) => {
+                const mm = String(idx + 1).padStart(2, '0');
+                const mName = new Intl.DateTimeFormat(t.locale, { month: 'short' }).format(new Date(2026, idx, 1));
+                return <option key={mm} value={mm}>{mName}</option>;
+              })}
+            </select>
+            <select
+              value={yPart}
+              onChange={e => updateDateParts(e.target.value, mPart, dPart)}
+              className="w-full px-2 py-1.5 text-xs font-bold rounded-xl"
+            >
+              <option value="">Tahun</option>
+              {[2025, 2026, 2027, 2028, 2029, 2030].map(yr => (
+                <option key={yr} value={String(yr)}>{yr}</option>
+              ))}
+            </select>
+          </div>
+        );
+      };
+
+      const nowMinuteOfDay = nowTime.getHours() * 60 + nowTime.getMinutes();
+
+      const simAnalysis = useMemo(() => {
+        if (!isCompleteDate(simStartDate) || !isValidTimeStr(simStartTime) || !isValidTimeStr(simEndTime)) return null;
+
+        const dates = [];
+        if (simMode === 'single' || !isCompleteDate(simEndDate) || simEndDate < simStartDate) {
+          dates.push(simStartDate);
+        } else {
+          let curr = simStartDate;
+          let guard = 0;
+          while (curr <= simEndDate && guard < 31) {
+            dates.push(curr);
+            curr = addDaysToDateStr(curr, 1);
+            guard++;
+          }
+        }
+
+        const reqStart = timeToMinutes(simStartTime);
+        const reqEndRaw = timeToMinutes(simEndTime);
+        const isOvernight = reqEndRaw <= reqStart;
+        const reqEnd = isOvernight ? reqEndRaw + 1440 : reqEndRaw;
+        const shiftDurHours = Math.round(((reqEnd - reqStart) / 60) * 10) / 10;
+
+        const isSleepItem = (s) => {
+          const tLower = (s.title || '').toLowerCase();
+          return s.status === 'Tidur' || s.brand_id === 'b_sleep' || tLower.includes('bobo') || tLower.includes('tidur');
+        };
+
+        const calcOverlap = (aStart, aEnd, bStart, bEnd) => {
+          return Math.max(0, Math.min(aEnd, bEnd) - Math.max(aStart, bStart));
+        };
+
+        const dayResults = dates.map(dStr => {
+          const prevDate = addDaysToDateStr(dStr, -1);
+          const nextDate = addDaysToDateStr(dStr, 1);
+
+          const rawRelated = [
+            ...schedules.filter(s => s.date === prevDate).map(s => ({ ...s, dayOffset: -1440 })),
+            ...schedules.filter(s => s.date === dStr).map(s => ({ ...s, dayOffset: 0 })),
+            ...schedules.filter(s => s.date === nextDate).map(s => ({ ...s, dayOffset: 1440 }))
+          ];
+
+          const normalized = rawRelated.map(s => {
+            const st = timeToMinutes(s.start_time);
+            let en = timeToMinutes(s.end_time);
+            if (en <= st) en += 1440;
+            return {
+              ...s,
+              absStart: st + s.dayOffset,
+              absEnd: en + s.dayOffset,
+              isSleep: isSleepItem(s),
+              isOffOrSick: s.status === 'OFF' || s.status === 'SAKIT' || s.status === 'Sakit / Medis' || s.brand_id === 'b_sakit'
+            };
+          });
+
+          const sameDayItems = normalized
+            .filter(s => s.dayOffset === 0)
+            .sort((a, b) => a.absStart - b.absStart);
+
+          const offOnDay = normalized.find(s => s.dayOffset === 0 && s.isOffOrSick);
+          const offNextOvernight = isOvernight ? normalized.find(s => s.dayOffset === 1440 && s.isOffOrSick && reqEnd > s.absStart) : null;
+
+          const isPastDate = dStr < realTodayStr;
+          const isTodayCheck = dStr === realTodayStr;
+          const isPastHourToday = isTodayCheck && reqStart < nowMinuteOfDay;
+          const isTooSoonToday = isTodayCheck && !isPastHourToday && (reqStart - simTravelMin) < nowMinuteOfDay;
+
+          const workConflicts = normalized.filter(s => !s.isOffOrSick && !s.isSleep && reqStart < s.absEnd && reqEnd > s.absStart);
+
+          const bufStart = reqStart - simTravelMin;
+          const bufEnd = reqEnd + simTravelMin;
+          const travelConflicts = normalized.filter(s =>
+            !s.isOffOrSick && !s.isSleep &&
+            !(reqStart < s.absEnd && reqEnd > s.absStart) &&
+            (bufStart < s.absEnd && bufEnd > s.absStart)
+          );
+
+          const workBefore = normalized.filter(s => !s.isOffOrSick && !s.isSleep && s.absEnd <= reqStart).sort((a, b) => b.absEnd - a.absEnd)[0];
+          const workAfter = normalized.filter(s => !s.isOffOrSick && !s.isSleep && s.absStart >= reqEnd).sort((a, b) => a.absStart - b.absStart)[0];
+          const gapBefore = workBefore ? Math.max(0, Math.round(((reqStart - workBefore.absEnd - simTravelMin) / 60) * 10) / 10) : null;
+          const gapAfter = workAfter ? Math.max(0, Math.round(((workAfter.absStart - reqEnd - simTravelMin) / 60) * 10) / 10) : null;
+
+          const explicitSleepItems = normalized.filter(s => s.isSleep && s.absEnd > 1200 && s.absStart < 2040);
+          let hasExplicitSleep = false;
+          let sleepHours = 0;
+          let sleepCutReq = 0;
+
+          if (explicitSleepItems.length > 0) {
+            hasExplicitSleep = true;
+            let totalExpMin = 0;
+            explicitSleepItems.forEach(sl => {
+              const durSl = Math.max(0, sl.absEnd - sl.absStart);
+              const cutR = calcOverlap(sl.absStart, sl.absEnd, bufStart, bufEnd);
+              sleepCutReq += cutR;
+              let cutW = 0;
+              normalized.filter(s => !s.isOffOrSick && !s.isSleep).forEach(w => {
+                cutW += calcOverlap(sl.absStart, sl.absEnd, w.absStart - simTravelMin, w.absEnd + simTravelMin);
+              });
+              totalExpMin += Math.max(0, durSl - cutR - cutW);
+            });
+            sleepHours = Math.round((totalExpMin / 60) * 10) / 10;
+          } else {
+            const naturalStart = Math.max(1320, workBefore ? workBefore.absEnd + simTravelMin : 1380);
+            const naturalEnd = Math.min(1980, workAfter ? workAfter.absStart - simTravelMin : 1830);
+            const baseNight = Math.min(480, Math.max(0, naturalEnd - naturalStart));
+            sleepCutReq = calcOverlap(naturalStart, naturalEnd, bufStart, bufEnd);
+            let nightCutOther = 0;
+            normalized.filter(s => !s.isOffOrSick && !s.isSleep).forEach(w => {
+              nightCutOther += calcOverlap(naturalStart, naturalEnd, w.absStart - simTravelMin, w.absEnd + simTravelMin);
+            });
+            sleepHours = Math.round((Math.max(0, baseNight - sleepCutReq - nightCutOther) / 60) * 10) / 10;
+          }
+
+          const wakeStart = 420;
+          const wakeEnd = 1380;
+          let busyDayMin = calcOverlap(wakeStart, wakeEnd, bufStart, bufEnd);
+          normalized.filter(s => !s.isOffOrSick && !s.isSleep).forEach(w => {
+            busyDayMin += calcOverlap(wakeStart, wakeEnd, w.absStart, w.absEnd);
+          });
+          const restAndMealHours = Math.round((Math.max(0, (wakeEnd - wakeStart) - busyDayMin) / 60) * 10) / 10;
+
+          const exactFreeSlots = [];
+          if (!offOnDay) {
+            const busyIntervals = sameDayItems
+              .filter(s => !s.isSleep)
+              .map(s => ({ start: Math.max(0, s.absStart), end: Math.min(1440, s.absEnd) }))
+              .sort((a, b) => a.start - b.start);
+
+            let cursor = isTodayCheck ? Math.min(1440, Math.ceil(nowMinuteOfDay / 30) * 30) : 0;
+            busyIntervals.forEach(b => {
+              if (b.start - cursor >= 60) {
+                exactFreeSlots.push({ start: minToHHMM(cursor), end: minToHHMM(b.start) });
+              }
+              cursor = Math.max(cursor, b.end);
+            });
+            if (1440 - cursor >= 60) {
+              exactFreeSlots.push({ start: minToHHMM(cursor), end: '23:59' });
+            }
+          }
+
+          let status = 'ok';
+          let statusLabel = '✅ Tersedia';
+          let reasonText = '';
+
+          if (isPastDate) {
+            status = 'blocked';
+            statusLabel = '❌ Tanggal Berlalu';
+            reasonText = `Tanggal ${dStr} sudah lewat dari hari ini (${realTodayStr}).`;
+          } else if (isPastHourToday) {
+            status = 'blocked';
+            statusLabel = '❌ Jam Sudah Lewat';
+            reasonText = `Pukul ${simStartTime} WIB hari ini sudah terlewat (sekarang pukul ${liveClockString.slice(0, 5)} WIB).`;
+          } else if (offOnDay || offNextOvernight) {
+            status = 'blocked';
+            statusLabel = '❌ Tidak Tersedia';
+            const tOff = offOnDay || offNextOvernight;
+            reasonText = `Tidak bisa diambil karena bertepatan dengan agenda ${tOff.title} [${tOff.status}].`;
+          } else if (workConflicts.length > 0) {
+            status = 'blocked';
+            statusLabel = '❌ Tidak Tersedia';
+            const conflictList = workConflicts.map(c => `"${c.title}" (${c.start_time}–${c.end_time} WIB)`).join(', ');
+            reasonText = `Tidak bisa diambil karena jam menabrak jadwal ${conflictList}.`;
+          } else if (isTooSoonToday) {
+            status = 'warning';
+            statusLabel = '⚠️ Waktu Terlalu Dekat';
+            reasonText = `Sisa waktu dari sekarang (${liveClockString.slice(0, 5)} WIB) kurang dari jeda perjalanan/persiapan ${simTravelMin} menit.`;
+          } else if (travelConflicts.length > 0) {
+            status = 'warning';
+            statusLabel = '⚠️ Jeda Mepet';
+            const nearList = travelConflicts.map(tc => `"${tc.title}" (${tc.start_time}–${tc.end_time} WIB)`).join(', ');
+            reasonText = `Slot jam kosong, namun jeda perjalanan/persiapan (${simTravelMin} menit) terlalu mepet dengan ${nearList}.`;
+          } else if (sleepHours < 5 || restAndMealHours < 2) {
+            status = 'warning';
+            statusLabel = '⚠️ Istirahat Terbatas';
+            if (sleepHours < 5 && workAfter) {
+              reasonText = `Slot kosong, namun waktu bobo hanya tersisa ${sleepHours} jam karena jadwal berikutnya "${workAfter.title}" mulai pukul ${workAfter.start_time} WIB.`;
+            } else if (sleepHours < 5) {
+              reasonText = `Slot kosong, namun mengambil jam ini memotong waktu bobo sehingga hanya tersisa ${sleepHours} jam.`;
+            } else {
+              reasonText = `Slot kosong, namun total jeda istirahat & makan harian hanya tersisa ${restAndMealHours} jam.`;
+            }
+          } else {
+            reasonText = `Slot tersedia. Tersisa ${restAndMealHours} jam untuk istirahat/makan dan ${sleepHours} jam untuk bobo malam.`;
+          }
+
+          const restSubText = (gapBefore !== null || gapAfter !== null)
+            ? `${gapBefore !== null ? `Jeda sebelum: ${gapBefore}j` : 'Pagi/siang kosong'} • ${gapAfter !== null ? `Jeda sesudah: ${gapAfter}j` : 'Sore/malam kosong'}`
+            : 'Dari jam kosong jadwal harian';
+
+          const sleepSubText = hasExplicitSleep
+            ? (sleepCutReq > 0 ? `Terpotong ${Math.round((sleepCutReq / 60) * 10) / 10}j dari jadwal Bobo` : 'Sesuai jadwal Bobo malam')
+            : 'Estimasi tidur malam tersedia';
+
+          return {
+            date: dStr,
+            dayName: getHariNama(dStr),
+            status,
+            statusLabel,
+            reasonText,
+            restAndMealHours,
+            restSubText,
+            sleepHours,
+            sleepSubText,
+            sameDayItems,
+            exactFreeSlots
+          };
+        });
+
+        return {
+          isOvernight,
+          shiftDurHours,
+          dayResults,
+          okCount: dayResults.filter(d => d.status === 'ok').length,
+          warnCount: dayResults.filter(d => d.status === 'warning').length,
+          blockedCount: dayResults.filter(d => d.status === 'blocked').length
+        };
+      }, [simMode, simStartDate, simEndDate, simStartTime, simEndTime, simTravelMin, schedules, realTodayStr, nowMinuteOfDay, liveClockString, lang]);
+
+      const renderSlotRestChecker = () => (
+        <div className="space-y-4">
+          <div className="bg-white rounded-3xl border-2 border-pink-200/70 p-4 md:p-5 shadow-sm space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-teal-400/25 pb-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="bg-teal-500/20 text-teal-300 border border-teal-400/50 text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                  🔍 REAL-TIME CHECKER
+                </span>
+                <h3 className="font-black text-sm md:text-base text-white">
+                  Cek Slot Jadwal, Istirahat & Waktu Bobo
+                </h3>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="flex items-center gap-1 bg-[#051120] p-1 rounded-xl border border-teal-400/35">
+                  <button
+                    type="button"
+                    onClick={() => setSimMode('single')}
+                    className={`px-3 py-1 rounded-lg text-xs font-black transition ${simMode === 'single' ? 'bg-maroon text-white shadow' : 'text-slate-300'}`}
+                  >
+                    📅 1 Tanggal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSimMode('range')}
+                    className={`px-3 py-1 rounded-lg text-xs font-black transition ${simMode === 'range' ? 'bg-maroon text-white shadow' : 'text-slate-300'}`}
+                  >
+                    🗓️ Rentang Tanggal
+                  </button>
+                </div>
+                {simStartDate && (
+                  <button
+                    type="button"
+                    onClick={handleResetSimulator}
+                    className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/40 px-3 py-1.5 rounded-xl text-xs font-black transition"
+                  >
+                    🔄 Reset
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="bg-[#071525] p-3 rounded-2xl border border-teal-400/30 space-y-2">
+                <label className="block text-[11px] font-black text-teal-300">
+                  {simMode === 'single' ? 'Tanggal Pengecekan:' : 'Rentang Tanggal (Tgl - Bln - Thn):'}
+                </label>
+                {simMode === 'single' ? (
+                  renderDMYSelector(simStartDate, (val) => {
+                    setSimStartDate(val);
+                    setSimEndDate(val);
+                  })
+                ) : (
+                  <div className="space-y-2">
+                    <div>
+                      <span className="block text-[10px] font-bold text-slate-400 mb-1">Dari Tanggal:</span>
+                      {renderDMYSelector(simStartDate, (val) => {
+                        setSimStartDate(val);
+                        if (isCompleteDate(val) && (!isCompleteDate(simEndDate) || simEndDate < val)) {
+                          setSimEndDate(val);
+                        }
+                      })}
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-slate-400 mb-1">Sampai Tanggal:</span>
+                      {renderDMYSelector(simEndDate, (val) => setSimEndDate(val))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-[#071525] p-3 rounded-2xl border border-teal-400/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-black text-teal-300">Rencana Jam Sesi (Ketik):</label>
+                  {simAnalysis && (
+                    <span className="font-mono text-[10px] font-black bg-purple-600 text-white px-2 py-0.5 rounded-full">
+                      {simAnalysis.shiftDurHours} Jam{simAnalysis.isOvernight ? ' • Lintas Malam' : ''}
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="block text-[10px] font-bold text-slate-400 mb-1">Dari Jam (WIB):</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="00:00"
+                      maxLength={5}
+                      value={simStartTime}
+                      onChange={e => setSimStartTime(formatManualTimeInput(e.target.value))}
+                      onBlur={() => { if (!isValidTimeStr(simStartTime)) setSimStartTime('00:00'); }}
+                      className="w-full font-mono text-xs font-black text-center py-1.5 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] font-bold text-slate-400 mb-1">Sampai Jam (WIB):</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="00:00"
+                      maxLength={5}
+                      value={simEndTime}
+                      onChange={e => setSimEndTime(formatManualTimeInput(e.target.value))}
+                      onBlur={() => { if (!isValidTimeStr(simEndTime)) setSimEndTime('00:00'); }}
+                      className="w-full font-mono text-xs font-black text-center py-1.5 rounded-xl"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#071525] p-3 rounded-2xl border border-teal-400/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-black text-teal-300">Jeda Perjalanan / Prep:</label>
+                  <span className="font-mono text-[10px] font-bold text-cyan-300">= {simTravelMin} mnt</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="30"
+                    value={simTravelVal}
+                    onChange={e => setSimTravelVal(e.target.value)}
+                    className="w-full font-mono text-xs font-black text-center py-1.5 rounded-xl"
+                  />
+                  <select
+                    value={simTravelUnit}
+                    onChange={e => setSimTravelUnit(e.target.value)}
+                    className="w-full text-xs font-bold py-1.5 px-2 rounded-xl"
+                  >
+                    <option value="minutes">Menit</option>
+                    <option value="hours">Jam</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {!simAnalysis ? (
+            <div className="bg-white rounded-3xl border-2 border-dashed border-teal-400/40 p-10 text-center space-y-1.5">
+              <div className="text-3xl">🗓️</div>
+              <div className="font-black text-sm text-white">Pilih Tanggal & Jam untuk Mengecek Ketersediaan</div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="bg-white rounded-2xl border border-teal-400/40 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span className="font-black text-xs text-white">
+                    {simAnalysis.dayResults.length} Hari Dicek ({simStartTime} – {simEndTime} WIB)
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-black">
+                  <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-1 rounded-full">
+                    ✅ {simAnalysis.okCount} Tersedia
+                  </span>
+                  {simAnalysis.warnCount > 0 && (
+                    <span className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2.5 py-1 rounded-full">
+                      ⚠️ {simAnalysis.warnCount} Istirahat Terbatas
+                    </span>
+                  )}
+                  {simAnalysis.blockedCount > 0 && (
+                    <span className="bg-rose-500/20 text-rose-300 border border-rose-400/40 px-2.5 py-1 rounded-full">
+                      ❌ {simAnalysis.blockedCount} Tidak Tersedia
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {simAnalysis.dayResults.map(res => {
+                const borderStyle = res.status === 'ok'
+                  ? 'border-emerald-400/60'
+                  : res.status === 'warning'
+                    ? 'border-amber-400/60'
+                    : 'border-rose-500/60';
+                const badgeStyle = res.status === 'ok'
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50'
+                  : res.status === 'warning'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-400/50'
+                    : 'bg-rose-500/20 text-rose-300 border-rose-400/50';
+                const reasonStyle = res.status === 'ok'
+                  ? 'bg-emerald-950/50 border-emerald-400/30 text-emerald-200'
+                  : res.status === 'warning'
+                    ? 'bg-amber-950/50 border-amber-400/30 text-amber-200'
+                    : 'bg-rose-950/50 border-rose-400/30 text-rose-200';
+
+                return (
+                  <div key={res.date} className={`bg-white rounded-3xl border-2 ${borderStyle} p-4 space-y-3 shadow-sm`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-black text-sm text-white">{res.dayName}, {res.date}</span>
+                        <span className="font-mono text-[11px] font-black bg-[#071525] text-cyan-300 border border-teal-400/40 px-2.5 py-0.5 rounded-lg">
+                          {simStartTime} – {simEndTime} WIB
+                        </span>
+                        <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${badgeStyle}`}>
+                          {res.statusLabel}
+                        </span>
+                      </div>
+                      {res.status !== 'blocked' && isAdmin && (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenCreate(res.date, simStartTime, simEndTime)}
+                          className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-[11px] px-3 py-1.5 rounded-xl shadow active:scale-95 transition"
+                        >
+                          + Masukkan Jadwal
+                        </button>
+                      )}
+                    </div>
+
+                    <div className={`p-2.5 rounded-xl border text-xs font-bold ${reasonStyle}`}>
+                      {res.reasonText}
+                    </div>
+
+                    {res.sameDayItems.length > 0 && (
+                      <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+                        <span className="font-bold text-slate-400">Jadwal Terisi:</span>
+                        {res.sameDayItems.map(it => (
+                          <span
+                            key={it.id}
+                            className={`font-mono font-bold px-2 py-0.5 rounded-lg border ${
+                              it.isSleep
+                                ? 'bg-indigo-950/60 text-indigo-200 border-indigo-400/40'
+                                : 'bg-rose-950/60 text-rose-200 border-rose-400/40'
+                            }`}
+                          >
+                            {it.isSleep ? '😴' : '🔒'} {it.start_time}–{it.end_time} {it.title}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {res.status === 'blocked' ? (
+                      res.exactFreeSlots.length > 0 && (
+                        <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
+                          <span className="font-bold text-teal-300">Slot Kosong Tersedia (Klik untuk Cek):</span>
+                          {res.exactFreeSlots.map(alt => (
+                            <button
+                              key={`${alt.start}-${alt.end}`}
+                              type="button"
+                              onClick={() => { setSimStartTime(alt.start); setSimEndTime(alt.end); }}
+                              className="font-mono text-[10px] font-black bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 border border-emerald-400/40 px-2.5 py-1 rounded-lg transition"
+                            >
+                              🟢 {alt.start}–{alt.end}
+                            </button>
+                          ))}
+                        </div>
+                      )
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="bg-[#071525] border border-teal-400/30 rounded-2xl p-3">
+                          <div className="text-[10px] font-black text-slate-400 uppercase">☕ Waktu Istirahat & Makan</div>
+                          <div className="text-base font-black text-teal-300 mt-0.5">{res.restAndMealHours} Jam</div>
+                          <div className="text-[11px] text-slate-300 mt-0.5">{res.restSubText}</div>
+                        </div>
+                        <div className="bg-[#071525] border border-purple-400/30 rounded-2xl p-3">
+                          <div className="text-[10px] font-black text-slate-400 uppercase">😴 Estimasi Waktu Bobo</div>
+                          <div className={`text-base font-black mt-0.5 ${res.sleepHours < 5 ? 'text-amber-300' : 'text-purple-300'}`}>
+                            {res.sleepHours} Jam
+                          </div>
+                          <div className="text-[11px] text-slate-300 mt-0.5">{res.sleepSubText}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
       return (
         <div className="min-h-screen flex flex-col relative">
           {/* 🫧 AMBIENT LEMURIAN BUBBLES & BIOLUMINESCENT PARTICLES */}
@@ -6233,6 +6835,12 @@ const handleTouchRafayel = (source = 'header') => {
                     onClick={() => setPcSubTab('dashboard')}
                     className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'dashboard' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                   >
+                    <button
+                    onClick={() => setPcSubTab('simulator')}
+                    className={`px-4 py-2 rounded-2xl transition flex items-center gap-2 ${pcSubTab === 'simulator' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
+                  >
+                    <span>🔍</span><span>{lang === 'en' ? 'Slot & Rest Checker' : 'Cek Slot & Istirahat'}</span>
+                  </button>
                     <span>📊</span><span>{t.tabKPI}</span>
                   </button>
                   <button
@@ -6627,23 +7235,31 @@ const handleTouchRafayel = (source = 'header') => {
                                         }}
                                         className={`border-r border-slate-200 p-1 align-top h-14 relative transition ${isAdmin ? 'hover:bg-rose-50/50 cursor-pointer' : ''}`}
                                       >
-                                        {slotItems.map(item => {
+{slotItems.map(item => {
                                           const isStartSlot = (item.start_time >= slot.start && item.start_time < slot.end) || (slot.start === '00:00' && item.start_time === '00:00');
+                                          const contrast = getContrastTextForHex(item.color);
                                           return (
                                             <div
                                               key={item.id}
                                               onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
-                                              className={`p-1.5 rounded-xl font-bold text-[10px] text-slate-900 shadow-sm border border-black/10 transition cursor-pointer mb-1 leading-tight hover:scale-[1.02] ${!isStartSlot ? 'opacity-85' : ''}`}
-                                              style={{ backgroundColor: item.color }}
+                                              className="p-1.5 rounded-xl font-bold text-[10px] shadow-sm transition cursor-pointer mb-1 leading-tight hover:scale-[1.02]"
+                                              style={{
+                                                backgroundColor: item.color,
+                                                color: contrast.text,
+                                                border: contrast.border,
+                                                textShadow: contrast.shadow
+                                              }}
                                               title={`${item.title} (${item.start_time}-${item.end_time})`}
                                             >
                                               {isStartSlot ? (
                                                 <React.Fragment>
-                                                  <div className="truncate font-black">{item.title}</div>
-                                                  <div className="text-[9px] font-mono text-slate-700">{item.start_time}-{item.end_time}</div>
+                                                  <div className="font-black leading-snug break-words">{item.title}</div>
+                                                  <div className="text-[9px] font-mono font-extrabold mt-0.5" style={{ color: contrast.subText }}>
+                                                    {item.start_time}-{item.end_time}
+                                                  </div>
                                                 </React.Fragment>
                                               ) : (
-                                                <div className="truncate text-[9px] font-bold opacity-75">
+                                                <div className="text-[9.5px] font-extrabold leading-snug break-words">
                                                   • {item.title}
                                                 </div>
                                               )}
@@ -6662,7 +7278,8 @@ const handleTouchRafayel = (source = 'header') => {
                     </div>
                   </div>
                 )}
-
+{/* CEK SLOT & ISTIRAHAT PC */}
+             {pcSubTab === 'simulator' && renderSlotRestChecker()}
                 {/* KPI & DASHBOARD PC */}
                 {pcSubTab === 'dashboard' && (
                   <div className="space-y-6">
@@ -7066,6 +7683,12 @@ const handleTouchRafayel = (source = 'header') => {
                   className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'calendar' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
                 >
                   <span>📅</span><span>{t.tabSpreadsheet}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('simulator')}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${activeTab === 'simulator' ? 'bg-maroon text-white shadow-md' : 'text-slate-600 hover:bg-pink-50'}`}
+                >
+                  <span>🔍</span><span>{lang === 'en' ? 'Slot Checker' : 'Cek Slot & Istirahat'}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('kpi')}
@@ -7508,6 +8131,8 @@ const handleTouchRafayel = (source = 'header') => {
                     </div>
                   </div>
                 )}
+                {/* CEK SLOT & ISTIRAHAT HP */}
+             {activeTab === 'simulator' && renderSlotRestChecker()}
                 {/* STATISTIK MODE HP */}
                 {activeTab === 'kpi' && (
                   <div className="space-y-4">
