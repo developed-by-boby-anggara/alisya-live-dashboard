@@ -2110,27 +2110,57 @@ const BGM_PLAYLIST = [
     "./img/rafael1.jpg"
   ];
 
- // Fungsi utama pemutar BGM tunggal bgm2.mp3 (Auto-Loop)
-  const playTrack = () => {
+ // 🎵 PENGATURAN VOLUME BGM (DEFAULT SELALU ON SAAT PERTAMA BUKA WEB)
+  const [bgmMuted, setBgmMuted] = useState(false);
+  const bgmMutedRef = useRef(false);
+  const bgmDelayTimerRef = useRef(null);
+  const BGM_NORMAL_VOL = 0.28; // Volume normal BGM
+  const BGM_DUCK_VOL = 0.05;   // Volume BGM mengecil saat Rafayel bicara (tidak mati)
+
+  // Fungsi utama pemutar BGM tunggal bgm2.mp3 (Auto-Loop)
+  const playTrack = (targetVolume = BGM_NORMAL_VOL) => {
     try {
       if (!bgmAudioRef.current) {
         const audio = new Audio("./audio/bgm2.mp3");
         audio.loop = true;
-        audio.volume = 0.25;
         audio.preload = "auto";
         bgmAudioRef.current = audio;
       }
-      // Jangan nyalakan BGM jika suara Rafayel sedang berbicara
-      if (callVoiceAudioRef.current && !callVoiceAudioRef.current.paused) {
-        return;
-      }
-      bgmAudioRef.current.onplay = () => setBgmPlaying(true);
-      bgmAudioRef.current.onpause = () => setBgmPlaying(false);
-      const playPromise = bgmAudioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => setBgmPlaying(true)).catch(() => {});
+      const bgm = bgmAudioRef.current;
+      bgm.muted = bgmMutedRef.current;
+      bgm.volume = targetVolume;
+      bgm.onplay = () => setBgmPlaying(true);
+      bgm.onpause = () => setBgmPlaying(false);
+
+      if (bgm.paused) {
+        const playPromise = bgm.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => setBgmPlaying(true)).catch(() => {});
+        }
       }
     } catch (e) {}
+  };
+
+  // 🔇 Tombol Mute/Unmute Khusus BGM Saja (Suara Rafayel Tetap Menyala 100%)
+  const toggleBgmMute = () => {
+    const nextMuted = !bgmMuted;
+    setBgmMuted(nextMuted);
+    bgmMutedRef.current = nextMuted;
+
+    if (!bgmAudioRef.current) {
+      const audio = new Audio("./audio/bgm2.mp3");
+      audio.loop = true;
+      audio.volume = BGM_NORMAL_VOL;
+      bgmAudioRef.current = audio;
+    }
+
+    bgmAudioRef.current.muted = nextMuted;
+    if (!nextMuted && hasEntered && bgmAudioRef.current.paused) {
+      const isRafayelSpeaking = callVoiceAudioRef.current && !callVoiceAudioRef.current.paused;
+      bgmAudioRef.current.volume = isRafayelSpeaking ? BGM_DUCK_VOL : BGM_NORMAL_VOL;
+      bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
+    }
+    notify(nextMuted ? '🔇 Musik Latar (BGM) Di-mute (Suara Rafayel Tetap Aktif)' : '🎵 Musik Latar (BGM) Menyala Kembali');
   };
   const [rafayelCallModalOpen, setRafayelCallModalOpen] = useState(false);
   const [rafayelCallStatus, setRafayelCallStatus] = useState('ringing'); // 'ringing' | 'connected'
@@ -2140,190 +2170,52 @@ const BGM_PLAYLIST = [
   const callVoiceAudioRef = useRef(null);
   const ringtoneIntervalRef = useRef(null);
 
-// 🎙️ 3 SUARA WELCOME ACAK SAAT PERTAMA KALI MASUK WEB (FOLDER: ./soundrafael/)
+  // 🎙️ 3 SUARA WELCOME SAAT PERTAMA KALI MASUK WEB (LENGKAP DENGAN TEKS ASLI)
   const RAFAYEL_WELCOME_VOICES = [
-    "./soundrafael/welcome1.mp3",
-    "./soundrafael/rafayel_call_welcome.mp3",
-    "./soundrafael/rafayel_call_welcome2.mp3"
+    {
+      audioUrl: "./soundrafael/welcome1.mp3",
+      text: "Oh, look who finally decided to show up. Alisya, do you have any idea how long I've been staring at this blank canvas waiting for you, Miss Bodyguard? Hmph. Three minutes longer and I would have locked the studio door."
+    },
+    {
+      audioUrl: "./soundrafael/rafayel_call_welcome.mp3",
+      text: "There you are, Alisya! I was just about to call you. Don't tell me you forgot your duty as my bodyguard today? Come here, keep me company before your shift starts. That's an order."
+    },
+    {
+      audioUrl: "./soundrafael/rafayel_call_welcome2.mp3",
+      text: "Ugh, finally. My painting inspiration was completely stuck at zero percent until you walked in, Alisya. Stand right there and let me look at you for a minute. What? A genius artist needs his muse, okay?"
+    }
   ];
 
-// 📞 DAFTAR LENGKAP 19 AUDIO PANGGILAN SUARA RAFAYEL (VERSI 1 & VERSI 2 — 100% SESUAI ISI MP3)
+  // 📞 DAFTAR LENGKAP 21 SKENARIO SUARA RAFAYEL (100% SAMA PERSIS DENGAN AUDIO MP3)
   const RAFAYEL_CALL_SCENARIOS = [
-    // --- KELOMPOK AUDIO VERSI 1 (SKRIP AWAL) ---
     {
       key: "boost",
       audioUrl: "./soundrafael/rafayel_call_boost.mp3",
-      tagId: "Transmisi Semangat • Mode Siaran",
+      tagId: "Broadcast Boost • On-Air Standby",
       tagEn: "Broadcast Boost • On-Air Standby",
-      titleId: "Rafayel • Sea God Support",
-      titleEn: "Rafayel • Sea God Support",
-      subtitleId: "Special encouragement before turning on the camera",
-      subtitleEn: "Special encouragement before turning on the camera",
-      transcriptId: "Hey, listen up. Before you turn on that camera, remember who you belong to—my number one bodyguard! Go dazzle everyone out there, make them see how radiant you are, and hurry back to Mo's Atelier as soon as you're done. Deal?",
-      transcriptEn: "Hey, listen up. Before you turn on that camera, remember who you belong to—my number one bodyguard! Go dazzle everyone out there, make them see how radiant you are, and hurry back to Mo's Atelier as soon as you're done. Deal?"
+      titleId: "Rafayel • Pre-Stream Pep Talk",
+      titleEn: "Rafayel • Pre-Stream Pep Talk",
+      subtitleId: "Remember who your real boss is before turning on that camera",
+      subtitleEn: "Remember who your real boss is before turning on that camera",
+      transcriptId: "Hey, listen up, Alisya. Before you turn on that camera, remember who your real boss is... me! Go dazzle everyone out there, show them how radiant you are, and hurry back to my studio as soon as you're done. Deal?",
+      transcriptEn: "Hey, listen up, Alisya. Before you turn on that camera, remember who your real boss is... me! Go dazzle everyone out there, show them how radiant you are, and hurry back to my studio as soon as you're done. Deal?"
     },
     {
-      key: "hydrate_v1",
-      audioUrl: "./soundrafael/rafayel_call_hydrate.mp3",
-      tagId: "Panggilan Darurat • Cek Hidrasi",
-      tagEn: "Priority Call • Hydration Check",
-      titleId: "Rafayel • Sea God Alert",
-      titleEn: "Rafayel • Sea God Alert",
-      subtitleId: "Vocal resonance alert from Lemuria",
-      subtitleEn: "Vocal resonance alert from Lemuria",
-      transcriptId: "Alisya! Stop talking for five seconds and drink your water! My Lemurian instincts are telling me your throat is getting dry. If my favorite mermaid loses her voice, I'm going to sulk for an entire month! Go take a sip right now!",
-      transcriptEn: "Alisya! Stop talking for five seconds and drink your water! My Lemurian instincts are telling me your throat is getting dry. If my favorite mermaid loses her voice, I'm going to sulk for an entire month! Go take a sip right now!"
-    },
-    {
-      key: "chill_v1",
+      key: "chill_1",
       audioUrl: "./soundrafael/rafayel_call_chill.mp3",
-      tagId: "Panggilan Santai • Jam Kosong",
-      tagEn: "Break Time Call • Atelier Invitation",
+      tagId: "Break Time Call • Couch Invitation",
+      tagEn: "Break Time Call • Couch Invitation",
       titleId: "Rafayel • Mo's Atelier",
       titleEn: "Rafayel • Mo's Atelier",
-      subtitleId: "Invitation to paint the sunset in the studio",
-      subtitleEn: "Invitation to paint the sunset in the studio",
-      transcriptId: "Aha! Caught you slacking off between schedules! Just kidding—actually, I'm glad you're taking a breather. Come keep me company in the studio for a bit. I'll mix the prettiest sunset colors just for you, no work allowed!",
-      transcriptEn: "Aha! Caught you slacking off between schedules! Just kidding—actually, I'm glad you're taking a breather. Come keep me company in the studio for a bit. I'll mix the prettiest sunset colors just for you, no work allowed!"
+      subtitleId: "Caught you slacking off between schedules!",
+      subtitleEn: "Caught you slacking off between schedules!",
+      transcriptId: "Aha! Caught you slacking off between schedules, Alisya! Just kidding. Actually, I'm glad you're finally taking a breather. Come sit with me on the couch for a bit. No talking about work allowed.",
+      transcriptEn: "Aha! Caught you slacking off between schedules, Alisya! Just kidding. Actually, I'm glad you're finally taking a breather. Come sit with me on the couch for a bit. No talking about work allowed."
     },
     {
-      key: "morning",
-      audioUrl: "./soundrafael/rafayel_call_morning.mp3",
-      tagId: "Panggilan Pagi • Morning Tide",
-      tagEn: "Morning Call • Rise & Shine",
-      titleId: "Rafayel • Lemurian Dawn",
-      titleEn: "Rafayel • Lemurian Dawn",
-      subtitleId: "Morning tide greeting from Mo's Atelier",
-      subtitleEn: "Morning tide greeting from Mo's Atelier",
-      transcriptId: "Rise and shine, sleepyhead! The morning tide is already here, and so is your favorite artist. Did you dream of Lemuria last night? Hurry up and get ready—a brand new canvas is waiting for us to paint today!",
-      transcriptEn: "Rise and shine, sleepyhead! The morning tide is already here, and so is your favorite artist. Did you dream of Lemuria last night? Hurry up and get ready—a brand new canvas is waiting for us to paint today!"
-    },
-    {
-      key: "jealous_v1",
-      audioUrl: "./soundrafael/rafayel_call_jealous.mp3",
-      tagId: "Panggilan Protes • Mode Merajuk",
-      tagEn: "Pouting Call • Attention Required",
-      titleId: "Rafayel • Your Real Boss",
-      titleEn: "Rafayel • Your Real Boss",
-      subtitleId: "The Lemurian artist is demanding attention",
-      subtitleEn: "The Lemurian artist is demanding attention",
-      transcriptId: "Hmph. You've been staring at that screen and talking to everyone else except me all day! Do I need to remind you who your real boss is? Wrap up your shift quickly—I'm reserving all of your attention tonight!",
-      transcriptEn: "Hmph. You've been staring at that screen and talking to everyone else except me all day! Do I need to remind you who your real boss is? Wrap up your shift quickly—I'm reserving all of your attention tonight!"
-    },
-    {
-      key: "rain",
-      audioUrl: "./soundrafael/rafayel_call_rain.mp3",
-      tagId: "Transmisi Puitis • Suara Hujan",
-      tagEn: "Poetic Line • Rainy Echoes",
-      titleId: "Rafayel • Deep Sea Echo",
-      titleEn: "Rafayel • Deep Sea Echo",
-      subtitleId: "Keeping you warm across Linkon City",
-      subtitleEn: "Keeping you warm across Linkon City",
-      transcriptId: "Listen to the rain outside... It reminds me of the deep ocean back home. Whenever the weather feels gloomy, just call my name. Even across Linkon City, I'll always find my way to keep you warm, Alisya.",
-      transcriptEn: "Listen to the rain outside... It reminds me of the deep ocean back home. Whenever the weather feels gloomy, just call my name. Even across Linkon City, I'll always find my way to keep you warm, Alisya."
-    },
-    {
-      key: "proud",
-      audioUrl: "./soundrafael/rafayel_call_proud.mp3",
-      tagId: "Panggilan Apresiasi • Ratu Hari Ini",
-      tagEn: "Celebration Call • Conquered Today",
-      titleId: "Rafayel • Pearl of Lemuria",
-      titleEn: "Rafayel • Pearl of Lemuria",
-      subtitleId: "Sincere praise from the Lemurian artist",
-      subtitleEn: "Sincere praise from the Lemurian artist",
-      transcriptId: "Look at you, shining brighter than any pearl in the deep sea! I knew hiring you as my bodyguard was the smartest decision I ever made. Take a bow, Alisya—you truly conquered today like a queen!",
-      transcriptEn: "Look at you, shining brighter than any pearl in the deep sea! I knew hiring you as my bodyguard was the smartest decision I ever made. Take a bow, Alisya—you truly conquered today like a queen!"
-    },
-    {
-      key: "dayoff_v1",
-      audioUrl: "./soundrafael/rafayel_call_dayoff.mp3",
-      tagId: "Panggilan Hari Libur • Kencan Pantai",
-      tagEn: "Day Off Call • Beach Date",
-      titleId: "Rafayel • Shore Walk",
-      titleEn: "Rafayel • Shore Walk",
-      subtitleId: "Your entire day officially belongs to me!",
-      subtitleEn: "Your entire day officially belongs to me!",
-      transcriptId: "Zero shifts on your schedule today?! Best news ever! That means your entire day officially belongs to me. Put on your prettiest outfit—I'm picking you up in ten minutes for a walk along the shore!",
-      transcriptEn: "Zero shifts on your schedule today?! Best news ever! That means your entire day officially belongs to me. Put on your prettiest outfit—I'm picking you up in ten minutes for a walk along the shore!"
-    },
-    {
-      key: "missyou",
-      audioUrl: "./soundrafael/rafayel_call_missyou.mp3",
-      tagId: "Panggilan Tanpa Alasan • Kangen",
-      tagEn: "Random Call • Missing You",
-      titleId: "Rafayel • Quiet Atelier",
-      titleEn: "Rafayel • Quiet Atelier",
-      subtitleId: "Even the paintbrushes are bored without you",
-      subtitleEn: "Even the paintbrushes are bored without you",
-      transcriptId: "No emergency... I just called because the atelier got way too quiet without you around. Even the paintbrushes look bored! Tell me what you're doing right now so I can hear your voice for a bit.",
-      transcriptEn: "No emergency... I just called because the atelier got way too quiet without you around. Even the paintbrushes look bored! Tell me what you're doing right now so I can hear your voice for a bit."
-    },
-    {
-      key: "lullaby",
-      audioUrl: "./soundrafael/rafayel_call_lullaby.mp3",
-      tagId: "Panggilan Pengantar Tidur • Deep Tide",
-      tagEn: "Lullaby Call • Drift with the Tide",
-      titleId: "Rafayel • Midnight Waves",
-      titleEn: "Rafayel • Midnight Waves",
-      subtitleId: "Gentle whisper to drift you to sleep",
-      subtitleEn: "Gentle whisper to drift you to sleep",
-      transcriptId: "Shh... Close your eyes and listen to the sound of the waves. Let all your worries drift away with the tide tonight. Whenever you wake up tomorrow, I'll still be right here waiting for you, Alisya.",
-      transcriptEn: "Shh... Close your eyes and listen to the sound of the waves. Let all your worries drift away with the tide tonight. Whenever you wake up tomorrow, I'll still be right here waiting for you, Alisya."
-    },
-    {
-      key: "rest",
-      audioUrl: "./soundrafael/rafayel_call_rest.mp3",
-      tagId: "Panggilan Malam • Perhatian Atelier",
-      tagEn: "Evening Call • Atelier Care",
-      titleId: "Rafayel • Linkon City Line",
-      titleEn: "Rafayel • Linkon City Line",
-      subtitleId: "Exclusive voice transmission for you",
-      subtitleEn: "Exclusive voice transmission for you",
-      transcriptId: "You worked so hard today, my little mermaid. Once your stream is finished, get some rest and don't stay up late. Tomorrow I'll paint your sweetest smile on my new canvas~",
-      transcriptEn: "You worked so hard today, my little mermaid. Once your stream is finished, get some rest and don't stay up late. Tomorrow I'll paint your sweetest smile on my new canvas~"
-    },
-    {
-      key: "live_end_v1",
-      audioUrl: "./soundrafael/live-end.mp3",
-      tagId: "Sesi Siaran Selesai • Atelier Check-In",
-      tagEn: "Stream Wrapped • Atelier Check-In",
-      titleId: "Rafayel • Sea God's Reward",
-      titleEn: "Rafayel • Sea God's Reward",
-      subtitleId: "Welcome back from your live broadcast!",
-      subtitleEn: "Welcome back from your live broadcast!",
-      transcriptId: "Your broadcast is finally over! I've been counting down the seconds. Rest your voice now and come keep me company in the studio!",
-      transcriptEn: "Your broadcast is finally over! I've been counting down the seconds. Rest your voice now and come keep me company in the studio!"
-    },
-
-    // --- KELOMPOK AUDIO VERSI 2 (GAYA CONGKAK / HAUGHTY MASTER ARTIST) ---
-    {
-      key: "hydrate_v2",
-      audioUrl: "./soundrafael/rafayel_call_hydrate2.mp3",
-      tagId: "Panggilan Darurat • Cek Hidrasi",
-      tagEn: "Priority Call • Hydration Check",
-      titleId: "Rafayel • Master Artist's Order",
-      titleEn: "Rafayel • Master Artist's Order",
-      subtitleId: "Did I give you permission to dehydrate on my shift?",
-      subtitleEn: "Did I give you permission to dehydrate on my shift?",
-      transcriptId: "Excuse me, Alisya. Did I give you permission to dehydrate yourself on my shift? Go drink water right now. Do you know how embarrassing it would be for a world-famous artist if his personal bodyguard lost her voice? Unacceptable.",
-      transcriptEn: "Excuse me, Alisya. Did I give you permission to dehydrate yourself on my shift? Go drink water right now. Do you know how embarrassing it would be for a world-famous artist if his personal bodyguard lost her voice? Unacceptable."
-    },
-    {
-      key: "jealous_v2",
-      audioUrl: "./soundrafael/rafayel_call_jealous2.mp3",
-      tagId: "Panggilan Protes • Harga Diri Seniman",
-      tagEn: "Pouting Call • Making The Great Rafayel Wait",
-      titleId: "Rafayel • Pouting & Jealous",
-      titleEn: "Rafayel • Pouting & Jealous",
-      subtitleId: "People line up for months just to see my brushstroke!",
-      subtitleEn: "People line up for months just to see my brushstroke!",
-      transcriptId: "Do those people on your screen have any idea that the great Rafayel is waiting for you right now? People line up for months just to see a single brushstroke of mine, Alisya... yet you're making me wait? Wrap it up. Immediately.",
-      transcriptEn: "Do those people on your screen have any idea that the great Rafayel is waiting for you right now? People line up for months just to see a single brushstroke of mine, Alisya... yet you're making me wait? Wrap it up. Immediately."
-    },
-    {
-      key: "chill_v2",
+      key: "chill_2",
       audioUrl: "./soundrafael/rafayel_call_chills.mp3",
-      tagId: "Panggilan Santai • Jam Kosong",
+      tagId: "Break Time Call • VIP Privilege",
       tagEn: "Break Time Call • VIP Privilege",
       titleId: "Rafayel • Mo's Atelier VIP",
       titleEn: "Rafayel • Mo's Atelier VIP",
@@ -2333,21 +2225,21 @@ const BGM_PLAYLIST = [
       transcriptEn: "Taking a break, Alisya? Well, consider yourself lucky... I happen to have five minutes of free time in my very busy schedule. Come sit next to me. You get to admire a genius up close for free."
     },
     {
-      key: "treat_v2",
-      audioUrl: "./soundrafael/rafayel_call_treat2.mp3",
-      tagId: "Perintah Bos • Kartu Hitam Tanpa Batas",
-      tagEn: "Boss's Black Card • Unlimited Dessert",
-      titleId: "Rafayel • Black Card Treat",
-      titleEn: "Rafayel • Black Card Treat",
-      subtitleId: "Don't insult your employer by looking at the price tag!",
-      subtitleEn: "Don't insult your employer by looking at the price tag!",
-      transcriptId: "Why are you looking at the price tag, Alisya? Don't insult your employer. Buy the whole dessert menu if you want, and put it on my black card. Money is the last thing a master artist worries about.",
-      transcriptEn: "Why are you looking at the price tag, Alisya? Don't insult your employer. Buy the whole dessert menu if you want, and put it on my black card. Money is the last thing a master artist worries about."
+      key: "dayoff_1",
+      audioUrl: "./soundrafael/rafayel_call_dayoff.mp3",
+      tagId: "Day Off Call • Walk by the Sea",
+      tagEn: "Day Off Call • Walk by the Sea",
+      titleId: "Rafayel • Shore Walk",
+      titleEn: "Rafayel • Shore Walk",
+      subtitleId: "Your entire day officially belongs to me!",
+      subtitleEn: "Your entire day officially belongs to me!",
+      transcriptId: "Wait a second... Zero shifts on your schedule today, Alisya? Best news ever! That means your entire day officially belongs to me. Put on your prettiest outfit, I'm picking you up in ten minutes for a walk by the sea.",
+      transcriptEn: "Wait a second... Zero shifts on your schedule today, Alisya? Best news ever! That means your entire day officially belongs to me. Put on your prettiest outfit, I'm picking you up in ten minutes for a walk by the sea."
     },
     {
-      key: "dayoff_v2",
+      key: "dayoff_2",
       audioUrl: "./soundrafael/rafayel_call_dayoff2.mp3",
-      tagId: "Panggilan Hari Libur • Kehormatan Besar",
+      tagId: "Day Off Call • Graced by My Presence",
       tagEn: "Day Off Call • Graced by My Presence",
       titleId: "Rafayel • Claiming Your Day Off",
       titleEn: "Rafayel • Claiming Your Day Off",
@@ -2357,28 +2249,196 @@ const BGM_PLAYLIST = [
       transcriptEn: "Since your schedule is completely empty today, Alisya... I've decided to grace you with my presence all day long. Don't look so touched, cutie. Just put on something nice, I'm taking you out."
     },
     {
-      key: "night_v2",
-      audioUrl: "./soundrafael/rafayel_call_night2.mp3",
-      tagId: "Panggilan Malam • Larangan Begadang",
-      tagEn: "Night Call • Studio Aesthetic Alert",
-      titleId: "Rafayel • Late Night Curfew",
-      titleEn: "Rafayel • Late Night Curfew",
-      subtitleId: "Dark circles will ruin the aesthetic of my studio!",
-      subtitleEn: "Dark circles will ruin the aesthetic of my studio!",
-      transcriptId: "Are you seriously still awake at this hour, Alisya? If you show up tomorrow with dark circles under your eyes, you're going to ruin the aesthetic of my studio. Put the phone down and go to sleep. Now.",
-      transcriptEn: "Are you seriously still awake at this hour, Alisya? If you show up tomorrow with dark circles under your eyes, you're going to ruin the aesthetic of my studio. Put the phone down and go to sleep. Now."
+      key: "hydrate_1",
+      audioUrl: "./soundrafael/rafayel_call_hydrate.mp3",
+      tagId: "Priority Call • Hydration Check",
+      tagEn: "Priority Call • Hydration Check",
+      titleId: "Rafayel • Bodyguard Vocal Check",
+      titleEn: "Rafayel • Bodyguard Vocal Check",
+      subtitleId: "Stop for five seconds and drink a glass right now!",
+      subtitleEn: "Stop for five seconds and drink a glass right now!",
+      transcriptId: "Excuse me, Alisya? Have you been talking non-stop without taking a single sip of water? Ugh, seriously... Stop for five seconds and drink a glass right now! I didn't hire a bodyguard just for her to lose her voice on my watch.",
+      transcriptEn: "Excuse me, Alisya? Have you been talking non-stop without taking a single sip of water? Ugh, seriously... Stop for five seconds and drink a glass right now! I didn't hire a bodyguard just for her to lose her voice on my watch."
     },
     {
-      key: "live_end_v2",
+      key: "hydrate_2",
+      audioUrl: "./soundrafael/rafayel_call_hydrate2.mp3",
+      tagId: "Gentle Reminder • Hydration Care",
+      tagEn: "Gentle Reminder • Hydration Care",
+      titleId: "Rafayel • Atelier Care",
+      titleEn: "Rafayel • Atelier Care",
+      subtitleId: "If my bodyguard loses her voice, who's gonna talk to me?",
+      subtitleEn: "If my bodyguard loses her voice, who's gonna talk to me?",
+      transcriptId: "Sigh... Alisya, have you been talking this whole time without drinking water? Seriously, stop for five seconds and go take a sip. If my bodyguard loses her voice, who's gonna talk to me later?",
+      transcriptEn: "Sigh... Alisya, have you been talking this whole time without drinking water? Seriously, stop for five seconds and go take a sip. If my bodyguard loses her voice, who's gonna talk to me later?"
+    },
+    {
+      key: "jealous_1",
+      audioUrl: "./soundrafael/rafayel_call_jealous.mp3",
+      tagId: "Pouting Call • Attention Required",
+      tagEn: "Pouting Call • Attention Required",
+      titleId: "Rafayel • Zero Seconds for My Text?!",
+      titleEn: "Rafayel • Zero Seconds for My Text?!",
+      subtitleId: "I'm reserving all of your attention tonight!",
+      subtitleEn: "I'm reserving all of your attention tonight!",
+      transcriptId: "Hmph. So you have time to smile at your camera and talk to strangers for hours, Alisya, but zero seconds to reply to my text? Unbelievable! Wrap up your shift fast, I'm reserving all of your attention tonight.",
+      transcriptEn: "Hmph. So you have time to smile at your camera and talk to strangers for hours, Alisya, but zero seconds to reply to my text? Unbelievable! Wrap up your shift fast, I'm reserving all of your attention tonight."
+    },
+    {
+      key: "jealous_2",
+      audioUrl: "./soundrafael/rafayel_call_jealous2.mp3",
+      tagId: "Sulking Call • Look at Me",
+      tagEn: "Sulking Call • Look at Me",
+      titleId: "Rafayel • Definitely Not Mad",
+      titleEn: "Rafayel • Definitely Not Mad",
+      subtitleId: "You don't even have two seconds to look at me...",
+      subtitleEn: "You don't even have two seconds to look at me...",
+      transcriptId: "Oh, I see how it is... You can smile at your camera for hours, Alisya, but you don't even have two seconds to look at me. Whatever. I'm not mad. Just... hurry up and finish your shift, okay?",
+      transcriptEn: "Oh, I see how it is... You can smile at your camera for hours, Alisya, but you don't even have two seconds to look at me. Whatever. I'm not mad. Just... hurry up and finish your shift, okay?"
+    },
+    {
+      key: "lullaby",
+      audioUrl: "./soundrafael/rafayel_call_lullaby.mp3",
+      tagId: "Boss's Order • Sweet Cravings",
+      tagEn: "Boss's Order • Sweet Cravings",
+      titleId: "Rafayel • Put It on My Tab",
+      titleEn: "Rafayel • Put It on My Tab",
+      subtitleId: "Nobody says no to me!",
+      subtitleEn: "Nobody says no to me!",
+      transcriptId: "Hey Miss Bodyguard! Since you worked so hard today, I officially order you to go buy sweet chocolate, pancakes, or whatever snack you're craving right now, Alisya. Put it on my tab. Nobody says no to me.",
+      transcriptEn: "Hey Miss Bodyguard! Since you worked so hard today, I officially order you to go buy sweet chocolate, pancakes, or whatever snack you're craving right now, Alisya. Put it on my tab. Nobody says no to me."
+    },
+    {
+      key: "missyou",
+      audioUrl: "./soundrafael/rafayel_call_missyou.mp3",
+      tagId: "Random Call • Quiet Studio",
+      tagEn: "Random Call • Quiet Studio",
+      titleId: "Rafayel • Bored Paintbrushes",
+      titleEn: "Rafayel • Bored Paintbrushes",
+      subtitleId: "Just talk to me for a minute...",
+      subtitleEn: "Just talk to me for a minute...",
+      transcriptId: "No, there's no emergency, Alisya. Why do you always assume something's wrong when I call? I just... the studio got way too quiet, and my paintbrushes looked bored without you around, okay? Just talk to me for a minute.",
+      transcriptEn: "No, there's no emergency, Alisya. Why do you always assume something's wrong when I call? I just... the studio got way too quiet, and my paintbrushes looked bored without you around, okay? Just talk to me for a minute."
+    },
+    {
+      key: "morning",
+      audioUrl: "./soundrafael/rafayel_call_morning.mp3",
+      tagId: "Morning Call • Breakfast Together",
+      tagEn: "Morning Call • Breakfast Together",
+      titleId: "Rafayel • Rise & Shine",
+      titleEn: "Rafayel • Rise & Shine",
+      subtitleId: "I want breakfast and I refuse to eat alone!",
+      subtitleEn: "I want breakfast and I refuse to eat alone!",
+      transcriptId: "Rise and shine, sleepyhead! Wait... don't tell me you're still curled up in bed, Alisya? I've been awake for ten whole minutes! Hurry up and get ready, I want breakfast and I refuse to eat alone.",
+      transcriptEn: "Rise and shine, sleepyhead! Wait... don't tell me you're still curled up in bed, Alisya? I've been awake for ten whole minutes! Hurry up and get ready, I want breakfast and I refuse to eat alone."
+    },
+    {
+      key: "night2",
+      audioUrl: "./soundrafael/rafayel_call_night2.mp3",
+      tagId: "Midnight Call • Drift with the Tide",
+      tagEn: "Midnight Call • Drift with the Tide",
+      titleId: "Rafayel • Midnight Ocean Voice",
+      titleEn: "Rafayel • Midnight Ocean Voice",
+      subtitleId: "Close your eyes and just listen to my voice",
+      subtitleEn: "Close your eyes and just listen to my voice",
+      transcriptId: "Shh... Stop overthinking about tomorrow's schedule, Alisya. Close your eyes and just listen to my voice. Let all your worries drift away with the tide tonight. I'll still be right here when you wake up.",
+      transcriptEn: "Shh... Stop overthinking about tomorrow's schedule, Alisya. Close your eyes and just listen to my voice. Let all your worries drift away with the tide tonight. I'll still be right here when you wake up."
+    },
+    {
+      key: "proud",
+      audioUrl: "./soundrafael/rafayel_call_proud.mp3",
+      tagId: "Celebration Call • Conquered Today",
+      tagEn: "Celebration Call • Conquered Today",
+      titleId: "Rafayel • Smartest Decision",
+      titleEn: "Rafayel • Smartest Decision",
+      subtitleId: "Don't let it get to your head though, cutie!",
+      subtitleEn: "Don't let it get to your head though, cutie!",
+      transcriptId: "Well, well... look at you conquering every single shift on your schedule today, Alisya! See? Hiring you as my bodyguard was definitely the smartest decision I ever made. Don't let it get to your head though, cutie.",
+      transcriptEn: "Well, well... look at you conquering every single shift on your schedule today, Alisya! See? Hiring you as my bodyguard was definitely the smartest decision I ever made. Don't let it get to your head though, cutie."
+    },
+    {
+      key: "rain",
+      audioUrl: "./soundrafael/rafayel_call_rain.mp3",
+      tagId: "Rainy Line • Cold & Quiet Studio",
+      tagEn: "Rainy Line • Cold & Quiet Studio",
+      titleId: "Rafayel • Warm My Fingers Up",
+      titleEn: "Rafayel • Warm My Fingers Up",
+      subtitleId: "Let me hold your hand until my fingers warm up",
+      subtitleEn: "Let me hold your hand until my fingers warm up",
+      transcriptId: "Listen to the rain outside, Alisya. Days like this make the studio feel way too cold and quiet. Where are you? Hurry back and bring me a warm drink... or at least let me hold your hand until my fingers warm up.",
+      transcriptEn: "Listen to the rain outside, Alisya. Days like this make the studio feel way too cold and quiet. Where are you? Hurry back and bring me a warm drink... or at least let me hold your hand until my fingers warm up."
+    },
+    {
+      key: "rest",
+      audioUrl: "./soundrafael/rafayel_call_rest.mp3",
+      tagId: "Rest Call • Gentle Ocean Tide",
+      tagEn: "Rest Call • Gentle Ocean Tide",
+      titleId: "Rafayel • Stop Overthinking",
+      titleEn: "Rafayel • Stop Overthinking",
+      subtitleId: "I'll still be right here when you wake up",
+      subtitleEn: "I'll still be right here when you wake up",
+      transcriptId: "Shh... Stop overthinking about tomorrow's schedule, Alisya. Close your eyes and just listen to my voice. Let all your worries drift away with the tide tonight. I'll still be right here when you wake up.",
+      transcriptEn: "Shh... Stop overthinking about tomorrow's schedule, Alisya. Close your eyes and just listen to my voice. Let all your worries drift away with the tide tonight. I'll still be right here when you wake up."
+    },
+    {
+      key: "treat2",
+      audioUrl: "./soundrafael/rafayel_call_treat2.mp3",
+      tagId: "Generous Boss • Sweet Bonus",
+      tagEn: "Generous Boss • Sweet Bonus",
+      titleId: "Rafayel • Use My Card",
+      titleEn: "Rafayel • Use My Card",
+      subtitleId: "Consider it a bonus from your very generous boss!",
+      subtitleEn: "Consider it a bonus from your very generous boss!",
+      transcriptId: "Hey, Miss Bodyguard. You look like you're craving something sweet. Go buy some chocolate or pancakes, Alisya, and just use my card. What? Consider it a bonus from your very generous boss.",
+      transcriptEn: "Hey, Miss Bodyguard. You look like you're craving something sweet. Go buy some chocolate or pancakes, Alisya, and just use my card. What? Consider it a bonus from your very generous boss."
+    },
+    {
+      key: "live_end_1",
+      audioUrl: "./soundrafael/live-end.mp3",
+      tagId: "Stream Wrapped • Counting Down",
+      tagEn: "Stream Wrapped • Counting Down",
+      titleId: "Rafayel • Broadcast Over",
+      titleEn: "Rafayel • Broadcast Over",
+      subtitleId: "Rest your throat and keep me company in the studio",
+      subtitleEn: "Rest your throat and keep me company in the studio",
+      transcriptId: "Ugh, finally! Your broadcast is over, Alisya? Do you know I've been counting down the seconds for the last hour? Rest your throat right now, and come keep me company in the studio.",
+      transcriptEn: "Ugh, finally! Your broadcast is over, Alisya? Do you know I've been counting down the seconds for the last hour? Rest your throat right now, and come keep me company in the studio."
+    },
+    {
+      key: "live_end_2",
       audioUrl: "./soundrafael/live-end1.mp3",
-      tagId: "Sesi Siaran Selesai • Tagihan Waktu",
-      tagEn: "Stream Wrapped • Expensive Waiting Time",
-      titleId: "Rafayel • Stream Finally Over",
-      titleEn: "Rafayel • Stream Finally Over",
-      subtitleId: "Do you know how much my time costs per minute, Alisya?",
-      subtitleEn: "Do you know how much my time costs per minute, Alisya?",
-      transcriptId: "Oh, you're finally done? Do you know how much my time costs per minute, Alisya? I could've painted three masterpieces while waiting for your broadcast to end. You owe me big time tonight.",
-      transcriptEn: "Oh, you're finally done? Do you know how much my time costs per minute, Alisya? I could've painted three masterpieces while waiting for your broadcast to end. You owe me big time tonight."
+      tagId: "Stream Wrapped • Almost Dried Paint",
+      tagEn: "Stream Wrapped • Almost Dried Paint",
+      titleId: "Rafayel • Waiting in the Studio",
+      titleEn: "Rafayel • Waiting in the Studio",
+      subtitleId: "My paint almost dried up waiting for you!",
+      subtitleEn: "My paint almost dried up waiting for you!",
+      transcriptId: "Ugh, finally! Your broadcast is over, Alisya? Do you have any idea how bored I was waiting for you to finish? My paint almost dried up! Rest your throat right now, and come keep me company in the studio.",
+      transcriptEn: "Ugh, finally! Your broadcast is over, Alisya? Do you have any idea how bored I was waiting for you to finish? My paint almost dried up! Rest your throat right now, and come keep me company in the studio."
+    },
+    {
+      key: "bisikan_hair",
+      audioUrl: "./soundrafael/bisikan-rafael.mp3",
+      tagId: "Close Interaction • Watch the Hair!",
+      tagEn: "Close Interaction • Watch the Hair!",
+      titleId: "Rafayel • Poking Because You Missed Me?",
+      titleEn: "Rafayel • Poking Because You Missed Me?",
+      subtitleId: "Why didn't you just say so, cutie?",
+      subtitleEn: "Why didn't you just say so, cutie?",
+      transcriptId: "Ow! Hey, watch the hair, Alisya! Do you know how long it took me to style this today? Wait... are you poking me because you missed me? Well, why didn't you just say so, cutie?",
+      transcriptEn: "Ow! Hey, watch the hair, Alisya! Do you know how long it took me to style this today? Wait... are you poking me because you missed me? Well, why didn't you just say so, cutie?"
+    },
+    {
+      key: "mekel_jealous",
+      audioUrl: "./soundrafael/rafael-2.mp3",
+      tagId: "Jealous of Mekel • Cat Smirk",
+      tagEn: "Jealous of Mekel • Cat Smirk",
+      titleId: "Rafayel • Rivalry with Mekel",
+      titleEn: "Rafayel • Rivalry with Mekel",
+      subtitleId: "That cat just looked at me and smirked!",
+      subtitleEn: "That cat just looked at me and smirked!",
+      transcriptId: "Alisya, tell the truth. Why does Mekel get your sweetest voice every single day, while I only get lectured about my sleeping schedule? That cat just looked at me and smirked. I saw it.",
+      transcriptEn: "Alisya, tell the truth. Why does Mekel get your sweetest voice every single day, while I only get lectured about my sleeping schedule? That cat just looked at me and smirked. I saw it."
     }
   ];
 
@@ -2446,44 +2506,70 @@ const BGM_PLAYLIST = [
     return Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length);
   };
 
+// 🔉 KECILKAN BGM SAAT RAFAYEL BICARA (TIDAK DIMATIKAN) & HENTIKAN SUARA BICARA SEBELUMNYA
   const stopAllOtherSounds = () => {
     try {
+      // 1. Hentikan suara bicara Rafayel sebelumnya agar tidak tumpang tindih sesama suara bicara
       if (callVoiceAudioRef.current) {
         callVoiceAudioRef.current.onended = null;
+        callVoiceAudioRef.current.ontimeupdate = null;
         callVoiceAudioRef.current.pause();
         callVoiceAudioRef.current.currentTime = 0;
         callVoiceAudioRef.current = null;
       }
+      // 2. Hentikan dering telepon jika sedang berdering
       if (ringtoneIntervalRef.current) {
         clearInterval(ringtoneIntervalRef.current);
         ringtoneIntervalRef.current = null;
       }
-      if (bgmAudioRef.current && !bgmAudioRef.current.paused) {
-        bgmAudioRef.current.pause();
-        setBgmPlaying(false);
+      // 3. Kecilkan volume BGM ke 5% (Ducking) tanpa mematikan BGM
+      if (bgmAudioRef.current) {
+        bgmAudioRef.current.volume = BGM_DUCK_VOL;
       }
     } catch (e) {}
   };
 
+  // 🔊 KEMBALIKAN VOLUME BGM KE NORMAL SETELAH RAFAYEL SELESAI BICARA
   const resumeBackgroundMusic = () => {
     try {
-      if (bgmAudioRef.current && bgmAudioRef.current.paused) {
-        bgmAudioRef.current.volume = 0.25;
-        bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
-      } else if (!bgmAudioRef.current) {
-        playTrack();
+      if (bgmAudioRef.current) {
+        bgmAudioRef.current.muted = bgmMutedRef.current;
+        bgmAudioRef.current.volume = BGM_NORMAL_VOL;
+        if (hasEntered && bgmAudioRef.current.paused && !bgmDelayTimerRef.current) {
+          bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
+        }
       }
     } catch (e) {}
   };
 
-  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.8) => {
+  // 🎙️ Pemutar Suara Rafayel + Ketikan Real-Time (BGM Otomatis Mengecil & Naik Kembali)
+  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.85, onProgressText = null, fullTextToSync = '') => {
     try {
       stopAllOtherSounds();
       const voice = new Audio(audioUrl);
       voice.volume = volumeLevel;
       callVoiceAudioRef.current = voice;
 
+      // Pastikan BGM tetap berputar dengan suara kecil (5%) di latar belakang
+      if (bgmAudioRef.current) {
+        bgmAudioRef.current.volume = BGM_DUCK_VOL;
+      }
+
+      if (onProgressText && fullTextToSync) {
+        onProgressText('');
+        voice.ontimeupdate = () => {
+          if (voice.duration && voice.duration > 0) {
+            const ratio = Math.min(1, (voice.currentTime + 0.18) / voice.duration);
+            const chars = Math.max(1, Math.floor(ratio * fullTextToSync.length));
+            onProgressText(fullTextToSync.slice(0, chars));
+          }
+        };
+      }
+
       voice.onended = () => {
+        if (onProgressText && fullTextToSync) {
+          onProgressText(fullTextToSync);
+        }
         if (callVoiceAudioRef.current === voice) {
           callVoiceAudioRef.current = null;
         }
@@ -2491,32 +2577,36 @@ const BGM_PLAYLIST = [
       };
 
       voice.play().catch(() => {
+        if (onProgressText && fullTextToSync) onProgressText(fullTextToSync);
         resumeBackgroundMusic();
       });
     } catch (e) {
+      if (onProgressText && fullTextToSync) onProgressText(fullTextToSync);
       resumeBackgroundMusic();
     }
   };
 
   // 🔀 LANGSUNG GANTI SUARA & KETIK TEKS BARU SAAT TERSAMBUNG (TANPA DERING ULANG)
   const handleSwitchRafayelCall = (forcedIndex = null) => {
-    stopAllOtherSounds();
     const nextIdx = (typeof forcedIndex === 'number')
       ? forcedIndex % RAFAYEL_CALL_SCENARIOS.length
       : (currentCallScenario + 1) % RAFAYEL_CALL_SCENARIOS.length;
     setCurrentCallScenario(nextIdx);
     setRafayelCallStatus('connected');
-    setTypedTranscript('');
+    setRafayelCallSeconds(0);
 
     const nextScenario = RAFAYEL_CALL_SCENARIOS[nextIdx] || RAFAYEL_CALL_SCENARIOS[0];
-    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85);
+    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85, setTypedTranscript, nextScenario.transcriptEn);
   };
 
-  // 📞 Memicu panggilan masuk (Jika sudah tersambung lalu klik Switch, otomatis langsung ganti suara!)
+  // 📞 Memicu panggilan masuk (Jika sudah tersambung lalu klik Switch, langsung ganti suara!)
   const triggerIncomingRafayelCall = (scenarioIndex = null) => {
     if (rafayelCallModalOpen && rafayelCallStatus === 'connected') {
       handleSwitchRafayelCall(scenarioIndex);
       return;
+    }
+    if (bgmAudioRef.current) {
+      bgmAudioRef.current.volume = BGM_DUCK_VOL;
     }
     const idx = (typeof scenarioIndex === 'number')
       ? scenarioIndex % RAFAYEL_CALL_SCENARIOS.length
@@ -2529,7 +2619,6 @@ const BGM_PLAYLIST = [
     playLemurianRingtonePulse();
   };
 
-  // Efek nada dering berulang & timer durasi saat panggilan tersambung
   useEffect(() => {
     if (!rafayelCallModalOpen) {
       if (ringtoneIntervalRef.current) clearInterval(ringtoneIntervalRef.current);
@@ -2556,35 +2645,12 @@ const BGM_PLAYLIST = [
     }
   }, [rafayelCallModalOpen, rafayelCallStatus]);
 
-  // ⌨️ EFEK MENGETIK OTOMATIS MENGIKUTI SUARA AUDIO RAFAYEL
-  useEffect(() => {
-    if (!rafayelCallModalOpen || rafayelCallStatus !== 'connected') {
-      setTypedTranscript('');
-      return;
-    }
-    const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
-    const fullText = scenario.transcriptEn;
-    setTypedTranscript('');
-
-    let charIndex = 0;
-    const typingInterval = setInterval(() => {
-      charIndex++;
-      setTypedTranscript(fullText.slice(0, charIndex));
-      if (charIndex >= fullText.length) {
-        clearInterval(typingInterval);
-      }
-    }, 45);
-
-    return () => clearInterval(typingInterval);
-  }, [rafayelCallModalOpen, rafayelCallStatus, currentCallScenario]);
-
   const handleAcceptRafayelCall = () => {
-    stopAllOtherSounds();
     setRafayelCallStatus('connected');
     setRafayelCallSeconds(0);
 
     const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
-    playExclusiveRafayelVoice(scenario.audioUrl, 0.85);
+    playExclusiveRafayelVoice(scenario.audioUrl, 0.85, setTypedTranscript, scenario.transcriptEn);
   };
 
   const handleEndRafayelCall = () => {
@@ -2599,16 +2665,49 @@ const BGM_PLAYLIST = [
   useEffect(() => {
     if (!hasEntered) return;
     const thirtySecCallTimer = setTimeout(() => {
-      stopAllOtherSounds();
       triggerIncomingRafayelCall();
     }, 30000);
     return () => clearTimeout(thirtySecCallTimer);
   }, [hasEntered]);
 
+  // 🌊 SAAT MASUK KE LEMURIA: SUARA RAFAYEL LANGSUNG MENYAMBUT & BGM MULAI BUNYI 3 DETIK KEMUDIAN (HP & PC)
   const handleEnterTerminal = () => {
     setHasEntered(true);
-    const randomWelcomeUrl = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
-    playExclusiveRafayelVoice(randomWelcomeUrl, 0.85);
+    setBgmMuted(false);
+    bgmMutedRef.current = false;
+
+    // 1. Buka kunci izin audio browser HP & PC tepat saat tombol diklik (volume 0 dulu selama 3 detik)
+    try {
+      if (!bgmAudioRef.current) {
+        const audio = new Audio("./audio/bgm2.mp3");
+        audio.loop = true;
+        audio.preload = "auto";
+        bgmAudioRef.current = audio;
+      }
+      const bgm = bgmAudioRef.current;
+      bgm.muted = false;
+      bgm.volume = 0;
+      bgm.play().then(() => setBgmPlaying(true)).catch(() => {});
+    } catch (e) {}
+
+    // 2. Putar suara sambutan Rafayel + ketik teksnya di layar atas
+    const welcomeObj = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
+    playExclusiveRafayelVoice(welcomeObj.audioUrl, 0.88, setRafayelTouchBubble, welcomeObj.text);
+    setTimeout(() => setRafayelTouchBubble(''), 13000);
+
+    // 3. Tepat 3 detik setelah masuk Lemuria, naikkan suara BGM (mengecil 5% jika Rafayel masih bicara, atau 28% jika sudah selesai)
+    if (bgmDelayTimerRef.current) clearTimeout(bgmDelayTimerRef.current);
+    bgmDelayTimerRef.current = setTimeout(() => {
+      bgmDelayTimerRef.current = null;
+      if (bgmAudioRef.current) {
+        const isRafayelStillSpeaking = callVoiceAudioRef.current && !callVoiceAudioRef.current.paused;
+        bgmAudioRef.current.muted = bgmMutedRef.current;
+        bgmAudioRef.current.volume = isRafayelStillSpeaking ? BGM_DUCK_VOL : BGM_NORMAL_VOL;
+        if (bgmAudioRef.current.paused) {
+          bgmAudioRef.current.play().then(() => setBgmPlaying(true)).catch(() => {});
+        }
+      }
+    }, 3000);
   };
       // State 2 Bahasa Utama (id & en)
       const [lang, setLang] = useState(() => {
@@ -2725,21 +2824,15 @@ const stickerDeckRef = useRef(createShuffledIndices(RAFAYEL_ALL_STICKERS.length)
         setTimeout(() => setSparkles([]), 1650);
       };
 const LND_VOICE_CLIPS = [
-  "./soundrafael/bisikan-rafael.mp3",
-  "./soundrafael/rafael-2.mp3"
-];
-const touchVoices = [
-   "./soundrafael/bisikan-rafael.mp3",
-   "./soundrafael/rafael-2.mp3",
-   "./soundrafael/rafayel_call_missyou.mp3",
-   "./soundrafael/rafayel_call_chill.mp3",
-   "./soundrafael/rafayel_call_proud.mp3",
-   "./soundrafael/rafayel_call_boost.mp3",
-   "./soundrafael/rafayel_call_jealous.mp3",
-   "./soundrafael/rafayel_call_treat2.mp3",
-   "./soundrafael/rafayel_call_rain.mp3",
-   "./soundrafael/rafayel_call_morning.mp3"
- ];
+        {
+          audioUrl: "./soundrafael/bisikan-rafael.mp3",
+          text: "Ow! Hey, watch the hair, Alisya! Do you know how long it took me to style this today? Wait... are you poking me because you missed me? Well, why didn't you just say so, cutie?"
+        },
+        {
+          audioUrl: "./soundrafael/rafael-2.mp3",
+          text: "Alisya, tell the truth. Why does Mekel get your sweetest voice every single day, while I only get lectured about my sleeping schedule? That cat just looked at me and smirked. I saw it."
+        }
+      ];
 
       const handleBoostMood = () => {
         setQuoteIdx(prev => {
@@ -2750,9 +2843,10 @@ const touchVoices = [
         pickNextRadarSticker();
         triggerCuteSparkles();
 
-        // 🔊 Putar suara acak Rafayel tanpa tabrakan (otomatis hentikan suara sebelumnya)
-        const randomVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
-        playExclusiveRafayelVoice(randomVoice, 0.55);
+        const chosenVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
+        if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
+        playExclusiveRafayelVoice(chosenVoice.audioUrl, 0.85, setRafayelTouchBubble, chosenVoice.text);
+        touchBubbleTimerRef.current = setTimeout(() => setRafayelTouchBubble(''), 13000);
       };
 
       // State Mood, Hydration Log, Mekel Makan/Minum, Beauty Prep & Self-Reward per Tanggal
@@ -3714,41 +3808,22 @@ const touchVoices = [
     }
   ];
 
-  const handleTouchRafayel = (source = 'header') => {
-    // 1. Ganti ekspresi foto/stiker secara acak
+ const handleTouchRafayel = (source = 'header') => {
     if (source === 'header') {
       pickNextHeaderSticker();
     } else {
       pickNextRadarSticker();
     }
 
-    // 2. Pilih pasangan suara + teks yang 100% cocok
-    const chosenPair = RAFAYEL_TOUCH_VOICE_PAIRS[Math.floor(Math.random() * RAFAYEL_TOUCH_VOICE_PAIRS.length)];
+    const chosen = RAFAYEL_CALL_SCENARIOS[Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length)];
 
-    // 3. Putar suara MP3-nya
-    playExclusiveRafayelVoice(chosenPair.audioUrl, 0.8);
-
-    // 4. Ketik kalimatnya huruf demi huruf mengikuti ucapan audio di Speech Bubble atas
-    if (touchTypingIntervalRef.current) clearInterval(touchTypingIntervalRef.current);
     if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
+    playExclusiveRafayelVoice(chosen.audioUrl, 0.85, setRafayelTouchBubble, chosen.transcriptEn);
 
-    setRafayelTouchBubble('');
-    let charIdx = 0;
-    touchTypingIntervalRef.current = setInterval(() => {
-      charIdx++;
-      setRafayelTouchBubble(chosenPair.text.slice(0, charIdx));
-      if (charIdx >= chosenPair.text.length) {
-        clearInterval(touchTypingIntervalRef.current);
-      }
-    }, 42);
-
-    // Sembunyikan bubble setelah suara selesai (~11 detik)
     touchBubbleTimerRef.current = setTimeout(() => {
-      if (touchTypingIntervalRef.current) clearInterval(touchTypingIntervalRef.current);
       setRafayelTouchBubble('');
-    }, 11000);
+    }, 14000);
 
-    // 5. Tambah +1 Affinity Heart & efek kilau
     updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 }, true);
   };
       // Deteksi apakah suatu sesi jadwal sudah selesai atau akan datang
@@ -5928,7 +6003,17 @@ const touchVoices = [
                 >
                   <span>{soundAlert ? '🔔' : '🔕'}</span>
                 </button>
-
+{/* 🎵 Tombol Mute / Unmute Khusus BGM */}
+                <button
+                  type="button"
+                  onClick={toggleBgmMute}
+                  className={`px-2.5 md:px-3 py-1.5 rounded-xl md:rounded-2xl text-xs font-black border transition flex items-center gap-1 active:scale-95 cursor-pointer ${!bgmMuted ? 'bg-purple-500/30 text-purple-200 border-purple-400/50 shadow-[0_0_10px_rgba(185,155,235,0.3)]' : 'bg-black/30 text-slate-400 border-white/15'}`}
+                  title={!bgmMuted ? "Mute Musik Latar (BGM)" : "Nyalakan Musik Latar (BGM)"}
+                >
+                  <span>{!bgmMuted ? '🎵' : '🔇'}</span>
+                  <span className="hidden xl:inline">{!bgmMuted ? 'BGM ON' : 'BGM MUTE'}</span>
+                </button>
+                
              {/* 📞 Tombol Panggilan Masuk Rafayel (Bergetar Terus di HP & PC) */}
              <button
                type="button"
@@ -7737,7 +7822,7 @@ const touchVoices = [
                           Rafayel
                         </div>
                         <p className="text-xs sm:text-[13px] text-[#F3F5F7] leading-relaxed font-medium">
-                          “{typedTranscript || (isEn ? scenario.transcriptEn : scenario.transcriptId)}”
+                        “{typedTranscript}”
                         </p>
                       </div>
                     </div>
