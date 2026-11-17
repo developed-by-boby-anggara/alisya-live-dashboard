@@ -4605,19 +4605,21 @@ const handleTouchRafayel = (source = 'header') => {
         const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
         const isKonten = cleanTitle.toLowerCase().includes('video') || cleanTitle.toLowerCase().includes('affiliate');
         const isMeeting = cleanTitle.toLowerCase().includes('meeting') || cleanTitle.toLowerCase().includes('briefing');
+        const isEvent = cleanTitle.toLowerCase().includes('event') || cleanTitle.toLowerCase().includes('campaign');
         const nextStatus = isKonten ? 'Konten' : isMeeting ? 'Meeting' : 'LIVE';
-        const nextColor = isKonten ? '#8B5CF6' : isMeeting ? '#00FFFF' : '#B6D7A8';
+        const nextColor = isKonten ? '#D8B4FE' : isMeeting ? '#93C5FD' : isEvent ? '#F5B7B1' : '#FFAB76';
 
         const updated = schedules.map(s => s.id === item.id ? {
           ...s,
           title: cleanTitle,
           status: nextStatus,
+          is_wa_booking: true,
           color: nextColor
         } : s);
         saveSchedulesToCloud(updated);
         triggerCuteSparkles();
         playNotificationChime();
-        notify(`✅ Jadwal "${cleanTitle}" resmi di-ACC menjadi [${nextStatus}]!`);
+        notify(`✅ Jadwal WA "${cleanTitle}" resmi di-ACC menjadi [${nextStatus}]!`);
       };
 
       const handleQuickRejectFromIndex = (item) => {
