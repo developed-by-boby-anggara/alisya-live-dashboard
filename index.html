@@ -2506,12 +2506,29 @@ const BGM_PLAYLIST = [
     return Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length);
   };
 
-// 🔉 KECILKAN BGM SAAT RAFAYEL BICARA (TIDAK DIMATIKAN) & HENTIKAN SUARA BICARA SEBELUMNYA
+const syncAnimFrameRef = useRef(null);
+  const autoHideBubbleTimerRef = useRef(null);
+
+  // 🔉 KECILKAN BGM SAAT RAFAYEL BICARA (TIDAK DIMATIKAN) & HENTIKAN SUARA BICARA SEBELUMNYA
   const stopAllOtherSounds = () => {
     try {
-      // 1. Hentikan suara bicara Rafayel sebelumnya agar tidak tumpang tindih sesama suara bicara
+      if (syncAnimFrameRef.current) {
+        cancelAnimationFrame(syncAnimFrameRef.current);
+        syncAnimFrameRef.current = null;
+      }
+      if (autoHideBubbleTimerRef.current) {
+        clearTimeout(autoHideBubbleTimerRef.current);
+        autoHideBubbleTimerRef.current = null;
+      }
+      if (touchBubbleTimerRef && touchBubbleTimerRef.current) {
+        clearTimeout(touchBubbleTimerRef.current);
+        touchBubbleTimerRef.current = null;
+      }
+      // 1. Hentikan suara bicara Rafayel sebelumnya agar tidak tumpang tindih
       if (callVoiceAudioRef.current) {
         callVoiceAudioRef.current.onended = null;
+        callVoiceAudioRef.current.onplay = null;
+        callVoiceAudioRef.current.onplaying = null;
         callVoiceAudioRef.current.ontimeupdate = null;
         callVoiceAudioRef.current.pause();
         callVoiceAudioRef.current.currentTime = 0;
@@ -2523,7 +2540,7 @@ const BGM_PLAYLIST = [
         ringtoneIntervalRef.current = null;
       }
       // 3. Kecilkan volume BGM ke 5% (Ducking) tanpa mematikan BGM
-      if (bgmAudioRef.current) {
+      if (bgmAudioRef.current && !bgmDelayTimerRef.current) {
         bgmAudioRef.current.volume = BGM_DUCK_VOL;
       }
     } catch (e) {}
@@ -2542,33 +2559,59 @@ const BGM_PLAYLIST = [
     } catch (e) {}
   };
 
-  // 🎙️ Pemutar Suara Rafayel + Ketikan Real-Time (BGM Otomatis Mengecil & Naik Kembali)
-  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.85, onProgressText = null, fullTextToSync = '') => {
+  // 🎙️ Pemutar Suara Rafayel + Sinkronisasi Ketikan 60FPS Real-Time & Auto-Hide Saat Suara Selesai
+  const playExclusiveRafayelVoice = (audioUrl, volumeLevel = 0.85, onProgressText = null, fullTextToSync = '', autoClearOnEnd = false) => {
     try {
       stopAllOtherSounds();
+
+      // Kosongkan teks selama audio masih loading/buffering agar tulisan TIDAK pernah mendahului suara
+      if (onProgressText) {
+        onProgressText('');
+      }
+
       const voice = new Audio(audioUrl);
+      voice.preload = "auto";
       voice.volume = volumeLevel;
       callVoiceAudioRef.current = voice;
 
-      // Pastikan BGM tetap berputar dengan suara kecil (5%) di latar belakang
-      if (bgmAudioRef.current) {
+      if (bgmAudioRef.current && !bgmDelayTimerRef.current) {
         bgmAudioRef.current.volume = BGM_DUCK_VOL;
       }
 
-      if (onProgressText && fullTextToSync) {
-        onProgressText('');
-        voice.ontimeupdate = () => {
-          if (voice.duration && voice.duration > 0) {
-            const ratio = Math.min(1, (voice.currentTime + 0.18) / voice.duration);
+      // Loop 60fps: Mengetik huruf demi huruf persis mengikuti detik suara yang sedang keluar
+      const syncTextLoop = () => {
+        if (callVoiceAudioRef.current !== voice) return;
+        if (!voice.paused && voice.duration && voice.duration > 0 && voice.currentTime > 0) {
+          if (onProgressText && fullTextToSync) {
+            const ratio = Math.min(1, voice.currentTime / (voice.duration * 0.94));
             const chars = Math.max(1, Math.floor(ratio * fullTextToSync.length));
             onProgressText(fullTextToSync.slice(0, chars));
           }
-        };
-      }
+        }
+        if (!voice.paused && !voice.ended) {
+          syncAnimFrameRef.current = requestAnimationFrame(syncTextLoop);
+        }
+      };
 
+      // Teks baru mulai mengetik tepat saat suara benar-benar mulai berbunyi di speaker
+      voice.onplaying = () => {
+        if (syncAnimFrameRef.current) cancelAnimationFrame(syncAnimFrameRef.current);
+        syncAnimFrameRef.current = requestAnimationFrame(syncTextLoop);
+      };
+
+      // Saat suara selesai: tampilkan kalimat utuh, kembalikan BGM, lalu hilangkan bubble otomatis!
       voice.onended = () => {
+        if (syncAnimFrameRef.current) {
+          cancelAnimationFrame(syncAnimFrameRef.current);
+          syncAnimFrameRef.current = null;
+        }
         if (onProgressText && fullTextToSync) {
           onProgressText(fullTextToSync);
+          if (autoClearOnEnd) {
+            autoHideBubbleTimerRef.current = setTimeout(() => {
+              onProgressText('');
+            }, 1200);
+          }
         }
         if (callVoiceAudioRef.current === voice) {
           callVoiceAudioRef.current = null;
@@ -2577,11 +2620,15 @@ const BGM_PLAYLIST = [
       };
 
       voice.play().catch(() => {
-        if (onProgressText && fullTextToSync) onProgressText(fullTextToSync);
+        if (onProgressText && fullTextToSync) {
+          onProgressText(fullTextToSync);
+          if (autoClearOnEnd) {
+            autoHideBubbleTimerRef.current = setTimeout(() => onProgressText(''), 3000);
+          }
+        }
         resumeBackgroundMusic();
       });
     } catch (e) {
-      if (onProgressText && fullTextToSync) onProgressText(fullTextToSync);
       resumeBackgroundMusic();
     }
   };
@@ -2596,7 +2643,7 @@ const BGM_PLAYLIST = [
     setRafayelCallSeconds(0);
 
     const nextScenario = RAFAYEL_CALL_SCENARIOS[nextIdx] || RAFAYEL_CALL_SCENARIOS[0];
-    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85, setTypedTranscript, nextScenario.transcriptEn);
+    playExclusiveRafayelVoice(nextScenario.audioUrl, 0.85, setTypedTranscript, nextScenario.transcriptEn, false);
   };
 
   // 📞 Memicu panggilan masuk (Jika sudah tersambung lalu klik Switch, langsung ganti suara!)
@@ -2605,7 +2652,7 @@ const BGM_PLAYLIST = [
       handleSwitchRafayelCall(scenarioIndex);
       return;
     }
-    if (bgmAudioRef.current) {
+    if (bgmAudioRef.current && !bgmDelayTimerRef.current) {
       bgmAudioRef.current.volume = BGM_DUCK_VOL;
     }
     const idx = (typeof scenarioIndex === 'number')
@@ -2645,15 +2692,21 @@ const BGM_PLAYLIST = [
     }
   }, [rafayelCallModalOpen, rafayelCallStatus]);
 
-  const handleAcceptRafayelCall = () => {
+  const handleAcceptRafayelCall = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (ringtoneIntervalRef.current) {
+      clearInterval(ringtoneIntervalRef.current);
+      ringtoneIntervalRef.current = null;
+    }
     setRafayelCallStatus('connected');
     setRafayelCallSeconds(0);
 
     const scenario = RAFAYEL_CALL_SCENARIOS[currentCallScenario] || RAFAYEL_CALL_SCENARIOS[0];
-    playExclusiveRafayelVoice(scenario.audioUrl, 0.85, setTypedTranscript, scenario.transcriptEn);
+    playExclusiveRafayelVoice(scenario.audioUrl, 0.85, setTypedTranscript, scenario.transcriptEn, false);
   };
 
-  const handleEndRafayelCall = () => {
+  const handleEndRafayelCall = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
     stopAllOtherSounds();
     setRafayelCallModalOpen(false);
     setRafayelCallStatus('ringing');
@@ -2670,13 +2723,12 @@ const BGM_PLAYLIST = [
     return () => clearTimeout(thirtySecCallTimer);
   }, [hasEntered]);
 
-  // 🌊 SAAT MASUK KE LEMURIA: SUARA RAFAYEL LANGSUNG MENYAMBUT & BGM MULAI BUNYI 3 DETIK KEMUDIAN (HP & PC)
+  // 🌊 SAAT MASUK KE LEMURIA: SUARA RAFAYEL LANGSUNG MENYAMBUT & HILANG OTOMATIS SAAT SELESAI
   const handleEnterTerminal = () => {
     setHasEntered(true);
     setBgmMuted(false);
     bgmMutedRef.current = false;
 
-    // 1. Buka kunci izin audio browser HP & PC tepat saat tombol diklik (volume 0 dulu selama 3 detik)
     try {
       if (!bgmAudioRef.current) {
         const audio = new Audio("./audio/bgm2.mp3");
@@ -2690,12 +2742,9 @@ const BGM_PLAYLIST = [
       bgm.play().then(() => setBgmPlaying(true)).catch(() => {});
     } catch (e) {}
 
-    // 2. Putar suara sambutan Rafayel + ketik teksnya di layar atas
     const welcomeObj = RAFAYEL_WELCOME_VOICES[Math.floor(Math.random() * RAFAYEL_WELCOME_VOICES.length)];
-    playExclusiveRafayelVoice(welcomeObj.audioUrl, 0.88, setRafayelTouchBubble, welcomeObj.text);
-    setTimeout(() => setRafayelTouchBubble(''), 13000);
+    playExclusiveRafayelVoice(welcomeObj.audioUrl, 0.88, setRafayelTouchBubble, welcomeObj.text, true);
 
-    // 3. Tepat 3 detik setelah masuk Lemuria, naikkan suara BGM (mengecil 5% jika Rafayel masih bicara, atau 28% jika sudah selesai)
     if (bgmDelayTimerRef.current) clearTimeout(bgmDelayTimerRef.current);
     bgmDelayTimerRef.current = setTimeout(() => {
       bgmDelayTimerRef.current = null;
@@ -2834,20 +2883,18 @@ const LND_VOICE_CLIPS = [
         }
       ];
 
-      const handleBoostMood = () => {
-        setQuoteIdx(prev => {
-          let next = Math.floor(Math.random() * t.affirmations.length);
-          if (next === prev) next = (prev + 1) % t.affirmations.length;
-          return next;
-        });
-        pickNextRadarSticker();
-        triggerCuteSparkles();
+const handleBoostMood = () => {
+     setQuoteIdx(prev => {
+       let next = Math.floor(Math.random() * t.affirmations.length);
+       if (next === prev) next = (prev + 1) % t.affirmations.length;
+       return next;
+     });
+     pickNextRadarSticker();
+     triggerCuteSparkles();
 
-        const chosenVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
-        if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
-        playExclusiveRafayelVoice(chosenVoice.audioUrl, 0.85, setRafayelTouchBubble, chosenVoice.text);
-        touchBubbleTimerRef.current = setTimeout(() => setRafayelTouchBubble(''), 13000);
-      };
+     const chosenVoice = LND_VOICE_CLIPS[Math.floor(Math.random() * LND_VOICE_CLIPS.length)];
+     playExclusiveRafayelVoice(chosenVoice.audioUrl, 0.85, setRafayelTouchBubble, chosenVoice.text, true);
+   };
 
       // State Mood, Hydration Log, Mekel Makan/Minum, Beauty Prep & Self-Reward per Tanggal
       const [dailyWellness, setDailyWellness] = useState(() => {
@@ -3808,24 +3855,18 @@ const LND_VOICE_CLIPS = [
     }
   ];
 
- const handleTouchRafayel = (source = 'header') => {
-    if (source === 'header') {
-      pickNextHeaderSticker();
-    } else {
-      pickNextRadarSticker();
-    }
+const handleTouchRafayel = (source = 'header') => {
+  if (source === 'header') {
+    pickNextHeaderSticker();
+  } else {
+    pickNextRadarSticker();
+  }
 
-    const chosen = RAFAYEL_CALL_SCENARIOS[Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length)];
+  const chosen = RAFAYEL_CALL_SCENARIOS[Math.floor(Math.random() * RAFAYEL_CALL_SCENARIOS.length)];
+  playExclusiveRafayelVoice(chosen.audioUrl, 0.85, setRafayelTouchBubble, chosen.transcriptEn, true);
 
-    if (touchBubbleTimerRef.current) clearTimeout(touchBubbleTimerRef.current);
-    playExclusiveRafayelVoice(chosen.audioUrl, 0.85, setRafayelTouchBubble, chosen.transcriptEn);
-
-    touchBubbleTimerRef.current = setTimeout(() => {
-      setRafayelTouchBubble('');
-    }, 14000);
-
-    updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 }, true);
-  };
+  updateDayWellness({ petHearts: (currentDayWellness.petHearts || 0) + 1 }, true);
+};
       // Deteksi apakah suatu sesi jadwal sudah selesai atau akan datang
       const getSessionTimeState = (item) => {
         if (item.date < realTodayStr) return 'done';
@@ -7829,84 +7870,89 @@ const LND_VOICE_CLIPS = [
                   )}
                 </div>
 
-                {/* BAGIAN BAWAH: Tombol Kontrol Bulat Besar Ala Layar Panggilan L&D */}
-                <div className="relative z-10 w-full max-w-xs pb-4">
-                  {!isConnected ? (
-                    <div className="flex items-center justify-around">
-                      <div className="flex flex-col items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleSwitchRafayelCall()}
-                          className="w-16 h-16 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-2xl flex items-center justify-center shadow-[0_0_25px_rgba(244,63,94,0.55)] active:scale-90 transition cursor-pointer"
-                          title={isEn ? 'Decline' : 'Tolak'}
-                        >
-                          📵
-                        </button>
-                        <span className="text-[11px] font-bold text-[#C7D5DE]">
-                          {isEn ? 'Decline' : 'Tolak'}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleAcceptRafayelCall}
-                          className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-500 to-[#42D6C5] hover:brightness-110 text-slate-950 text-2xl flex items-center justify-center shadow-[0_0_30px_rgba(66,214,197,0.75)] animate-bounce active:scale-90 transition cursor-pointer"
-                          title={isEn ? 'Accept' : 'Terima'}
-                        >
-                          📞
-                        </button>
-                        <span className="text-[11px] font-bold text-[#42D6C5]">
-                          {isEn ? 'Accept' : 'Angkat'}
-                        </span>
-                      </div>
+{/* BAGIAN BAWAH: Tombol Kontrol Bulat Besar Ala Layar Panggilan L&D */}
+              <div className="relative z-10 w-full max-w-xs pb-4">
+                {!isConnected ? (
+                  <div className="flex items-center justify-around">
+                    {/* 🔴 Tombol Kiri Saat Berdering: TOLAK PANGGILAN */}
+                    <div className="flex flex-col items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); playCallActionTone(false); handleEndRafayelCall(e); }}
+                        className="w-16 h-16 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-2xl flex items-center justify-center shadow-[0_0_25px_rgba(244,63,94,0.6)] active:scale-90 transition cursor-pointer"
+                        title={isEn ? 'Decline' : 'Tolak'}
+                      >
+                        📵
+                      </button>
+                      <span className="text-xs font-bold text-rose-300">
+                        {isEn ? 'Decline' : 'Tolak'}
+                      </span>
                     </div>
-                  ) : (
-                    <div className="flex items-center justify-around">
-                      <div className="flex flex-col items-center gap-1.5">
-                        <button
-                          type="button"
-onClick={() => handleSwitchRafayelCall()}
-                          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-lg flex items-center justify-center active:scale-90 transition cursor-pointer"
-                          title={isEn ? 'Next Topic' : 'Ganti Topik'}
-                        >
-                          🔀
-                        </button>
-                        <span className="text-[10px] font-semibold text-[#C7D5DE]">
-                          {isEn ? 'Switch' : 'Ganti Topik'}
-                        </span>
-                      </div>
 
-                      <div className="flex flex-col items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={handleEndRafayelCall}
-                          className="w-16 h-16 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-2xl flex items-center justify-center shadow-[0_0_25px_rgba(244,63,94,0.6)] active:scale-90 transition cursor-pointer"
-                          title={isEn ? 'End Call' : 'Akhiri'}
-                        >
-                          📵
-                        </button>
-                        <span className="text-[11px] font-bold text-rose-300">
-                          {isEn ? 'End Call' : 'Tutup'}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={handleAcceptRafayelCall}
-                          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[#42D6C5] text-lg flex items-center justify-center active:scale-90 transition cursor-pointer"
-                          title={isEn ? 'Replay' : 'Ulangi'}
-                        >
-                          🔁
-                        </button>
-                        <span className="text-[10px] font-semibold text-[#C7D5DE]">
-                          {isEn ? 'Replay' : 'Ulangi'}
-                        </span>
-                      </div>
+                    {/* 🟢 Tombol Kanan Saat Berdering: ANGKAT PANGGILAN */}
+                    <div className="flex flex-col items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); playCallActionTone(true); handleAcceptRafayelCall(e); }}
+                        className="w-16 h-16 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-2xl flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.7)] animate-bounce active:scale-90 transition cursor-pointer"
+                        title={isEn ? 'Answer' : 'Angkat'}
+                      >
+                        📞
+                      </button>
+                      <span className="text-xs font-bold text-emerald-300">
+                        {isEn ? 'Answer' : 'Angkat'}
+                      </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-around">
+                    {/* 🔀 Tombol Kiri Saat Tersambung: SWITCH SUARA & TEKS LANGSUNG */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleSwitchRafayelCall(); }}
+                        className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[#B99BEB] text-lg flex items-center justify-center active:scale-90 transition cursor-pointer"
+                        title={isEn ? 'Switch' : 'Ganti'}
+                      >
+                        🔀
+                      </button>
+                      <span className="text-[10px] font-semibold text-[#C7D5DE]">
+                        {isEn ? 'Switch' : 'Ganti'}
+                      </span>
+                    </div>
+
+                    {/* 🔴 Tombol Tengah Saat Tersambung: END CALL / TUTUP */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); playCallActionTone(false); handleEndRafayelCall(e); }}
+                        className="w-16 h-16 rounded-full bg-rose-500 hover:bg-rose-600 text-white text-2xl flex items-center justify-center shadow-[0_0_25px_rgba(244,63,94,0.6)] active:scale-90 transition cursor-pointer"
+                        title={isEn ? 'End Call' : 'Akhiri'}
+                      >
+                        📵
+                      </button>
+                      <span className="text-[11px] font-bold text-rose-300">
+                        {isEn ? 'End Call' : 'Tutup'}
+                      </span>
+                    </div>
+
+                    {/* 🔁 Tombol Kanan Saat Tersambung: REPLAY / ULANGI */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleAcceptRafayelCall(e); }}
+                        className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[#42D6C5] text-lg flex items-center justify-center active:scale-90 transition cursor-pointer"
+                        title={isEn ? 'Replay' : 'Ulangi'}
+                      >
+                        🔁
+                      </button>
+                      <span className="text-[10px] font-semibold text-[#C7D5DE]">
+                        {isEn ? 'Replay' : 'Ulangi'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
               </div>
             );
           })()}
