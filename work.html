@@ -1664,16 +1664,35 @@
       const [simEndDate, setSimEndDate] = useState('');
       const [simStartTime, setSimStartTime] = useState('22:00');
       const [simEndTime, setSimEndTime] = useState('02:00');
-      const [simTravelMin, setSimTravelMin] = useState(30);
+    const [simTravelVal, setSimTravelVal] = useState('30');
+      const [simTravelUnit, setSimTravelUnit] = useState('minutes'); // 'minutes' | 'hours'
 
-    const isCompleteDate = (str) => /^\d{4}-\d{2}-\d{2}$/.test(str || '');
+      // Konversi otomatis angka + satuan (Menit / Jam) menjadi total menit
+      const simTravelMin = useMemo(() => {
+        const num = parseFloat(String(simTravelVal).replace(',', '.'));
+        if (isNaN(num) || num < 0) return 0;
+        return simTravelUnit === 'hours' ? Math.round(num * 60) : Math.round(num);
+      }, [simTravelVal, simTravelUnit]);
+
+      const isCompleteDate = (str) => /^\d{4}-\d{2}-\d{2}$/.test(str || '');
+      const isValidTimeStr = (tStr) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(tStr || '');
+
+      // Auto-format ketikan jam (contoh: ketik "1200" -> otomatis jadi "12:00")
+      const formatManualTimeInput = (raw) => {
+        const cleaned = raw.replace(/[^\d:]/g, '');
+        if (/^\d{4}$/.test(cleaned)) {
+          return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}`;
+        }
+        return cleaned.slice(0, 5);
+      };
 
       const handleResetSimulator = () => {
         setSimStartDate('');
         setSimEndDate('');
-        setSimStartTime('22:00');
-        setSimEndTime('02:00');
-        setSimTravelMin(30);
+        setSimStartTime('00:00');
+        setSimEndTime('00:00');
+        setSimTravelVal('30');
+        setSimTravelUnit('minutes');
       };
 
       // 📅 Pemilih Tanggal Urutan: Tanggal (Hari) -> Bulan -> Tahun
@@ -1732,8 +1751,8 @@
         );
       };
 
-      const simAnalysis = useMemo(() => {
-        if (!isCompleteDate(simStartDate)) return null;
+const simAnalysis = useMemo(() => {
+     if (!isCompleteDate(simStartDate) || !isValidTimeStr(simStartTime) || !isValidTimeStr(simEndTime)) return null;
 
         const dates = [];
         if (simMode === 'single' || !isCompleteDate(simEndDate) || simEndDate < simStartDate) {
@@ -1768,9 +1787,9 @@
           const nextDate = addDaysToDateStr(dStr, 1);
 
           const rawRelated = [
-            ...schedules.filter(s => s.date === prevDate).map(s => ({ ...s, dayOffset: -1440 })),
-            ...schedules.filter(s => s.date === dStr).map(s => ({ ...s, dayOffset: 0 })),
-            ...schedules.filter(s => s.date === nextDate).map(s => ({ ...s, dayOffset: 1440 }))
+            ...schedules.filter(s => s.date === prevDate).map(s => ({ ...s, dayOffset: -1440, dayTag: 'H-1' })),
+            ...schedules.filter(s => s.date === dStr).map(s => ({ ...s, dayOffset: 0, dayTag: 'Hari H' })),
+            ...schedules.filter(s => s.date === nextDate).map(s => ({ ...s, dayOffset: 1440, dayTag: 'Besok' }))
           ];
 
           const normalized = rawRelated.map(s => {
@@ -1789,7 +1808,7 @@
           const offOnDay = normalized.find(s => s.dayOffset === 0 && s.isOffOrSick);
           const offNextOvernight = isOvernight ? normalized.find(s => s.dayOffset === 1440 && s.isOffOrSick && reqEnd > s.absStart) : null;
 
-          // 1. Cek Tabrakan dengan Jadwal Terdaftar
+          // 1. Cek Tabrakan Langsung dengan Jadwal Kerja Terdaftar
           const workConflicts = normalized.filter(s => !s.isOffOrSick && !s.isSleep && reqStart < s.absEnd && reqEnd > s.absStart);
 
           // 2. Cek Tabrakan Jeda Perjalanan / Persiapan
@@ -1801,7 +1820,7 @@
             (bufStart < s.absEnd && bufEnd > s.absStart)
           );
 
-          // 3. Estimasi Waktu Bobo (Mengacu pada jadwal Bobo tertulis atau jendela tidur alami 23:00 - 06:30)
+          // 3. Estimasi Waktu Bobo (Mengacu pada jadwal Bobo tertulis atau jendela tidur malam alami 23:00 - 06:30)
           const explicitSleepItems = normalized.filter(s => s.isSleep && s.absEnd > 1200 && s.absStart < 1920);
           let sleepStart = 1380; // 23:00
           let sleepEnd = 1830;   // 06:30 (+1 hari)
@@ -1821,20 +1840,22 @@
           });
           const sleepHours = Math.round((Math.max(0, totalSleepBase - sleepCutReq - sleepCutOther) / 60) * 10) / 10;
 
-          // 4. Estimasi Waktu Istirahat & Makan (Mempertimbangkan jam kosong alami 07:00 - 23:00)
+          // 4. Estimasi Waktu Istirahat & Makan (Memperhitungkan jam kosong alami 07:00 - 23:00)
           const wakeStart = 420; // 07:00
-          const wakeEnd = 1380;  // 23:00
+          const wakeEnd = 1380;  // 23:00 (16 jam aktif)
           let busyDayMin = calcOverlap(wakeStart, wakeEnd, bufStart, bufEnd);
           normalized.filter(s => !s.isOffOrSick && !s.isSleep).forEach(w => {
             busyDayMin += calcOverlap(wakeStart, wakeEnd, w.absStart, w.absEnd);
           });
           const restAndMealHours = Math.round((Math.max(0, (wakeEnd - wakeStart) - busyDayMin) / 60) * 10) / 10;
 
+          // Hitung jeda bersih tepat sebelum & sesudah sesi yang dicek
           const workBefore = normalized.filter(s => !s.isOffOrSick && !s.isSleep && s.absEnd <= reqStart).sort((a, b) => b.absEnd - a.absEnd)[0];
           const workAfter = normalized.filter(s => !s.isOffOrSick && !s.isSleep && s.absStart >= reqEnd).sort((a, b) => a.absStart - b.absStart)[0];
           const gapBefore = workBefore ? Math.max(0, Math.round(((reqStart - workBefore.absEnd - simTravelMin) / 60) * 10) / 10) : null;
           const gapAfter = workAfter ? Math.max(0, Math.round(((workAfter.absStart - reqEnd - simTravelMin) / 60) * 10) / 10) : null;
 
+          // Slot kosong alternatif di tanggal ini
           const freeAlternatives = TIME_SLOTS.filter(slot => {
             const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
             return !schedules.filter(s => s.date === dStr).some(s => {
@@ -1846,34 +1867,46 @@
             });
           }).map(sl => `${sl.start}–${sl.end}`);
 
-          let status = 'ok';
+          // 5. Susun Status & Alasan Real-Time Terhubung
+          let status = 'ok'; // 'ok' | 'warning' | 'blocked'
           let statusLabel = '✅ Tersedia';
-          let conflictNote = '';
+          let reasonText = '';
 
           if (offOnDay || offNextOvernight) {
             status = 'blocked';
             statusLabel = '❌ Tidak Tersedia';
             const tOff = offOnDay || offNextOvernight;
-            conflictNote = `Menabrak agenda ${tOff.title} [${tOff.status}]`;
+            reasonText = `Tidak bisa diambil karena bertepatan dengan agenda ${tOff.title} [${tOff.status}].`;
           } else if (workConflicts.length > 0) {
             status = 'blocked';
             statusLabel = '❌ Tidak Tersedia';
-            conflictNote = workConflicts.map(c => `Menabrak jadwal "${c.title}" (${c.start_time}–${c.end_time} WIB)`).join(' • ');
+            const conflictList = workConflicts.map(c => `"${c.title}" (${c.start_time}–${c.end_time} WIB)`).join(', ');
+            reasonText = `Tidak bisa diambil karena jam menabrak jadwal ${conflictList}.`;
           } else if (travelConflicts.length > 0) {
             status = 'warning';
             statusLabel = '⚠️ Jeda Mepet';
-            conflictNote = travelConflicts.map(tc => `Mepet dengan "${tc.title}" (${tc.start_time}–${tc.end_time} WIB)`).join(' • ');
+            const nearList = travelConflicts.map(tc => `"${tc.title}" (${tc.start_time}–${tc.end_time} WIB)`).join(', ');
+            reasonText = `Slot jam kosong, namun jeda perjalanan/persiapan (${simTravelMin} menit) terlalu mepet dengan ${nearList}.`;
           } else if (sleepHours < 5 || restAndMealHours < 2) {
             status = 'warning';
             statusLabel = '⚠️ Istirahat Terbatas';
+            if (sleepHours < 5 && workAfter) {
+              reasonText = `Slot kosong, namun waktu bobo hanya tersisa ${sleepHours} jam karena jadwal berikutnya "${workAfter.title}" mulai pukul ${workAfter.start_time} WIB.`;
+            } else if (sleepHours < 5) {
+              reasonText = `Slot kosong, namun mengambil jam ini memotong waktu bobo sehingga hanya tersisa ${sleepHours} jam.`;
+            } else {
+              reasonText = `Slot kosong, namun total jeda istirahat & makan di siang hari hanya tersisa ${restAndMealHours} jam.`;
+            }
+          } else {
+            reasonText = `Slot tersedia. Tersisa ${restAndMealHours} jam untuk istirahat/makan dan ${sleepHours} jam untuk bobo malam.`;
           }
 
           const restSubText = (gapBefore !== null || gapAfter !== null)
-            ? `${gapBefore !== null ? `Sebelum sesi: ${gapBefore}j` : 'Pagi/siang luang'} • ${gapAfter !== null ? `Sesudah sesi: ${gapAfter}j` : 'Sore/malam luang'}`
-            : 'Waktu luang makan & istirahat harian';
+            ? `${gapBefore !== null ? `Jeda sebelum: ${gapBefore}j` : 'Pagi/siang kosong'} • ${gapAfter !== null ? `Jeda sesudah: ${gapAfter}j` : 'Sore/malam kosong'}`
+            : 'Dari jam kosong jadwal harian';
 
           const sleepSubText = hasExplicitSleep
-            ? (sleepCutReq > 0 ? `Terpotong ${Math.round((sleepCutReq / 60) * 10) / 10}j dari jadwal Bobo` : 'Jadwal Bobo malam aman')
+            ? (sleepCutReq > 0 ? `Terpotong ${Math.round((sleepCutReq / 60) * 10) / 10}j dari jadwal Bobo` : 'Sesuai jadwal Bobo malam')
             : 'Estimasi tidur malam tersedia';
 
           return {
@@ -1881,7 +1914,7 @@
             dayName: getHariNama(dStr),
             status,
             statusLabel,
-            conflictNote,
+            reasonText,
             restAndMealHours,
             restSubText,
             sleepHours,
@@ -2712,6 +2745,7 @@ h('span', { style: { color: '#F472B6' } }, '•')
           // 🔍 TAB BARU: CEK KETERSEDIAAN SLOT, ISTIRAHAT & WAKTU BOBO
           // =================================================================
           activeTab === 'simulator' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+            // 1. Panel Filter Tanggal, Jam & Perjalanan
             h('div', { className: 'exec-card', style: { background: '#FFFFFF', border: '2px solid #F472B6' } },
               h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { borderBottom: '1.5px solid #FCE7F3', paddingBottom: '10px', marginBottom: '12px' } },
                 h('div', { className: 'flex items-center gap-2 flex-wrap' },
@@ -2742,11 +2776,11 @@ h('span', { style: { color: '#F472B6' } }, '•')
                 )
               ),
 
-              h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : '1.4fr 1.2fr 1fr', gap: '10px' } },
-               // Tanggal (Urutan: Tanggal -> Bulan -> Tahun, Default Kosong)
+              h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : '1.35fr 1.25fr 1fr', gap: '10px' } },
+                // Kolom 1: Tanggal (Tgl - Bln - Thn)
                 h('div', { style: { background: '#FFF0F6', padding: '10px 12px', borderRadius: '14px', border: '1px solid #F9A8D4' } },
                   h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 900, color: '#831843', marginBottom: '5px' } },
-                    simMode === 'single' ? 'Tanggal Pengecekan (Tgl - Bln - Thn):' : 'Rentang Tanggal (Tgl - Bln - Thn):'
+                    simMode === 'single' ? 'Tanggal Pengecekan:' : 'Rentang Tanggal (Tgl - Bln - Thn):'
                   ),
                   simMode === 'single'
                     ? renderDMYSelector(simStartDate, (val) => {
@@ -2770,46 +2804,100 @@ h('span', { style: { color: '#F472B6' } }, '•')
                       )
                 ),
 
+               // Kolom 2: Rencana Jam Sesi (Ketik Manual Bebas, misal 12:00)
                 h('div', { style: { background: '#FFF0F6', padding: '10px 12px', borderRadius: '14px', border: '1px solid #F9A8D4' } },
-                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 900, color: '#831843', marginBottom: '5px' } }, 'Jeda Perjalanan / Persiapan:'),
-                  h('select', {
-                    value: simTravelMin,
-                    onChange: e => setSimTravelMin(Number(e.target.value)),
-                    style: { width: '100%' }
-                  },
-                    [
-                      { v: 0, l: '0 Menit (Studio Rumah)' },
-                      { v: 15, l: '15 Menit (Persiapan)' },
-                      { v: 30, l: '30 Menit (Perjalanan)' },
-                      { v: 60, l: '60 Menit (1 Jam PP)' },
-                      { v: 90, l: '90 Menit (1.5 Jam PP)' }
-                    ].map(op => h('option', { key: op.v, value: op.v }, op.l))
+                  h('div', { className: 'flex items-center justify-between', style: { marginBottom: '5px' } },
+                    h('label', { style: { fontSize: '10.5px', fontWeight: 900, color: '#831843' } }, 'Rencana Jam Sesi'),
+                    simAnalysis && h('span', { className: 'font-mono', style: { fontSize: '9.5px', fontWeight: 900, background: '#DB2777', color: '#FFFFFF', padding: '1px 7px', borderRadius: '999px' } },
+                      `${simAnalysis.shiftDurHours} Jam${simAnalysis.isOvernight ? ' • Lintas Malam' : ''}`
+                    )
+                  ),
+                  h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
+                    h('div', null,
+                      h('span', { style: { display: 'block', fontSize: '9.5px', fontWeight: 800, color: '#9D174D', marginBottom: '2px' } }, 'Dari Jam (WIB):'),
+                      h('input', {
+                        type: 'text',
+                        inputMode: 'numeric',
+                        placeholder: '00:00',
+                        maxLength: 5,
+                        className: 'font-mono',
+                        value: simStartTime,
+                        onChange: e => setSimStartTime(formatManualTimeInput(e.target.value)),
+                        onBlur: () => { if (!isValidTimeStr(simStartTime)) setSimStartTime('00:00'); },
+                        style: { width: '100%', textAlign: 'center' }
+                      })
+                    ),
+                    h('div', null,
+                      h('span', { style: { display: 'block', fontSize: '9.5px', fontWeight: 800, color: '#9D174D', marginBottom: '2px' } }, 'Sampai Jam (WIB):'),
+                      h('input', {
+                        type: 'text',
+                        inputMode: 'numeric',
+                        placeholder: '00:00',
+                        maxLength: 5,
+                        className: 'font-mono',
+                        value: simEndTime,
+                        onChange: e => setSimEndTime(formatManualTimeInput(e.target.value)),
+                        onBlur: () => { if (!isValidTimeStr(simEndTime)) setSimEndTime('00:00'); },
+                        style: { width: '100%', textAlign: 'center' }
+                      })
+                    )
+                  )
+                ),
+// Kolom 3: Jeda Perjalanan / Persiapan (Ketik Angka + Pilih Menit / Jam)
+                h('div', { style: { background: '#FFF0F6', padding: '10px 12px', borderRadius: '14px', border: '1px solid #F9A8D4' } },
+                  h('div', { className: 'flex items-center justify-between', style: { marginBottom: '5px' } },
+                    h('label', { style: { fontSize: '10.5px', fontWeight: 900, color: '#831843' } }, 'Jeda Perjalanan / Prep:'),
+                    h('span', { className: 'font-mono', style: { fontSize: '9.5px', fontWeight: 800, color: '#9D174D' } },
+                      `= ${simTravelMin} mnt`
+                    )
+                  ),
+                  h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '6px' } },
+                    h('input', {
+                      type: 'number',
+                      min: '0',
+                      step: 'any',
+                      placeholder: '30',
+                      className: 'font-mono',
+                      value: simTravelVal,
+                      onChange: e => setSimTravelVal(e.target.value),
+                      style: { width: '100%', textAlign: 'center' }
+                    }),
+                    h('select', {
+                      value: simTravelUnit,
+                      onChange: e => setSimTravelUnit(e.target.value),
+                      style: { width: '100%' }
+                    },
+                     h('option', { value: 'minutes' }, 'Menit'),
+                      h('option', { value: 'hours' }, 'Jam')
+                    )
                   )
                 )
               )
             ),
-
+                                         
+            // 2. Hasil Pengecekan Real-Time
             !simAnalysis
-              ? h('div', { className: 'exec-card', style: { background: '#FFFFFF', textAlign: 'center', padding: '38px 20px', border: '1.5px dashed #F472B6' } },
-                  h('div', { style: { fontSize: '28px', marginBottom: '6px' } }, '🗓️'),
-                  h('div', { style: { fontSize: '13.5px', fontWeight: 900, color: '#4A0424' } }, 'Pilih Tanggal untuk Melihat Ketersediaan'),
-                  h('p', { style: { fontSize: '11.5px', color: '#831843', marginTop: '4px' } }, 'Menampilkan status bentrok, durasi istirahat & makan, serta estimasi waktu bobo.')
+              ? h('div', { className: 'exec-card', style: { background: '#FFFFFF', textAlign: 'center', padding: '36px 20px', border: '1.5px dashed #F472B6' } },
+                  h('div', { style: { fontSize: '26px', marginBottom: '6px' } }, '🗓️'),
+                  h('div', { style: { fontSize: '13.5px', fontWeight: 900, color: '#4A0424' } }, 'Pilih Tanggal & Jam untuk Mengecek Ketersediaan')
                 )
               : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+                  // Ringkasan Total Hari
                   h('div', {
                     className: 'exec-card flex items-center justify-between flex-wrap gap-2',
                     style: { background: '#FFFFFF', padding: '11px 16px', borderColor: '#F472B6' }
                   },
                     h('span', { style: { fontSize: '12.5px', fontWeight: 900, color: '#4A0424' } },
-                      `📊 ${simAnalysis.dayResults.length} Hari Dicek (${simStartTime}–${simEndTime} WIB)`
+                      `📊 ${simAnalysis.dayResults.length} Hari Dicek (${simStartTime} – ${simEndTime} WIB)`
                     ),
                     h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
                       h('span', { style: { background: '#D1FAE5', color: '#065F46', fontSize: '10.5px', fontWeight: 900, padding: '3px 10px', borderRadius: '999px' } }, `✅ ${simAnalysis.okCount} Tersedia`),
                       simAnalysis.warnCount > 0 && h('span', { style: { background: '#FEF3C7', color: '#92400E', fontSize: '10.5px', fontWeight: 900, padding: '3px 10px', borderRadius: '999px' } }, `⚠️ ${simAnalysis.warnCount} Istirahat Terbatas`),
-                      simAnalysis.blockedCount > 0 && h('span', { style: { background: '#FFE4E6', color: '#9F1239', fontSize: '10.5px', fontWeight: 900, padding: '3px 10px', borderRadius: '999px' } }, `❌ ${simAnalysis.blockedCount} Bentrok`)
+                      simAnalysis.blockedCount > 0 && h('span', { style: { background: '#FFE4E6', color: '#9F1239', fontSize: '10.5px', fontWeight: 900, padding: '3px 10px', borderRadius: '999px' } }, `❌ ${simAnalysis.blockedCount} Tidak Tersedia`)
                     )
                   ),
 
+                  // Kartu Detail Per Tanggal
                   simAnalysis.dayResults.map(res => {
                     const borderCol = res.status === 'ok' ? '#10B981' : res.status === 'warning' ? '#F59E0B' : '#E11D48';
                     const badgeBg = res.status === 'ok' ? '#D1FAE5' : res.status === 'warning' ? '#FEF3C7' : '#FFE4E6';
@@ -2822,10 +2910,14 @@ h('span', { style: { color: '#F472B6' } }, '•')
                         background: '#FFFFFF',
                         border: `1.5px solid ${borderCol}`,
                         borderLeft: `6px solid ${borderCol}`,
-                        padding: '14px 16px'
+                        padding: '14px 16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px'
                       }
                     },
-                      h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginBottom: '10px' } },
+                      // Header Kartu: Tanggal, Jam, Status & Tombol Booking
+                      h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
                         h('div', { className: 'flex items-center gap-2 flex-wrap' },
                           h('span', { style: { fontSize: '14px', fontWeight: 900, color: '#4A0424' } }, `${res.dayName}, ${res.date}`),
                           h('span', { className: 'font-mono', style: { fontSize: '11px', fontWeight: 800, background: '#FCE7F3', color: '#831843', padding: '2px 8px', borderRadius: '6px' } },
@@ -2843,35 +2935,39 @@ h('span', { style: { color: '#F472B6' } }, '•')
                         }, isAdmin ? '+ Masukkan Jadwal' : '📲 Booking Slot Ini')
                       ),
 
+                      // Keterangan / Alasan Real-Time Utama
+                      h('div', {
+                        style: {
+                          background: res.status === 'blocked' ? '#FFF1F2' : res.status === 'warning' ? '#FFFBEB' : '#F0FDF4',
+                          border: `1px solid ${res.status === 'blocked' ? '#FECDD3' : res.status === 'warning' ? '#FDE68A' : '#BBF7D0'}`,
+                          color: res.status === 'blocked' ? '#9F1239' : res.status === 'warning' ? '#92400E' : '#166534',
+                          padding: '8px 12px',
+                          borderRadius: '10px',
+                          fontSize: '11.5px',
+                          fontWeight: 800
+                        }
+                      }, res.reasonText),
+
+                      // Jika Tidak Tersedia: Tampilkan Slot Kosong Alternatif; Jika Tersedia: Tampilkan 2 Kotak Istirahat & Bobo
                       res.status === 'blocked'
-                        ? h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
-                            h('div', {
-                              style: { background: '#FFF1F2', border: '1px solid #FECDD3', color: '#9F1239', padding: '8px 12px', borderRadius: '10px', fontSize: '11.5px', fontWeight: 800 }
-                            }, `⛔ ${res.conflictNote}`),
-                            res.freeAlternatives.length > 0 && h('div', { style: { fontSize: '11px' } },
-                              h('span', { style: { fontWeight: 800, color: '#065F46', marginRight: '6px' } }, 'Slot Kosong Tersedia:'),
-                              res.freeAlternatives.map(alt => h('span', {
-                                key: alt,
-                                className: 'font-mono',
-                                style: { display: 'inline-block', background: '#ECFDF5', color: '#065F46', border: '1px solid #6EE7B7', padding: '2px 7px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, marginRight: '4px', marginTop: '2px' }
-                              }, alt))
-                            )
-                          )
-                        : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
-                            res.conflictNote && h('div', {
-                              style: { background: '#FFFBEB', border: '1px solid #FDE68A', color: '#92400E', padding: '7px 11px', borderRadius: '10px', fontSize: '11px', fontWeight: 800 }
-                            }, `⚠️ ${res.conflictNote}`),
-                            h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : '1fr 1fr', gap: '10px' } },
-                              h('div', { style: { background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px 12px' } },
-                                h('div', { style: { fontSize: '10.5px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' } }, '☕ Waktu Istirahat & Makan'),
-                                h('div', { style: { fontSize: '16px', fontWeight: 900, color: '#0F172A', marginTop: '2px' } }, `${res.restAndMealHours} Jam`),
-                                h('div', { style: { fontSize: '11px', color: '#475569', marginTop: '2px', fontWeight: 600 } }, res.restSubText)
-                              ),
-                              h('div', { style: { background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px 12px' } },
-                                h('div', { style: { fontSize: '10.5px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' } }, '😴 Estimasi Waktu Bobo'),
-                                h('div', { style: { fontSize: '16px', fontWeight: 900, color: res.sleepHours < 5 ? '#D97706' : '#0F172A', marginTop: '2px' } }, `${res.sleepHours} Jam`),
-                                h('div', { style: { fontSize: '11px', color: '#475569', marginTop: '2px', fontWeight: 600 } }, res.sleepSubText)
-                              )
+                        ? (res.freeAlternatives.length > 0 && h('div', { style: { fontSize: '11px' } },
+                            h('span', { style: { fontWeight: 800, color: '#065F46', marginRight: '6px' } }, 'Slot Kosong Tersedia:'),
+                            res.freeAlternatives.map(alt => h('span', {
+                              key: alt,
+                              className: 'font-mono',
+                              style: { display: 'inline-block', background: '#ECFDF5', color: '#065F46', border: '1px solid #6EE7B7', padding: '2px 7px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, marginRight: '4px', marginTop: '2px' }
+                            }, alt))
+                          ))
+                        : h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : '1fr 1fr', gap: '10px' } },
+                            h('div', { style: { background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px 12px' } },
+                              h('div', { style: { fontSize: '10.5px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' } }, '☕ Waktu Istirahat & Makan'),
+                              h('div', { style: { fontSize: '16px', fontWeight: 900, color: '#0F172A', marginTop: '2px' } }, `${res.restAndMealHours} Jam`),
+                              h('div', { style: { fontSize: '11px', color: '#475569', marginTop: '2px', fontWeight: 600 } }, res.restSubText)
+                            ),
+                            h('div', { style: { background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px 12px' } },
+                              h('div', { style: { fontSize: '10.5px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' } }, '😴 Estimasi Waktu Bobo'),
+                              h('div', { style: { fontSize: '16px', fontWeight: 900, color: res.sleepHours < 5 ? '#D97706' : '#0F172A', marginTop: '2px' } }, `${res.sleepHours} Jam`),
+                              h('div', { style: { fontSize: '11px', color: '#475569', marginTop: '2px', fontWeight: 600 } }, res.sleepSubText)
                             )
                           )
                     );
