@@ -1804,11 +1804,10 @@ h('span', { style: { color: '#F472B6' } }, '•')
 
 // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
         h('nav', { className: 'exec-nav no-scrollbar' },
-          [
+[
             { id: 'agenda', icon: '📅', label: t.tabAgenda },
             { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
             { id: 'kpi', icon: '📈', label: t.tabKPI },
-            { id: 'list', icon: '📋', label: t.tabList },
             { id: 'colors', icon: '🎨', label: t.tabColors },
             ...(isAdmin ? [{
               id: 'pending',
