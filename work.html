@@ -90,19 +90,19 @@
       gap: 26px;
       animation: tickerMove 36s linear infinite;
     }
-    .exec-nav {
-      background: #FFF0F6;
-      border-bottom: 2px solid #F9A8D4;
-      padding: 8px 14px;
-      position: sticky;
-      top: 56px;
-      z-index: 35;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      box-shadow: 0 4px 12px rgba(157, 23, 77, 0.08);
-    }
+   .exec-nav {
+   background: linear-gradient(90deg, #500724 0%, #831843 50%, #500724 100%);
+   border-bottom: 2px solid #F472B6;
+   padding: 9px 14px;
+   position: sticky;
+   top: 56px;
+   z-index: 35;
+   display: flex;
+   align-items: center;
+   gap: 7px;
+   overflow-x: auto;
+   box-shadow: 0 6px 18px rgba(80, 7, 36, 0.28);
+ }
 
     .wrap-pc { max-width: 1520px; margin: 0 auto; padding: 20px; }
     .wrap-hp { max-width: 540px; margin: 0 auto; padding: 10px; }
@@ -240,24 +240,61 @@
     }
     .btn-header:hover { background: rgba(255, 255, 255, 0.28); }
 
-    .nav-pill {
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 11.5px;
-      font-weight: 800;
-      color: #831843;
-      background: #FCE7F3;
-      border: 1.5px solid #F9A8D4;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .nav-pill.active {
-      background: linear-gradient(135deg, #DB2777 0%, #9D174D 100%);
-      color: #FFFFFF;
-      border-color: #831843;
-      font-weight: 900;
-      box-shadow: 0 4px 12px rgba(157, 23, 77, 0.28);
-    }
+   .nav-pill {
+   padding: 8px 14px;
+   border-radius: 12px;
+   font-size: 11.5px;
+   font-weight: 800;
+   color: #FCE7F3;
+   background: rgba(255, 255, 255, 0.14);
+   border: 1.5px solid rgba(249, 168, 212, 0.38);
+   white-space: nowrap;
+   flex-shrink: 0;
+ }
+ .nav-pill:hover {
+   background: rgba(255, 255, 255, 0.25);
+   color: #FFFFFF;
+ }
+ .nav-pill.active {
+   background: linear-gradient(135deg, #EC4899 0%, #F43F5E 100%);
+   color: #FFFFFF;
+   border: 2px solid #FDE047;
+   font-weight: 900;
+   box-shadow: 0 4px 14px rgba(236, 72, 153, 0.55);
+ }
+ .mobile-bottom-dock {
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   z-index: 45;
+   background: linear-gradient(90deg, #500724 0%, #831843 50%, #500724 100%);
+   border-top: 2px solid #F472B6;
+   padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+   display: grid;
+   grid-template-columns: repeat(5, 1fr);
+   gap: 4px;
+   box-shadow: 0 -6px 20px rgba(80, 7, 36, 0.35);
+ }
+ .dock-item {
+   background: transparent;
+   color: #FBCFE8;
+   border: 1px solid transparent;
+   border-radius: 10px;
+   padding: 5px 2px;
+   font-size: 9.5px;
+   font-weight: 800;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 2px;
+ }
+ .dock-item.active {
+   background: linear-gradient(135deg, #EC4899 0%, #F43F5E 100%);
+   color: #FFFFFF;
+   border-color: #FDE047;
+   font-weight: 900;
+ }
 
     input, select, textarea {
       font-family: inherit;
@@ -2038,18 +2075,6 @@
                 className: 'btn btn-header',
                 onClick: () => { window.location.href = './index.html'; }
               }, '🌊 Lemuria'),
-              h('div', { className: 'flex items-center', style: { background: 'rgba(0,0,0,0.25)', padding: '2px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.25)' } },
-                h('button', {
-                  onClick: () => setDisplayMode('mobile'),
-                  className: 'btn',
-                  style: { padding: '4px 8px', background: displayMode === 'mobile' ? '#FCE7F3' : 'transparent', color: displayMode === 'mobile' ? '#831843' : '#FFFFFF' }
-                }, '📱 HP'),
-                h('button', {
-                  onClick: () => setDisplayMode('pc'),
-                  className: 'btn',
-                  style: { padding: '4px 8px', background: displayMode === 'pc' ? '#FCE7F3' : 'transparent', color: displayMode === 'pc' ? '#831843' : '#FFFFFF' }
-                }, '💻 PC')
-              ),
               h('div', { className: 'flex items-center gap-1' },
                 h('button', { className: 'btn btn-header', style: { padding: '5px 8px' }, onClick: () => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y - 1)) : setCurrentMonth(m => m - 1) }, '◀'),
                 h('select', { value: currentMonth, onChange: e => setCurrentMonth(Number(e.target.value)) },
@@ -2618,7 +2643,7 @@ h('span', { style: { color: '#F472B6' } }, '•')
           ),
 
           // =================================================================
-          // TAB 2: KALENDER SPREADSHEET (SOLID PINK & BISA ZOOM 2 JARI)
+        // TAB 2: KALENDER SPREADSHEET (RESPONSIF OTOMATIS PC & HP)
           activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('div', { className: 'flex items-center justify-between gap-2' },
               h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
@@ -2640,154 +2665,83 @@ h('span', { style: { color: '#F472B6' } }, '•')
                 )
               ),
 
-              displayMode === 'mobile'
-                ? h('div', { style: { width: '100%', overflow: 'hidden' } },
-                    h('table', { className: 'matrix-table-hp' },
-                      h('thead', null,
-                        h('tr', null,
-                          h('th', { style: { width: '48px', textAlign: 'left', paddingLeft: '4px', fontSize: '7.5px' } }, `🌸 ${t.colDate}`),
-                          h('th', { style: { width: '52px', fontSize: '7.5px' } }, t.colStatus),
-                          TIME_SLOTS.map(slot => h('th', { key: slot.label, className: 'font-mono' },
-                            h('div', null, `${slot.start}/`),
-                            h('div', null, slot.end)
-                          ))
-                        )
-                      ),
-                      h('tbody', null,
-                        Array.from({ length: daysInMonth }).map((_, i) => {
-                          const day = i + 1;
-                          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                          const dtObj = new Date(currentYear, currentMonth, day);
-                          const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'short' }).format(dtObj);
-                          const isToday = dateStr === realTodayStr;
-                          const density = getDayScheduleDensity(dateStr, true);
-
-                          return h('tr', { key: day, className: isToday ? 'row-today-glow' : '' },
-                            h('td', {
-                              className: 'col-date-hp',
-                              onClick: () => { setSelectedDate(dateStr); setActiveTab('agenda'); }
-                            },
-                              h('div', { className: 'flex items-center gap-1' },
-                                isToday && h('span', { className: 'radar-dot-wrap', style: { width: '6px', height: '6px' } },
-                                  h('span', { className: 'radar-dot-core', style: { width: '6px', height: '6px' } })
-                                ),
-                                h('span', { style: { fontSize: '8.5px', fontWeight: 900, color: '#4A0424', width: '12px', textAlign: 'right' } }, day),
-                                h('span', { style: { fontSize: '7px', fontWeight: 800, color: '#9D174D', textTransform: 'uppercase' } }, dayName)
-                              )
-                            ),
-                            h('td', { className: 'col-status-hp' },
-                              h('span', { className: `status-pill-hp ${density.cls}` }, density.text)
-                            ),
-                            TIME_SLOTS.map(slot => {
-                              const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                              const slotItems = schedules.filter(s => {
-                                if (s.date !== dateStr) return false;
-                                const st = timeToMinutes(s.start_time);
-                                let en = timeToMinutes(s.end_time);
-                                if (en <= st) en = 24 * 60;
-                                return st < eM && en > sM;
-                              });
-                              return h('td', {
-                                key: slot.label,
-                                onClick: () => {
-                                  if (slotItems.length > 0) {
-                                    const it = slotItems[0];
-                                    if (isAdmin) handleOpenEdit(it);
-                                    else notify(`🔒 Slot ${it.start_time}-${it.end_time} sudah terisi: ${it.title} [${it.status}]. Pilih kotak putih yang kosong!`);
-                                  } else {
-                                    handleOpenCreate(dateStr, slot.start, slot.end);
-                                  }
-                                }
-                              },
-                                slotItems.length > 0 && h('div', { style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1px' } },
-                                  slotItems.map(item => h('div', {
-                                    key: item.id,
-                                    style: {
-                                      width: '100%', flex: 1, minHeight: '15px', borderRadius: '3px',
-                                      background: item.color, border: '1px solid rgba(0,0,0,0.25)'
-                                    }
-                                  }))
-                                )
-                              );
-                            })
-                          );
-                        })
-                      )
+              h('div', { style: { overflowX: 'auto', maxHeight: '75vh', WebkitOverflowScrolling: 'touch' } },
+                h('table', { className: 'matrix-table-pc' },
+                  h('thead', null,
+                    h('tr', null,
+                      h('th', { className: 'sticky-col-pc', style: { minWidth: displayMode === 'mobile' ? '115px' : '170px', textAlign: 'left', background: '#9D174D' } }, `🌸 ${t.colDateTime}`),
+                      h('th', { style: { minWidth: displayMode === 'mobile' ? '95px' : '125px' } }, t.colDayStatus),
+                      TIME_SLOTS.map(slot => {
+                        const isCurrentSlot = slot.label === currentActiveSlotLabel;
+                        return h('th', {
+                          key: slot.label,
+                          id: `matrix-col-${slot.label}`,
+                          className: `font-mono ${isCurrentSlot ? 'active-time-col-header' : ''}`,
+                          style: { minWidth: displayMode === 'mobile' ? '95px' : '105px' }
+                        }, isCurrentSlot ? `🟢 ${slot.label}` : slot.label);
+                      })
                     )
-                  )
-                : h('div', { style: { overflowX: 'auto', maxHeight: '75vh' } },
-                    h('table', { className: 'matrix-table-pc' },
-                      h('thead', null,
-                        h('tr', null,
-                          h('th', { className: 'sticky-col-pc', style: { minWidth: '170px', textAlign: 'left', background: '#9D174D' } }, `🌸 ${t.colDateTime}`),
-                          h('th', { style: { minWidth: '125px' } }, t.colDayStatus),
-                         TIME_SLOTS.map(slot => {
-                            const isCurrentSlot = slot.label === currentActiveSlotLabel;
-                            return h('th', {
-                              key: slot.label,
-                              id: `matrix-col-${slot.label}`,
-                              className: `font-mono ${isCurrentSlot ? 'active-time-col-header' : ''}`,
-                              style: { minWidth: '105px' }
-                            }, isCurrentSlot ? `🟢 ${slot.label}` : slot.label);
-                          })
-                        )
-                      ),
-                      h('tbody', null,
-                        Array.from({ length: daysInMonth }).map((_, i) => {
-                          const day = i + 1;
-                          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                          const dtObj = new Date(currentYear, currentMonth, day);
-                          const dayName = new Intl.DateTimeFormat(t.locale, { weekday: 'long' }).format(dtObj);
-                          const isToday = dateStr === realTodayStr;
-                          const density = getDayScheduleDensity(dateStr, false);
+                  ),
+                  h('tbody', null,
+                    Array.from({ length: daysInMonth }).map((_, i) => {
+                      const day = i + 1;
+                      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      const dtObj = new Date(currentYear, currentMonth, day);
+                      const dayName = new Intl.DateTimeFormat(t.locale, { weekday: displayMode === 'mobile' ? 'short' : 'long' }).format(dtObj);
+                      const isToday = dateStr === realTodayStr;
+                      const density = getDayScheduleDensity(dateStr, displayMode === 'mobile');
 
-                          return h('tr', { key: day, id: `matrix-row-${dateStr}`, className: isToday ? 'row-today-glow' : '' },
-                            h('td', { className: 'sticky-col-pc' },
-                              h('div', { className: 'flex items-center gap-2' },
-                                isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
-                                h('span', { style: { fontSize: '14px', fontWeight: 900, color: '#4A0424' } }, day),
-                                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#9D174D', textTransform: 'uppercase' } }, dayName)
-                              )
-                            ),
-                            h('td', { style: { textAlign: 'center', verticalAlign: 'middle' } },
-                              h('span', { className: `status-pill-hp ${density.cls}`, style: { fontSize: '9px', padding: '4px 8px', borderRadius: '8px' } }, density.text)
-                            ),
-                            TIME_SLOTS.map(slot => {
-                              const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                              const slotItems = schedules.filter(s => {
-                                if (s.date !== dateStr) return false;
-                                const st = timeToMinutes(s.start_time);
-                                let en = timeToMinutes(s.end_time);
-                                if (en <= st) en = 24 * 60;
-                                return st < eM && en > sM;
-                              });
-                              return h('td', {
-                                key: slot.label,
-                                onClick: () => slotItems.length > 0
-                                  ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`🔒 Slot ${slotItems[0].start_time}-${slotItems[0].end_time} sudah terisi: ${slotItems[0].title}. Pilih kotak kosong!`))
-                                  : handleOpenCreate(dateStr, slot.start, slot.end),
-                                style: { cursor: 'pointer' }
-                              },
-                                slotItems.map(item => h('div', {
-                                  key: item.id,
-                                  style: {
-                                    background: item.color, color: '#0F172A', padding: '4px 6px',
-                                    borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px',
-                                    border: '1px solid rgba(0,0,0,0.18)'
-                                  }
-                                },
-                                  h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `🔒 ${item.title}`),
-                                  h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.85 } }, `${item.start_time}-${item.end_time}`)
-                                ))
-                              );
-                            })
+                      return h('tr', { key: day, id: `matrix-row-${dateStr}`, className: isToday ? 'row-today-glow' : '' },
+                        h('td', {
+                          className: 'sticky-col-pc',
+                          onClick: () => { setSelectedDate(dateStr); setActiveTab('agenda'); },
+                          style: { cursor: 'pointer' }
+                        },
+                          h('div', { className: 'flex items-center gap-1-5' },
+                            isToday && h('span', { className: 'radar-dot-wrap' }, h('span', { className: 'radar-dot-core' })),
+                            h('span', { style: { fontSize: displayMode === 'mobile' ? '12px' : '14px', fontWeight: 900, color: '#4A0424' } }, day),
+                            h('span', { style: { fontSize: displayMode === 'mobile' ? '10px' : '11px', fontWeight: 800, color: '#9D174D', textTransform: 'uppercase' } }, dayName)
+                          )
+                        ),
+                        h('td', { style: { textAlign: 'center', verticalAlign: 'middle' } },
+                          h('span', { className: `status-pill-hp ${density.cls}`, style: { fontSize: '9px', padding: '4px 8px', borderRadius: '8px' } }, density.text)
+                        ),
+                        TIME_SLOTS.map(slot => {
+                          const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
+                          const slotItems = schedules.filter(s => {
+                            if (s.date !== dateStr) return false;
+                            const st = timeToMinutes(s.start_time);
+                            let en = timeToMinutes(s.end_time);
+                            if (en <= st) en = 24 * 60;
+                            return st < eM && en > sM;
+                          });
+                          return h('td', {
+                            key: slot.label,
+                            onClick: () => slotItems.length > 0
+                              ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`🔒 Slot ${slotItems[0].start_time}-${slotItems[0].end_time} sudah terisi: ${slotItems[0].title}. Pilih kotak kosong!`))
+                              : handleOpenCreate(dateStr, slot.start, slot.end),
+                            style: { cursor: 'pointer' }
+                          },
+                            slotItems.map(item => h('div', {
+                              key: item.id,
+                              style: {
+                                background: item.color, color: '#0F172A', padding: '4px 6px',
+                                borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px',
+                                border: '1px solid rgba(0,0,0,0.18)'
+                              }
+                            },
+                              h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `🔒 ${item.title}`),
+                              h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.85 } }, `${item.start_time}-${item.end_time}`)
+                            ))
                           );
                         })
-                      )
-                            )
-                          )
-                        )
-                      ),
+                      );
+                    })
+                  )
+                )
+              )
+            )
+          ),
 // =================================================================
           // 🔍 TAB BARU: CEK KETERSEDIAAN SLOT, ISTIRAHAT & WAKTU BOBO (REAL-TIME)
           // =================================================================
@@ -3220,7 +3174,24 @@ h('span', { style: { color: '#F472B6' } }, '•')
                 )
           )
         ),
-
+// 📱 NAVIGASI BAWAH INTERAKTIF KHUSUS LAYAR HP (OTOMATIS MUNCUL DI HP)
+        displayMode === 'mobile' && h('div', { className: 'mobile-bottom-dock' },
+          [
+            { id: 'agenda', icon: '📅', label: 'Agenda' },
+            { id: 'calendar', icon: '📊', label: 'Tabel' },
+            { id: 'simulator', icon: '🔍', label: 'Cek Slot' },
+            { id: 'kpi', icon: '📈', label: 'KPI' },
+            { id: 'list', icon: '📋', label: 'Daftar' }
+          ].map(tb => h('button', {
+            key: tb.id,
+            type: 'button',
+            onClick: () => setActiveTab(tb.id),
+            className: `dock-item ${activeTab === tb.id ? 'active' : ''}`
+          },
+            h('span', { style: { fontSize: '15px', lineHeight: 1 } }, tb.icon),
+            h('span', null, tb.label)
+          ))
+        ),
         // =================================================================
         // 💡 V2.2: MODAL POPUP PANDUAN CARA BOOKING VIA WHATSAPP
         // =================================================================
