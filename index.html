@@ -1320,7 +1320,7 @@
     });
   </script>
 
-<script type="text/babel">
+<script id="alisya-jsx-source" type="text/babel">
     
     const { useState, useEffect, useMemo, useRef } = React;
 
@@ -2922,7 +2922,7 @@ const handleBoostMood = () => {
           }
         }, 350);
         return () => clearTimeout(timer);
-      }, [selectedDate, currentMonth, activeTab, displayMode]);
+      }, [selectedDate]);
       const prevRealTodayRef = useRef(realTodayStr);
 
       // 🔄 AUTO-SWITCH & AUTO-RESET REAL-TIME SETIAP GANTI HARI (JAM 00:00 TENGAH MALAM)
@@ -8519,6 +8519,50 @@ const handleTouchRafayel = (source = 'header') => {
           .catch((err) => console.error('Gagal aktivasi Service Worker:', err));
       });
     }
+ </script>
+
+<!-- ⚡ MESIN FAST-BOOT CACHE V4: Kode Berwarna, Anti-Blank & Super Cepat -->
+  <script>
+    (function() {
+      if (window.Babel && Babel.disableScriptTags) {
+        Babel.disableScriptTags();
+      }
+      var el = document.getElementById('alisya-jsx-source');
+      if (!el) return;
+      var src = el.textContent;
+      el.type = 'text/plain';
+      el.parentNode.removeChild(el);
+
+      var h = 5381;
+      for (var i = 0; i < src.length; i++) {
+        h = ((h << 5) + h) + src.charCodeAt(i);
+      }
+      var currentHash = 'v4_' + src.length + '_' + (h >>> 0).toString(36);
+      var cacheKey = 'alisya_fastboot_v4_code';
+      var hashKey = 'alisya_fastboot_v4_hash';
+      var compiledCode = null;
+
+      try {
+        localStorage.removeItem('alisya_compiled_js_cache');
+        localStorage.removeItem('alisya_fastboot_v2_code');
+        localStorage.removeItem('alisya_fastboot_v3_code');
+        if (localStorage.getItem(hashKey) === currentHash) {
+          compiledCode = localStorage.getItem(cacheKey);
+        }
+      } catch (e) {}
+
+      if (!compiledCode) {
+        compiledCode = Babel.transform(src, { presets: ['es2015', 'react'] }).code;
+        try {
+          localStorage.setItem(cacheKey, compiledCode);
+          localStorage.setItem(hashKey, currentHash);
+        } catch (e) {}
+      }
+
+      var runner = document.createElement('script');
+      runner.text = compiledCode;
+      document.body.appendChild(runner);
+    })();
   </script>
 </body>
 </html>
