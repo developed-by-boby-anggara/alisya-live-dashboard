@@ -803,6 +803,122 @@
       const [repeatDays, setRepeatDays] = useState(1);
       const [cloneModalOpen, setCloneModalOpen] = useState(false);
       const [cloneTargetDate, setCloneTargetDate] = useState(() => addDaysToDateStr(realTodayStr, 1));
+      // ⚡ V2.15: INPUT CEPAT JADWAL 1 BULAN PENUH (BULK SHIFT MOM UUNG)
+      const [bulkModalOpen, setBulkModalOpen] = useState(false);
+      const [bulkYear, setBulkYear] = useState(() => new Date().getFullYear());
+      const [bulkMonth, setBulkMonth] = useState(() => new Date().getMonth());
+      const [bulkPatternText, setBulkPatternText] = useState('');
+      const [bulkReplaceExisting, setBulkReplaceExisting] = useState(true);
+      const [bulkMarkOffAsDayOff, setBulkMarkOffAsDayOff] = useState(false);
+
+      const MOMUUNG_SHIFT_PRESETS = {
+        '1': { label: 'Shift 1 Mom Uung', start: '05:00', end: '13:00', bg: '#DCFCE7', col: '#14532D' },
+        '2': { label: 'Shift 2 Mom Uung', start: '11:00', end: '19:00', bg: '#BBF7D0', col: '#14532D' },
+        '3': { label: 'Shift 3 Mom Uung', start: '17:00', end: '00:00', bg: '#86EFAC', col: '#14532D' },
+        '4': { label: 'Shift 4 Mom Uung', start: '23:00', end: '06:50', bg: '#4ADE80', col: '#052E16' }
+      };
+
+      const parseBulkShiftTokens = (rawText, maxDays) => {
+        const rawNoNl = String(rawText || '').replace(/\r/g, '').replace(/\n/g, ' ');
+        if (!rawNoNl.trim()) return Array(maxDays).fill('');
+        const isTab = rawNoNl.includes('\t');
+        const parts = isTab
+          ? rawNoNl.split('\t')
+          : rawNoNl.trim().split(/[,\s;]+/).filter(Boolean);
+        const tokens = [];
+        for (let i = 0; i < maxDays; i++) {
+          if (i >= parts.length) { tokens.push(''); continue; }
+          const v = String(parts[i] || '').trim().toUpperCase();
+          if (['1', '2', '3', '4'].includes(v)) tokens.push(v);
+          else if ((isTab && v === '') || ['L', '0', '-', 'OFF', 'LIBUR', 'CUTI', 'X'].includes(v)) tokens.push('L');
+          else tokens.push('');
+        }
+        return tokens;
+      };
+
+      const handleOpenBulkModal = () => {
+        setBulkYear(currentYear);
+        setBulkMonth(currentMonth);
+        setBulkModalOpen(true);
+      };
+
+      const handleCycleBulkDay = (dayIndex, totalDays) => {
+        const tokens = parseBulkShiftTokens(bulkPatternText, totalDays).map(x => x || 'L');
+        const order = ['L', '1', '2', '3', '4'];
+        const curr = tokens[dayIndex] || 'L';
+        tokens[dayIndex] = order[(order.indexOf(curr) + 1) % order.length];
+        setBulkPatternText(tokens.join(','));
+      };
+
+      const handleApplyBulkMonth = () => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const totalDays = new Date(bulkYear, bulkMonth + 1, 0).getDate();
+        const tokens = parseBulkShiftTokens(bulkPatternText, totalDays);
+        const momBrand = brands.find(b => b.id === 'b_momuung');
+        const momColor = momBrand ? momBrand.color : '#B6D7A8';
+        const offBrand = brands.find(b => b.id === 'b_pribadi');
+        const offColor = offBrand ? offBrand.color : '#EF4444';
+        const monthPrefix = `${bulkYear}-${String(bulkMonth + 1).padStart(2, '0')}-`;
+
+        const baseList = bulkReplaceExisting
+          ? schedules.filter(s => !(s.date && s.date.startsWith(monthPrefix) && (s.brand_id === 'b_momuung' || s.is_bulk_momuung_off)))
+          : [...schedules];
+
+        const newItems = [];
+        let shiftCount = 0;
+        let offCount = 0;
+        const ts = Date.now();
+
+        for (let d = 1; d <= totalDays; d++) {
+          const code = tokens[d - 1];
+          const dateStr = `${monthPrefix}${String(d).padStart(2, '0')}`;
+          if (MOMUUNG_SHIFT_PRESETS[code]) {
+            const p = MOMUUNG_SHIFT_PRESETS[code];
+            shiftCount++;
+            newItems.push({
+              id: `sch_bulk_${ts}_${d}`,
+              date: dateStr,
+              start_time: p.start,
+              end_time: p.end,
+              title: p.label,
+              brand_id: 'b_momuung',
+              status: 'LIVE',
+              color: momColor,
+              notes: 'Input Cepat Bulanan Mom Uung',
+              gmv: '',
+              checklist: { shoot: false, edit: false, upload: false }
+            });
+          } else if (code === 'L' && bulkMarkOffAsDayOff) {
+            offCount++;
+            newItems.push({
+              id: `sch_bulk_off_${ts}_${d}`,
+              date: dateStr,
+              start_time: '00:00',
+              end_time: '23:59',
+              title: 'OFF / Libur Mom Uung',
+              brand_id: 'b_pribadi',
+              status: 'OFF',
+              color: offColor,
+              is_bulk_momuung_off: true,
+              notes: 'Libur Bulanan Mom Uung',
+              gmv: '',
+              checklist: { shoot: false, edit: false, upload: false }
+            });
+          }
+        }
+
+        if (newItems.length === 0) {
+          notify('⚠️ Belum ada kode shift (1/2/3/4) yang diisi.');
+          return;
+        }
+
+        saveSchedulesToCloud([...baseList, ...newItems]);
+        setCurrentYear(bulkYear);
+        setCurrentMonth(bulkMonth);
+        setSelectedDate(`${monthPrefix}01`);
+        setBulkModalOpen(false);
+        notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} langsung terisi 1 bulan penuh!`);
+      };
 // 🚨 V2.7: State Ceklis Persiapan Studio (15 Menit Sebelum Mulai) & Slot Jam Aktif
       const [standbyChecklist, setStandbyChecklist] = useState({
         mic: false,
@@ -1101,8 +1217,39 @@
         return map;
       }, [schedules]);
 
+     // 🌙 V2.14: HELPER JADWAL LINTAS MALAM (WARNA & BLOK JAM NYAMBUNG KE HARI BERIKUTNYA)
+      const getSchedulesCoveringDate = (targetDateStr) => {
+        const prevDateStr = addDaysToDateStr(targetDateStr, -1);
+        const result = [];
+
+        schedules.forEach(s => {
+          const sMin = timeToMinutes(s.start_time);
+          const rawEndMin = timeToMinutes(s.end_time);
+          const crossesMidnight = rawEndMin > 0 && rawEndMin < sMin;
+
+          if (s.date === targetDateStr) {
+            const effEndMin = rawEndMin <= sMin ? 1440 : rawEndMin;
+            result.push({
+              ...s,
+              effStartMin: sMin,
+              effEndMin: effEndMin,
+              isOvernightCarry: false
+            });
+          } else if (s.date === prevDateStr && crossesMidnight) {
+            result.push({
+              ...s,
+              effStartMin: 0,
+              effEndMin: rawEndMin,
+              isOvernightCarry: true
+            });
+          }
+        });
+
+        return result.sort((a, b) => a.effStartMin - b.effStartMin);
+      };
+
       const selectedDaySchedules = useMemo(() => {
-        return schedules.filter(s => s.date === selectedDate).sort((a, b) => a.start_time.localeCompare(b.start_time));
+        return getSchedulesCoveringDate(selectedDate);
       }, [schedules, selectedDate]);
 
       const availableSlotsForSelectedDate = useMemo(() => {
@@ -1110,22 +1257,19 @@
         if (isDayOff) return [];
         return TIME_SLOTS.filter(slot => {
           const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-          return !selectedDaySchedules.some(s => {
-            const st = timeToMinutes(s.start_time);
-            let en = timeToMinutes(s.end_time);
-            if (en <= st) en = 24 * 60;
-            return st < eM && en > sM;
-          });
+          return !selectedDaySchedules.some(s => s.effStartMin < eM && s.effEndMin > sM);
         });
       }, [selectedDaySchedules]);
 
       const getDayScheduleDensity = (dateStr, isCompact = false) => {
-        const dayShifts = schedules.filter(s => s.date === dateStr);
+        const dayShifts = getSchedulesCoveringDate(dateStr);
         if (dayShifts.length === 0) return { text: t.statusFree, cls: 'st-free' };
         if (dayShifts.some(s => s.status === 'OFF')) return { text: t.statusOff, cls: 'st-off' };
         let prodHours = 0;
         dayShifts.forEach(s => {
-          if (s.status !== 'Tidur' && s.brand_id !== 'b_sleep') prodHours += calculateDurationHours(s.start_time, s.end_time);
+          if (s.status !== 'Tidur' && s.brand_id !== 'b_sleep') {
+            prodHours += Math.round(((s.effEndMin - s.effStartMin) / 60) * 10) / 10;
+          }
         });
         if (prodHours >= 10) return { text: isCompact ? t.statusFull : t.statusFullPC, cls: 'st-full' };
         if (prodHours >= 6) return { text: t.statusMed, cls: 'st-med' };
@@ -1134,85 +1278,88 @@
       };
 
       // =====================================================================
-      // 🔒 V2.2: PROTEKSI ANTI-DOUBLE BOOKING UNTUK POPUP KLIEN & ADMIN
+      // 🔒 V2.14: PROTEKSI ANTI-DOUBLE BOOKING KLIEN & ADMIN (TERMASUK LINTAS MALAM)
       // =====================================================================
       const schedulesOnBookingDate = useMemo(() => {
-        return schedules
-          .filter(s => s.date === bookingData.date)
-          .sort((a, b) => a.start_time.localeCompare(b.start_time));
+        return getSchedulesCoveringDate(bookingData.date);
       }, [schedules, bookingData.date]);
 
-      // Cek apakah satu titik Jam Mulai sudah dipakai jadwal lain
       const getBookingStartConflict = (timeCandidate) => {
         const candMin = timeToMinutes(timeCandidate);
         return schedulesOnBookingDate.find(s => {
           if (s.status === 'OFF') return true;
-          const sStart = timeToMinutes(s.start_time);
-          let sEnd = timeToMinutes(s.end_time);
-          if (sEnd <= sStart) sEnd = 24 * 60;
-          return candMin >= sStart && candMin < sEnd;
+          return candMin >= s.effStartMin && candMin < s.effEndMin;
         });
       };
 
-      // Cek apakah titik Jam Selesai menabrak jadwal lain atau <= Jam Mulai
       const getBookingEndConflict = (endCandidate) => {
         const startMin = timeToMinutes(bookingData.start_time);
         const endMin = timeToMinutes(endCandidate);
         if (endMin <= startMin) return { title: 'Harus > ' + bookingData.start_time, isOrderError: true };
         return schedulesOnBookingDate.find(s => {
           if (s.status === 'OFF') return true;
-          const sStart = timeToMinutes(s.start_time);
-          let sEnd = timeToMinutes(s.end_time);
-          if (sEnd <= sStart) sEnd = 24 * 60;
-          return startMin < sEnd && endMin > sStart;
+          return startMin < s.effEndMin && endMin > s.effStartMin;
         });
       };
 
-      // Cek apakah rentang waktu yang dipilih klien saat ini bentrok
       const currentBookingConflict = useMemo(() => {
         const sMin = timeToMinutes(bookingData.start_time);
         const eMin = timeToMinutes(bookingData.end_time);
         if (eMin <= sMin) return { title: 'Jam Selesai harus lebih besar dari Jam Mulai', start_time: bookingData.start_time, end_time: bookingData.end_time };
         return schedulesOnBookingDate.find(s => {
           if (s.status === 'OFF') return true;
-          const exS = timeToMinutes(s.start_time);
-          let exE = timeToMinutes(s.end_time);
-          if (exE <= exS) exE = 24 * 60;
-          return sMin < exE && eMin > exS;
+          return sMin < s.effEndMin && eMin > s.effStartMin;
         });
       }, [bookingData.start_time, bookingData.end_time, schedulesOnBookingDate]);
 
       const existingSchedulesOnFormDate = useMemo(() => {
-        return schedules
-          .filter(s => s.date === formData.date && (!selectedSchedule || s.id !== selectedSchedule.id))
-          .sort((a, b) => a.start_time.localeCompare(b.start_time));
+        return getSchedulesCoveringDate(formData.date)
+          .filter(s => !selectedSchedule || s.id !== selectedSchedule.id);
       }, [schedules, formData.date, selectedSchedule]);
 
       const checkConflictRange = (startStr, endStr) => {
+        if (!startStr || !endStr || startStr === endStr) return null;
         const sMin = timeToMinutes(startStr);
-        let eMin = timeToMinutes(endStr);
-        if (eMin <= sMin) eMin = 24 * 60;
-        return existingSchedulesOnFormDate.find(s => {
-          const exS = timeToMinutes(s.start_time);
-          let exE = timeToMinutes(s.end_time);
-          if (exE <= exS) exE = 24 * 60;
-          return sMin < exE && eMin > exS;
-        });
+        const rawEnd = timeToMinutes(endStr);
+        const crossesMidnight = rawEnd > 0 && rawEnd < sMin;
+        const eMinToday = rawEnd <= sMin ? 1440 : rawEnd;
+
+        const conflictToday = existingSchedulesOnFormDate.find(s => sMin < s.effEndMin && eMinToday > s.effStartMin);
+        if (conflictToday) return conflictToday;
+
+        if (crossesMidnight) {
+          const nextDateStr = addDaysToDateStr(formData.date, 1);
+          const nextDayItems = getSchedulesCoveringDate(nextDateStr)
+            .filter(s => !selectedSchedule || s.id !== selectedSchedule.id);
+          const conflictNext = nextDayItems.find(s => 0 < s.effEndMin && rawEnd > s.effStartMin);
+          if (conflictNext) return { ...conflictNext, title: `Besok: ${conflictNext.title}` };
+        }
+        return null;
       };
 
-      const currentFormConflict = useMemo(() => checkConflictRange(formData.start_time, formData.end_time), [formData.start_time, formData.end_time, existingSchedulesOnFormDate]);
+      const getAdminStartConflict = (timeCandidate) => {
+        const candMin = timeToMinutes(timeCandidate);
+        return existingSchedulesOnFormDate.find(s => candMin >= s.effStartMin && candMin < s.effEndMin);
+      };
+
+      const getAdminEndConflict = (endCandidate) => {
+        if (endCandidate === formData.start_time) return { title: 'Sama dengan Jam Mulai', isOrderError: true };
+        const sMin = timeToMinutes(formData.start_time);
+        const rawEnd = timeToMinutes(endCandidate);
+        if (rawEnd > 0 && rawEnd < sMin && sMin < 18 * 60) {
+          return { title: 'Harus > ' + formData.start_time, isOrderError: true };
+        }
+        return checkConflictRange(formData.start_time, endCandidate);
+      };
+
+      const currentFormConflict = useMemo(() => checkConflictRange(formData.start_time, formData.end_time), [formData.start_time, formData.end_time, existingSchedulesOnFormDate, schedules, formData.date]);
 
       const findFirstFreeSlotOnDate = (dateStr, prefStart = '10:00', prefEnd = '12:00') => {
-        const dayList = schedules.filter(s => s.date === dateStr);
+        const dayList = getSchedulesCoveringDate(dateStr);
         if (dayList.some(s => s.status === 'OFF')) return null;
         const isFree = (st, en) => {
           const sM = timeToMinutes(st), eM = timeToMinutes(en);
-          return !dayList.some(item => {
-            const iS = timeToMinutes(item.start_time);
-            let iE = timeToMinutes(item.end_time);
-            if (iE <= iS) iE = 24 * 60;
-            return sM < iE && eM > iS;
-          });
+          return !dayList.some(item => sM < item.effEndMin && eM > item.effStartMin);
         };
         if (isFree(prefStart, prefEnd)) return { start: prefStart, end: prefEnd };
         for (const slot of TIME_SLOTS) {
@@ -1220,7 +1367,6 @@
         }
         return null;
       };
-
       const jumpToOffset = (days) => {
         const d = new Date();
         d.setDate(d.getDate() + days);
@@ -2161,10 +2307,12 @@
         e.preventDefault();
         if (formData.start_time === formData.end_time) { notify('⛔ Jam Mulai dan Jam Selesai tidak boleh sama!'); return; }
         const sMin = timeToMinutes(formData.start_time);
-        let eMin = timeToMinutes(formData.end_time);
-        if (eMin <= sMin) eMin = (eMin === 0 ? 24 * 60 : eMin + 24 * 60);
+        const rawEnd = timeToMinutes(formData.end_time);
+        const crossesMidnight = rawEnd > 0 && rawEnd < sMin;
+        const eMinToday = rawEnd <= sMin ? 1440 : rawEnd;
         const brandObj = brands.find(b => b.id === formData.brand_id);
-        const basePayload = { ...formData, color: brandObj?.color || formData.color };
+        const { effStartMin, effEndMin, isOvernightCarry, ...cleanForm } = formData;
+        const basePayload = { ...cleanForm, color: brandObj?.color || cleanForm.color };
 
         if (selectedSchedule) {
           if (currentFormConflict) { notify(`⛔ Bentrok dengan "${currentFormConflict.title}"!`); return; }
@@ -2175,14 +2323,16 @@
           const count = Number(repeatDays) || 1;
           for (let i = 0; i < count; i++) {
             const targetDate = i === 0 ? basePayload.date : addDaysToDateStr(basePayload.date, i);
-            const daySchedules = schedules.filter(s => s.date === targetDate);
-            const hasConflict = daySchedules.some(ex => {
-              const exS = timeToMinutes(ex.start_time);
-              let exE = timeToMinutes(ex.end_time);
-              if (exE <= exS) exE = 24 * 60;
-              return sMin < exE && eMin > exS;
-            });
-            if (!hasConflict) newItems.push({ ...basePayload, id: 'sch_' + Date.now() + '_' + i, date: targetDate });
+            const daySchedules = getSchedulesCoveringDate(targetDate);
+            const conflictToday = daySchedules.some(ex => sMin < ex.effEndMin && eMinToday > ex.effStartMin);
+            let conflictNext = false;
+            if (crossesMidnight) {
+              const nextDaySchedules = getSchedulesCoveringDate(addDaysToDateStr(targetDate, 1));
+              conflictNext = nextDaySchedules.some(ex => 0 < ex.effEndMin && rawEnd > ex.effStartMin);
+            }
+            if (!conflictToday && !conflictNext) {
+              newItems.push({ ...basePayload, id: 'sch_' + Date.now() + '_' + i, date: targetDate });
+            }
           }
           if (newItems.length === 0) { notify('⛔ Jam tersebut sudah terisi!'); return; }
           saveSchedulesToCloud([...schedules, ...newItems]);
@@ -3242,13 +3392,7 @@ h('button', {
                             TIME_SLOTS.map(slot => {
                               const isCurrentSlot = slot.label === currentActiveSlotLabel;
                               const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                              const slotItems = schedules.filter(s => {
-                                if (s.date !== dateStr) return false;
-                                const st = timeToMinutes(s.start_time);
-                                let en = timeToMinutes(s.end_time);
-                                if (en <= st) en = 24 * 60;
-                                return st < eM && en > sM;
-                              });
+                              const slotItems = getSchedulesCoveringDate(dateStr).filter(s => s.effStartMin < eM && s.effEndMin > sM);
                               return h('td', {
                                 key: slot.label,
                                 className: isCurrentSlot ? 'active-time-col-cell' : '',
@@ -3321,13 +3465,7 @@ h('button', {
                             ),
                             TIME_SLOTS.map(slot => {
                               const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                              const slotItems = schedules.filter(s => {
-                                if (s.date !== dateStr) return false;
-                                const st = timeToMinutes(s.start_time);
-                                let en = timeToMinutes(s.end_time);
-                                if (en <= st) en = 24 * 60;
-                                return st < eM && en > sM;
-                              });
+                              const slotItems = getSchedulesCoveringDate(dateStr).filter(s => s.effStartMin < eM && s.effEndMin > sM);
                               return h('td', {
                                 key: slot.label,
                                 onClick: () => slotItems.length > 0
@@ -3654,6 +3792,7 @@ h('button', {
           activeTab === 'list' && h('div', { className: 'exec-card', style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
               h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#831843' } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
+              isAdmin && h('button', { className: 'btn btn-soft', onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan'),
               isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
             ),
             h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : 'repeat(3, 1fr)', gap: '8px' } },
@@ -4345,7 +4484,116 @@ h('button', {
             )
           )
         ),
+// ⚡ V2.15: MODAL INPUT CEPAT JADWAL 1 BULAN PENUH (MOM UUNG)
+        bulkModalOpen && (() => {
+          const bulkDaysCount = new Date(bulkYear, bulkMonth + 1, 0).getDate();
+          const parsedTokens = parseBulkShiftTokens(bulkPatternText, bulkDaysCount);
+          const countMap = { '1': 0, '2': 0, '3': 0, '4': 0, 'L': 0 };
+          parsedTokens.forEach(tk => { if (countMap[tk] !== undefined) countMap[tk]++; });
+          const totalShiftWork = countMap['1'] + countMap['2'] + countMap['3'] + countMap['4'];
 
+          return h('div', { className: 'modal-overlay' },
+            h('div', { className: 'modal-box', style: { maxWidth: '560px', display: 'flex', flexDirection: 'column', gap: '11px' } },
+              h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '9px' } },
+                h('div', null,
+                  h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#059669', textTransform: 'uppercase' } }, '⚡ BULK IMPORT • 1 KLIK FULL 1 BULAN'),
+                  h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843', marginTop: '2px' } }, 'Input Cepat Jadwal Bulanan Mom Uung')
+                ),
+                h('button', { className: 'btn btn-soft', onClick: () => setBulkModalOpen(false) }, '✕')
+              ),
+
+              // Pilih Bulan & Tahun Target
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '8px' } },
+                h('select', { value: bulkMonth, onChange: e => setBulkMonth(Number(e.target.value)) },
+                  Array.from({ length: 12 }).map((_, idx) =>
+                    h('option', { key: idx, value: idx }, new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(new Date(2026, idx, 1)))
+                  )
+                ),
+                h('select', { className: 'font-mono', value: bulkYear, onChange: e => setBulkYear(Number(e.target.value)) },
+                  [2025, 2026, 2027, 2028, 2029, 2030].map(yr => h('option', { key: yr, value: yr }, yr))
+                )
+              ),
+
+              // Kotak Paste / Ketik Kode 1 Baris (Mendukung langsung Copy-Paste baris Excel atau ketik koma)
+              h('div', null,
+                h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } },
+                  `Tempel baris Excel atau ketik kode Tgl 1–${bulkDaysCount} (1/2/3/4 = Shift, L = Libur):`
+                ),
+                h('textarea', {
+                  rows: 2,
+                  className: 'font-mono',
+                  placeholder: 'Contoh: 4,4,L,3,3,2,1,L,2,1,4,4,L,3,3,2,1,L,2,1,4,4,L,3,3,2,1,L,2,1,4',
+                  value: bulkPatternText,
+                  onChange: e => setBulkPatternText(e.target.value),
+                  style: { width: '100%', fontSize: '11.5px' }
+                })
+              ),
+
+              // Rekap Otomatis (Cocokkan dengan kolom TOTAL di tabel Excel)
+              h('div', {
+                className: 'flex flex-wrap items-center justify-between gap-1-5',
+                style: { background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '11px', padding: '7px 10px', fontSize: '10.5px', fontWeight: 800 }
+              },
+                h('span', { style: { color: '#065F46' } }, `✅ Kerja: ${totalShiftWork} Hari`),
+                h('span', { style: { color: '#BE123C' } }, `🔴 Libur: ${countMap['L']}`),
+                h('span', { className: 'font-mono', style: { color: '#4A0424' } },
+                  `S1:${countMap['1']} | S2:${countMap['2']} | S3:${countMap['3']} | S4:${countMap['4']}`
+                )
+              ),
+
+              // Grid Interaktif Tanggal 1 - 31 (Klik kotak untuk ubah shift cepat)
+              h('div', null,
+                h('div', { style: { fontSize: '10px', fontWeight: 800, color: '#9D174D', marginBottom: '5px' } },
+                  'Pratinjau Tanggal (Klik kotak mana saja untuk ganti shift):'
+                ),
+                h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' } },
+                  Array.from({ length: bulkDaysCount }).map((_, idx) => {
+                    const code = parsedTokens[idx] || '';
+                    const isOff = code === 'L';
+                    const p = MOMUUNG_SHIFT_PRESETS[code];
+                    return h('button', {
+                      key: idx,
+                      type: 'button',
+                      onClick: () => handleCycleBulkDay(idx, bulkDaysCount),
+                      style: {
+                        padding: '5px 2px', borderRadius: '8px',
+                        background: p ? p.bg : isOff ? '#FFE4E6' : '#FFFFFF',
+                        color: p ? p.col : isOff ? '#BE123C' : '#64748B',
+                        border: `1.5px solid ${p ? '#22C55E' : isOff ? '#FDA4AF' : '#F9A8D4'}`,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.15
+                      }
+                    },
+                      h('span', { style: { fontSize: '9px', opacity: 0.75, fontWeight: 800 } }, idx + 1),
+                      h('span', { className: 'font-mono', style: { fontSize: '11.5px', fontWeight: 900 } }, code || '-')
+                    );
+                  })
+                )
+              ),
+
+              // Opsi Timpa & Opsi Libur
+              h('div', { style: { display: 'flex', flexDirection: 'column', gap: '6px', background: '#FFFFFF', border: '1px solid #F9A8D4', borderRadius: '11px', padding: '8px 10px' } },
+                h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#4A0424', cursor: 'pointer' } },
+                  h('input', { type: 'checkbox', checked: bulkReplaceExisting, onChange: e => setBulkReplaceExisting(e.target.checked) }),
+                  'Ganti jadwal Mom Uung lama di bulan ini (jadwal AquaPress/brand lain tetap aman)'
+                ),
+                h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#9F1239', cursor: 'pointer' } },
+                  h('input', { type: 'checkbox', checked: bulkMarkOffAsDayOff, onChange: e => setBulkMarkOffAsDayOff(e.target.checked) }),
+                  'Tandai kode "L" sebagai DAY OFF penuh (biarkan tidak dicentang jika hari libur Mom Uung boleh di-booking brand lain)'
+                )
+              ),
+
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '8px', marginTop: '2px' } },
+                h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setBulkPatternText('') }, '🗑️ Bersihkan'),
+                h('button', {
+                  type: 'button',
+                  className: 'btn btn-pink',
+                  style: { padding: '10px', fontSize: '12px' },
+                  onClick: handleApplyBulkMonth
+                }, `⚡ Simpan ${totalShiftWork} Shift ke Cloud`)
+              )
+            )
+          );
+        })(),
         // MODAL CLONE DAY
         cloneModalOpen && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '12px' } },
@@ -4419,12 +4667,35 @@ h('button', {
                   [1, 2, 3, 5, 7].map(d => h('option', { key: d, value: d }, `Ulangi ${d} Hari`))
                 )
               ),
-              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
-                h('select', { className: 'font-mono', value: formData.start_time, onChange: e => setFormData({ ...formData, start_time: e.target.value }) },
-                  START_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm))
+h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Jam Mulai (Terkunci jika terisi)'),
+                  h('select', { className: 'font-mono', style: { width: '100%' }, value: formData.start_time, onChange: e => setFormData({ ...formData, start_time: e.target.value }) },
+                    START_TIME_OPTIONS.map(tm => {
+                      const conflict = getAdminStartConflict(tm);
+                      return h('option', {
+                        key: tm,
+                        value: tm,
+                        disabled: !!conflict
+                      }, conflict ? `🔒 ${tm} (${conflict.title})` : `🟢 ${tm}`);
+                    })
+                  )
                 ),
-                h('select', { className: 'font-mono', value: formData.end_time, onChange: e => setFormData({ ...formData, end_time: e.target.value }) },
-                  END_TIME_OPTIONS.map(tm => h('option', { key: tm, value: tm }, tm))
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Jam Selesai'),
+                  h('select', { className: 'font-mono', style: { width: '100%' }, value: formData.end_time, onChange: e => setFormData({ ...formData, end_time: e.target.value }) },
+                    END_TIME_OPTIONS.map(tm => {
+                      const conflict = getAdminEndConflict(tm);
+                      const isOvernightOpt = timeToMinutes(tm) > 0 && timeToMinutes(tm) < timeToMinutes(formData.start_time);
+                      return h('option', {
+                        key: tm,
+                        value: tm,
+                        disabled: !!conflict
+                      }, conflict
+                        ? (conflict.isOrderError ? `⛔ ${tm}` : `🔒 ${tm} (${conflict.title})`)
+                        : (isOvernightOpt ? `🌙 ${tm} (+1 Hari)` : `🟢 ${tm}`));
+                    })
+                  )
                 )
               ),
               currentFormConflict && h('div', { style: { background: '#FFE4E6', border: '1.5px solid #E11D48', color: '#9F1239', padding: '8px', borderRadius: '10px', fontSize: '11px', fontWeight: 800 } },
@@ -4448,7 +4719,6 @@ h('button', {
         )
       );
     }
-
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(WorkApp));
   </script>
