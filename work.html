@@ -663,10 +663,10 @@
         totalLive: "TOTAL SHIFT LIVE", takeKonten: "TAKE KONTEN VIDEO", sleepTime: "JAM ISTIRAHAT", offDay: "HARI LIBUR / OFF",
         hoursLive: "Jam Streaming", hoursProd: "Jam Produksi", hoursSleep: "Jam Istirahat",
         propTitle: "PROPORSI WAKTU ALISYA", barTitle: "BEBAN AKTIVITAS PER KATEGORI",
-        guideTitle: "💡 Cara Booking Slot Jadwal Kerja Alisya via WhatsApp",
-        guideStep1: "1. Pilih Tanggal di Kalender (pastikan status hari bukan FULL SCHEDULE / DAY OFF).",
-        guideStep2: "2. Klik salah satu kotak hijau di 'Available Schedule (Slot Jam Kosong)' atau tombol '📲 Booking WA'.",
-        guideStep3: "3. Isi Nama Brand & pilih jam yang tersedia (jam yang sudah terisi otomatis terkunci 🔒), lalu klik 'Kirim ke WA Alisya'."
+       guideTitle: "💡 Cara Booking Slot Jadwal Kerja Alisya (Konfirmasi Otomatis via BOT WA)",
+        guideStep1: "1. Pilih Tanggal & Slot Jam Kosong (hijau) di Kalender atau tab 'Cek Slot & Istirahat' (slot terisi terkunci 🔒).",
+        guideStep2: "2. Pilih Kategori Brand (atau isi Nama Brand Baru + No. WA PIC untuk menerima notifikasi status otomatis).",
+        guideStep3: "3. Klik '📲 Ajukan Booking Slot' — slot otomatis dikunci sementara & BOT WA mengirim konfirmasi saat di-ACC/Tolak."
       },
       en: {
         locale: 'en-US',
@@ -845,9 +845,9 @@
       // 📞 V2.13: ATURAN NOMOR WA OTOMATIS PER BRAND PARTNER
       // AquaPress & Moell otomatis pakai nomor PIC terdaftar | Mom Uung tanpa WA | Brand lain WAJIB isi WA
       const PARTNER_BRAND_CONTACTS = {
-        b_aquapress: { pic: 'Kakak Dinda', phone: '6289525674620', skipPhone: false },
-        b_moell:     { pic: 'PIC Moell',   phone: '62895426413636', skipPhone: false },
-        b_momuung:   { pic: 'Mom Uung',    phone: '',               skipPhone: true }
+        b_aquapress: { pic: '', phone: '6289525674620', skipPhone: false },
+        b_moell:     { pic: '', phone: '62895426413636', skipPhone: false },
+        b_momuung:   { pic: '', phone: '',               skipPhone: true }
       };
       const getBrandContactPolicy = (brandId) => {
         return PARTNER_BRAND_CONTACTS[brandId] || { pic: '', phone: '', skipPhone: false };
@@ -4043,18 +4043,18 @@ h('button', {
               h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843' } }, '💡 Panduan Booking Jadwal Alisya via WA'),
               h('button', { className: 'btn btn-soft', onClick: () => setGuideModalOpen(false) }, '✕')
             ),
-            h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px', color: '#4A0424', lineHeight: 1.5 } },
+           h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px', color: '#4A0424', lineHeight: 1.5 } },
               h('div', { style: { background: '#FFFFFF', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid #F9A8D4' } },
-                h('div', { style: { fontWeight: 900, color: '#DB2777', marginBottom: '2px' } }, 'Langkah 1: Pilih Tanggal di Kalender'),
-                h('div', null, 'Klik tanggal yang diinginkan pada Kalender. Pastikan status hari masih memiliki slot kosong (bukan FULL SCHEDULE atau DAY OFF).')
+                h('div', { style: { fontWeight: 900, color: '#DB2777', marginBottom: '2px' } }, 'Langkah 1: Pilih Tanggal & Slot Jam Kosong'),
+                h('div', null, 'Klik tanggal pada Kalender, lalu pilih slot jam kosong berwarna hijau (atau gunakan tab "🔍 Cek Slot & Istirahat" untuk mengecek kecocokan jam secara otomatis).')
               ),
               h('div', { style: { background: '#FFFFFF', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid #F9A8D4' } },
-                h('div', { style: { fontWeight: 900, color: '#059669', marginBottom: '2px' } }, 'Langkah 2: Klik Slot Jam Kosong (Hijau)'),
-                h('div', null, 'Pada bagian "🟢 Available Schedule", klik tombol jam kosong yang tersedia (misal: 10:00 - 12:00). Slot yang sudah terisi otomatis terkunci (🔒) dan tidak bisa dipilih.')
+                h('div', { style: { fontWeight: 900, color: '#059669', marginBottom: '2px' } }, 'Langkah 2: Isi Detail Brand & Nomor WhatsApp PIC'),
+                h('div', null, 'Pilih nama Brand Partner atau ketik Nama Brand Baru beserta Nomor WhatsApp PIC yang aktif agar sistem dapat mengirimkan bukti pengajuan dan status konfirmasi.')
               ),
               h('div', { style: { background: '#FFFFFF', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid #F9A8D4' } },
-                h('div', { style: { fontWeight: 900, color: '#831843', marginBottom: '2px' } }, 'Langkah 3: Isi Nama Brand & Kirim ke WhatsApp'),
-                h('div', null, 'Masukkan Nama Brand/Agensi, pilih jenis kolaborasi (Live Streaming / Konten Affiliate / Meeting), lalu tekan tombol "📲 Kirim ke WA Alisya".')
+                h('div', { style: { fontWeight: 900, color: '#831843', marginBottom: '2px' } }, 'Langkah 3: Klik Ajukan Booking (Notifikasi Otomatis via BOT WA)'),
+                h('div', null, 'Tekan tombol "📲 Ajukan Booking Slot". Jadwal langsung masuk antrean (Hold) dan BOT Notifikasi Alisya akan mengirim pesan WhatsApp otomatis begitu jadwal di-ACC atau ditolak.')
               )
             ),
             h('div', { className: 'flex justify-between gap-2', style: { marginTop: '4px' } },
@@ -4170,11 +4170,11 @@ h('button', {
                     }
                   },
                     h('div', { style: { fontSize: '11px', fontWeight: 900, color: '#065F46' } },
-                      `🤖 Nomor WA PIC terdaftar otomatis (${activePolicy.pic}) — notif ACC/Tolak langsung dikirim ke PIC!`
+                      '🤖 Kontak PIC Partner sudah terdaftar otomatis — notifikasi ACC/Tolak langsung dikirim via WhatsApp.'
                     ),
                     h('input', {
                       type: 'tel',
-                      placeholder: `Opsional: isi nomor WA lain jika bukan ${activePolicy.pic}`,
+                      placeholder: 'Opsional: isi nomor WA PIC lain jika berbeda',
                       value: bookingData.clientPhone || '',
                       onChange: e => setBookingData({ ...bookingData, clientPhone: e.target.value }),
                       style: { width: '100%' }
