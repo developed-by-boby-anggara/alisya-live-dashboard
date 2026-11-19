@@ -442,6 +442,20 @@
       vertical-align: middle;
       background: #FFFFFF;
     }
+    .matrix-table-hp tr:nth-child(even) td { background: #FFF5F9; }
+    .matrix-table-hp td.col-date-hp {
+      background: #FCE7F3 !important;
+      border-right: 2px solid #EC4899;
+      padding: 2px 3px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .matrix-table-hp td.col-status-hp {
+      background: #FDF2F8 !important;
+      padding: 1px 2px;
+      text-align: center;
+      overflow: hidden;
+    }
     .row-today-glow td {
       border-top: 2px solid #DB2777 !important;
       border-bottom: 2px solid #9333EA !important;
@@ -570,11 +584,12 @@
     ];
 
     const START_TIME_OPTIONS = [];
-    for (let hr = 0; hr < 24; hr++) {
-      const hh = String(hr).padStart(2, '0');
-      START_TIME_OPTIONS.push(`${hh}:00`, `${hh}:30`);
-    }
-    const END_TIME_OPTIONS = [...START_TIME_OPTIONS, "23:59"];
+ for (let hr = 0; hr < 24; hr++) {
+   const hh = String(hr).padStart(2, '0');
+   START_TIME_OPTIONS.push(`${hh}:00`, `${hh}:30`);
+   if (hr === 6) START_TIME_OPTIONS.push('06:50');
+ }
+ const END_TIME_OPTIONS = [...START_TIME_OPTIONS, "23:59"];
 
     const timeToMinutes = (tStr) => {
       if (!tStr) return 0;
@@ -823,16 +838,37 @@
         }, 250);
         return () => clearTimeout(timer);
       }, [activeTab, displayMode, realTodayStr, currentActiveSlotLabel]);
-      // 🚀 V2.2: STATE BOOKING WHATSAPP & POPUP PANDUAN CARA BOOKING
+      // 🤖 V2.12: KONFIGURASI BOT ADMIN NOTIFIKASI ALISYA (GOOGLE APPS SCRIPT + FONNTE)
       const ADMIN_WA_NUMBER = "6285159440579";
+      const BOT_WEBAPP_URL  = "https://script.google.com/macros/s/AKfycbxPWCLvRKs8fuMPbCZ0BgIRpGMxNV2BPWf10HCTMl0_O7pPMOrEOipucnsb5BCSsrbz/exec";
+      const BOT_SECRET_KEY  = "ALISYA_BOT_2026";
+      // 📞 V2.13: ATURAN NOMOR WA OTOMATIS PER BRAND PARTNER
+      // AquaPress & Moell otomatis pakai nomor PIC terdaftar | Mom Uung tanpa WA | Brand lain WAJIB isi WA
+      const PARTNER_BRAND_CONTACTS = {
+        b_aquapress: { pic: 'Kakak Dinda', phone: '6289525674620', skipPhone: false },
+        b_moell:     { pic: 'PIC Moell',   phone: '62895426413636', skipPhone: false },
+        b_momuung:   { pic: 'Mom Uung',    phone: '',               skipPhone: true }
+      };
+      const getBrandContactPolicy = (brandId) => {
+        return PARTNER_BRAND_CONTACTS[brandId] || { pic: '', phone: '', skipPhone: false };
+      };
+      const [botSending, setBotSending] = useState(false);
+      const [rejectModalItem, setRejectModalItem] = useState(null);
+      const [rejectReason, setRejectReason] = useState('');
+      const [rejectPhone, setRejectPhone] = useState('');
+      const [rejectIncludeAlts, setRejectIncludeAlts] = useState(true);
       const [bookingModalOpen, setBookingModalOpen] = useState(false);
       const [guideModalOpen, setGuideModalOpen] = useState(false);
+      const [openSlotsModalOpen, setOpenSlotsModalOpen] = useState(false);
+      const [openSlotsDays, setOpenSlotsDays] = useState(7);
+      const [openSlotsDaytimeOnly, setOpenSlotsDaytimeOnly] = useState(true);
       const [showGuideBanner, setShowGuideBanner] = useState(true);
       const [bookingData, setBookingData] = useState({
         date: realTodayStr,
         start_time: '10:00',
         end_time: '12:00',
         clientName: '',
+        clientPhone: '',
         collabType: 'Live Streaming Session',
         notes: ''
       });
@@ -1210,7 +1246,101 @@
         }
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
       };
+// 👁️ V2.10: DETEKTOR KONTRAS TEKS OTOMATIS (AGAR WARNA BRAND GELAP/TERANG TETAP TERBACA)
+      const getContrastColor = (hexColor) => {
+        const raw = String(hexColor || '#B6D7A8').trim().replace('#', '');
+        const fullHex = raw.length === 3 ? raw.split('').map(c => c + c).join('') : raw;
+        const r = parseInt(fullHex.substring(0, 2), 16) || 0;
+        const g = parseInt(fullHex.substring(2, 4), 16) || 0;
+        const b = parseInt(fullHex.substring(4, 6), 16) || 0;
+        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return lum < 0.54 ? '#FFFFFF' : '#0F172A';
+      };
 
+      // 📤 V2.10: GENERATOR TEKS SLOT KOSONG REAL-TIME (AMAN PRIVASI UNTUK DIKIRIM KE KLIEN)
+      const generatedOpenSlotsText = useMemo(() => {
+        const winStart = openSlotsDaytimeOnly ? 420 : 0;      // 07:00 atau 00:00
+        const winEnd = openSlotsDaytimeOnly ? 1380 : 1440;    // 23:00 atau 23:59
+        const nowMin = nowTime.getHours() * 60 + nowTime.getMinutes();
+
+        const toHHMM = (m) => {
+          const clamped = Math.max(0, Math.min(1440, Math.round(m)));
+          if (clamped === 1440) return '23:59';
+          return `${String(Math.floor(clamped / 60)).padStart(2, '0')}:${String(clamped % 60).padStart(2, '0')}`;
+        };
+
+        const formatShortDate = (dStr) => {
+          const [y, m, d] = dStr.split('-').map(Number);
+          return new Intl.DateTimeFormat(t.locale, { day: '2-digit', month: 'short' }).format(new Date(y, m - 1, d));
+        };
+
+        const lines = [];
+        let totalOpenDays = 0;
+
+        for (let i = 0; i < openSlotsDays; i++) {
+          const dStr = addDaysToDateStr(realTodayStr, i);
+          const dayItems = schedules.filter(s => s.date === dStr);
+          const isDayOff = dayItems.some(s => s.status === 'OFF' || s.status === 'SAKIT' || s.status === 'Sakit / Medis' || s.brand_id === 'b_sakit');
+
+          if (isDayOff) {
+            lines.push(`• *${getHariNama(dStr)}, ${formatShortDate(dStr)}:* Libur / Tidak Tersedia`);
+            continue;
+          }
+
+          const busy = dayItems.map(s => {
+            const st = timeToMinutes(s.start_time);
+            let en = timeToMinutes(s.end_time);
+            if (en <= st) en = 1440;
+            return { start: Math.max(winStart, st), end: Math.min(winEnd, en) };
+          }).filter(b => b.end > b.start).sort((a, b) => a.start - b.start);
+
+          let cursor = dStr === realTodayStr ? Math.max(winStart, Math.ceil(nowMin / 30) * 30) : winStart;
+          const freeRanges = [];
+
+          busy.forEach(b => {
+            if (b.start - cursor >= 60) {
+              freeRanges.push(`${toHHMM(cursor)}–${toHHMM(b.start)}`);
+            }
+            cursor = Math.max(cursor, b.end);
+          });
+          if (winEnd - cursor >= 60) {
+            freeRanges.push(`${toHHMM(cursor)}–${toHHMM(winEnd)}`);
+          }
+
+          if (freeRanges.length > 0) {
+            totalOpenDays++;
+            lines.push(`• *${getHariNama(dStr)}, ${formatShortDate(dStr)}:* ${freeRanges.join(', ')} WIB`);
+          } else {
+            lines.push(`• *${getHariNama(dStr)}, ${formatShortDate(dStr)}:* Penuh (Fully Booked)`);
+          }
+        }
+
+        const endDateStr = addDaysToDateStr(realTodayStr, openSlotsDays - 1);
+        const rangeTitle = openSlotsDays === 1
+          ? `${getHariNama(realTodayStr)}, ${formatShortDate(realTodayStr)}`
+          : `${formatShortDate(realTodayStr)} – ${formatShortDate(endDateStr)}`;
+
+        return (
+          `*AVAILABLE SCHEDULE — ALISYA*\n` +
+          `Periode : ${rangeTitle} (${openSlotsDaytimeOnly ? 'Jam Produktif 07:00–23:00' : '24 Jam'})\n` +
+          `────────────────────────\n` +
+          lines.join('\n') + `\n` +
+          `────────────────────────\n` +
+          (totalOpenDays > 0
+            ? `Silakan pilih slot jam di atas untuk penguncian jadwal. Terima kasih!`
+            : `Seluruh slot pada periode ini sudah terisi penuh. Silakan cek tanggal berikutnya.`)
+        );
+      }, [schedules, realTodayStr, nowTime, openSlotsDays, openSlotsDaytimeOnly, t.locale]);
+
+      const handleCopyOpenSlots = () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(generatedOpenSlotsText)
+            .then(() => notify('📋 Daftar slot kosong berhasil disalin! Siap ditempel ke chat klien.'))
+            .catch(() => notify('⚠️ Gagal menyalin otomatis, silakan salin manual dari kotak teks.'));
+        } else {
+          notify('⚠️ Silakan blok & salin teks dari kotak pratinjau.');
+        }
+      };
       const shareSpreadsheetToWA = () => {
         const monthItems = schedules
           .filter(s => {
@@ -1347,9 +1477,10 @@
 
         // 2. Deteksi otomatis jika nama brand yang diketik cocok dengan partner yang sudah terdaftar
         const normInput = norm(rawTitleOrClient);
-        const matchedPartner = partnerBrandOptions.find(b => {
+      const matchedPartner = partnerBrandOptions.find(b => {
           const fullNorm = norm(b.name);
           const primaryPart = norm((b.name || '').split('/')[0]);
+          if (b.id === 'b_moell' && normInput.includes('moel')) return true;
           return (fullNorm.length >= 3 && normInput.includes(fullNorm)) ||
                  (primaryPart.length >= 3 && normInput.includes(primaryPart));
         });
@@ -1392,7 +1523,75 @@
         );
       }, [bookingData.clientName, bookingData.collabType, bookingData.brand_id, bookingData.customColor, brands]);
 
-      // 🚀 V2.9: Buka Modal Booking WA (Hanya Mengizinkan Slot yang Benar-Benar Kosong)
+     // 🤖 V2.12: MESIN PENGIRIM PESAN BOT WA OTOMATIS (100% FULL BACKGROUND)
+      const formatWaPhone = (raw) => {
+        const digits = String(raw || '').replace(/\D/g, '');
+        if (!digits) return '';
+        if (digits.startsWith('0')) return '62' + digits.slice(1);
+        if (digits.startsWith('8')) return '62' + digits;
+        return digits;
+      };
+
+      const getFreeRangesForDate = (dStr) => {
+        const dayItems = schedules.filter(s => s.date === dStr && s.status !== 'PENDING');
+        if (dayItems.some(s => s.status === 'OFF' || s.status === 'SAKIT' || s.status === 'Sakit / Medis' || s.brand_id === 'b_sakit')) {
+          return [];
+        }
+        const winStart = 420; // 07:00
+        const winEnd = 1380;  // 23:00
+        const toHHMM = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+        const busy = dayItems.map(s => {
+          const st = timeToMinutes(s.start_time);
+          let en = timeToMinutes(s.end_time);
+          if (en <= st) en = 1440;
+          return { start: Math.max(winStart, st), end: Math.min(winEnd, en) };
+        }).filter(b => b.end > b.start).sort((a, b) => a.start - b.start);
+
+        let cursor = winStart;
+        const ranges = [];
+        busy.forEach(b => {
+          if (b.start - cursor >= 60) ranges.push(`${toHHMM(cursor)}–${toHHMM(b.start)} WIB`);
+          cursor = Math.max(cursor, b.end);
+        });
+        if (winEnd - cursor >= 60) ranges.push(`${toHHMM(cursor)}–${toHHMM(winEnd)} WIB`);
+        return ranges;
+      };
+
+      const sendViaBotWA = async (rawTargetPhone, messageText) => {
+        const target = formatWaPhone(rawTargetPhone);
+        if (!target) return { ok: false, reason: 'Nomor WA tujuan kosong.' };
+        if (!BOT_WEBAPP_URL || BOT_WEBAPP_URL.includes('TEMPEL_URL')) {
+          return { ok: false, reason: 'URL Aplikasi Web Bot belum diisi.' };
+        }
+        try {
+          const res = await fetch(BOT_WEBAPP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              secret: BOT_SECRET_KEY,
+              target: target,
+              message: messageText
+            })
+          });
+          const data = await res.json();
+          if (data && data.status === true) {
+            return { ok: true, data };
+          }
+          return { ok: false, reason: (data && data.reason) ? data.reason : 'Bot gagal mengirim pesan.' };
+        } catch (err) {
+          return { ok: false, reason: err.message || 'Gangguan koneksi ke server bot.' };
+        }
+      };
+
+      const openManualWaFallback = (rawPhone, messageText) => {
+        const phone = formatWaPhone(rawPhone);
+        const url = phone
+          ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(messageText)}`
+          : `https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`;
+        window.open(url, '_blank');
+      };
+
+      // 🚀 V2.12: Buka Modal Booking WA (Hanya Mengizinkan Slot yang Benar-Benar Kosong)
       const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
         const targetDate = dateStr || selectedDate;
         const smartSlot = findFirstFreeSlotOnDate(targetDate, slotStart, slotEnd);
@@ -1409,6 +1608,7 @@
             brand_id: 'AUTO',
             customColor: pickUnusedBrandColor(),
             clientName: '',
+            clientPhone: '',
             collabType: 'Live Streaming Session',
             notes: ''
           });
@@ -1428,8 +1628,8 @@
         setModalOpen(true);
       };
 
-      // ⏳ V2.9: Kirim Booking ke WA + Simpan Warna Pilihan Brand Baru
-      const handleSendBookingWA = (e) => {
+      // ⏳ V2.13: Klien Submit Booking -> Aturan WA per Brand (AquaPress/Moell Otomatis, Mom Uung Tanpa WA, Brand Lain Wajib)
+      const handleSendBookingWA = async (e) => {
         e.preventDefault();
         if (currentBookingConflict) {
           notify(`Tidak dapat mem-booking! Jam tersebut bentrok dengan "${currentBookingConflict.title}".`);
@@ -1441,6 +1641,16 @@
         const explicitChoice = bookingData.brand_id && bookingData.brand_id !== 'AUTO' ? bookingData.brand_id : 'AUTO';
         const chosenColor = bookingData.customColor || pickUnusedBrandColor();
         const resolved = resolveBookingBrandAndColor(brandText, bookingData.collabType, explicitChoice, chosenColor);
+        const contactPolicy = getBrandContactPolicy(resolved.brand_id);
+
+        const phoneClean = contactPolicy.skipPhone
+          ? ''
+          : (formatWaPhone(bookingData.clientPhone) || contactPolicy.phone);
+
+        if (!contactPolicy.skipPhone && !phoneClean) {
+          notify('⚠️ Wajib memasukkan Nomor WhatsApp PIC / Brand terlebih dahulu!');
+          return;
+        }
 
         const pendingItem = {
           id: 'sch_pending_' + Date.now(),
@@ -1451,6 +1661,8 @@
           brand_id: resolved.brand_id,
           brand_locked: explicitChoice !== 'AUTO',
           custom_brand_name: brandText,
+          client_phone: phoneClean,
+          skip_client_wa: !!contactPolicy.skipPhone,
           custom_color: resolved.isExternalWA ? resolved.color : null,
           register_as_new_brand: resolved.isExternalWA,
           status: 'PENDING',
@@ -1463,25 +1675,48 @@
         };
 
         saveSchedulesToCloud([...schedules, pendingItem]);
-
-        const msg =
-          `*PENGAJUAN BOOKING JADWAL ALISYA*\n` +
-          `────────────────────────\n` +
-          `Halo Alisya / Management,\n` +
-          `Saya dari *${brandText}* ingin mengajukan booking slot jadwal kerja yang *Tersedia (Available)* dengan rincian berikut:\n\n` +
-          `• *Hari & Tanggal :* ${hari}, ${bookingData.date}\n` +
-          `• *Slot Waktu :* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
-          `• *Jenis Kolaborasi :* ${bookingData.collabType}\n` +
-          `• *Kategori Brand :* ${resolved.matchedBrand.name}\n` +
-          `• *Warna Label :* ${resolved.color}\n` +
-          `• *Catatan / Brief :* ${noteText}\n` +
-          `• *Status Sistem :* Slot Otomatis Masuk Antrean Konfirmasi (Hold)\n` +
-          `────────────────────────\n` +
-          `Mohon konfirmasinya untuk penguncian jadwal di atas. Terima kasih.`;
-
-        window.open(`https://api.whatsapp.com/send?phone=${ADMIN_WA_NUMBER}&text=${encodeURIComponent(msg)}`, '_blank');
         setBookingModalOpen(false);
-        notify('⏳ Slot otomatis dikunci sementara (Waiting Confirmation) & membuka WhatsApp...');
+        setBotSending(true);
+        notify('🤖 Mengirim pengajuan booking via BOT Notifikasi...');
+
+        const adminMsg =
+          `*🔔 BOOKING BARU MASUK ANTREAN — ALISYA*\n` +
+          `────────────────────────\n` +
+          `• *Brand / PIC :* ${brandText}${contactPolicy.pic ? ` (${contactPolicy.pic})` : ''}\n` +
+          `• *No. WA Brand :* ${contactPolicy.skipPhone ? 'Tidak perlu WA (Mom Uung)' : (phoneClean || '-')}\n` +
+          `• *Hari & Tanggal :* ${hari}, ${bookingData.date}\n` +
+          `• *Slot Waktu :* ${bookingData.start_time} – ${bookingData.end_time} WIB\n` +
+          `• *Jenis Sesi :* ${bookingData.collabType}\n` +
+          `• *Catatan :* ${noteText}\n` +
+          `────────────────────────\n` +
+          `Silakan login Admin di Portal Jadwal untuk ACC atau Tolak pengajuan ini.`;
+
+        const clientReceiptMsg =
+          `*PENGAJUAN BOOKING DITERIMA — ALISYA*\n` +
+          `────────────────────────\n` +
+          `Halo ${contactPolicy.pic ? `*${contactPolicy.pic}* (${brandText})` : `tim *${brandText}*`},\n` +
+          `Pengajuan booking slot Anda sudah masuk sistem dan *dikunci sementara (Waiting Confirmation)*:\n\n` +
+          `• *Hari & Tanggal :* ${hari}, ${bookingData.date}\n` +
+          `• *Slot Waktu :* ${bookingData.start_time} – ${bookingData.end_time} WIB\n` +
+          `• *Jenis Sesi :* ${bookingData.collabType}\n` +
+          `────────────────────────\n` +
+          `Pesan ini dikirim otomatis oleh BOT Notifikasi Alisya. Anda akan menerima pesan WA otomatis lagi setelah jadwal dikonfirmasi (ACC/Tolak).\n` +
+          `Admin Utama: wa.me/${ADMIN_WA_NUMBER}`;
+
+        const resAdmin = await sendViaBotWA(ADMIN_WA_NUMBER, adminMsg);
+        if (phoneClean && !contactPolicy.skipPhone) {
+          await sendViaBotWA(phoneClean, clientReceiptMsg);
+        }
+        setBotSending(false);
+
+        if (resAdmin.ok) {
+          notify(contactPolicy.skipPhone
+            ? '✅ Booking Mom Uung tersimpan & notifikasi otomatis terkirim ke Admin!'
+            : '✅ Booking tersimpan & BOT otomatis mengirim notifikasi ke Admin & WA Brand!');
+        } else {
+          notify('⚠️ Bot sedang offline, membuka WhatsApp manual...');
+          openManualWaFallback(ADMIN_WA_NUMBER, adminMsg);
+        }
       };
 
       // 🔄 V2.9: Edit Brand / Warna / Opsi Daftar Brand Baru Langsung di Kartu Antrean WA
@@ -1491,8 +1726,8 @@
         saveSchedulesToCloud(updated);
       };
 
-      // ✅ V2.9: ACC Booking Pending -> Support Warna Custom & Auto-Daftar Brand Baru ke Firebase
-      const handleApprovePending = (e, item, overrideBrandId = null) => {
+      // ✅ V2.13: ACC Booking -> Simpan Cloud + BOT Otomatis Kirim WA (Sesuai Aturan Brand)
+      const handleApprovePending = async (e, item, overrideBrandId = null) => {
         e.stopPropagation();
         if (!isAdmin) { setPinInputModal(true); return; }
         const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
@@ -1505,7 +1740,6 @@
         let finalBrandLabel = `${resolved.matchedBrand.emoji} ${resolved.matchedBrand.name}`;
         let hasCustomColor = false;
 
-        // Jika Brand Baru & opsi "Simpan permanen ke Daftar Brand" aktif -> buat brand baru di Firebase
         if (resolved.isExternalWA && item.register_as_new_brand !== false && brandNameGuess) {
           const normNew = brandNameGuess.toLowerCase().replace(/[^a-z0-9]/g, '');
           const alreadyExists = brands.find(b => (b.name || '').toLowerCase().replace(/[^a-z0-9]/g, '') === normNew);
@@ -1529,18 +1763,53 @@
           hasCustomColor = true;
         }
 
+        const contactPolicy = getBrandContactPolicy(finalBrandId);
+        const targetClientPhone = contactPolicy.skipPhone
+          ? ''
+          : (formatWaPhone(item.client_phone) || contactPolicy.phone);
+
         const updated = schedules.map(s => s.id === item.id ? {
           ...s,
           title: cleanTitle,
           brand_id: finalBrandId,
           brand_locked: true,
+          client_phone: targetClientPhone,
           has_custom_color: hasCustomColor,
           status: resolved.status,
           color: finalColor,
           is_wa_booking: true
         } : s);
         saveSchedulesToCloud(updated);
-        notify(`✅ Booking "${cleanTitle}" di-ACC -> ${finalBrandLabel} [${resolved.status}]!`);
+
+        if (contactPolicy.skipPhone || !targetClientPhone) {
+          notify(`✅ Booking "${cleanTitle}" di-ACC -> ${finalBrandLabel} [${resolved.status}]!`);
+          return;
+        }
+
+        const hari = getHariNama(item.date);
+        const accMsg =
+          `*✅ KONFIRMASI BOOKING DISETUJUI (ACC) — ALISYA*\n` +
+          `────────────────────────\n` +
+          `Halo ${contactPolicy.pic ? `*${contactPolicy.pic}* (${brandNameGuess})` : `tim *${brandNameGuess}*`},\n` +
+          `Pengajuan jadwal Anda telah *DISETUJUI & DIKUNCI* di kalender operasional Alisya dengan rincian:\n\n` +
+          `• *Hari & Tanggal :* ${hari}, ${item.date}\n` +
+          `• *Slot Waktu :* ${item.start_time} – ${item.end_time} WIB\n` +
+          `• *Agenda :* ${cleanTitle}\n` +
+          `• *Status :* CONFIRMED [${resolved.status}]\n` +
+          `────────────────────────\n` +
+          `Pesan ini dikirim otomatis oleh BOT Notifikasi Alisya.\n` +
+          `Untuk pengiriman brief / diskusi lebih lanjut, silakan hubungi Admin Utama di: wa.me/${ADMIN_WA_NUMBER}`;
+
+        setBotSending(true);
+        notify(`🤖 Booking di-ACC! Mengirim balasan WA otomatis ke ${contactPolicy.pic || brandNameGuess}...`);
+        const resBot = await sendViaBotWA(targetClientPhone, accMsg);
+        setBotSending(false);
+        if (resBot.ok) {
+          notify(`✅ ACC Berhasil & Pesan WA Otomatis Terkirim ke ${contactPolicy.pic || brandNameGuess}!`);
+        } else {
+          notify(`✅ ACC Tersimpan! (Bot gagal: ${resBot.reason} — membuka WA manual)`);
+          openManualWaFallback(targetClientPhone, accMsg);
+        }
       };
 
       // 🎨 V2.9: 1-Klik Rapikan Warna Jadwal Booking WA Lama (Tanpa Menimpa Warna Custom)
@@ -1581,13 +1850,69 @@
         }
       };
 
-      // ❌ V2.3: Fungsi Admin 1-Klik Tolak / Batalkan Booking Pending (Buka Kembali Slot)
+      // ❌ V2.13: Buka Modal Alasan Penolakan (Otomatis Isi Nomor PIC AquaPress/Moell; Kosong untuk Mom Uung)
       const handleRejectPending = (e, item) => {
         e.stopPropagation();
         if (!isAdmin) { setPinInputModal(true); return; }
-        if (confirm(`Tolak pengajuan "${item.title}" dan buka kembali slot jam ${item.start_time}-${item.end_time}?`)) {
-          saveSchedulesToCloud(schedules.filter(s => s.id !== item.id));
-          notify('🔓 Pengajuan ditolak & slot jam kembali kosong (Available).');
+        const resolvedHint = resolveBookingBrandAndColor(item.title, item.collab_type || item.title, item.brand_locked ? item.brand_id : 'AUTO');
+        const policy = getBrandContactPolicy(resolvedHint.brand_id);
+        setRejectModalItem(item);
+        setRejectReason('Jadwal di jam tersebut berdekatan dengan sesi lain sehingga waktu istirahat & persiapan kurang memadai.');
+        setRejectPhone(policy.skipPhone ? '' : (item.client_phone || policy.phone || ''));
+        setRejectIncludeAlts(true);
+      };
+
+      const handleConfirmReject = async (sendBotMessage = true) => {
+        if (!rejectModalItem) return;
+        const item = rejectModalItem;
+        const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
+        const brandNameGuess = (item.custom_brand_name || cleanTitle.split('—')[0] || 'Partner').trim();
+        const reasonFinal = rejectReason.trim() || 'Slot waktu tersebut belum dapat diambil saat ini.';
+        const resolvedHint = resolveBookingBrandAndColor(item.title, item.collab_type || item.title, item.brand_locked ? item.brand_id : 'AUTO');
+        const policy = getBrandContactPolicy(resolvedHint.brand_id);
+        const targetPhone = formatWaPhone(rejectPhone) || (policy.skipPhone ? '' : (item.client_phone || policy.phone || ''));
+
+        saveSchedulesToCloud(schedules.filter(s => s.id !== item.id));
+        setRejectModalItem(null);
+
+        if (!sendBotMessage || (policy.skipPhone && !formatWaPhone(rejectPhone))) {
+          notify('🔓 Pengajuan ditolak & slot jam kembali kosong (Tanpa kirim WA).');
+          return;
+        }
+
+        const hari = getHariNama(item.date);
+        const altRanges = rejectIncludeAlts ? getFreeRangesForDate(item.date) : [];
+        const altSection = altRanges.length > 0
+          ? `\n• *Alternatif Jam Kosong (${hari}, ${item.date}):*\n  ${altRanges.join(', ')}\n`
+          : '';
+
+        const rejectMsg =
+          `*❌ UPDATE PENGAJUAN BOOKING — ALISYA*\n` +
+          `────────────────────────\n` +
+          `Halo ${policy.pic ? `*${policy.pic}* (${brandNameGuess})` : `tim *${brandNameGuess}*`},\n` +
+          `Mohon maaf, pengajuan booking jadwal berikut *belum dapat kami terima*:\n\n` +
+          `• *Hari & Tanggal :* ${hari}, ${item.date}\n` +
+          `• *Slot Diajukan :* ${item.start_time} – ${item.end_time} WIB\n` +
+          `• *Alasan :* ${reasonFinal}\n` +
+          altSection +
+          `────────────────────────\n` +
+          `Silakan ajukan ulang di jam atau tanggal lain yang tersedia.\n` +
+          `Pesan ini dikirim otomatis oleh BOT Notifikasi Alisya. Hubungi Admin Utama: wa.me/${ADMIN_WA_NUMBER}`;
+
+        if (targetPhone) {
+          setBotSending(true);
+          notify(`🤖 Slot dibuka kembali! Mengirim alasan penolakan otomatis ke ${policy.pic || brandNameGuess}...`);
+          const resBot = await sendViaBotWA(targetPhone, rejectMsg);
+          setBotSending(false);
+          if (resBot.ok) {
+            notify(`✅ Pesan Penolakan + Alasan Otomatis Terkirim ke ${policy.pic || brandNameGuess}!`);
+          } else {
+            notify(`🔓 Slot dibuka! (Bot gagal: ${resBot.reason} — membuka WA manual)`);
+            openManualWaFallback(targetPhone, rejectMsg);
+          }
+        } else {
+          notify('🔓 Pengajuan ditolak & slot dibuka (Membuka WA manual karena nomor kosong).');
+          openManualWaFallback('', rejectMsg);
         }
       };
       const handleOpenEdit = (sch) => {
@@ -1834,8 +2159,10 @@
 
       const handleSave = (e) => {
         e.preventDefault();
-        const sMin = timeToMinutes(formData.start_time), eMin = timeToMinutes(formData.end_time);
-        if (eMin <= sMin) { notify('⛔ Jam Selesai harus lebih besar dari Jam Mulai!'); return; }
+        if (formData.start_time === formData.end_time) { notify('⛔ Jam Mulai dan Jam Selesai tidak boleh sama!'); return; }
+        const sMin = timeToMinutes(formData.start_time);
+        let eMin = timeToMinutes(formData.end_time);
+        if (eMin <= sMin) eMin = (eMin === 0 ? 24 * 60 : eMin + 24 * 60);
         const brandObj = brands.find(b => b.id === formData.brand_id);
         const basePayload = { ...formData, color: brandObj?.color || formData.color };
 
@@ -2370,9 +2697,13 @@ h('span', { style: { color: '#F472B6' } }, '•')
               className: `nav-pill ${activeTab === tb.id ? 'active' : ''} ${isPendingAlert ? 'nav-pill-alert' : ''}`
             }, `${tb.icon} ${tb.label}${isPendingAlert ? ' 🔥' : ''}`);
           }),
-          h('button', {
+h('button', {
             className: 'btn btn-soft',
             style: { marginLeft: 'auto' },
+            onClick: () => setOpenSlotsModalOpen(true)
+          }, '📤 Share Slot Kosong'),
+          h('button', {
+            className: 'btn btn-soft',
             onClick: () => setGuideModalOpen(true)
           }, '💡 Cara Booking'),
           h('button', { className: 'btn btn-soft', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
@@ -3004,17 +3335,20 @@ h('span', { style: { color: '#F472B6' } }, '•')
                                   : handleOpenCreate(dateStr, slot.start, slot.end),
                                 style: { cursor: 'pointer' }
                               },
-                                slotItems.map(item => h('div', {
-                                  key: item.id,
-                                  style: {
-                                    background: item.color, color: '#0F172A', padding: '4px 6px',
-                                    borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px',
-                                    border: '1px solid rgba(0,0,0,0.18)'
-                                  }
-                                },
-                                  h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`),
-                                  h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.85 } }, `${item.start_time}-${item.end_time}`)
-                                ))
+                               slotItems.map(item => {
+                                  const txtCol = getContrastColor(item.color);
+                                  return h('div', {
+                                    key: item.id,
+                                    style: {
+                                      background: item.color, color: txtCol, padding: '4px 6px',
+                                      borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px',
+                                      border: '1px solid rgba(0,0,0,0.2)'
+                                    }
+                                  },
+                                    h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`),
+                                    h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.9 } }, `${item.start_time}-${item.end_time}`)
+                                  );
+                                })
                               );
                             })
                           );
@@ -3023,7 +3357,7 @@ h('span', { style: { color: '#F472B6' } }, '•')
                     )
                   )
             )
-          ),
+          ), 
 // =================================================================
           // 🔍 TAB BARU: CEK KETERSEDIAAN SLOT, ISTIRAHAT & WAKTU BOBO (REAL-TIME)
           // =================================================================
@@ -3550,6 +3884,156 @@ h('span', { style: { color: '#F472B6' } }, '•')
             h('span', null, tb.label)
           ))
         ),
+               // =================================================================
+        // ❌ V2.12: MODAL ALASAN PENOLAKAN & KIRIM OTOMATIS VIA BOT WA
+        // =================================================================
+        rejectModalItem && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '11px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#BE123C', textTransform: 'uppercase' } }, '🤖 BOT WA OTOMATIS • TOLAK & BUKA SLOT'),
+                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Kirim Alasan Penolakan ke Brand')
+              ),
+              h('button', { className: 'btn btn-soft', onClick: () => setRejectModalItem(null) }, '✕')
+            ),
+
+            h('div', { style: { background: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '12px', padding: '8px 10px', fontSize: '11px', color: '#9F1239' } },
+              h('div', { style: { fontWeight: 900 } }, rejectModalItem.title.replace(/^\[WAITING\]\s*/i, '')),
+              h('div', { className: 'font-mono', style: { fontSize: '10.5px', marginTop: '2px' } },
+                `🗓️ ${getHariNama(rejectModalItem.date)}, ${rejectModalItem.date} • ⏰ ${rejectModalItem.start_time} – ${rejectModalItem.end_time} WIB`
+              )
+            ),
+
+            h('div', null,
+              h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Nomor WA Tujuan (Brand / PIC):'),
+              h('input', {
+                type: 'tel',
+                placeholder: 'Contoh: 081234567890',
+                value: rejectPhone,
+                onChange: e => setRejectPhone(e.target.value),
+                style: { width: '100%' }
+              })
+            ),
+
+            h('div', null,
+              h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '5px' } }, 'Pilih Alasan Cepat atau Tulis Sendiri:'),
+              h('div', { className: 'flex flex-wrap gap-1', style: { marginBottom: '6px' } },
+                [
+                  { l: '⏳ Istirahat Mepet', t: 'Jadwal di jam tersebut berdekatan dengan sesi lain sehingga waktu istirahat & persiapan kurang memadai.' },
+                  { l: '🔒 Jadwal Penuh', t: 'Slot di jam tersebut sudah berbenturan dengan jadwal prioritas yang baru masuk.' },
+                  { l: '🚗 Jarak / Lokasi', t: 'Jeda perjalanan dari lokasi sesi sebelumnya belum mencukupi untuk jam tersebut.' },
+                  { l: '📅 Reschedule', t: 'Agenda operasional studio di tanggal tersebut sedang tidak tersedia, mohon bantu reschedule ke hari lain.' }
+                ].map((pr, idx) => h('button', {
+                  key: idx,
+                  type: 'button',
+                  className: 'btn btn-soft',
+                  style: { padding: '4px 8px', fontSize: '10px' },
+                  onClick: () => setRejectReason(pr.t)
+                }, pr.l))
+              ),
+              h('textarea', {
+                rows: 3,
+                placeholder: 'Tulis alasan penolakan yang sopan untuk dikirim oleh BOT ke brand...',
+                value: rejectReason,
+                onChange: e => setRejectReason(e.target.value),
+                style: { width: '100%' }
+              })
+            ),
+
+            h('label', {
+              className: 'flex items-center gap-1-5',
+              style: { fontSize: '11px', fontWeight: 800, color: '#065F46', cursor: 'pointer' }
+            },
+              h('input', {
+                type: 'checkbox',
+                checked: rejectIncludeAlts,
+                onChange: e => setRejectIncludeAlts(e.target.checked)
+              }),
+              'Sertakan otomatis alternatif jam kosong di tanggal tersebut'
+            ),
+
+            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '8px', marginTop: '4px' } },
+              h('button', {
+                type: 'button',
+                className: 'btn btn-soft',
+                style: { padding: '9px', fontSize: '11px' },
+                onClick: () => handleConfirmReject(false)
+              }, '🗑️ Tolak Tanpa WA'),
+              h('button', {
+                type: 'button',
+                disabled: botSending,
+                className: 'btn',
+                style: { padding: '9px', fontSize: '11.5px', background: '#E11D48', color: '#FFFFFF', borderColor: '#FDA4AF', fontWeight: 900 },
+                onClick: () => handleConfirmReject(true)
+              }, botSending ? '⏳ Mengirim...' : '🤖 Tolak & Kirim Bot WA')
+            )
+          )
+        ),
+               // =================================================================
+        // 📤 V2.10: MODAL GENERATOR & SHARE SLOT KOSONG (PRIVACY-SAFE)
+        // =================================================================
+        openSlotsModalOpen && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '11px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#059669', textTransform: 'uppercase' } }, '✨ CLIENT-READY • TANPA BOCOR JADWAL BRAND LAIN'),
+                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '📤 Generator Daftar Slot Kosong')
+              ),
+              h('button', { className: 'btn btn-soft', onClick: () => setOpenSlotsModalOpen(false) }, '✕')
+            ),
+
+            h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
+              h('div', { className: 'flex items-center gap-1 flex-wrap' },
+                [
+                  { d: 1, l: 'Hari Ini' },
+                  { d: 3, l: '3 Hari' },
+                  { d: 7, l: '7 Hari' },
+                  { d: 14, l: '14 Hari' }
+                ].map(op => h('button', {
+                  key: op.d,
+                  type: 'button',
+                  onClick: () => setOpenSlotsDays(op.d),
+                  className: `btn ${openSlotsDays === op.d ? 'btn-pink' : 'btn-soft'}`,
+                  style: { padding: '5px 10px', fontSize: '10.5px' }
+                }, op.l))
+              ),
+              h('label', {
+                className: 'flex items-center gap-1',
+                style: { fontSize: '10.5px', fontWeight: 800, color: '#831843', cursor: 'pointer' }
+              },
+                h('input', {
+                  type: 'checkbox',
+                  checked: openSlotsDaytimeOnly,
+                  onChange: e => setOpenSlotsDaytimeOnly(e.target.checked)
+                }),
+                'Jam 07:00–23:00 saja'
+              )
+            ),
+
+            h('textarea', {
+              rows: 9,
+              readOnly: true,
+              className: 'font-mono',
+              value: generatedOpenSlotsText,
+              style: { width: '100%', fontSize: '11px', lineHeight: 1.45, background: '#FFFFFF', color: '#4A0424' }
+            }),
+
+            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '8px' } },
+              h('button', {
+                type: 'button',
+                className: 'btn btn-soft',
+                style: { padding: '10px', fontSize: '11.5px' },
+                onClick: handleCopyOpenSlots
+              }, '📋 Salin Teks'),
+              h('button', {
+                type: 'button',
+                className: 'btn btn-emerald',
+                style: { padding: '10px', fontSize: '11.5px' },
+                onClick: () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(generatedOpenSlotsText)}`, '_blank')
+              }, '📲 Kirim ke WhatsApp')
+            )
+          )
+        ),
         // =================================================================
         // 💡 V2.2: MODAL POPUP PANDUAN CARA BOOKING VIA WHATSAPP
         // =================================================================
@@ -3668,7 +4152,46 @@ h('span', { style: { color: '#F472B6' } }, '•')
                   style: { width: '100%' }
                 })
               ),
-
+(() => {
+                const activePolicy = getBrandContactPolicy(bookingPreviewResolution.brand_id);
+                if (activePolicy.skipPhone) {
+                  return h('div', {
+                    style: {
+                      background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '11px',
+                      padding: '8px 10px', fontSize: '11px', fontWeight: 800, color: '#166534'
+                    }
+                  }, '🍼 Khusus partner Mom Uung tidak perlu memasukkan nomor HP/WA.');
+                }
+                if (activePolicy.phone) {
+                  return h('div', {
+                    style: {
+                      background: '#ECFDF5', border: '1.5px solid #6EE7B7', borderRadius: '12px',
+                      padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '6px'
+                    }
+                  },
+                    h('div', { style: { fontSize: '11px', fontWeight: 900, color: '#065F46' } },
+                      `🤖 Nomor WA PIC terdaftar otomatis (${activePolicy.pic}) — notif ACC/Tolak langsung dikirim ke PIC!`
+                    ),
+                    h('input', {
+                      type: 'tel',
+                      placeholder: `Opsional: isi nomor WA lain jika bukan ${activePolicy.pic}`,
+                      value: bookingData.clientPhone || '',
+                      onChange: e => setBookingData({ ...bookingData, clientPhone: e.target.value }),
+                      style: { width: '100%' }
+                    })
+                  );
+                }
+                return h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Nomor WhatsApp PIC / Brand (Wajib diisi untuk balasan otomatis BOT) *'),
+                  h('input', {
+                    type: 'tel', required: true,
+                    placeholder: 'Contoh: 081234567890',
+                    value: bookingData.clientPhone || '',
+                    onChange: e => setBookingData({ ...bookingData, clientPhone: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                );
+              })(),
               // 🎨 Pemilih Warna Khusus Jika Brand Belum Terdaftar di Partner Brand
               bookingPreviewResolution.isExternalWA && h('div', {
                 style: {
@@ -3844,16 +4367,38 @@ h('span', { style: { color: '#F472B6' } }, '•')
               h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#831843' } }, selectedSchedule ? '✏️ Edit Jadwal' : '✨ Tambah Jadwal Baru'),
               h('button', { className: 'btn btn-soft', onClick: () => setModalOpen(false) }, '✕')
             ),
-            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
-              [
-                { b: 'b_momuung', name: 'Mom Uung', n: 1, st: '05:00', en: '13:00' },
-                { b: 'b_momuung', name: 'Mom Uung', n: 2, st: '11:00', en: '19:00' },
-                { b: 'b_aquapress', name: 'AquaPress', n: 1, st: '08:00', en: '12:00' },
-                { b: 'b_aquapress', name: 'AquaPress', n: 2, st: '12:00', en: '16:00' }
-              ].map((p, idx) => h('button', {
-                key: idx, type: 'button', className: 'btn btn-soft',
-                onClick: () => applyPresetShift(p.b, p.name, p.n, p.st, p.en)
-              }, `⚡ Shift ${p.n} ${p.name} (${p.st}-${p.en})`))
+    h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+              // Grup 1: Preset Shift Mom Uung (Shift 1 - 4)
+              h('div', { style: { background: '#F0FDF4', border: '1.5px solid #86EFAC', borderRadius: '12px', padding: '8px' } },
+                h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#166534', marginBottom: '5px', textTransform: 'uppercase' } }, '🍼 Preset Shift Mom Uung'),
+                h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
+                  [
+                    { n: 1, st: '05:00', en: '13:00' },
+                    { n: 2, st: '11:00', en: '19:00' },
+                    { n: 3, st: '17:00', en: '00:00' },
+                    { n: 4, st: '23:00', en: '06:50' }
+                  ].map(p => h('button', {
+                    key: 'mu_' + p.n, type: 'button', className: 'btn',
+                    style: { background: '#DCFCE7', color: '#14532D', borderColor: '#4ADE80', fontSize: '10.5px', padding: '6px 8px' },
+                    onClick: () => applyPresetShift('b_momuung', 'Mom Uung', p.n, p.st, p.en)
+                  }, `⚡ Shift ${p.n} (${p.st}-${p.en})`))
+                )
+              ),
+              // Grup 2: Preset Shift AquaPress (Shift 1 - 3)
+              h('div', { style: { background: '#ECFEFF', border: '1.5px solid #67E8F9', borderRadius: '12px', padding: '8px' } },
+                h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#155E75', marginBottom: '5px', textTransform: 'uppercase' } }, '💧 Preset Shift AquaPress'),
+                h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' } },
+                  [
+                    { n: 1, st: '07:00', en: '11:00' },
+                    { n: 2, st: '11:00', en: '16:00' },
+                    { n: 3, st: '15:00', en: '21:00' }
+                  ].map(p => h('button', {
+                    key: 'ap_' + p.n, type: 'button', className: 'btn',
+                    style: { background: '#CFFAFE', color: '#164E63', borderColor: '#22D3EE', fontSize: '10px', padding: '6px 6px' },
+                    onClick: () => applyPresetShift('b_aquapress', 'AquaPress', p.n, p.st, p.en)
+                  }, `⚡ Shift ${p.n} (${p.st}-${p.en})`))
+                )
+              )
             ),
             h('form', { onSubmit: handleSave, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', {
