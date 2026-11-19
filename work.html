@@ -541,10 +541,11 @@
       firebaseDb = firebase.database();
     } catch (err) {}
 
-    const REQUIRED_CATEGORIES = [
+   const REQUIRED_CATEGORIES = [
       { id: 'b_momuung', name: 'Mom Uung', emoji: '🍼', color: '#B6D7A8' },
       { id: 'b_aquapress', name: 'AquaPress', emoji: '💧', color: '#00FFFF' },
       { id: 'b_moell', name: 'Moell / Back Up', emoji: '✨', color: '#FACC15' },
+      { id: 'b_booking_wa', name: 'Partner / Booking WA', emoji: '📲', color: '#93C5FD' },
       { id: 'b_konten', name: 'Take Konten Video Affiliate', emoji: '🎬', color: '#8B5CF6' },
       { id: 'b_sleep', name: 'Jam Tidur / Istirahat', emoji: '😴', color: '#6366F1' },
       { id: 'b_sakit', name: 'Sakit / Izin Medis', emoji: '🤒', color: '#EF4444' },
@@ -863,12 +864,32 @@
           }
         });
 
-        const refBrands = firebaseDb.ref('alisya_brands');
+       const refBrands = firebaseDb.ref('alisya_brands');
         refBrands.on('value', snap => {
           const val = snap.val();
-          if (val && Array.isArray(val)) setBrands(val);
+          if (val && Array.isArray(val)) {
+            let needsSync = false;
+            const merged = val.map(b => {
+              const reqMatch = REQUIRED_CATEGORIES.find(r => r.id === b.id);
+              if (!b.emoji) {
+                needsSync = true;
+                return { ...b, emoji: reqMatch ? reqMatch.emoji : '🏷️' };
+              }
+              return b;
+            });
+            REQUIRED_CATEGORIES.forEach(req => {
+              if (!merged.some(b => b.id === req.id)) {
+                merged.push(req);
+                needsSync = true;
+              }
+            });
+            setBrands(merged);
+            if (needsSync) refBrands.set(merged);
+          } else {
+            refBrands.set(REQUIRED_CATEGORIES);
+            setBrands(REQUIRED_CATEGORIES);
+          }
         });
-
         const refNote = firebaseDb.ref('alisya_sticky_note');
         refNote.on('value', snap => {
           const val = snap.val();
@@ -1280,7 +1301,103 @@
         notify('✅ Progres konten diperbarui!');
       };
 
-      // 🚀 V2.2: Buka Modal Booking WA (Hanya Mengizinkan Slot yang Benar-Benar Kosong)
+     // 🎨 V2.9: DETEKSI BRAND, PALET WARNA UNIK & AUTO-REGISTER BRAND BARU
+      const NON_PARTNER_BRAND_IDS = ['b_sleep', 'b_sakit', 'b_lainlain', 'b_pribadi', 'b_booking_wa', 'b_konten'];
+
+      const NEW_BRAND_COLOR_PALETTE = [
+        { hex: '#93C5FD', name: 'Sky Blue' },
+        { hex: '#FDBA74', name: 'Soft Peach' },
+        { hex: '#C4B5FD', name: 'Lavender' },
+        { hex: '#FDA4AF', name: 'Coral Rose' },
+        { hex: '#5EEAD4', name: 'Aqua Mint' },
+        { hex: '#BEF264', name: 'Fresh Lime' },
+        { hex: '#F9A8D4', name: 'Cotton Pink' },
+        { hex: '#FCA5A5', name: 'Warm Salmon' }
+      ];
+
+      const getBrandEmoji = (b) => (b && b.emoji) ? b.emoji : '🏷️';
+
+      const partnerBrandOptions = useMemo(() => {
+        return brands.filter(b => !NON_PARTNER_BRAND_IDS.includes(b.id));
+      }, [brands]);
+
+      const pickUnusedBrandColor = () => {
+        const usedColors = new Set(brands.map(b => String(b.color || '').toUpperCase()));
+        const unused = NEW_BRAND_COLOR_PALETTE.find(c => !usedColors.has(c.hex.toUpperCase()));
+        return unused ? unused.hex : '#93C5FD';
+      };
+
+      const resolveBookingBrandAndColor = (rawTitleOrClient, collabType = '', explicitBrandId = 'AUTO', customColor = null) => {
+        const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const findBrand = (id) => brands.find(b => b.id === id);
+
+        const combinedLower = `${rawTitleOrClient || ''} ${collabType || ''}`.toLowerCase();
+        const isKonten = combinedLower.includes('video') || combinedLower.includes('affiliate') || combinedLower.includes('konten');
+        const isMeeting = combinedLower.includes('meeting') || combinedLower.includes('briefing');
+        const nextStatus = isKonten ? 'Konten' : isMeeting ? 'Meeting' : 'LIVE';
+
+        // 1. Jika memilih brand partner spesifik (bukan AUTO dan bukan b_booking_wa)
+        if (explicitBrandId && explicitBrandId !== 'AUTO' && explicitBrandId !== 'b_booking_wa') {
+          const chosen = findBrand(explicitBrandId);
+          if (chosen) {
+            return {
+              brand_id: chosen.id,
+              color: chosen.color,
+              status: chosen.id === 'b_konten' ? 'Konten' : nextStatus,
+              matchedBrand: { ...chosen, emoji: getBrandEmoji(chosen) },
+              isExternalWA: false
+            };
+          }
+        }
+
+        // 2. Deteksi otomatis jika nama brand yang diketik cocok dengan partner yang sudah terdaftar
+        const normInput = norm(rawTitleOrClient);
+        const matchedPartner = partnerBrandOptions.find(b => {
+          const fullNorm = norm(b.name);
+          const primaryPart = norm((b.name || '').split('/')[0]);
+          return (fullNorm.length >= 3 && normInput.includes(fullNorm)) ||
+                 (primaryPart.length >= 3 && normInput.includes(primaryPart));
+        });
+
+        if (matchedPartner && explicitBrandId !== 'b_booking_wa') {
+          return {
+            brand_id: matchedPartner.id,
+            color: matchedPartner.color,
+            status: nextStatus,
+            matchedBrand: { ...matchedPartner, emoji: getBrandEmoji(matchedPartner) },
+            isExternalWA: false
+          };
+        }
+
+        // 3. Brand Baru / Belum Terdaftar -> Gunakan warna custom pilihan klien/admin
+        const waBrand = findBrand('b_booking_wa') || { id: 'b_booking_wa', name: 'Partner / Booking WA', emoji: '📲', color: '#93C5FD' };
+        const finalColor = customColor || waBrand.color || '#93C5FD';
+        const cleanBrandLabel = String(rawTitleOrClient || '').split('—')[0].trim();
+
+        return {
+          brand_id: 'b_booking_wa',
+          color: finalColor,
+          status: nextStatus,
+          matchedBrand: {
+            id: 'b_booking_wa',
+            name: cleanBrandLabel ? `${cleanBrandLabel} (Brand Baru)` : waBrand.name,
+            emoji: '🆕',
+            color: finalColor
+          },
+          isExternalWA: true
+        };
+      };
+
+      const bookingPreviewResolution = useMemo(() => {
+        return resolveBookingBrandAndColor(
+          bookingData.clientName,
+          bookingData.collabType,
+          bookingData.brand_id || 'AUTO',
+          bookingData.customColor || null
+        );
+      }, [bookingData.clientName, bookingData.collabType, bookingData.brand_id, bookingData.customColor, brands]);
+
+      // 🚀 V2.9: Buka Modal Booking WA (Hanya Mengizinkan Slot yang Benar-Benar Kosong)
       const handleOpenCreate = (dateStr = null, slotStart = '10:00', slotEnd = '12:00') => {
         const targetDate = dateStr || selectedDate;
         const smartSlot = findFirstFreeSlotOnDate(targetDate, slotStart, slotEnd);
@@ -1294,6 +1411,8 @@
             date: targetDate,
             start_time: smartSlot.start,
             end_time: smartSlot.end,
+            brand_id: 'AUTO',
+            customColor: pickUnusedBrandColor(),
             clientName: '',
             collabType: 'Live Streaming Session',
             notes: ''
@@ -1314,8 +1433,7 @@
         setModalOpen(true);
       };
 
-     // 🚀 V2.2: Kirim Format Booking ke WhatsApp 085159440579 (100% Bersih Tanpa Emoji Rusak)
-// ⏳ V2.3: Kirim Booking ke WA + Otomatis Kunci Slot sebagai "PENDING" di Firebase
+      // ⏳ V2.9: Kirim Booking ke WA + Simpan Warna Pilihan Brand Baru
       const handleSendBookingWA = (e) => {
         e.preventDefault();
         if (currentBookingConflict) {
@@ -1325,17 +1443,25 @@
         const hari = getHariNama(bookingData.date);
         const brandText = bookingData.clientName.trim() || 'Brand / Partner';
         const noteText = bookingData.notes.trim() || '-';
+        const explicitChoice = bookingData.brand_id && bookingData.brand_id !== 'AUTO' ? bookingData.brand_id : 'AUTO';
+        const chosenColor = bookingData.customColor || pickUnusedBrandColor();
+        const resolved = resolveBookingBrandAndColor(brandText, bookingData.collabType, explicitChoice, chosenColor);
 
-        // 1. Buat item jadwal berstatus PENDING agar slot langsung terkunci bagi klien lain
         const pendingItem = {
           id: 'sch_pending_' + Date.now(),
           date: bookingData.date,
           start_time: bookingData.start_time,
           end_time: bookingData.end_time,
           title: `[WAITING] ${brandText} — ${bookingData.collabType}`,
-          brand_id: brands[0]?.id || 'b_momuung',
+          brand_id: resolved.brand_id,
+          brand_locked: explicitChoice !== 'AUTO',
+          custom_brand_name: brandText,
+          custom_color: resolved.isExternalWA ? resolved.color : null,
+          register_as_new_brand: resolved.isExternalWA,
           status: 'PENDING',
           color: '#F59E0B',
+          is_wa_booking: true,
+          collab_type: bookingData.collabType,
           notes: `Pengajuan WA (${brandText}): ${noteText}`,
           gmv: '',
           checklist: { shoot: false, edit: false, upload: false }
@@ -1343,7 +1469,6 @@
 
         saveSchedulesToCloud([...schedules, pendingItem]);
 
-        // 2. Kirim pesan resmi ke WhatsApp Admin
         const msg =
           `*PENGAJUAN BOOKING JADWAL ALISYA*\n` +
           `────────────────────────\n` +
@@ -1352,6 +1477,8 @@
           `• *Hari & Tanggal :* ${hari}, ${bookingData.date}\n` +
           `• *Slot Waktu :* ${bookingData.start_time} - ${bookingData.end_time} WIB\n` +
           `• *Jenis Kolaborasi :* ${bookingData.collabType}\n` +
+          `• *Kategori Brand :* ${resolved.matchedBrand.name}\n` +
+          `• *Warna Label :* ${resolved.color}\n` +
           `• *Catatan / Brief :* ${noteText}\n` +
           `• *Status Sistem :* Slot Otomatis Masuk Antrean Konfirmasi (Hold)\n` +
           `────────────────────────\n` +
@@ -1362,24 +1489,101 @@
         notify('⏳ Slot otomatis dikunci sementara (Waiting Confirmation) & membuka WhatsApp...');
       };
 
-      // ✅ V2.3: Fungsi Admin 1-Klik Terima Booking Pending Menjadi Jadwal Resmi
-      const handleApprovePending = (e, item) => {
+      // 🔄 V2.9: Edit Brand / Warna / Opsi Daftar Brand Baru Langsung di Kartu Antrean WA
+      const handleUpdatePendingField = (itemId, patchObj) => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        const updated = schedules.map(s => s.id === itemId ? { ...s, ...patchObj } : s);
+        saveSchedulesToCloud(updated);
+      };
+
+      // ✅ V2.9: ACC Booking Pending -> Support Warna Custom & Auto-Daftar Brand Baru ke Firebase
+      const handleApprovePending = (e, item, overrideBrandId = null) => {
         e.stopPropagation();
         if (!isAdmin) { setPinInputModal(true); return; }
         const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
-        const isKonten = cleanTitle.toLowerCase().includes('video') || cleanTitle.toLowerCase().includes('affiliate');
-        const isMeeting = cleanTitle.toLowerCase().includes('meeting') || cleanTitle.toLowerCase().includes('briefing');
-        const nextStatus = isKonten ? 'Konten' : isMeeting ? 'Meeting' : 'LIVE';
-        const nextColor = isKonten ? '#8B5CF6' : isMeeting ? '#00FFFF' : '#10B981';
+        const brandNameGuess = (item.custom_brand_name || cleanTitle.split('—')[0] || 'Brand Baru').trim();
+        const targetBrandHint = overrideBrandId || (item.brand_locked ? item.brand_id : 'AUTO');
+        const resolved = resolveBookingBrandAndColor(cleanTitle, item.collab_type || cleanTitle, targetBrandHint, item.custom_color || null);
+
+        let finalBrandId = resolved.brand_id;
+        let finalColor = resolved.color;
+        let finalBrandLabel = `${resolved.matchedBrand.emoji} ${resolved.matchedBrand.name}`;
+        let hasCustomColor = false;
+
+        // Jika Brand Baru & opsi "Simpan permanen ke Daftar Brand" aktif -> buat brand baru di Firebase
+        if (resolved.isExternalWA && item.register_as_new_brand !== false && brandNameGuess) {
+          const normNew = brandNameGuess.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const alreadyExists = brands.find(b => (b.name || '').toLowerCase().replace(/[^a-z0-9]/g, '') === normNew);
+
+          if (alreadyExists) {
+            finalBrandId = alreadyExists.id;
+            finalColor = item.custom_color || alreadyExists.color;
+            finalBrandLabel = `${getBrandEmoji(alreadyExists)} ${alreadyExists.name}`;
+          } else {
+            const newBrandObj = {
+              id: 'b_custom_' + Date.now(),
+              name: brandNameGuess,
+              emoji: '🏷️',
+              color: finalColor
+            };
+            saveBrandsToCloud([...brands, newBrandObj]);
+            finalBrandId = newBrandObj.id;
+            finalBrandLabel = `${newBrandObj.emoji} ${newBrandObj.name} (Brand Baru Terdaftar!)`;
+          }
+        } else if (resolved.isExternalWA && item.custom_color) {
+          hasCustomColor = true;
+        }
 
         const updated = schedules.map(s => s.id === item.id ? {
           ...s,
           title: cleanTitle,
-          status: nextStatus,
-          color: nextColor
+          brand_id: finalBrandId,
+          brand_locked: true,
+          has_custom_color: hasCustomColor,
+          status: resolved.status,
+          color: finalColor,
+          is_wa_booking: true
         } : s);
         saveSchedulesToCloud(updated);
-        notify(`✅ Booking "${cleanTitle}" resmi dikonfirmasi menjadi jadwal [${nextStatus}]!`);
+        notify(`✅ Booking "${cleanTitle}" di-ACC -> ${finalBrandLabel} [${resolved.status}]!`);
+      };
+
+      // 🎨 V2.9: 1-Klik Rapikan Warna Jadwal Booking WA Lama (Tanpa Menimpa Warna Custom)
+      const handleAutoFixBookingColors = () => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        let fixedCount = 0;
+        const updated = schedules.map(s => {
+          if (s.has_custom_color || s.status === 'PENDING' || s.status === 'OFF' || s.status === 'Tidur' || s.brand_id === 'b_sleep' || s.brand_id === 'b_sakit') return s;
+
+          const isWaLike = !!s.is_wa_booking ||
+            (s.notes || '').includes('Pengajuan WA') ||
+            (s.title || '').includes('Live Streaming Session') ||
+            (s.title || '').includes('Take Video Affiliate') ||
+            (s.title || '').includes('Briefing / Meeting Online') ||
+            (s.title || '').includes('Event / Brand Campaign');
+
+          const resolved = resolveBookingBrandAndColor(s.title, s.collab_type || s.title, 'AUTO', s.custom_color || null);
+          const isMatchedPartnerMismatch = !resolved.isExternalWA && (s.brand_id !== resolved.brand_id || s.color !== resolved.color);
+          const isExternalWaMismatch = isWaLike && resolved.isExternalWA && (s.brand_id !== resolved.brand_id || s.color !== resolved.color);
+
+          if (isMatchedPartnerMismatch || isExternalWaMismatch) {
+            fixedCount++;
+            return {
+              ...s,
+              brand_id: resolved.brand_id,
+              color: resolved.color,
+              is_wa_booking: isWaLike ? true : s.is_wa_booking
+            };
+          }
+          return s;
+        });
+
+        if (fixedCount === 0) {
+          notify('✨ Semua warna jadwal & booking WA sudah rapi sesuai brand masing-masing!');
+        } else {
+          saveSchedulesToCloud(updated);
+          notify(`🎨 Berhasil merapikan warna ${fixedCount} jadwal sesuai brand & kategori WA!`);
+        }
       };
 
       // ❌ V2.3: Fungsi Admin 1-Klik Tolak / Batalkan Booking Pending (Buka Kembali Slot)
@@ -2730,7 +2934,7 @@ h('span', { style: { color: '#F472B6' } }, '•')
                                 border: '1px solid rgba(0,0,0,0.18)'
                               }
                             },
-                              h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `🔒 ${item.title}`),
+                             h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`),
                               h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.85 } }, `${item.start_time}-${item.end_time}`)
                             ))
                           );
@@ -3080,7 +3284,14 @@ h('span', { style: { color: '#F472B6' } }, '•')
 
          // TAB 5: WARNA BRAND
           activeTab === 'colors' && h('div', { className: 'exec-card', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
+           h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
             h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#831843' } }, `🎨 ${t.tabColors}`),
+            isAdmin && h('button', {
+              type: 'button',
+              className: 'btn btn-pink',
+              onClick: handleAutoFixBookingColors
+            }, '🔄 Rapikan Warna Booking WA')
+          ),
             brands.map(b => h('div', {
               key: b.id, className: 'flex items-center justify-between',
               style: { background: '#FFFFFF', padding: '10px 14px', borderRadius: '14px', border: '1.5px solid #F9A8D4' }
@@ -3128,7 +3339,18 @@ h('span', { style: { color: '#F472B6' } }, '•')
                   h('p', { style: { fontSize: '11.5px', color: '#831843', marginTop: '4px' } }, 'Seluruh pengajuan jadwal dari klien via WhatsApp sudah kamu konfirmasi (ACC) atau belum ada pengajuan baru.')
                 )
               : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
-                  pendingBookingsList.map((item, idx) => h('div', {
+                pendingBookingsList.map((item, idx) => {
+                  const cleanPreviewTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
+                  const previewRes = resolveBookingBrandAndColor(
+                    cleanPreviewTitle,
+                    item.collab_type || cleanPreviewTitle,
+                    item.brand_locked ? item.brand_id : 'AUTO',
+                    item.custom_color || null
+                  );
+                  const activeCustomColor = item.custom_color || previewRes.color || '#93C5FD';
+                  const willRegisterNew = item.register_as_new_brand !== false;
+
+                  return h('div', {
                     key: item.id,
                     style: {
                       background: '#FFFFFF', border: '2px solid #F59E0B', borderRadius: '16px',
@@ -3138,16 +3360,73 @@ h('span', { style: { color: '#F472B6' } }, '•')
                       boxShadow: '0 4px 14px rgba(245, 158, 11, 0.12)'
                     }
                   },
-                    h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', gap: '5px' } },
+                    h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' } },
                       h('div', { className: 'flex items-center gap-2 flex-wrap' },
                         h('span', { style: { background: '#FEF3C7', color: '#92400E', border: '1px solid #F59E0B', fontSize: '10px', fontWeight: 900, padding: '2px 8px', borderRadius: '8px' } }, `ANTREAN #${idx + 1}`),
                         h('span', { style: { fontSize: '12px', fontWeight: 900, color: '#9D174D' } }, `🗓️ ${getHariNama(item.date)}, ${item.date}`),
-                        h('span', { className: 'font-mono', style: { background: '#FCE7F3', color: '#831843', border: '1px solid #F472B6', padding: '2px 8px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 900 } }, `⏰ ${item.start_time} - ${item.end_time} WIB`)
+                        h('span', { className: 'font-mono', style: { background: '#FCE7F3', color: '#831843', border: '1px solid #F472B6', padding: '2px 8px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 900 } }, `⏰ ${item.start_time} - ${item.end_time} WIB`),
+                        h('span', {
+                          style: { background: previewRes.color, color: '#0F172A', border: '1px solid rgba(0,0,0,0.2)', fontSize: '10px', fontWeight: 900, padding: '2px 8px', borderRadius: '8px' }
+                        }, `🎨 ${previewRes.matchedBrand.emoji} ${previewRes.matchedBrand.name}`)
                       ),
                       h('div', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, item.title),
                       item.notes && h('div', {
                         style: { background: '#FFFBEB', border: '1px solid #FDE68A', padding: '6px 10px', borderRadius: '10px', fontSize: '11.5px', color: '#78350F', fontWeight: 700 }
-                      }, `📝 ${item.notes}`)
+                      }, `📝 ${item.notes}`),
+
+                      // 🎛️ Panel Atur Brand & Warna Sendiri Sebelum ACC
+                      h('div', {
+                        style: {
+                          background: '#FFF0F6', border: '1px solid #F9A8D4', borderRadius: '12px',
+                          padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '2px'
+                        }
+                      },
+                        h('div', { className: 'flex items-center gap-2 flex-wrap' },
+                          h('span', { style: { fontSize: '10.5px', fontWeight: 800, color: '#831843' } }, 'Kategori saat ACC:'),
+                          h('select', {
+                            value: previewRes.brand_id,
+                            onChange: e => handleUpdatePendingField(item.id, { brand_id: e.target.value, brand_locked: true }),
+                            style: { padding: '4px 8px', fontSize: '11px' }
+                          },
+                            h('option', { value: 'b_booking_wa' }, '🆕 Brand Baru (Pakai Warna Sendiri)'),
+                            partnerBrandOptions.map(b =>
+                              h('option', { key: b.id, value: b.id }, `${getBrandEmoji(b)} ${b.name}`)
+                            ),
+                            h('option', { value: 'b_konten' }, '🎬 Take Konten Video Affiliate')
+                          )
+                        ),
+
+                        previewRes.isExternalWA && h('div', { className: 'flex items-center gap-2 flex-wrap' },
+                          h('span', { style: { fontSize: '10.5px', fontWeight: 800, color: '#831843' } }, '🎨 Atur Warna Brand Baru:'),
+                          h('input', {
+                            type: 'color',
+                            value: activeCustomColor,
+                            onChange: e => handleUpdatePendingField(item.id, { custom_color: e.target.value }),
+                            style: { width: '32px', height: '26px', padding: '1px', cursor: 'pointer' }
+                          }),
+                          NEW_BRAND_COLOR_PALETTE.slice(0, 6).map(c => h('button', {
+                            key: c.hex,
+                            type: 'button',
+                            title: c.name,
+                            onClick: () => handleUpdatePendingField(item.id, { custom_color: c.hex }),
+                            style: {
+                              width: '18px', height: '18px', borderRadius: '999px', background: c.hex,
+                              border: activeCustomColor.toUpperCase() === c.hex.toUpperCase() ? '2.5px solid #831843' : '1px solid rgba(0,0,0,0.2)'
+                            }
+                          })),
+                          h('label', {
+                            className: 'flex items-center gap-1',
+                            style: { fontSize: '10.5px', fontWeight: 800, color: '#065F46', cursor: 'pointer', marginLeft: '4px' }
+                          },
+                            h('input', {
+                              type: 'checkbox',
+                              checked: willRegisterNew,
+                              onChange: e => handleUpdatePendingField(item.id, { register_as_new_brand: e.target.checked })
+                            }),
+                            'Simpan permanen ke Daftar Brand'
+                          )
+                        )
+                      )
                     ),
 
                     h('div', { className: 'flex items-center gap-2 flex-wrap', style: { justifyContent: 'flex-end' } },
@@ -3155,14 +3434,14 @@ h('span', { style: { color: '#F472B6' } }, '•')
                         type: 'button',
                         className: 'btn btn-emerald',
                         style: { padding: '9px 14px', fontSize: '11.5px' },
-                        onClick: e => handleApprovePending(e, item)
+                        onClick: e => handleApprovePending(e, item, previewRes.brand_id)
                       }, '✅ ACC / Terima Jadwal'),
                       h('button', {
                         type: 'button',
                         className: 'btn btn-soft',
                         style: { padding: '9px 12px', fontSize: '11.5px' },
                         onClick: () => handleOpenEdit(item)
-                      }, '✏️ Edit / Atur Brand'),
+                      }, '✏️ Edit Detail'),
                       h('button', {
                         type: 'button',
                         className: 'btn btn-soft',
@@ -3170,8 +3449,9 @@ h('span', { style: { color: '#F472B6' } }, '•')
                         onClick: e => handleRejectPending(e, item)
                       }, '❌ Tolak & Buka Slot')
                     )
-                  ))
-                )
+                  );
+                })
+                  )
           )
         ),
 // 📱 NAVIGASI BAWAH INTERAKTIF KHUSUS LAYAR HP (OTOMATIS MUNCUL DI HP)
@@ -3278,17 +3558,92 @@ h('span', { style: { color: '#F472B6' } }, '•')
                   )
             ),
 
-            // Form Pengajuan Klien (Dropdown Jam Terisi Otomatis Terkunci / Disabled)
+        // Form Pengajuan Klien (Brand Partner / Brand Baru + Pilih Warna Sendiri + Anti-Bentrok)
             h('form', { onSubmit: handleSendBookingWA, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+              h('div', null,
+                h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Kategori Brand / Partner'),
+                h('select', {
+                  style: { width: '100%' },
+                  value: bookingData.brand_id || 'AUTO',
+                  onChange: e => {
+                    const val = e.target.value;
+                    const chosen = partnerBrandOptions.find(b => b.id === val);
+                    setBookingData(prev => ({
+                      ...prev,
+                      brand_id: val,
+                      clientName: chosen ? chosen.name : (partnerBrandOptions.some(b => b.name === prev.clientName) ? '' : prev.clientName)
+                    }));
+                  }
+                },
+                  h('option', { value: 'AUTO' }, '🆕 Pilih Brand Terdaftar'),
+                  partnerBrandOptions.map(b => h('option', { key: b.id, value: b.id }, `${getBrandEmoji(b)} ${b.name} (Brand Partner)`))
+                )
+              ),
+
               h('div', null,
                 h('label', { style: { display: 'block', fontSize: '11px', fontWeight: 800, color: '#831843', marginBottom: '4px' } }, 'Nama Brand / Agensi / PIC *'),
                 h('input', {
                   type: 'text', required: true, autoFocus: true,
-                  placeholder: 'Contoh: Brand Mom Uung / Kak Rina...',
+                  placeholder: 'Nama Brand Baru...',
                   value: bookingData.clientName,
                   onChange: e => setBookingData({ ...bookingData, clientName: e.target.value }),
                   style: { width: '100%' }
                 })
+              ),
+
+              // 🎨 Pemilih Warna Khusus Jika Brand Belum Terdaftar di Partner Brand
+              bookingPreviewResolution.isExternalWA && h('div', {
+                style: {
+                  background: '#FFFFFF', border: '1.5px solid #F472B6', borderRadius: '12px',
+                  padding: '9px 11px', display: 'flex', flexDirection: 'column', gap: '7px'
+                }
+              },
+                h('div', { className: 'flex items-center justify-between gap-2' },
+                  h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#831843' } }, '🎨 Pilih Warna Ciri Khas Brand Kamu:'),
+                  h('div', { className: 'flex items-center gap-1-5' },
+                    h('input', {
+                      type: 'color',
+                      value: bookingData.customColor || '#93C5FD',
+                      onChange: e => setBookingData({ ...bookingData, customColor: e.target.value }),
+                      style: { width: '28px', height: '24px', padding: '1px', cursor: 'pointer', borderRadius: '6px' }
+                    }),
+                    h('span', { className: 'font-mono', style: { fontSize: '10px', fontWeight: 800, color: '#9D174D' } },
+                      (bookingData.customColor || '#93C5FD').toUpperCase()
+                    )
+                  )
+                ),
+                h('div', { className: 'flex flex-wrap gap-1-5' },
+                  NEW_BRAND_COLOR_PALETTE.map(c => {
+                    const isPicked = (bookingData.customColor || '#93C5FD').toUpperCase() === c.hex.toUpperCase();
+                    return h('button', {
+                      key: c.hex,
+                      type: 'button',
+                      title: c.name,
+                      onClick: () => setBookingData({ ...bookingData, customColor: c.hex }),
+                      style: {
+                        width: '24px', height: '24px', borderRadius: '999px',
+                        background: c.hex,
+                        border: isPicked ? '3px solid #831843' : '1.5px solid rgba(0,0,0,0.2)',
+                        transform: isPicked ? 'scale(1.15)' : 'scale(1)'
+                      }
+                    });
+                  })
+                )
+              ),
+
+              h('div', {
+                style: {
+                  background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '11px',
+                  padding: '7px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', fontSize: '10.5px'
+                }
+              },
+                h('span', { style: { fontWeight: 800, color: '#701A46' } }, '🎨 Preview di Kalender:'),
+                h('span', {
+                  style: {
+                    background: bookingPreviewResolution.color, color: '#0F172A',
+                    border: '1px solid rgba(0,0,0,0.2)', padding: '2px 9px', borderRadius: '999px', fontWeight: 900
+                  }
+                }, `${bookingPreviewResolution.matchedBrand.emoji} ${bookingPreviewResolution.matchedBrand.name}`)
               ),
 
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
@@ -3329,7 +3684,6 @@ h('span', { style: { color: '#F472B6' } }, '•')
                   )
                 )
               ),
-
               // Peringatan Jika Rentang Jam Bentrok
               currentBookingConflict && h('div', {
                 style: { background: '#FFE4E6', border: '1.5px solid #E11D48', color: '#9F1239', padding: '8px 10px', borderRadius: '10px', fontSize: '11px', fontWeight: 800 }
