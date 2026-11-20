@@ -557,7 +557,7 @@
       .matrix-table-pc td { padding: 7px; height: 66px; }
       .modal-box { max-width: 520px; padding: 22px; }
     }
-    /* 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE */
+/* 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE (LOGO ONLY) */
     .brand-marquee-bar {
       background: linear-gradient(90deg, #FFF0F6 0%, #FFFFFF 50%, #FFF0F6 100%);
       border-bottom: 2px solid #F9A8D4;
@@ -595,42 +595,35 @@
     .brand-marquee-track {
       display: flex;
       width: max-content;
-      gap: 14px;
-      animation: brandLogoScroll 28s linear infinite;
+      gap: 12px;
+      animation: brandLogoScroll 26s linear infinite;
     }
     .brand-marquee-bar:hover .brand-marquee-track {
       animation-play-state: paused;
     }
-    .brand-logo-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
+    .brand-logo-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       background: #FFFFFF;
       border: 1.5px solid #F9A8D4;
-      border-radius: 12px;
-      padding: 4px 11px 4px 5px;
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: 0 2px 6px rgba(157, 23, 77, 0.08);
       flex-shrink: 0;
     }
-    .brand-logo-chip img {
-      width: 28px;
-      height: 28px;
-      object-fit: cover;
+    .brand-logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
       border-radius: 8px;
-      border: 1px solid #FBCFE8;
-      background: #FFF0F6;
-    }
-    .brand-logo-chip span {
-      font-size: 11px;
-      font-weight: 900;
-      color: #4A0424;
-      white-space: nowrap;
     }
     @media (min-width: 1024px) {
       .brand-marquee-bar { padding: 10px 0; }
       .brand-marquee-badge { font-size: 11.5px; padding: 6px 14px; margin-left: 20px; }
-      .brand-logo-chip img { width: 34px; height: 34px; }
-      .brand-logo-chip span { font-size: 12.5px; }
+      .brand-logo-box { width: 52px; height: 52px; border-radius: 14px; }
     }
   </style>
 </head>
@@ -3082,40 +3075,31 @@ h('button', {
           }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking WA'),
           isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
         ),
-// 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE
+// 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE (LOGO ONLY)
         h('div', { className: 'brand-marquee-bar' },
           h('span', { className: 'brand-marquee-badge' }, '🤝 BRAND COLLAB'),
           h('div', { className: 'brand-marquee-viewport' },
             h('div', { className: 'brand-marquee-track' },
-              [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center', style: { gap: '14px' } },
+              [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center', style: { gap: '12px' } },
                 [
-                  { name: 'Mom Uung', files: ['brand/momuung brand 9', 'brand/momuung brand 9.jpg', 'brand/momuung brand 9.jpeg', 'brand/momuung brand 9.png'] },
-                  { name: 'AquaPress', files: ['brand/aquapress-brand-11.jpeg', 'brand/aquapress-brand-11.jpg'] },
-                  { name: 'Moell', files: ['brand/moel brand 10.jpg', 'brand/moel brand 10.jpeg'] },
-                  { name: 'Scarlett', files: ['brand/scarlet-brand1.jpeg', 'brand/scarlet-brand1.jpg'] },
-                  { name: 'Philia', files: ['brand/philia brand2.jpeg', 'brand/philia brand2.jpg'] },
-                  { name: 'Implora', files: ['brand/implora-brand-3.jpeg', 'brand/implora-brand-3.jpg'] },
-                  { name: 'Whitebalance', files: ['brand/whitebalance-brand4.jpeg', 'brand/whitebalance-brand4.jpg'] },
-                  { name: 'Brand Partner', files: ['brand/brand-5.jpeg', 'brand/brand-5.jpg'] },
-                  { name: 'Hanasui', files: ['brand/hanasui-brand-6.jpeg', 'brand/hanasui-brand-6.jpg'] },
-                  { name: 'Gume', files: ['brand/gume-brand-7.jpeg', 'brand/gume-brand-7.jpg'] },
-                  { name: 'Canabasic', files: ['brand/canabasic-brand-8.jpeg', 'brand/canabasic-brand-8.jpg'] }
-                ].map((br, idx) => h('div', { key: `${loop}_${idx}`, className: 'brand-logo-chip' },
+                  'brand/scarlet-brand1.jpeg',
+                  'brand/philia-brand2.jpeg',
+                  'brand/implora-brand-3.jpeg',
+                  'brand/whitebalance-brand4.jpeg',
+                  'brand/brand-5.jpeg',
+                  'brand/hanasui-brand-6.jpeg',
+                  'brand/giime-brand-7.jpeg',
+                  'brand/canabasic-brand-8.jpeg',
+                  'brand/momuung-brand-9',
+                  'brand/moel-brand-10.jpg',
+                  'brand/aquapress-brand-11.jpg'
+                ].map((srcPath, idx) => h('div', { key: `${loop}_${idx}`, className: 'brand-logo-box' },
                   h('img', {
-                    src: encodeURI(br.files[0]),
-                    alt: br.name,
+                    src: srcPath,
+                    alt: `Brand ${idx + 1}`,
                     loading: 'lazy',
-                    onError: e => {
-                      const step = Number(e.target.dataset.step || 0) + 1;
-                      if (step < br.files.length) {
-                        e.target.dataset.step = String(step);
-                        e.target.src = encodeURI(br.files[step]);
-                      } else {
-                        e.target.style.display = 'none';
-                      }
-                    }
-                  }),
-                  h('span', null, br.name)
+                    onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
+                  })
                 ))
               ))
             )
