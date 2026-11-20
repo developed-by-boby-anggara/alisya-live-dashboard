@@ -1084,7 +1084,8 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
       };
       const [portfolioData, setPortfolioData] = useState(DEFAULT_PORTFOLIO_DATA);
       const [portfolioEditModal, setPortfolioEditModal] = useState(false);
-      const [portfolioDraftJson, setPortfolioDraftJson] = useState('');
+      const [portfolioDraft, setPortfolioDraft] = useState(DEFAULT_PORTFOLIO_DATA);
+      const [portfolioEditSection, setPortfolioEditSection] = useState('profile');
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -3552,8 +3553,9 @@ h('button', {
                     type: 'button',
                     className: 'btn btn-gold',
                     style: { padding: '8px 14px', fontSize: '11.5px' },
-                    onClick: () => {
-                      setPortfolioDraftJson(JSON.stringify(portfolioData, null, 2));
+                   onClick: () => {
+                      setPortfolioDraft(JSON.parse(JSON.stringify(portfolioData)));
+                      setPortfolioEditSection('profile');
                       setPortfolioEditModal(true);
                     }
                   }, '✏️ Edit Portofolio & Tarif')
@@ -5261,43 +5263,275 @@ h('button', {
           )
         ),
 
-        // ✨ V6.1-PRO: MODAL EDIT PORTOFOLIO & RATE CARD (KHUSUS ADMIN)
+     // ✨ V6.2-PRO: VISUAL FORM EDITOR PORTOFOLIO & RATE CARD (TANPA JSON)
         portfolioEditModal && isAdmin && h('div', { className: 'modal-overlay' },
-          h('div', { className: 'modal-box', style: { maxWidth: '580px', display: 'flex', flexDirection: 'column', gap: '10px' } },
+          h('div', { className: 'modal-box', style: { maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
-              h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843' } }, '✏️ Edit Data Portofolio & Rate Card'),
-              h('button', { className: 'btn btn-soft', onClick: () => setPortfolioEditModal(false) }, '✕')
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase' } }, '✨ VISUAL EDITOR • MUDAH & ANTI-ERROR'),
+                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843', marginTop: '2px' } }, '✏️ Atur Portofolio, Kontak & Daftar Tarif')
+              ),
+              h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setPortfolioEditModal(false) }, '✕')
             ),
-            h('p', { style: { fontSize: '11px', color: '#701A46', fontWeight: 700 } },
-              'Ubah teks bio, angka followers, kontak manager, atau harga layanan di bawah ini lalu klik Simpan ke Cloud:'
+
+            // Sub-Tab Navigasi Editor Visual
+            h('div', { className: 'flex flex-wrap gap-1-5' },
+              [
+                { id: 'profile', label: '👤 Profil & Kontak' },
+                { id: 'social', label: '🎬 Tarif Konten' },
+                { id: 'live', label: '🎙️ Tarif Live' },
+                { id: 'packages', label: '👑 Paket Bulanan' }
+              ].map(sec => h('button', {
+                key: sec.id,
+                type: 'button',
+                onClick: () => setPortfolioEditSection(sec.id),
+                className: `btn ${portfolioEditSection === sec.id ? 'btn-pink' : 'btn-soft'}`,
+                style: { flex: 1, padding: '6px 8px', fontSize: '10.5px' }
+              }, sec.label))
             ),
-            h('textarea', {
-              rows: 14,
-              className: 'font-mono',
-              value: portfolioDraftJson,
-              onChange: e => setPortfolioDraftJson(e.target.value),
-              style: { width: '100%', fontSize: '11px', lineHeight: 1.4 }
-            }),
-            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '8px' } },
+
+            // BAGIAN 1: PROFIL, STATISTIK & KONTAK MANAGER
+            portfolioEditSection === 'profile' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nama Talent / Kreator'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.displayName || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, displayName: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Path / URL Foto Profil'),
+                  h('input', {
+                    type: 'text',
+                    placeholder: 'img/lisy-profile.jpg',
+                    value: portfolioDraft.photoUrl || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, photoUrl: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              ),
+              h('div', null,
+                h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Tagline Keahlian'),
+                h('input', {
+                  type: 'text',
+                  value: portfolioDraft.roleTagline || '',
+                  onChange: e => setPortfolioDraft({ ...portfolioDraft, roleTagline: e.target.value }),
+                  style: { width: '100%' }
+                })
+              ),
+              h('div', null,
+                h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Deskripsi Bio Singkat'),
+                h('textarea', {
+                  rows: 3,
+                  value: portfolioDraft.bio || '',
+                  onChange: e => setPortfolioDraft({ ...portfolioDraft, bio: e.target.value }),
+                  style: { width: '100%' }
+                })
+              ),
+              h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Followers TikTok'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.tiktokFollowers || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, tiktokFollowers: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Jumlah Brand'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.brandCount || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, brandCount: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Pengalaman'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.experienceYears || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, experienceYears: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              ),
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nama Manager'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.managerName || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, managerName: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nomor WA Manager'),
+                  h('input', {
+                    type: 'tel',
+                    value: portfolioDraft.managerPhone || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, managerPhone: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              ),
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Username Instagram'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.igHandle || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, igHandle: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Username TikTok'),
+                  h('input', {
+                    type: 'text',
+                    value: portfolioDraft.tiktokHandle || '',
+                    onChange: e => setPortfolioDraft({ ...portfolioDraft, tiktokHandle: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              )
+            ),
+
+            // BAGIAN 2 & 3: DAFTAR TARIF KONTEN ATAU TARIF LIVE SELLING
+            (portfolioEditSection === 'social' || portfolioEditSection === 'live') && (() => {
+              const listKey = portfolioEditSection === 'social' ? 'socialMediaRates' : 'liveSellingRates';
+              const items = portfolioDraft[listKey] || [];
+              const updateRow = (idx, field, val) => {
+                const next = items.map((it, i) => i === idx ? { ...it, [field]: val } : it);
+                setPortfolioDraft({ ...portfolioDraft, [listKey]: next });
+              };
+              const removeRow = (idx) => {
+                setPortfolioDraft({ ...portfolioDraft, [listKey]: items.filter((_, i) => i !== idx) });
+              };
+              const addRow = () => {
+                const defaultType = portfolioEditSection === 'social' ? 'Take Video Affiliate (TikTok/Shopee)' : 'Live Streaming Session';
+                setPortfolioDraft({
+                  ...portfolioDraft,
+                  [listKey]: [...items, { name: 'Layanan Baru', price: '100k', collabType: defaultType }]
+                });
+              };
+              return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                items.map((it, idx) => h('div', {
+                  key: idx,
+                  style: {
+                    background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '12px',
+                    padding: '8px', display: 'grid', gridTemplateColumns: '1.5fr 1fr auto', gap: '6px', alignItems: 'center'
+                  }
+                },
+                  h('input', {
+                    type: 'text',
+                    placeholder: 'Nama Layanan',
+                    value: it.name,
+                    onChange: e => updateRow(idx, 'name', e.target.value)
+                  }),
+                  h('input', {
+                    type: 'text',
+                    placeholder: 'Harga / Durasi',
+                    value: it.price,
+                    onChange: e => updateRow(idx, 'price', e.target.value)
+                  }),
+                  h('button', {
+                    type: 'button',
+                    className: 'btn btn-soft',
+                    style: { padding: '6px 9px', color: '#E11D48' },
+                    onClick: () => removeRow(idx)
+                  }, '🗑️')
+                )),
+                h('button', {
+                  type: 'button',
+                  className: 'btn btn-soft',
+                  style: { width: '100%', padding: '8px' },
+                  onClick: addRow
+                }, '+ Tambah Baris Layanan Baru')
+              );
+            })(),
+
+            // BAGIAN 4: PAKET BUNDLING BULANAN
+            portfolioEditSection === 'packages' && (() => {
+              const pkgs = portfolioDraft.monthlyPackages || [];
+              const updatePkg = (idx, field, val) => {
+                const next = pkgs.map((pk, i) => i === idx ? { ...pk, [field]: val } : pk);
+                setPortfolioDraft({ ...portfolioDraft, monthlyPackages: next });
+              };
+              const removePkg = (idx) => {
+                setPortfolioDraft({ ...portfolioDraft, monthlyPackages: pkgs.filter((_, i) => i !== idx) });
+              };
+              const addPkg = () => {
+                setPortfolioDraft({
+                  ...portfolioDraft,
+                  monthlyPackages: [...pkgs, { name: 'Paket Bundling Baru', price: 'Rp 2,5 Juta', badge: '✨ PAKET HEMAT', collabType: 'Event / Brand Campaign' }]
+                });
+              };
+              return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                pkgs.map((pk, idx) => h('div', {
+                  key: idx,
+                  style: {
+                    background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '12px',
+                    padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px'
+                  }
+                },
+                  h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '6px', alignItems: 'center' } },
+                    h('input', {
+                      type: 'text',
+                      placeholder: 'Label Badge (mis. BEST VALUE)',
+                      value: pk.badge,
+                      onChange: e => updatePkg(idx, 'badge', e.target.value)
+                    }),
+                    h('input', {
+                      type: 'text',
+                      placeholder: 'Harga Paket',
+                      value: pk.price,
+                      onChange: e => updatePkg(idx, 'price', e.target.value)
+                    }),
+                    h('button', {
+                      type: 'button',
+                      className: 'btn btn-soft',
+                      style: { padding: '6px 9px', color: '#E11D48' },
+                      onClick: () => removePkg(idx)
+                    }, '🗑️')
+                  ),
+                  h('input', {
+                    type: 'text',
+                    placeholder: 'Nama & Rincian Paket',
+                    value: pk.name,
+                    onChange: e => updatePkg(idx, 'name', e.target.value),
+                    style: { width: '100%' }
+                  })
+                )),
+                h('button', {
+                  type: 'button',
+                  className: 'btn btn-soft',
+                  style: { width: '100%', padding: '8px' },
+                  onClick: addPkg
+                }, '+ Tambah Paket Bulanan Baru')
+              );
+            })(),
+
+            // TOMBOL SIMPAN & BATAL
+            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '8px', marginTop: '4px', paddingTop: '8px', borderTop: '1.5px solid #F9A8D4' } },
               h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setPortfolioEditModal(false) }, 'Batal'),
               h('button', {
                 type: 'button',
                 className: 'btn btn-pink',
                 onClick: () => {
-                  try {
-                    const parsed = JSON.parse(portfolioDraftJson);
-                    savePortfolioToCloud(parsed);
-                    setPortfolioEditModal(false);
-                    notify('✨ Portofolio & Rate Card berhasil diperbarui ke Cloud!');
-                  } catch (err) {
-                    notify('⚠️ Format JSON kurang tepat, periksa tanda kutip atau koma.');
-                  }
+                  savePortfolioToCloud(portfolioDraft);
+                  setPortfolioEditModal(false);
+                  notify('✨ Portofolio & Rate Card berhasil disimpan ke Cloud!');
                 }
               }, '💾 Simpan Perubahan ke Cloud')
             )
           )
         ),
-
         // MODAL PIN ADMIN
         pinInputModal && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '320px', textAlign: 'center' } },
