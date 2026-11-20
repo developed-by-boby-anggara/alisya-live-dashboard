@@ -557,6 +557,81 @@
       .matrix-table-pc td { padding: 7px; height: 66px; }
       .modal-box { max-width: 520px; padding: 22px; }
     }
+    /* 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE */
+    .brand-marquee-bar {
+      background: linear-gradient(90deg, #FFF0F6 0%, #FFFFFF 50%, #FFF0F6 100%);
+      border-bottom: 2px solid #F9A8D4;
+      padding: 8px 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(157, 23, 77, 0.06);
+    }
+    .brand-marquee-badge {
+      flex-shrink: 0;
+      background: #9D174D;
+      color: #FDE047;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 5px 12px;
+      margin-left: 12px;
+      border-radius: 999px;
+      border: 1.5px solid #F472B6;
+      letter-spacing: 0.04em;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(131, 24, 67, 0.25);
+    }
+    .brand-marquee-viewport {
+      flex: 1;
+      overflow: hidden;
+      margin-left: 10px;
+      mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+    }
+    @keyframes brandLogoScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .brand-marquee-track {
+      display: flex;
+      width: max-content;
+      gap: 14px;
+      animation: brandLogoScroll 28s linear infinite;
+    }
+    .brand-marquee-bar:hover .brand-marquee-track {
+      animation-play-state: paused;
+    }
+    .brand-logo-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #FFFFFF;
+      border: 1.5px solid #F9A8D4;
+      border-radius: 12px;
+      padding: 4px 11px 4px 5px;
+      box-shadow: 0 2px 6px rgba(157, 23, 77, 0.08);
+      flex-shrink: 0;
+    }
+    .brand-logo-chip img {
+      width: 28px;
+      height: 28px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #FBCFE8;
+      background: #FFF0F6;
+    }
+    .brand-logo-chip span {
+      font-size: 11px;
+      font-weight: 900;
+      color: #4A0424;
+      white-space: nowrap;
+    }
+    @media (min-width: 1024px) {
+      .brand-marquee-bar { padding: 10px 0; }
+      .brand-marquee-badge { font-size: 11.5px; padding: 6px 14px; margin-left: 20px; }
+      .brand-logo-chip img { width: 34px; height: 34px; }
+      .brand-logo-chip span { font-size: 12.5px; }
+    }
   </style>
 </head>
 <body>
@@ -882,7 +957,7 @@
         setBulkPatternText(tokens.join(','));
       };
 
-      const handleApplyBulkMonth = () => {
+     const handleApplyBulkMonth = () => {
         if (!isAdmin) { setPinInputModal(true); return; }
         const totalDays = new Date(bulkYear, bulkMonth + 1, 0).getDate();
         const tokens = parseBulkShiftTokens(bulkPatternText, totalDays);
@@ -892,13 +967,50 @@
         const offColor = offBrand ? offBrand.color : '#EF4444';
         const monthPrefix = `${bulkYear}-${String(bulkMonth + 1).padStart(2, '0')}-`;
 
+        const isMomUungItem = (s) => {
+          const tLow = String(s.title || '').toLowerCase();
+          return s.brand_id === 'b_momuung' || s.is_bulk_momuung_off || tLow.includes('mom uung') || tLow.includes('muu shift');
+        };
+
         const baseList = bulkReplaceExisting
-          ? schedules.filter(s => !(s.date && s.date.startsWith(monthPrefix) && (s.brand_id === 'b_momuung' || s.is_bulk_momuung_off)))
+          ? schedules.filter(s => !(s.date && s.date.startsWith(monthPrefix) && isMomUungItem(s)))
           : [...schedules];
+
+        const checkBulkCollision = (dStr, stStr, enStr, accumulated) => {
+          const sMin = timeToMinutes(stStr);
+          const rawEnd = timeToMinutes(enStr);
+          const crosses = rawEnd > 0 && rawEnd < sMin;
+          const eMinToday = rawEnd <= sMin ? 1440 : rawEnd;
+          const pool = [...baseList, ...accumulated];
+
+          const getCov = (targetD) => {
+            const prevD = addDaysToDateStr(targetD, -1);
+            const res = [];
+            pool.forEach(s => {
+              const sM = timeToMinutes(s.start_time);
+              const rE = timeToMinutes(s.end_time);
+              const cr = rE > 0 && rE < sM;
+              if (s.date === targetD) res.push({ ...s, effStartMin: sM, effEndMin: rE <= sM ? 1440 : rE });
+              else if (s.date === prevD && cr) res.push({ ...s, effStartMin: 0, effEndMin: rE });
+            });
+            return res;
+          };
+
+          const hitToday = getCov(dStr).find(ex => ex.status === 'OFF' || (sMin < ex.effEndMin && eMinToday > ex.effStartMin));
+          if (hitToday) return hitToday;
+
+          if (crosses) {
+            const nextD = addDaysToDateStr(dStr, 1);
+            const hitNext = getCov(nextD).find(ex => ex.status === 'OFF' || (0 < ex.effEndMin && rawEnd > ex.effStartMin));
+            if (hitNext) return hitNext;
+          }
+          return null;
+        };
 
         const newItems = [];
         let shiftCount = 0;
         let offCount = 0;
+        let skippedCollisions = [];
         const ts = Date.now();
 
         for (let d = 1; d <= totalDays; d++) {
@@ -906,6 +1018,11 @@
           const dateStr = `${monthPrefix}${String(d).padStart(2, '0')}`;
           if (MOMUUNG_SHIFT_PRESETS[code]) {
             const p = MOMUUNG_SHIFT_PRESETS[code];
+            const conflict = checkBulkCollision(dateStr, p.start, p.end, newItems);
+            if (conflict) {
+              skippedCollisions.push(`Tgl ${d}`);
+              continue;
+            }
             shiftCount++;
             newItems.push({
               id: `sch_bulk_${ts}_${d}`,
@@ -921,6 +1038,11 @@
               checklist: { shoot: false, edit: false, upload: false }
             });
           } else if (code === 'L' && bulkMarkOffAsDayOff) {
+            const conflictOff = checkBulkCollision(dateStr, '00:00', '23:59', newItems);
+            if (conflictOff) {
+              skippedCollisions.push(`Tgl ${d}`);
+              continue;
+            }
             offCount++;
             newItems.push({
               id: `sch_bulk_off_${ts}_${d}`,
@@ -939,6 +1061,10 @@
           }
         }
 
+        if (newItems.length === 0 && skippedCollisions.length > 0) {
+          notify(`🔒 Semua tanggal yang diisi sudah terkunci oleh jadwal lain (${skippedCollisions.length} bentrok)!`);
+          return;
+        }
         if (newItems.length === 0) {
           notify('⚠️ Belum ada kode shift (1/2/3/4) yang diisi.');
           return;
@@ -949,7 +1075,11 @@
         setCurrentMonth(bulkMonth);
         setSelectedDate(`${monthPrefix}01`);
         setBulkModalOpen(false);
-        notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} langsung terisi 1 bulan penuh!`);
+        if (skippedCollisions.length > 0) {
+          notify(`⚡ ${shiftCount} Shift tersimpan! 🔒 ${skippedCollisions.length} tanggal dilewati karena jam sudah terisi.`);
+        } else {
+          notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} tersimpan aman tanpa tabrakan!`);
+        }
       };
 // 🚨 V2.7: State Ceklis Persiapan Studio (15 Menit Sebelum Mulai) & Slot Jam Aktif
       const [standbyChecklist, setStandbyChecklist] = useState({
@@ -1279,7 +1409,50 @@
 
         return result.sort((a, b) => a.effStartMin - b.effStartMin);
       };
+// 🔒 V5.8-PRO: MESIN GLOBAL ANTI-TABRAKAN JAM (100% LOCK DI SEMUA JALUR INPUT)
+      const findScheduleCollision = (dateStr, startStr, endStr, excludeId = null, extraItems = []) => {
+        if (!dateStr || !startStr || !endStr || startStr === endStr) return null;
+        const sMin = timeToMinutes(startStr);
+        const rawEnd = timeToMinutes(endStr);
+        const crossesMidnight = rawEnd > 0 && rawEnd < sMin;
+        const eMinToday = rawEnd <= sMin ? 1440 : rawEnd;
 
+        const allCombined = [...schedules, ...extraItems].filter(s => !excludeId || s.id !== excludeId);
+
+        const getCoveringFromPool = (targetDate) => {
+          const prevDate = addDaysToDateStr(targetDate, -1);
+          const list = [];
+          allCombined.forEach(s => {
+            const st = timeToMinutes(s.start_time);
+            const re = timeToMinutes(s.end_time);
+            const cross = re > 0 && re < st;
+            if (s.date === targetDate) {
+              list.push({ ...s, effStartMin: st, effEndMin: re <= st ? 1440 : re });
+            } else if (s.date === prevDate && cross) {
+              list.push({ ...s, effStartMin: 0, effEndMin: re });
+            }
+          });
+          return list;
+        };
+
+        const todayItems = getCoveringFromPool(dateStr);
+        const hitToday = todayItems.find(ex => {
+          if (ex.status === 'OFF') return true;
+          return sMin < ex.effEndMin && eMinToday > ex.effStartMin;
+        });
+        if (hitToday) return { ...hitToday, collisionDate: dateStr };
+
+        if (crossesMidnight) {
+          const nextDate = addDaysToDateStr(dateStr, 1);
+          const nextItems = getCoveringFromPool(nextDate);
+          const hitNext = nextItems.find(ex => {
+            if (ex.status === 'OFF') return true;
+            return 0 < ex.effEndMin && rawEnd > ex.effStartMin;
+          });
+          if (hitNext) return { ...hitNext, collisionDate: nextDate, isNextDayCollision: true };
+        }
+        return null;
+      };
       const selectedDaySchedules = useMemo(() => {
         return getSchedulesCoveringDate(selectedDate);
       }, [schedules, selectedDate]);
@@ -1908,6 +2081,11 @@
       const handleApprovePending = async (e, item, overrideBrandId = null) => {
         e.stopPropagation();
         if (!isAdmin) { setPinInputModal(true); return; }
+        const approveHit = findScheduleCollision(item.date, item.start_time, item.end_time, item.id);
+        if (approveHit) {
+          notify(`🔒 Tidak bisa ACC! Jam ${item.start_time}-${item.end_time} bentrok dengan "${approveHit.title}".`);
+          return;
+        }
         const cleanTitle = item.title.replace(/^\[WAITING\]\s*/i, '');
         const brandNameGuess = (item.custom_brand_name || cleanTitle.split('—')[0] || 'Brand Baru').trim();
         const targetBrandHint = overrideBrandId || (item.brand_locked ? item.brand_id : 'AUTO');
@@ -2384,24 +2562,27 @@
       const handleCloneFullDay = (e) => {
         e.preventDefault();
         if (!isAdmin) { setPinInputModal(true); return; }
-        const existingOnTarget = schedules.filter(s => s.date === cloneTargetDate);
-        const nonConflicting = selectedDaySchedules.filter(item => {
-          const sM = timeToMinutes(item.start_time);
-          let eM = timeToMinutes(item.end_time);
-          if (eM <= sM) eM = 24 * 60;
-          return !existingOnTarget.some(ex => {
-            const exS = timeToMinutes(ex.start_time);
-            let exE = timeToMinutes(ex.end_time);
-            if (exE <= exS) exE = 24 * 60;
-            return sM < exE && eM > exS;
-          });
+        const sourceItems = selectedDaySchedules.filter(it => !it.isOvernightCarry);
+        const cloned = [];
+        let skippedCount = 0;
+
+        sourceItems.forEach((it, idx) => {
+          const collision = findScheduleCollision(cloneTargetDate, it.start_time, it.end_time, null, cloned);
+          if (collision) {
+            skippedCount++;
+          } else {
+            const { effStartMin, effEndMin, isOvernightCarry, ...cleanIt } = it;
+            cloned.push({ ...cleanIt, id: 'sch_' + Date.now() + '_c_' + idx, date: cloneTargetDate });
+          }
         });
-        if (nonConflicting.length === 0) { notify('⛔ Semua jam di tanggal tujuan sudah terisi!'); return; }
-        const cloned = nonConflicting.map((it, idx) => ({ ...it, id: 'sch_' + Date.now() + '_c_' + idx, date: cloneTargetDate }));
+
+        if (cloned.length === 0) { notify('🔒 Semua jam di tanggal tujuan sudah terkunci / terisi!'); return; }
         saveSchedulesToCloud([...schedules, ...cloned]);
         setCloneModalOpen(false);
         setSelectedDate(cloneTargetDate);
-        notify(`✅ ${cloned.length} sesi berhasil disalin ke ${cloneTargetDate}!`);
+        notify(skippedCount > 0
+          ? `✅ ${cloned.length} sesi disalin (🔒 ${skippedCount} sesi dilewati karena jam sudah terisi).`
+          : `✅ ${cloned.length} sesi berhasil disalin ke ${cloneTargetDate}!`);
       };
 // 🔍 STATE & MESIN ANALISIS REAL-TIME: SLOT, ISTIRAHAT & WAKTU BOBO
       const [simMode, setSimMode] = useState('single');
@@ -2901,7 +3082,45 @@ h('button', {
           }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking WA'),
           isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
         ),
-
+// 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE
+        h('div', { className: 'brand-marquee-bar' },
+          h('span', { className: 'brand-marquee-badge' }, '🤝 BRAND COLLAB'),
+          h('div', { className: 'brand-marquee-viewport' },
+            h('div', { className: 'brand-marquee-track' },
+              [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center', style: { gap: '14px' } },
+                [
+                  { name: 'Mom Uung', files: ['brand/momuung brand 9', 'brand/momuung brand 9.jpg', 'brand/momuung brand 9.jpeg', 'brand/momuung brand 9.png'] },
+                  { name: 'AquaPress', files: ['brand/aquapress-brand-11.jpeg', 'brand/aquapress-brand-11.jpg'] },
+                  { name: 'Moell', files: ['brand/moel brand 10.jpg', 'brand/moel brand 10.jpeg'] },
+                  { name: 'Scarlett', files: ['brand/scarlet-brand1.jpeg', 'brand/scarlet-brand1.jpg'] },
+                  { name: 'Philia', files: ['brand/philia brand2.jpeg', 'brand/philia brand2.jpg'] },
+                  { name: 'Implora', files: ['brand/implora-brand-3.jpeg', 'brand/implora-brand-3.jpg'] },
+                  { name: 'Whitebalance', files: ['brand/whitebalance-brand4.jpeg', 'brand/whitebalance-brand4.jpg'] },
+                  { name: 'Brand Partner', files: ['brand/brand-5.jpeg', 'brand/brand-5.jpg'] },
+                  { name: 'Hanasui', files: ['brand/hanasui-brand-6.jpeg', 'brand/hanasui-brand-6.jpg'] },
+                  { name: 'Gume', files: ['brand/gume-brand-7.jpeg', 'brand/gume-brand-7.jpg'] },
+                  { name: 'Canabasic', files: ['brand/canabasic-brand-8.jpeg', 'brand/canabasic-brand-8.jpg'] }
+                ].map((br, idx) => h('div', { key: `${loop}_${idx}`, className: 'brand-logo-chip' },
+                  h('img', {
+                    src: encodeURI(br.files[0]),
+                    alt: br.name,
+                    loading: 'lazy',
+                    onError: e => {
+                      const step = Number(e.target.dataset.step || 0) + 1;
+                      if (step < br.files.length) {
+                        e.target.dataset.step = String(step);
+                        e.target.src = encodeURI(br.files[step]);
+                      } else {
+                        e.target.style.display = 'none';
+                      }
+                    }
+                  }),
+                  h('span', null, br.name)
+                ))
+              ))
+            )
+          )
+        ),
         // KONTEN UTAMA (PEMBUKA MAIN YANG TADI TERHAPUS)
         h('main', { className: displayMode === 'mobile' ? 'wrap-hp' : 'wrap-pc' },
           // 🔔 BANNER PRIORITAS ADMIN: MUNCUL OTOMATIS JIKA ADA ANTREAN WA BELUM DI-ACC
@@ -3360,7 +3579,6 @@ h('button', {
           // TAB 2: KALENDER SPREADSHEET (HP = 1 LAYAR PENUH TANPA GESER + HEADER JAM STICKY | PC = TABEL LENGKAP)
           activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
   h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
-  isAdmin && h('button', { className: 'btn btn-gold', style: { flex: 1, padding: '10px' }, onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan (Mom Uung)'),
               isAdmin && h('button', { className: 'btn btn-gold', style: { flex: 1, padding: '10px' }, onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan (Mom Uung)'),
               h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
               h('button', { className: 'btn btn-pink', style: { flex: 1, padding: '9px' }, onClick: () => exportElementAsPNG('work-matrix-capture', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
