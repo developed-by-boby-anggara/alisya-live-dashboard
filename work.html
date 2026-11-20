@@ -72,38 +72,66 @@
       box-shadow: 0 6px 20px rgba(131, 24, 67, 0.25);
       color: #FFFFFF;
     }
+    /* 💎 V6.0-PRO: SEAMLESS LIVE COMMAND TICKER & INFINITE LOGO CAROUSEL */
     .exec-ticker {
-      background: #6B0F36;
+      background: linear-gradient(90deg, #4C0519 0%, #831843 50%, #4C0519 100%);
       color: #FCE7F3;
       border-bottom: 1.5px solid #F472B6;
-      padding: 7px 0;
+      padding: 8px 0;
       overflow: hidden;
-      font-size: 11px;
-    }
-    @keyframes tickerMove {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .ticker-track {
+      font-size: 11.5px;
       display: flex;
-      width: max-content;
-      gap: 26px;
-      animation: tickerMove 36s linear infinite;
+      align-items: center;
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.1);
     }
-   .exec-nav {
-   background: linear-gradient(90deg, #500724 0%, #831843 50%, #500724 100%);
-   border-bottom: 2px solid #F472B6;
-   padding: 9px 14px;
-   position: sticky;
-   top: 56px;
-   z-index: 35;
-   display: flex;
-   align-items: center;
-   gap: 7px;
-   overflow-x: auto;
-   box-shadow: 0 6px 18px rgba(80, 7, 36, 0.28);
- }
-
+    .ticker-viewport {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+    }
+    @keyframes seamlessMarquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
+    }
+    .ticker-group {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      min-width: 100%;
+      gap: 14px;
+      padding-right: 14px;
+      animation: seamlessMarquee 34s linear infinite;
+      will-change: transform;
+    }
+    .exec-ticker:hover .ticker-group {
+      animation-play-state: paused;
+    }
+    .ticker-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+      backdrop-filter: blur(4px);
+    }
+    .exec-nav {
+      background: linear-gradient(90deg, #500724 0%, #831843 50%, #500724 100%);
+      border-bottom: 2px solid #F472B6;
+      padding: 9px 14px;
+      position: sticky;
+      top: 56px;
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      overflow-x: auto;
+      box-shadow: 0 6px 18px rgba(80, 7, 36, 0.28);
+    }
     .wrap-pc { max-width: 1520px; margin: 0 auto; padding: 20px; }
     .wrap-hp { max-width: 540px; margin: 0 auto; padding: 10px; }
 
@@ -557,79 +585,90 @@
       .matrix-table-pc td { padding: 7px; height: 66px; }
       .modal-box { max-width: 520px; padding: 22px; }
     }
-/* 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE (LOGO ONLY) */
+/* 🏆 V6.0-PRO: SEAMLESS RUNNING BRAND COLLABORATION LOGO CAROUSEL */
     .brand-marquee-bar {
-      background: linear-gradient(90deg, #FFF0F6 0%, #FFFFFF 50%, #FFF0F6 100%);
-      border-bottom: 2px solid #F9A8D4;
-      padding: 8px 0;
+      background: linear-gradient(90deg, #FDF2F8 0%, #FFFFFF 50%, #FDF2F8 100%);
+      border-bottom: 2px solid #F472B6;
+      padding: 9px 0;
       overflow: hidden;
       display: flex;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(157, 23, 77, 0.06);
+      box-shadow: 0 6px 16px rgba(157, 23, 77, 0.08);
     }
     .brand-marquee-badge {
       flex-shrink: 0;
-      background: #9D174D;
-      color: #FDE047;
-      font-size: 10px;
+      background: linear-gradient(135deg, #9D174D 0%, #DB2777 100%);
+      color: #FFFFFF;
+      font-size: 10.5px;
       font-weight: 900;
-      padding: 5px 12px;
+      padding: 6px 14px;
       margin-left: 12px;
       border-radius: 999px;
-      border: 1.5px solid #F472B6;
+      border: 1.5px solid #FDE047;
       letter-spacing: 0.04em;
       z-index: 2;
-      box-shadow: 0 2px 8px rgba(131, 24, 67, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 10px rgba(157, 23, 77, 0.28);
     }
     .brand-marquee-viewport {
       flex: 1;
       overflow: hidden;
-      margin-left: 10px;
-      mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    }
-    @keyframes brandLogoScroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .brand-marquee-track {
       display: flex;
-      width: max-content;
-      gap: 12px;
-      animation: brandLogoScroll 26s linear infinite;
+      margin-left: 10px;
+      mask-image: linear-gradient(to right, transparent, #000 2.5%, #000 97.5%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 2.5%, #000 97.5%, transparent);
     }
-    .brand-marquee-bar:hover .brand-marquee-track {
+    .brand-logo-group {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      min-width: 100%;
+      justify-content: space-around;
+      gap: 14px;
+      padding-right: 14px;
+      animation: seamlessMarquee 24s linear infinite;
+      will-change: transform;
+    }
+    .brand-marquee-bar:hover .brand-logo-group {
       animation-play-state: paused;
     }
     .brand-logo-box {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       background: #FFFFFF;
       border: 1.5px solid #F9A8D4;
-      padding: 3px;
+      padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(157, 23, 77, 0.08);
+      box-shadow: 0 3px 8px rgba(157, 23, 77, 0.1);
       flex-shrink: 0;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .brand-logo-box:hover {
+      transform: translateY(-2px) scale(1.08);
+      border-color: #DB2777;
+      box-shadow: 0 6px 14px rgba(219, 39, 119, 0.22);
     }
     .brand-logo-box img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 8px;
+      border-radius: 9px;
     }
     @media (min-width: 1024px) {
-      .brand-marquee-bar { padding: 10px 0; }
-      .brand-marquee-badge { font-size: 11.5px; padding: 6px 14px; margin-left: 20px; }
-      .brand-logo-box { width: 52px; height: 52px; border-radius: 14px; }
+      .exec-ticker { font-size: 12.5px; padding: 9px 0; }
+      .brand-marquee-bar { padding: 11px 0; }
+      .brand-marquee-badge { font-size: 12px; padding: 7px 16px; margin-left: 20px; }
+      .brand-logo-box { width: 58px; height: 58px; border-radius: 15px; padding: 5px; }
     }
-  </style>
+    </style>
 </head>
 <body>
   <div id="root"></div>
-
   <script>
     const { useState, useEffect, useMemo, useRef } = React;
     const h = React.createElement;
@@ -2978,57 +3017,65 @@
           )
         ),
 
-      // TICKER BAR PROFESIONAL REAL-TIME (TANPA TEKS PERSONAL MEKEL/AIR)
+     // 💎 V6.0-PRO: SEAMLESS LIVE COMMAND TICKER (DATA REAL-TIME LENGKAP TANPA TERPUTUS)
         h('div', { className: 'exec-ticker' },
-          h('div', { className: 'ticker-track' },
-            [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center gap-4' },
-              // 1. Identitas Resmi
-              h('span', {
-                style: {
-                  background: '#9D174D', color: '#FDE047', fontWeight: 900,
-                  padding: '2px 10px', borderRadius: '999px', border: '1px solid #F472B6',
-                  letterSpacing: '0.04em'
-                }
-              }, '💼 OFFICIAL SCHEDULE PORTAL • ALISYA'),
+          h('div', { className: 'ticker-viewport' },
+            [1, 2].map(loop => {
+              const tomorrowStr = addDaysToDateStr(realTodayStr, 1);
+              const tomorrowSessions = schedules.filter(s => s.date === tomorrowStr && s.status !== 'OFF' && s.status !== 'Tidur' && s.brand_id !== 'b_sleep').length;
+              const tomorrowFree = TIME_SLOTS.filter(slot => {
+                const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
+                return !getSchedulesCoveringDate(tomorrowStr).some(s => s.status === 'OFF' || (s.effStartMin < eM && s.effEndMin > sM));
+              }).length;
 
-              // 2. Highlight Utama: Ketersediaan Slot 7 Hari ke Depan (Real-Time)
-              h('span', {
-                style: {
-                  background: broadcastMetrics.freeSlots <= 28 ? 'rgba(253, 224, 71, 0.18)' : 'rgba(16, 185, 129, 0.2)',
-                  color: broadcastMetrics.freeSlots <= 28 ? '#FDE047' : '#6EE7B7',
-                  border: `1px solid ${broadcastMetrics.freeSlots <= 28 ? '#FACC15' : '#34D399'}`,
-                  padding: '2px 10px', borderRadius: '999px', fontWeight: 900
-                }
-              }, `${broadcastMetrics.badge}: Sisa ${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan (${broadcastMetrics.bookedPct}% Terisi)`),
+              return h('div', { key: loop, className: 'ticker-group', 'aria-hidden': loop === 2 ? 'true' : undefined },
+                // 1. Status Live On-Air atau Sesi Berikutnya (Countdown Detik Real-Time)
+                liveTracker.activeItem
+                  ? h('span', {
+                      className: 'ticker-chip',
+                      style: { background: 'rgba(16, 185, 129, 0.24)', color: '#6EE7B7', border: '1px solid #34D399', fontWeight: 900 }
+                    }, `🟢 ON-AIR: ${liveTracker.activeItem.title} (${liveTracker.activeItem.start_time}–${liveTracker.activeItem.end_time} WIB • Sisa ${liveTracker.activeItem.remainingHMS})`)
+                  : liveTracker.nextItem
+                    ? h('span', {
+                        className: 'ticker-chip',
+                        style: { background: 'rgba(253, 224, 71, 0.2)', color: '#FDE047', border: '1px solid #FACC15', fontWeight: 900 }
+                      }, `⏭️ NEXT LIVE: ${liveTracker.nextItem.title} Pkl ${liveTracker.nextItem.start_time} WIB (Mulai -${liveTracker.nextItem.startsInHMS})`)
+                    : h('span', {
+                        className: 'ticker-chip',
+                        style: { background: 'rgba(255, 255, 255, 0.14)', color: '#FCE7F3', border: '1px solid rgba(249,168,212,0.4)' }
+                      }, `✨ STANDBY MODE • Siap Menerima Jadwal Live & Konten`),
 
-              // 3. Status Live / Jam Kerja Hari Ini (Real-Time)
-              liveTracker.activeItem
-                ? h('span', { style: { color: '#6EE7B7', fontWeight: 900 } },
-                    `🟢 ON-AIR SEKARANG: ${liveTracker.activeItem.title} (${liveTracker.activeItem.start_time}-${liveTracker.activeItem.end_time} WIB • Sisa ${liveTracker.activeItem.remainingHMS})`
-                  )
-                : h('span', { style: { color: '#FFFFFF', fontWeight: 800 } },
-                    `📅 Beban Kerja Hari Ini (${realTodayStr}): ${broadcastMetrics.todayWorkHours} Jam Aktif (${broadcastMetrics.todayTotalSessions} Sesi Terjadwal)`
-                  ),
+                // 2. Progres Agenda Hari Ini (Persentase & Sesi Selesai)
+                h('span', {
+                  className: 'ticker-chip',
+                  style: { background: 'rgba(236, 72, 153, 0.28)', color: '#FFFFFF', border: '1px solid #F472B6' }
+                }, `📈 Progres Hari Ini: ${liveTracker.completedCount}/${liveTracker.totalToday} Sesi (${liveTracker.progressPct}%) • ${broadcastMetrics.todayWorkHours} Jam Aktif`),
 
-              // 4. Performa Bulan Berjalan (Real-Time)
-              h('span', { style: { color: '#FBCFE8', fontWeight: 800 } },
-                `📊 Jadwal Live Bulan ${monthName}: ${broadcastMetrics.monthLiveHours} Jam Streaming (${broadcastMetrics.monthLiveSessions} Sesi Live)`
-              ),
+                // 3. Ketersediaan Slot Besok (Real-Time)
+                h('span', {
+                  className: 'ticker-chip',
+                  style: { background: 'rgba(14, 165, 233, 0.22)', color: '#BAE6FD', border: '1px solid #38BDF8' }
+                }, `🗓️ Besok (${getHariNama(tomorrowStr)}): ${tomorrowSessions} Sesi Terjadwal • ${tomorrowFree} Slot Kosong`),
 
-              // 5. Total Jam Terbang Live Selama Ini (Terverifikasi)
-              h('span', {
-                style: {
-                  background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF',
-                  padding: '2px 10px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.25)',
-                  fontWeight: 900
-                }
-              }, `⏱️ Total Jam Terbang Terverifikasi: ${broadcastMetrics.totalHours}+ Jam Live On`),
+                // 4. Okupansi 7 Hari ke Depan
+                h('span', {
+                  className: 'ticker-chip',
+                  style: {
+                    background: broadcastMetrics.freeSlots <= 28 ? 'rgba(253, 224, 71, 0.18)' : 'rgba(16, 185, 129, 0.2)',
+                    color: broadcastMetrics.freeSlots <= 28 ? '#FDE047' : '#6EE7B7',
+                    border: `1px solid ${broadcastMetrics.freeSlots <= 28 ? '#FACC15' : '#34D399'}`
+                  }
+                }, `${broadcastMetrics.badge}: Sisa ${broadcastMetrics.freeSlots} Slot Kosong 7 Hari ke Depan (${broadcastMetrics.bookedPct}% Terisi)`),
 
-h('span', { style: { color: '#F472B6' } }, '•')
-            ))
+                // 5. Statistik Bulan Berjalan & Total Jam Terbang Terverifikasi
+                h('span', {
+                  className: 'ticker-chip',
+                  style: { background: 'rgba(255, 255, 255, 0.12)', color: '#FCE7F3', border: '1px solid rgba(255,255,255,0.25)' }
+                }, `📊 ${monthName}: ${broadcastMetrics.monthLiveHours} Jam Live (${broadcastMetrics.monthLiveSessions} Sesi) • ⏱️ Total Jam Terbang: ${broadcastMetrics.totalHours}+ Jam`)
+              );
+            })
           )
         ),
-
 // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
         h('nav', { className: 'exec-nav no-scrollbar' },
           [
@@ -3075,34 +3122,37 @@ h('button', {
           }, availableSlotsForSelectedDate.length === 0 ? '🔒 Slot Penuh' : '📲 Booking WA'),
           isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
         ),
-// 🏆 V5.9-PRO: RUNNING BRAND COLLABORATION LOGO MARQUEE (LOGO ONLY)
+// 🏆 V6.0-PRO: SEAMLESS RUNNING BRAND COLLABORATION LOGO CAROUSEL (TANPA TERPUTUS)
         h('div', { className: 'brand-marquee-bar' },
-          h('span', { className: 'brand-marquee-badge' }, '🤝 BRAND COLLAB'),
+          h('span', { className: 'brand-marquee-badge' },
+            h('span', null, '🤝 BRAND COLLAB'),
+            h('span', {
+              style: { background: 'rgba(255,255,255,0.22)', color: '#FEF08A', padding: '1px 7px', borderRadius: '999px', fontSize: '9.5px' }
+            }, '11+')
+          ),
           h('div', { className: 'brand-marquee-viewport' },
-            h('div', { className: 'brand-marquee-track' },
-              [1, 2].map(loop => h('div', { key: loop, className: 'flex items-center', style: { gap: '12px' } },
-                [
-                  'brand/scarlet-brand1.jpeg',
-                  'brand/philia-brand2.jpeg',
-                  'brand/implora-brand-3.jpeg',
-                  'brand/whitebalance-brand4.jpeg',
-                  'brand/brand-5.jpeg',
-                  'brand/hanasui-brand-6.jpeg',
-                  'brand/giime-brand-7.jpeg',
-                  'brand/canabasic-brand-8.jpeg',
-                  'brand/momuung-brand-9',
-                  'brand/moel-brand-10.jpg',
-                  'brand/aquapress-brand-11.jpg'
-                ].map((srcPath, idx) => h('div', { key: `${loop}_${idx}`, className: 'brand-logo-box' },
-                  h('img', {
-                    src: srcPath,
-                    alt: `Brand ${idx + 1}`,
-                    loading: 'lazy',
-                    onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
-                  })
-                ))
+            [1, 2].map(loop => h('div', { key: loop, className: 'brand-logo-group', 'aria-hidden': loop === 2 ? 'true' : undefined },
+              [
+                'brand/scarlet-brand1.jpeg',
+                'brand/philia-brand2.jpeg',
+                'brand/implora-brand-3.jpeg',
+                'brand/whitebalance-brand4.jpeg',
+                'brand/brand-5.jpeg',
+                'brand/hanasui-brand-6.jpeg',
+                'brand/giime-brand-7.jpeg',
+                'brand/canabasic-brand-8.jpeg',
+                'brand/momuung-brand-9',
+                'brand/moel-brand-10.jpg',
+                'brand/aquapress-brand-11.jpg'
+              ].map((srcPath, idx) => h('div', { key: `${loop}_${idx}`, className: 'brand-logo-box' },
+                h('img', {
+                  src: srcPath,
+                  alt: `Partner Brand ${idx + 1}`,
+                  loading: 'lazy',
+                  onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
+                })
               ))
-            )
+            ))
           )
         ),
         // KONTEN UTAMA (PEMBUKA MAIN YANG TADI TERHAPUS)
