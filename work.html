@@ -665,6 +665,130 @@
       .brand-marquee-badge { font-size: 12px; padding: 7px 16px; margin-left: 20px; }
       .brand-logo-box { width: 58px; height: 58px; border-radius: 15px; padding: 5px; }
     }
+
+    /* ✨ V6.1-PRO: INTERACTIVE PORTFOLIO & RATE CARD (LISY / @CHOCOOVORA) */
+    .pf-hero {
+      background: linear-gradient(135deg, #500724 0%, #9D174D 52%, #BE185D 100%);
+      border: 2px solid #F9A8D4;
+      border-radius: 24px;
+      padding: 22px;
+      color: #FFFFFF;
+      box-shadow: 0 14px 34px rgba(131, 24, 67, 0.28);
+      position: relative;
+      overflow: hidden;
+    }
+    .pf-avatar-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #FDE047, #F472B6);
+      padding: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pf-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 23px;
+      background: #831843;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 900;
+      color: #FDE047;
+    }
+    .pf-avatar-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .pf-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .pf-stat-box {
+      background: rgba(255, 255, 255, 0.13);
+      border: 1.5px solid rgba(249, 168, 212, 0.45);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .pf-rate-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .pf-rate-card {
+      background: #FFFFFF;
+      border: 2px solid #F9A8D4;
+      border-radius: 22px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 8px 22px rgba(157, 23, 77, 0.08);
+    }
+    .pf-rate-card.featured {
+      background: linear-gradient(180deg, #FFF0F6 0%, #FFFFFF 100%);
+      border: 2.5px solid #DB2777;
+      box-shadow: 0 12px 28px rgba(219, 39, 119, 0.18);
+    }
+    .pf-rate-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #FDF2F8;
+      border: 1px solid #FBCFE8;
+    }
+    .pf-client-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .pf-client-tile {
+      background: #FFFFFF;
+      border: 1.5px solid #F9A8D4;
+      border-radius: 16px;
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(157, 23, 77, 0.06);
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+    .pf-client-tile:hover {
+      transform: translateY(-2px);
+      border-color: #DB2777;
+    }
+    .pf-client-tile img {
+   width: 100%;
+   height: 100%;
+   max-height: 54px;
+   object-fit: contain;
+   border-radius: 10px;
+ }
+    @media (min-width: 1024px) {
+      .pf-hero { padding: 28px 32px; }
+      .pf-avatar-ring { width: 118px; height: 118px; border-radius: 30px; }
+      .pf-avatar-inner { border-radius: 27px; font-size: 44px; }
+      .pf-stat-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .pf-rate-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .pf-client-grid { grid-template-columns: repeat(6, 1fr); gap: 14px; }
+      .pf-client-tile img { width: 58px; height: 58px; }
+    }
     </style>
 </head>
 <body>
@@ -883,7 +1007,8 @@
         return () => window.removeEventListener('resize', onResize);
       }, []);
 
-      const [activeTab, setActiveTab] = useState('agenda');
+     const [activeTab, setActiveTab] = useState('agenda');
+const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
       const [selectedDate, setSelectedDate] = useState(realTodayStr);
       const prevRealTodayRef = useRef(realTodayStr);
 
@@ -921,6 +1046,45 @@
       });
       const [brands, setBrands] = useState(REQUIRED_CATEGORIES);
       const [stickyNote, setStickyNote] = useState("Target Minggu Ini: Push GMV Live Mom Uung & AquaPress!");
+
+      // ✨ V6.1-PRO: DATA PORTOFOLIO & RATE CARD INTERAKTIF (TERHUBUNG FIREBASE CLOUD)
+      const DEFAULT_PORTFOLIO_DATA = {
+        displayName: 'Lisy',
+        roleTagline: 'Host Marketing • Content Creator • Live Selling Specialist',
+        bio: 'Berpengalaman memandu sesi live streaming interaktif dan produksi konten kreator dengan konversi tinggi. Spesialis kategori Mom & Baby, Skincare & Beauty, Home Living, Fashion Apparels, Jewelry, hingga Gadget & Tech.',
+        photoUrl: 'img/lisy-profile.jpg',
+        tiktokFollowers: '44,5K+',
+        brandCount: '50+',
+        experienceYears: '7+ Years',
+        managerName: 'Zy',
+        managerPhone: '085159810102',
+        igHandle: '@chocoovora',
+        tiktokHandle: '@chocoovora',
+        socialMediaRates: [
+          { name: 'Content IG Feed', price: '100k / post', collabType: 'Take Video Affiliate (TikTok/Shopee)' },
+          { name: 'IG Story', price: '20k / 24 jam', collabType: 'Take Video Affiliate (TikTok/Shopee)' },
+          { name: 'IG Reels', price: '100k / post', collabType: 'Take Video Affiliate (TikTok/Shopee)' },
+          { name: 'Content Video (No Face)', price: '35k / video', collabType: 'Take Video Affiliate (TikTok/Shopee)' },
+          { name: 'Content Video (With Face)', price: '45k / video', collabType: 'Take Video Affiliate (TikTok/Shopee)' },
+          { name: 'Review / Upsell Video', price: '50k / video', collabType: 'Take Video Affiliate (TikTok/Shopee)' }
+        ],
+        liveSellingRates: [
+          { name: 'Live Selling (No Face) @client acc', price: '100k / 3 jam', collabType: 'Live Streaming Session' },
+          { name: 'Live Selling (With Face) @client acc', price: '150k / 3 jam', collabType: 'Live Streaming Session' },
+          { name: 'Live Selling (No Face) @chocoovora', price: '150k / 3 jam', collabType: 'Live Streaming Session' },
+          { name: 'Live Selling (With Face) @chocoovora', price: '170k / 3 jam', collabType: 'Live Streaming Session' },
+          { name: 'Ala Carte Live (No Face)', price: '30k / jam', collabType: 'Live Streaming Session' },
+          { name: 'Ala Carte Live (With Face)', price: '40k / jam', collabType: 'Live Streaming Session' }
+        ],
+        monthlyPackages: [
+          { name: '1 Month Full (15 Content + 80 Jam Live)', price: 'Rp 4 Juta', badge: '🔥 BEST VALUE', collabType: 'Event / Brand Campaign' },
+          { name: '1 Month Growth (15 Content + 50 Jam Live)', price: 'Rp 3,3 Juta', badge: '⭐ FAVORIT BRAND', collabType: 'Event / Brand Campaign' },
+          { name: '1 Monthly Content Only (30 Content)', price: 'Rp 1,2 Juta', badge: '🎬 KONTEN RUTIN', collabType: 'Take Video Affiliate (TikTok/Shopee)' }
+        ]
+      };
+      const [portfolioData, setPortfolioData] = useState(DEFAULT_PORTFOLIO_DATA);
+      const [portfolioEditModal, setPortfolioEditModal] = useState(false);
+      const [portfolioDraftJson, setPortfolioDraftJson] = useState('');
 
       const [isAdmin, setIsAdmin] = useState(false);
       const adminPin = "101100";
@@ -1237,9 +1401,25 @@
           if (val) setStickyNote(val);
         });
 
-        return () => { refSch.off(); refBrands.off(); refNote.off(); };
-      }, []);
+       const refPortfolio = firebaseDb.ref('alisya_portfolio_v1');
+     refPortfolio.on('value', snap => {
+       const val = snap.val();
+       if (val && typeof val === 'object') {
+         setPortfolioData(prev => ({ ...prev, ...val }));
+       }
+     });
 
+     const refShowPf = firebaseDb.ref('alisya_show_portfolio');
+     refShowPf.on('value', snap => {
+       const isVisible = !!snap.val();
+       setShowPortfolioPublic(isVisible);
+       if (!isVisible) {
+         setActiveTab(prev => prev === 'portfolio' ? 'agenda' : prev);
+       }
+     });
+
+     return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); };
+}, []);
       const saveSchedulesToCloud = (newList) => {
         setSchedules(newList);
         try { localStorage.setItem('alisya_schedules_cache', JSON.stringify(newList)); } catch (e) {}
@@ -1249,6 +1429,63 @@
       const saveBrandsToCloud = (newBrands) => {
         setBrands(newBrands);
         if (firebaseDb) firebaseDb.ref('alisya_brands').set(newBrands);
+      };
+
+      const savePortfolioToCloud = (nextPortfolio) => {
+        setPortfolioData(nextPortfolio);
+        if (firebaseDb) firebaseDb.ref('alisya_portfolio_v1').set(nextPortfolio);
+      };
+const togglePortfolioVisibility = () => {
+     if (!isAdmin) { setPinInputModal(true); return; }
+     const nextVal = !showPortfolioPublic;
+     setShowPortfolioPublic(nextVal);
+     if (firebaseDb) firebaseDb.ref('alisya_show_portfolio').set(nextVal);
+     notify(nextVal ? '✨ Tab Portofolio & Rate Card DITAMPILKAN ke Partner!' : '🙈 Tab Portofolio & Rate Card DISEMBUNYIKAN sementara.');
+   };
+      const handleBookFromPortfolio = (serviceName, priceLabel, collabType = 'Live Streaming Session') => {
+        let chosenDate = selectedDate;
+        let chosenSlot = findFirstFreeSlotOnDate(chosenDate, '10:00', '12:00');
+        if (!chosenSlot) {
+          for (let i = 0; i <= 14; i++) {
+            const candDate = addDaysToDateStr(realTodayStr, i);
+            const found = findFirstFreeSlotOnDate(candDate, '10:00', '12:00');
+            if (found) {
+              chosenDate = candDate;
+              chosenSlot = found;
+              break;
+            }
+          }
+        }
+        if (!chosenSlot) {
+          notify('🔒 Seluruh slot 14 hari ke depan penuh. Silakan cek kalender bulan berikutnya!');
+          setActiveTab('calendar');
+          return;
+        }
+        setSelectedDate(chosenDate);
+        if (!isAdmin) {
+          setBookingData({
+            date: chosenDate,
+            start_time: chosenSlot.start,
+            end_time: chosenSlot.end,
+            brand_id: 'AUTO',
+            customColor: pickUnusedBrandColor(),
+            clientName: '',
+            clientPhone: '',
+            collabType: collabType,
+            notes: `Booking Portofolio: ${serviceName} (${priceLabel})`
+          });
+          setBookingModalOpen(true);
+        } else {
+          setSelectedSchedule(null);
+          setRepeatDays(1);
+          setFormData({
+            id: 'sch_' + Date.now(), date: chosenDate, start_time: chosenSlot.start, end_time: chosenSlot.end,
+            title: serviceName, brand_id: brands[0]?.id || 'b_momuung', status: 'LIVE',
+            color: brands[0]?.color || '#B6D7A8', notes: `Rate Card: ${priceLabel}`, gmv: '',
+            checklist: { shoot: false, edit: false, upload: false }
+          });
+          setModalOpen(true);
+        }
       };
 
       const getHariNama = (dateString) => {
@@ -2531,6 +2768,7 @@
         e.preventDefault();
         if (enteredPin === adminPin) {
           setIsAdmin(true); setPinInputModal(false); setEnteredPin(''); setPinError(false);
+          if (activeTab === 'portfolio') setActiveTab('agenda');
           notify('🔓 Admin Access Unlocked!');
         } else { setPinError(true); }
       };
@@ -2971,7 +3209,7 @@
                   h('span', {
                     className: 'font-mono',
                     style: { background: 'rgba(255,255,255,0.2)', color: '#FCE7F3', border: '1px solid rgba(255,255,255,0.4)', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 800 }
-                  }, 'WORK MODE V5.7-PRO'),
+                  }, 'WORK MODE V6.1-PRO'),
                   isAdmin
                     ? h('span', { style: { background: '#FDE047', color: '#831843', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 900 } }, '👑 ADMIN')
                     : h('span', { style: { background: 'rgba(0,0,0,0.25)', color: '#FCE7F3', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 700 } }, '👀 PARTNER')
@@ -3079,6 +3317,7 @@
 // NAVIGASI TAB + TOMBOL PANDUAN & BOOKING WA
         h('nav', { className: 'exec-nav no-scrollbar' },
           [
+           ...(showPortfolioPublic ? [{ id: 'portfolio', icon: '✨', label: lang === 'en' ? 'Portfolio & Rates' : 'Portofolio & Rate Card' }] : []),
             { id: 'agenda', icon: '📅', label: t.tabAgenda },
             { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
             { id: 'simulator', icon: '🔍', label: lang === 'en' ? 'Slot & Rest Checker' : 'Cek Slot & Istirahat' },
@@ -3110,6 +3349,12 @@ h('button', {
             onClick: () => setGuideModalOpen(true)
           }, '💡 Cara Booking'),
           h('button', { className: 'btn btn-soft', onClick: exportCSV }, `📥 ${t.btnExportCSV}`),
+          isAdmin && h('button', {
+            type: 'button',
+            className: `btn ${showPortfolioPublic ? 'btn-emerald' : 'btn-soft'}`,
+            onClick: togglePortfolioVisibility,
+            title: 'Tampilkan atau sembunyikan tab Portofolio untuk mode Partner/View'
+          }, showPortfolioPublic ? '🙈 Portofolio:Sembunyikan' : '👁️ Portofolio: Tampilkan'),
           isAdmin && h('button', { className: 'btn btn-gold', onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan'),
           !isAdmin && h('button', {
             className: 'btn btn-emerald',
@@ -3128,7 +3373,7 @@ h('button', {
             h('span', null, '🤝 BRAND COLLAB'),
             h('span', {
               style: { background: 'rgba(255,255,255,0.22)', color: '#FEF08A', padding: '1px 7px', borderRadius: '999px', fontSize: '9.5px' }
-            }, '✔')
+            }, '11+')
           ),
           h('div', { className: 'brand-marquee-viewport' },
             [1, 2].map(loop => h('div', { key: loop, className: 'brand-logo-group', 'aria-hidden': loop === 2 ? 'true' : undefined },
@@ -3243,6 +3488,261 @@ h('button', {
               h('div', { className: 'flex flex-col gap-1 items-end' },
                 h('button', { className: 'btn btn-soft', style: { padding: '4px 8px', fontSize: '10px' }, onClick: () => setShowGuideBanner(false) }, 'Tutup ✕'),
                 h('button', { className: 'btn btn-pink', style: { padding: '5px 10px', fontSize: '10px' }, onClick: () => setGuideModalOpen(true) }, '📖 Detail')
+              )
+            )
+          ),
+
+          // =================================================================
+          // ✨ V6.1-PRO: TAB PORTOFOLIO & RATE CARD INTERAKTIF (LISY / @CHOCOOVORA)
+          // =================================================================
+         showPortfolioPublic && activeTab === 'portfolio' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
+            // 1. HERO CARD PROFIL LISY & ANGKA KREDIBILITAS
+            h('div', { className: 'pf-hero' },
+              h('div', { className: 'flex flex-wrap items-center justify-between gap-4' },
+                h('div', { className: 'flex items-center gap-3', style: { flex: 1, minWidth: '260px' } },
+                  h('div', { className: 'pf-avatar-ring' },
+                    h('div', { className: 'pf-avatar-inner' },
+                      portfolioData.photoUrl
+                        ? h('img', {
+                            src: portfolioData.photoUrl,
+                            alt: portfolioData.displayName,
+                            onError: e => { e.currentTarget.style.display = 'none'; }
+                          })
+                        : null,
+                      h('span', null, (portfolioData.displayName || 'L')[0].toUpperCase())
+                    )
+                  ),
+                  h('div', { style: { flex: 1 } },
+                    h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
+                      h('span', {
+                        style: { background: '#FDE047', color: '#831843', fontSize: '10px', fontWeight: 900, padding: '3px 10px', borderRadius: '999px' }
+                      }, '✨ OFFICIAL PORTFOLIO & RATE CARD'),
+                      h('span', {
+                        style: { background: 'rgba(16, 185, 129, 0.25)', color: '#6EE7B7', border: '1px solid #34D399', fontSize: '10px', fontWeight: 900, padding: '3px 10px', borderRadius: '999px' }
+                      }, broadcastMetrics.badge)
+                    ),
+                    h('h2', { style: { fontSize: displayMode === 'mobile' ? '22px' : '30px', fontWeight: 900, marginTop: '6px', lineHeight: 1.15 } },
+                      `${portfolioData.displayName} — Live Host & Content Creator`
+                    ),
+                    h('div', { style: { fontSize: '12px', fontWeight: 800, color: '#FDE047', marginTop: '3px' } },
+                      portfolioData.roleTagline
+                    ),
+                    h('p', { style: { fontSize: displayMode === 'mobile' ? '11.5px' : '13px', color: '#FCE7F3', marginTop: '8px', lineHeight: 1.5, maxWidth: '760px' } },
+                      portfolioData.bio
+                    )
+                  )
+                ),
+
+                // Tombol Aksi Cepat Klien & Admin Edit
+                h('div', { className: 'flex flex-col gap-2', style: { minWidth: displayMode === 'mobile' ? '100%' : '225px' } },
+                  h('button', {
+                    type: 'button',
+                    className: 'btn btn-emerald',
+                    style: { padding: '11px 16px', fontSize: '12.5px' },
+                    onClick: () => setActiveTab('agenda')
+                  }, '📅 Cek Jadwal & Slot Kosong'),
+                  h('a', {
+                    href: `https://wa.me/${formatWaPhone(portfolioData.managerPhone)}?text=${encodeURIComponent(`Halo Kak ${portfolioData.managerName}, saya tertarik untuk kerjasama / booking jadwal live & konten dengan ${portfolioData.displayName}.`)}`,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    className: 'btn btn-header',
+                    style: { padding: '9px 14px', fontSize: '12px', textDecoration: 'none' }
+                  }, `📲 Chat Manager (${portfolioData.managerName})`),
+                  isAdmin && h('button', {
+                    type: 'button',
+                    className: 'btn btn-gold',
+                    style: { padding: '8px 14px', fontSize: '11.5px' },
+                    onClick: () => {
+                      setPortfolioDraftJson(JSON.stringify(portfolioData, null, 2));
+                      setPortfolioEditModal(true);
+                    }
+                  }, '✏️ Edit Portofolio & Tarif')
+                )
+              ),
+
+              // 4 Angka Pencapaian Utama (Gabungan Statistik Poster + Real-Time Web)
+              h('div', { className: 'pf-stat-grid' },
+                [
+                  { icon: '📱', val: portfolioData.tiktokFollowers, lbl: `TikTok Selling (${portfolioData.tiktokHandle})` },
+                  { icon: '🤝', val: portfolioData.brandCount, lbl: 'Brand Partnerships' },
+                  { icon: '🏆', val: portfolioData.experienceYears, lbl: 'Live & Content Experience' },
+                  { icon: '⏱️', val: `${broadcastMetrics.totalHours}+ Jam`, lbl: 'Total Jam Live Terverifikasi' }
+                ].map((st, idx) => h('div', { key: idx, className: 'pf-stat-box' },
+                  h('div', { style: { fontSize: '11px', color: '#FBCFE8', fontWeight: 800 } }, `${st.icon} ${st.lbl}`),
+                  h('div', { className: 'font-mono', style: { fontSize: displayMode === 'mobile' ? '19px' : '24px', fontWeight: 900, color: '#FDE047', marginTop: '3px' } }, st.val)
+                ))
+              )
+            ),
+
+            // 2. KATALOG SERVICES & RATES + MONTHLY PACKAGE (BISA LANGSUNG KLIK BOOKING)
+            h('div', { className: 'exec-card', style: { background: '#FFF0F6' } },
+              h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginBottom: '14px' } },
+                h('div', null,
+                  h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase' } }, '💼 SERVICES, RATES & PACKAGES'),
+                  h('h3', { style: { fontSize: '17px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Daftar Layanan & Paket Kolaborasi')
+                ),
+                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#831843', background: '#FCE7F3', padding: '5px 12px', borderRadius: '999px', border: '1px solid #F472B6' } },
+                  '⚡ Klik layanan mana saja untuk langsung kunci jadwal kosong'
+                )
+              ),
+
+              h('div', { className: 'pf-rate-grid' },
+                // Kolom 1: Social Media Content
+                h('div', { className: 'pf-rate-card' },
+                  h('div', null,
+                    h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#9D174D', background: '#FCE7F3', padding: '3px 9px', borderRadius: '999px' } }, '🎬 CONTENT CREATION'),
+                    h('h4', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '6px', marginBottom: '10px' } }, 'Social Media & Video Affiliate'),
+                    h('div', { style: { display: 'flex', flexDirection: 'column', gap: '7px' } },
+                      (portfolioData.socialMediaRates || []).map((rt, i) => h('div', { key: i, className: 'pf-rate-row' },
+                        h('div', null,
+                          h('div', { style: { fontSize: '12px', fontWeight: 800, color: '#4A0424' } }, rt.name),
+                          h('div', { className: 'font-mono', style: { fontSize: '11.5px', fontWeight: 900, color: '#DB2777' } }, rt.price)
+                        ),
+                        h('button', {
+                          type: 'button',
+                          className: 'btn btn-soft',
+                          style: { padding: '5px 9px', fontSize: '10.5px' },
+                          onClick: () => handleBookFromPortfolio(rt.name, rt.price, rt.collabType)
+                        }, '📲 Pilih')
+                      ))
+                    )
+                  )
+                ),
+
+                // Kolom 2: Live Selling & Ala Carte
+                h('div', { className: 'pf-rate-card' },
+                  h('div', null,
+                    h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#065F46', background: '#D1FAE5', padding: '3px 9px', borderRadius: '999px' } }, '🎙️ LIVE SELLING & ALA CARTE'),
+                    h('h4', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '6px', marginBottom: '10px' } }, 'Sesi Live Streaming (3 Jam / Per Jam)'),
+                    h('div', { style: { display: 'flex', flexDirection: 'column', gap: '7px' } },
+                      (portfolioData.liveSellingRates || []).map((rt, i) => h('div', { key: i, className: 'pf-rate-row' },
+                        h('div', null,
+                          h('div', { style: { fontSize: '12px', fontWeight: 800, color: '#4A0424' } }, rt.name),
+                          h('div', { className: 'font-mono', style: { fontSize: '11.5px', fontWeight: 900, color: '#059669' } }, rt.price)
+                        ),
+                        h('button', {
+                          type: 'button',
+                          className: 'btn btn-soft',
+                          style: { padding: '5px 9px', fontSize: '10.5px' },
+                          onClick: () => handleBookFromPortfolio(rt.name, rt.price, rt.collabType)
+                        }, '📲 Pilih')
+                      ))
+                    )
+                  )
+                ),
+
+                // Kolom 3: Monthly Bundling Packages (Featured)
+                h('div', { className: 'pf-rate-card featured' },
+                  h('div', null,
+                    h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#FFFFFF', background: '#DB2777', padding: '3px 10px', borderRadius: '999px' } }, '👑 MONTHLY PACKAGES'),
+                    h('h4', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '6px', marginBottom: '10px' } }, 'Paket Bundling Bulanan Brand'),
+                    h('div', { style: { display: 'flex', flexDirection: 'column', gap: '9px' } },
+                      (portfolioData.monthlyPackages || []).map((pkg, i) => h('div', {
+                        key: i,
+                        style: {
+                          background: '#FFFFFF', border: '1.5px solid #F472B6', borderRadius: '14px',
+                          padding: '11px 12px', display: 'flex', flexDirection: 'column', gap: '6px'
+                        }
+                      },
+                        h('div', { className: 'flex items-center justify-between gap-2' },
+                          h('span', { style: { fontSize: '9.5px', fontWeight: 900, color: '#831843', background: '#FDE047', padding: '2px 8px', borderRadius: '999px' } }, pkg.badge),
+                          h('span', { className: 'font-mono', style: { fontSize: '14px', fontWeight: 900, color: '#9D174D' } }, pkg.price)
+                        ),
+                        h('div', { style: { fontSize: '12.5px', fontWeight: 900, color: '#4A0424' } }, pkg.name),
+                        h('button', {
+                          type: 'button',
+                          className: 'btn btn-pink',
+                          style: { width: '100%', padding: '7px 10px', fontSize: '11px', marginTop: '2px' },
+                          onClick: () => handleBookFromPortfolio(pkg.name, pkg.price, pkg.collabType)
+                        }, '📲 Booking Paket Ini')
+                      ))
+                    )
+                  )
+                )
+              )
+            ),
+
+            // 3. WALL OF CLIENTS — SEMUA BRAND DIJADIKAN SATU (50+ BRAND PARTNERSHIPS)
+            h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
+              h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginBottom: '14px' } },
+                h('div', null,
+                  h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '🤝 TRUSTED BY 50+ BRANDS'),
+                  h('h3', { style: { fontSize: '17px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Brand Collaborations & Clients')
+                ),
+                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#065F46', background: '#ECFDF5', padding: '5px 12px', borderRadius: '999px', border: '1px solid #6EE7B7' } },
+                  '✅ Beauty • Skincare • Mom & Baby • Home & Fashion'
+                )
+              ),
+            h('div', { className: 'pf-client-grid' },
+             [
+               'brand/momuung-brand-9',
+               'brand/aquapress-brand-11.jpg',
+               'brand/moel-brand-10.jpg',
+               'brand/scarlet-brand1.jpeg',
+               'brand/philia-brand2.jpeg',
+               'brand/implora-brand-3.jpeg',
+               'brand/whitebalance-brand4.jpeg',
+               'brand/hanasui-brand-6.jpeg',
+               'brand/giime-brand-7.jpeg',
+               'brand/canabasic-brand-8.jpeg',
+               'brand/brand-5.jpeg',
+               'brand/korper-besonders.jpeg'
+             ].map((srcPath, idx) => h('div', { key: idx, className: 'pf-client-tile' },
+               h('img', {
+                 src: srcPath,
+                 alt: `Brand Partner ${idx + 1}`,
+                 loading: 'lazy',
+                 onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
+               })
+             )),
+             h('div', {
+               className: 'pf-client-tile',
+               style: { background: 'linear-gradient(135deg, #FCE7F3, #FFF0F6)', borderStyle: 'dashed', borderColor: '#DB2777' }
+             },
+               h('span', { className: 'font-mono', style: { fontSize: '20px', fontWeight: 900, color: '#9D174D' } }, '50+'),
+               h('span', { style: { fontSize: '10.5px', fontWeight: 800, color: '#831843' } }, 'Brand Lainnya')
+             )
+           )
+         ),
+
+            // 4. KARTU KONTAK MANAGER ZY & AKUN RESMI @CHOCOOVORA
+            h('div', {
+              className: 'exec-card',
+              style: { background: 'linear-gradient(135deg, #FFF0F6 0%, #FCE7F3 100%)', border: '2px solid #EC4899' }
+            },
+              h('div', { className: 'flex flex-wrap items-center justify-between gap-3' },
+                h('div', null,
+                  h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase' } }, '📞 OFFICIAL CONTACT & SOCIAL MEDIA'),
+                  h('h3', { style: { fontSize: '16px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } },
+                    `Manager: ${portfolioData.managerName} (${portfolioData.managerPhone})`
+                  ),
+                  h('p', { style: { fontSize: '11.5px', color: '#701A46', marginTop: '2px', fontWeight: 700 } },
+                    `Instagram & TikTok Official: ${portfolioData.igHandle}`
+                  )
+                ),
+                h('div', { className: 'flex flex-wrap items-center gap-2' },
+                  h('a', {
+                    href: `https://wa.me/${formatWaPhone(portfolioData.managerPhone)}?text=${encodeURIComponent(`Halo Kak ${portfolioData.managerName}, saya ingin bertanya mengenai kerjasama dengan ${portfolioData.displayName} (${portfolioData.igHandle}).`)}`,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    className: 'btn btn-emerald',
+                    style: { padding: '9px 14px', textDecoration: 'none' }
+                  }, `📲 WhatsApp ${portfolioData.managerName} (${portfolioData.managerPhone})`),
+                  h('a', {
+                    href: `https://instagram.com/${String(portfolioData.igHandle || '@chocoovora').replace('@', '')}`,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    className: 'btn btn-pink',
+                    style: { padding: '9px 14px', textDecoration: 'none' }
+                  }, `📸 IG ${portfolioData.igHandle}`),
+                  h('a', {
+                    href: `https://tiktok.com/@${String(portfolioData.tiktokHandle || '@chocoovora').replace('@', '')}`,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    className: 'btn btn-soft',
+                    style: { padding: '9px 14px', textDecoration: 'none' }
+                  }, `🎵 TikTok ${portfolioData.tiktokHandle}`)
+                )
               )
             )
           ),
@@ -4294,14 +4794,23 @@ h('button', {
           )
         ),
 // 📱 NAVIGASI BAWAH INTERAKTIF KHUSUS LAYAR HP (OTOMATIS MUNCUL DI HP)
-        displayMode === 'mobile' && h('div', { className: 'mobile-bottom-dock' },
-          [
-            { id: 'agenda', icon: '📅', label: 'Agenda' },
-            { id: 'calendar', icon: '📊', label: 'Tabel' },
-            { id: 'simulator', icon: '🔍', label: 'Cek Slot' },
-            { id: 'kpi', icon: '📈', label: 'KPI' },
-            { id: 'list', icon: '📋', label: 'Daftar' }
-          ].map(tb => h('button', {
+       displayMode === 'mobile' && h('div', { className: 'mobile-bottom-dock' },
+          (showPortfolioPublic
+            ? [
+                { id: 'portfolio', icon: '✨', label: 'Portofolio' },
+                { id: 'agenda', icon: '📅', label: 'Agenda' },
+                { id: 'calendar', icon: '📊', label: 'Tabel' },
+                { id: 'simulator', icon: '🔍', label: 'Cek Slot' },
+                { id: 'kpi', icon: '📈', label: 'KPI' }
+              ]
+            : [
+                { id: 'agenda', icon: '📅', label: 'Agenda' },
+                { id: 'calendar', icon: '📊', label: 'Tabel' },
+                { id: 'simulator', icon: '🔍', label: 'Cek Slot' },
+                { id: 'kpi', icon: '📈', label: 'KPI' },
+                { id: 'list', icon: '📋', label: 'Daftar' }
+              ]
+          ).map(tb => h('button', {
             key: tb.id,
             type: 'button',
             onClick: () => setActiveTab(tb.id),
@@ -4505,7 +5014,7 @@ h('button', {
           h('div', { className: 'modal-box', style: { display: 'flex', flexDirection: 'column', gap: '11px' } },
             h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '10px' } },
               h('div', null,
-                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase', letterSpacing: '0.06em' } }, '🌸 OFFICIAL PARTNER BOOKING • V5.7-PRO'),
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase', letterSpacing: '0.06em' } }, '🌸 OFFICIAL PARTNER BOOKING • V6.1-PRO'),
                 h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '📲 Pengajuan Slot Jadwal via WhatsApp')
               ),
               h('button', { className: 'btn btn-soft', onClick: () => setBookingModalOpen(false) }, '✕')
@@ -4748,6 +5257,43 @@ h('button', {
                   style: { padding: '10px 14px', fontSize: '12px' }
                 }, currentBookingConflict ? '🔒 Jam Sudah Terisi' :'📲 Ajukan Booking Slot')
               )
+            )
+          )
+        ),
+
+        // ✨ V6.1-PRO: MODAL EDIT PORTOFOLIO & RATE CARD (KHUSUS ADMIN)
+        portfolioEditModal && isAdmin && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { maxWidth: '580px', display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
+              h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843' } }, '✏️ Edit Data Portofolio & Rate Card'),
+              h('button', { className: 'btn btn-soft', onClick: () => setPortfolioEditModal(false) }, '✕')
+            ),
+            h('p', { style: { fontSize: '11px', color: '#701A46', fontWeight: 700 } },
+              'Ubah teks bio, angka followers, kontak manager, atau harga layanan di bawah ini lalu klik Simpan ke Cloud:'
+            ),
+            h('textarea', {
+              rows: 14,
+              className: 'font-mono',
+              value: portfolioDraftJson,
+              onChange: e => setPortfolioDraftJson(e.target.value),
+              style: { width: '100%', fontSize: '11px', lineHeight: 1.4 }
+            }),
+            h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '8px' } },
+              h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setPortfolioEditModal(false) }, 'Batal'),
+              h('button', {
+                type: 'button',
+                className: 'btn btn-pink',
+                onClick: () => {
+                  try {
+                    const parsed = JSON.parse(portfolioDraftJson);
+                    savePortfolioToCloud(parsed);
+                    setPortfolioEditModal(false);
+                    notify('✨ Portofolio & Rate Card berhasil diperbarui ke Cloud!');
+                  } catch (err) {
+                    notify('⚠️ Format JSON kurang tepat, periksa tanda kutip atau koma.');
+                  }
+                }
+              }, '💾 Simpan Perubahan ke Cloud')
             )
           )
         ),
