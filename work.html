@@ -1410,11 +1410,15 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
        }
      });
 
+     let isInitialPortfolioCheck = true;
      const refShowPf = firebaseDb.ref('alisya_show_portfolio');
      refShowPf.on('value', snap => {
        const isVisible = !!snap.val();
        setShowPortfolioPublic(isVisible);
-       if (!isVisible) {
+       if (isInitialPortfolioCheck) {
+         isInitialPortfolioCheck = false;
+         setActiveTab(isVisible ? 'portfolio' : 'agenda');
+       } else if (!isVisible) {
          setActiveTab(prev => prev === 'portfolio' ? 'agenda' : prev);
        }
      });
@@ -1431,7 +1435,15 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         setBrands(newBrands);
         if (firebaseDb) firebaseDb.ref('alisya_brands').set(newBrands);
       };
-
+const resolvePortfolioImageUrl = (rawUrl) => {
+        const clean = String(rawUrl || '').trim();
+        if (!clean) return 'img/lisy-profile.jpg';
+        const match = clean.match(/(?:\/d\/|[?&]id=)([a-zA-Z0-9_-]{20,})/);
+        if (match && match[1]) {
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+        }
+        return clean;
+      };
       const savePortfolioToCloud = (nextPortfolio) => {
         setPortfolioData(nextPortfolio);
         if (firebaseDb) firebaseDb.ref('alisya_portfolio_v1').set(nextPortfolio);
@@ -3502,14 +3514,25 @@ h('button', {
               h('div', { className: 'flex flex-wrap items-center justify-between gap-4' },
                 h('div', { className: 'flex items-center gap-3', style: { flex: 1, minWidth: '260px' } },
                   h('div', { className: 'pf-avatar-ring' },
-                    h('div', { className: 'pf-avatar-inner' },
-                      portfolioData.photoUrl
-                        ? h('img', {
-                            src: portfolioData.photoUrl,
-                            alt: portfolioData.displayName,
-                            onError: e => { e.currentTarget.style.display = 'none'; }
-                          })
-                        : null,
+                   h('div', { className: 'pf-avatar-inner' },
+                      h('img', {
+                        src: resolvePortfolioImageUrl(portfolioData.photoUrl),
+                        alt: portfolioData.displayName,
+                        referrerPolicy: 'no-referrer',
+                        onLoad: e => {
+                          e.currentTarget.style.display = 'block';
+                          if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'none';
+                        },
+                        onError: e => {
+                          if (e.currentTarget.src !== window.location.origin + '/img/lisy-profile.jpg' && !e.currentTarget.dataset.fallback) {
+                            e.currentTarget.dataset.fallback = '1';
+                            e.currentTarget.src = 'img/lisy-profile.jpg';
+                          } else {
+                            e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'inline';
+                          }
+                        }
+                      }),
                       h('span', null, (portfolioData.displayName || 'L')[0].toUpperCase())
                     )
                   ),
