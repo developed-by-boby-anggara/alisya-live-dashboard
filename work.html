@@ -1423,8 +1423,18 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
        }
      });
 
-     return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); };
-}, []);
+     const refLogs = firebaseDb.ref('alisya_access_logs');
+        refLogs.on('value', snap => {
+          const val = snap.val();
+          setAccessLogs(Array.isArray(val) ? val.slice(0, 200) : []);
+        });
+
+        if (!isAdmin) {
+          recordAccessLog('VISIT_PORTAL', 'Membuka halaman portal', true);
+        }
+
+        return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); refLogs.off(); };
+      }, [isAdmin]);
       const saveSchedulesToCloud = (newList) => {
         setSchedules(newList);
         try { localStorage.setItem('alisya_schedules_cache', JSON.stringify(newList)); } catch (e) {}
@@ -1447,6 +1457,93 @@ const resolvePortfolioImageUrl = (rawUrl) => {
       const savePortfolioToCloud = (nextPortfolio) => {
         setPortfolioData(nextPortfolio);
         if (firebaseDb) firebaseDb.ref('alisya_portfolio_v1').set(nextPortfolio);
+      };
+      // 🕵️ V6.3-PRO: VISITOR & ADMIN AUDIT LOG (AUTO-TRIM 200 LOG + IP GEO FALLBACK)
+      const [accessLogs, setAccessLogs] = useState([]);
+      const [accessLogModalOpen, setAccessLogModalOpen] = useState(false);
+
+      const detectDeviceSummary = () => {
+        const ua = navigator.userAgent || '';
+        const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || window.innerWidth < 1024;
+        let osName = 'Other OS';
+        if (/Windows/i.test(ua)) osName = 'Windows';
+        else if (/Android/i.test(ua)) osName = 'Android';
+        else if (/iPhone|iPad|iPod/i.test(ua)) osName = 'iOS';
+        else if (/Mac OS X/i.test(ua)) osName = 'macOS';
+        else if (/Linux/i.test(ua)) osName = 'Linux';
+
+        let browserName = 'Browser';
+        if (/Edg\//i.test(ua)) browserName = 'Edge';
+        else if (/OPR\//i.test(ua) || /Opera/i.test(ua)) browserName = 'Opera';
+        else if (/Chrome\//i.test(ua)) browserName = 'Chrome';
+        else if (/Safari\//i.test(ua)) browserName = 'Safari';
+        else if (/Firefox\//i.test(ua)) browserName = 'Firefox';
+
+        return {
+          deviceType: isMobile ? 'HP / Mobile' : 'PC / Desktop',
+          platform: `${osName} • ${browserName}`,
+          screenSize: `${window.innerWidth}x${window.innerHeight}`,
+          tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local'
+        };
+      };
+
+      const fetchApproxGeo = async () => {
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 2200);
+          const resp = await fetch('https://ipapi.co/json/', { signal: ctrl.signal });
+          clearTimeout(tid);
+          if (!resp.ok) throw new Error('geo');
+          const d = await resp.json();
+          const city = d.city || '';
+          const region = d.region || '';
+          const country = d.country_name || '';
+          const locText = [city, region, country].filter(Boolean).join(', ') || 'Lokasi tidak terdeteksi';
+          return { location: locText, ip: d.ip || '-' };
+        } catch (err) {
+          return { location: 'Lokasi terbatas / terblokir', ip: '-' };
+        }
+      };
+
+      const recordAccessLog = async (eventType, detailText = '', forceOncePerSession = false) => {
+        if (!firebaseDb) return;
+        try {
+          if (forceOncePerSession) {
+            const sessionKey = `alisya_logged_${eventType}`;
+            if (sessionStorage.getItem(sessionKey)) return;
+            sessionStorage.setItem(sessionKey, '1');
+          }
+          const dev = detectDeviceSummary();
+          const geo = await fetchApproxGeo();
+          const entry = {
+            id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            timeWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+            ts: Date.now(),
+            eventType,
+            detail: detailText || activeTab,
+            deviceType: dev.deviceType,
+            platform: dev.platform,
+            screenSize: dev.screenSize,
+            tz: dev.tz,
+            location: geo.location,
+            ip: geo.ip
+          };
+
+          const refLogs = firebaseDb.ref('alisya_access_logs');
+          const snap = await refLogs.once('value');
+          const currentList = Array.isArray(snap.val()) ? snap.val() : [];
+          const nextList = [entry, ...currentList].slice(0, 200);
+          await refLogs.set(nextList);
+          setAccessLogs(nextList);
+        } catch (e) {}
+      };
+
+      const handleClearAccessLogs = () => {
+        if (!isAdmin) { setPinInputModal(true); return; }
+        if (!confirm('Hapus seluruh riwayat log akses (200 data)?')) return;
+        setAccessLogs([]);
+        if (firebaseDb) firebaseDb.ref('alisya_access_logs').set([]);
+        notify('🧹 Seluruh log akses berhasil dibersihkan!');
       };
 const togglePortfolioVisibility = () => {
      if (!isAdmin) { setPinInputModal(true); return; }
@@ -2777,13 +2874,17 @@ const togglePortfolioVisibility = () => {
         }
       }, [activeTab, stats]);
 
-      const handleVerifyPin = (e) => {
+   const handleVerifyPin = (e) => {
         e.preventDefault();
         if (enteredPin === adminPin) {
           setIsAdmin(true); setPinInputModal(false); setEnteredPin(''); setPinError(false);
           if (activeTab === 'portfolio') setActiveTab('agenda');
+          recordAccessLog('ADMIN_LOGIN_OK', 'Login Admin berhasil');
           notify('🔓 Admin Access Unlocked!');
-        } else { setPinError(true); }
+        } else {
+          setPinError(true);
+          recordAccessLog('ADMIN_LOGIN_FAIL', 'Percobaan PIN Admin gagal');
+        }
       };
 
       const applyPresetShift = (brandId, labelPrefix, shiftNum, start, end) => {
@@ -3369,6 +3470,11 @@ h('button', {
             title: 'Tampilkan atau sembunyikan tab Portofolio untuk mode Partner/View'
           }, showPortfolioPublic ? '🙈 Portofolio:Sembunyikan' : '👁️ Portofolio: Tampilkan'),
           isAdmin && h('button', { className: 'btn btn-gold', onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan'),
+          isAdmin && h('button', {
+                type: 'button',
+                className: 'btn btn-soft',
+                onClick: () => setAccessLogModalOpen(true)
+              }, `🕵️ Log (${accessLogs.length}/200)`),
           !isAdmin && h('button', {
             className: 'btn btn-emerald',
             disabled: availableSlotsForSelectedDate.length === 0,
@@ -5553,6 +5659,59 @@ h('button', {
                 }
               }, '💾 Simpan Perubahan ke Cloud')
             )
+          )
+        ),
+               // 🕵️ V6.3-PRO: MODAL RIWAYAT LOG AKSES & PERANGKAT (KHUSUS ADMIN)
+        accessLogModalOpen && isAdmin && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '👑 ADMIN ONLY • AUTO-TRIM MAKS 200 LOG'),
+                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, `🕵️ Riwayat Kunjungan & Login (${accessLogs.length}/200)`)
+              ),
+              h('div', { className: 'flex items-center gap-1-5' },
+                accessLogs.length > 0 && h('button', {
+                  type: 'button',
+                  className: 'btn btn-soft',
+                  style: { color: '#E11D48', borderColor: '#FDA4AF' },
+                  onClick: handleClearAccessLogs
+                }, '🗑️ Hapus Semua'),
+                h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setAccessLogModalOpen(false) }, '✕')
+              )
+            ),
+
+            accessLogs.length === 0
+              ? h('div', { style: { textAlign: 'center', padding: '28px 14px', background: '#FFFFFF', borderRadius: '14px', border: '1.5px dashed #F9A8D4', fontSize: '12px', color: '#701A46', fontWeight: 700 } },
+                  'Belum ada log akses yang tersimpan.'
+                )
+              : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '7px', maxHeight: '62vh', overflowY: 'auto' } },
+                  accessLogs.map(lg => {
+                    const isLoginOk = lg.eventType === 'ADMIN_LOGIN_OK';
+                    const isLoginFail = lg.eventType === 'ADMIN_LOGIN_FAIL';
+                    const badgeBg = isLoginOk ? '#D1FAE5' : isLoginFail ? '#FFE4E6' : '#FCE7F3';
+                    const badgeCol = isLoginOk ? '#065F46' : isLoginFail ? '#9F1239' : '#831843';
+                    const badgeLbl = isLoginOk ? '👑 LOGIN ADMIN' : isLoginFail ? '⚠️ PIN SALAH' : '👀 VISIT WEB';
+
+                    return h('div', {
+                      key: lg.id,
+                      style: {
+                        background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '12px',
+                        padding: '9px 12px', display: 'flex', flexDirection: 'column', gap: '4px'
+                      }
+                    },
+                      h('div', { className: 'flex items-center justify-between flex-wrap gap-1' },
+                        h('span', { style: { background: badgeBg, color: badgeCol, fontSize: '9.5px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, badgeLbl),
+                        h('span', { className: 'font-mono', style: { fontSize: '10.5px', color: '#701A46', fontWeight: 800 } }, lg.timeWIB)
+                      ),
+                      h('div', { style: { fontSize: '11.5px', fontWeight: 800, color: '#4A0424' } },
+                        `${lg.deviceType} (${lg.platform}) • Layar ${lg.screenSize}`
+                      ),
+                      h('div', { style: { fontSize: '10.5px', color: '#701A46', fontWeight: 700 } },
+                        `📍 Perkiraan Lokasi: ${lg.location} • Zona: ${lg.tz}`
+                      )
+                    );
+                  })
+                )
           )
         ),
         // MODAL PIN ADMIN
