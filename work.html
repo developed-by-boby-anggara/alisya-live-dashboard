@@ -1177,8 +1177,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         tokens[dayIndex] = order[(order.indexOf(curr) + 1) % order.length];
         setBulkPatternText(tokens.join(','));
       };
-
-     const handleApplyBulkMonth = () => {
+const handleApplyBulkMonth = () => {
         if (!isAdmin) { setPinInputModal(true); return; }
         const totalDays = new Date(bulkYear, bulkMonth + 1, 0).getDate();
         const tokens = parseBulkShiftTokens(bulkPatternText, totalDays);
@@ -1188,8 +1187,9 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         const offColor = offBrand ? offBrand.color : '#EF4444';
         const monthPrefix = `${bulkYear}-${String(bulkMonth + 1).padStart(2, '0')}-`;
         const trMin = Number(bulkTravelMinutes) || 0;
-        const hasGo = trMin > 0 && (bulkTravelDirection === 'go' || bulkTravelDirection === 'rt');
-        const hasBack = trMin > 0 && (bulkTravelDirection === 'back' || bulkTravelDirection === 'rt');
+        const legMin = bulkTravelDirection === 'rt' ? Math.floor(trMin / 2) : trMin;
+        const hasGo = legMin > 0 && (bulkTravelDirection === 'go' || bulkTravelDirection === 'rt');
+        const hasBack = legMin > 0 && (bulkTravelDirection === 'back' || bulkTravelDirection === 'rt');
 
         try { localStorage.setItem('alisya_default_travel_min', String(trMin)); } catch (err) {}
 
@@ -1269,9 +1269,9 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
             const rawEnd = timeToMinutes(p.end);
 
             if (hasGo) {
-              const goStart = formatMinutesWrap(sMin - trMin);
+              const goStart = formatMinutesWrap(sMin - legMin);
               const goEnd = formatMinutesWrap(sMin);
-              const goDate = (sMin - trMin) < 0 ? addDaysToDateStr(dateStr, -1) : dateStr;
+              const goDate = (sMin - legMin) < 0 ? addDaysToDateStr(dateStr, -1) : dateStr;
               if (!checkBulkCollision(goDate, goStart, goEnd, newItems)) {
                 newItems.push({
                   id: `tr_go_${mainId}`,
@@ -1284,14 +1284,14 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
                   color: TRAVEL_COLOR,
                   is_travel_block: true,
                   parent_travel_for: mainId,
-                  notes: `Estimasi OTW ${trMin} mnt`
+                  notes: `Estimasi OTW ${legMin} mnt`
                 });
               }
             }
 
             if (hasBack) {
               const backStart = formatMinutesWrap(rawEnd);
-              const backEnd = formatMinutesWrap(rawEnd + trMin);
+              const backEnd = formatMinutesWrap(rawEnd + legMin);
               const backDate = p.end === '00:00' ? addDaysToDateStr(dateStr, 1) : dateStr;
               if (!checkBulkCollision(backDate, backStart, backEnd, newItems)) {
                 newItems.push({
@@ -1305,7 +1305,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
                   color: TRAVEL_COLOR,
                   is_travel_block: true,
                   parent_travel_for: mainId,
-                  notes: `Estimasi pulang ${trMin} mnt`
+                  notes: `Estimasi pulang ${legMin} mnt`
                 });
               }
             }
@@ -1350,7 +1350,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         if (skippedCollisions.length > 0) {
           notify(`⚡ ${shiftCount} Shift tersimpan! 🔒 ${skippedCollisions.length} tanggal dilewati karena jam sudah terisi.`);
         } else {
-          notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${trMin > 0 ? ` + Perjalanan ${trMin} mnt` : ''}${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} tersimpan!`);
+          notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${legMin > 0 ? ` + Perjalanan ${legMin}m/arah` : ''}${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} tersimpan!`);
         }
       };
 // 🚨 V2.7: State Ceklis Persiapan Studio (15 Menit Sebelum Mulai) & Slot Jam Aktif
@@ -6077,7 +6077,9 @@ h('div', {
                 h('div', { className: 'flex items-center justify-between', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
                   h('span', null, '🛵 Estimasi Perjalanan Kos (Otomatis Semua Shift)'),
                   bulkTravelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
-                    `${bulkTravelMinutes} mnt (${bulkTravelDirection === 'rt' ? 'PP' : bulkTravelDirection === 'go' ? 'Pergi' : 'Pulang'})`
+                    bulkTravelDirection === 'rt'
+                      ? `PP ${bulkTravelMinutes} mnt (${Math.floor(bulkTravelMinutes / 2)}m pergi + ${Math.floor(bulkTravelMinutes / 2)}m pulang)`
+                      : `${bulkTravelMinutes} mnt (${bulkTravelDirection === 'go' ? 'Pergi' : 'Pulang'})`
                   )
                 ),
                 h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
@@ -6098,6 +6100,7 @@ h('div', {
                   )
                 )
               ),
+              
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '8px', marginTop: '2px' } },
                 h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setBulkPatternText('') }, '🗑️ Bersihkan'),
                 h('button', {
