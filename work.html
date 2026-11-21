@@ -3030,9 +3030,10 @@ const formatMinutesWrap = (mins) => {
         const brandObj = brands.find(b => b.id === formData.brand_id);
         const { effStartMin, effEndMin, isOvernightCarry, ...cleanForm } = formData;
         const basePayload = { ...cleanForm, color: brandObj?.color || cleanForm.color };
-        const trMin = Number(travelMinutes) || 0;
-        const hasGo = trMin > 0 && (travelDirection === 'go' || travelDirection === 'rt');
-        const hasBack = trMin > 0 && (travelDirection === 'back' || travelDirection === 'rt');
+       const trMin = Number(travelMinutes) || 0;
+     const legMin = travelDirection === 'rt' ? Math.floor(trMin / 2) : trMin;
+     const hasGo = legMin > 0 && (travelDirection === 'go' || travelDirection === 'rt');
+     const hasBack = legMin > 0 && (travelDirection === 'back' || travelDirection === 'rt');
 
         try { localStorage.setItem('alisya_default_travel_min', String(trMin)); } catch (err) {}
 
@@ -6222,7 +6223,11 @@ h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' 
                 h('div', { className: 'flex items-center justify-between', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
                   h('span', null, '🛵 Estimasi Perjalanan Kos (Kelipatan 30 Menit)'),
                   travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
-                    `${travelMinutes} mnt (${travelDirection === 'rt' ? 'PP' : travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
+                   travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
+                 travelDirection === 'rt'
+                   ? `PP ${travelMinutes} mnt (${Math.floor(travelMinutes / 2)}m pergi + ${Math.floor(travelMinutes / 2)}m pulang)`
+                   : `${travelMinutes} mnt (${travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
+               )
                   )
                 ),
                 h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
