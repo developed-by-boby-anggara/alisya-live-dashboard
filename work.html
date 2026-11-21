@@ -9,10 +9,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Preconnect Cepat -->
+ <!-- Preconnect Cepat & Google Fonts -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
   <!-- React 18 Production (Tanpa Babel & Tanpa Tailwind CDN = Buka Instan 0.1 Detik) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
@@ -49,13 +52,13 @@
       background-image: radial-gradient(#F9A8D4 1.2px, transparent 1.2px);
       background-size: 24px 24px;
       color: var(--text-dark);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+     font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       padding-bottom: 60px;
       overflow-x: hidden;
     }
 
-    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .font-mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #FCE7F3; }
     ::-webkit-scrollbar-thumb { background: #EC4899; border-radius: 999px; }
@@ -1098,6 +1101,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
       const [customStatMonth, setCustomStatMonth] = useState(() => new Date().getMonth());
       const [customStatYear, setCustomStatYear] = useState(() => new Date().getFullYear());
 
+      const [portfolioBrandCat, setPortfolioBrandCat] = useState('ALL');
       const [searchQuery, setSearchQuery] = useState('');
       const [filterBrand, setFilterBrand] = useState('ALL');
       const [filterStatus, setFilterStatus] = useState('ALL');
@@ -3842,48 +3846,72 @@ h('button', {
               )
             ),
 
-            // 3. WALL OF CLIENTS — SEMUA BRAND DIJADIKAN SATU (50+ BRAND PARTNERSHIPS)
-            h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
-              h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginBottom: '14px' } },
-                h('div', null,
-                  h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '🤝 TRUSTED BY 50+ BRANDS'),
-                  h('h3', { style: { fontSize: '17px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Brand Collaborations & Clients')
+        // 3. WALL OF CLIENTS — DENGAN FILTER KATEGORI UNTUK PARTNER
+            (() => {
+              const clientLogos = [
+                { src: 'brand/momuung-brand-9', name: 'Mom Uung', cat: 'mom_baby' },
+                { src: 'brand/aquapress-brand-11.jpg', name: 'AquaPress', cat: 'mom_baby' },
+                { src: 'brand/moel-brand-10.jpg', name: 'Moel', cat: 'mom_baby' },
+                { src: 'brand/scarlet-brand1.jpeg', name: 'Scarlett', cat: 'beauty' },
+                { src: 'brand/philia-brand2.jpeg', name: 'Philia', cat: 'beauty' },
+                { src: 'brand/implora-brand-3.jpeg', name: 'Implora', cat: 'beauty' },
+                { src: 'brand/whitebalance-brand4.jpeg', name: 'WhiteBalance', cat: 'beauty' },
+                { src: 'brand/hanasui-brand-6.jpeg', name: 'Hanasui', cat: 'beauty' },
+                { src: 'brand/giime-brand-7.jpeg', name: 'Giime', cat: 'beauty' },
+                { src: 'brand/canabasic-brand-8.jpeg', name: 'CanaBasic', cat: 'lifestyle' },
+                { src: 'brand/brand-5.jpeg', name: 'Brand Partner', cat: 'lifestyle' },
+                { src: 'brand/korper-besonders.jpeg', name: 'Korper Besonder', cat: 'lifestyle' }
+              ];
+              const filterCats = [
+                { id: 'ALL', label: 'Semua' },
+                { id: 'mom_baby', label: 'Mom & Baby' },
+                { id: 'beauty', label: 'Beauty & Skincare' },
+                { id: 'lifestyle', label: 'Fashion & Lifestyle' }
+              ];
+              const shownLogos = portfolioBrandCat === 'ALL'
+                ? clientLogos
+                : clientLogos.filter(item => item.cat === portfolioBrandCat);
+
+              return h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
+                h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginBottom: '12px' } },
+                  h('div', null,
+                    h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '🤝 TRUSTED BY 50+ BRANDS'),
+                    h('h3', { style: { fontSize: '17px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Brand Collaborations & Clients')
+                  ),
+                  h('div', { className: 'flex items-center gap-1 flex-wrap' },
+                    filterCats.map(fc => h('button', {
+                      key: fc.id,
+                      type: 'button',
+                      onClick: () => setPortfolioBrandCat(fc.id),
+                      className: `btn ${portfolioBrandCat === fc.id ? 'btn-pink' : 'btn-soft'}`,
+                      style: { padding: '5px 10px', fontSize: '10.5px' }
+                    }, fc.label))
+                  )
                 ),
-                h('span', { style: { fontSize: '11px', fontWeight: 800, color: '#065F46', background: '#ECFDF5', padding: '5px 12px', borderRadius: '999px', border: '1px solid #6EE7B7' } },
-                  '✅ Beauty • Skincare • Mom & Baby • Home & Fashion'
+                h('div', { className: 'pf-client-grid' },
+                  shownLogos.map((brItem, idx) => h('div', {
+                    key: `${brItem.src}_${idx}`,
+                    className: 'pf-client-tile',
+                    title: brItem.name
+                  },
+                    h('img', {
+                      src: brItem.src,
+                      alt: brItem.name,
+                      loading: 'lazy',
+                      onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
+                    }),
+                    h('span', { style: { fontSize: '9.5px', fontWeight: 800, color: '#701A46', lineHeight: 1.1 } }, brItem.name)
+                  )),
+                  h('div', {
+                    className: 'pf-client-tile',
+                    style: { background: 'linear-gradient(135deg, #FCE7F3, #FFF0F6)', borderStyle: 'dashed', borderColor: '#DB2777' }
+                  },
+                    h('span', { className: 'font-mono', style: { fontSize: '20px', fontWeight: 900, color: '#9D174D' } }, '50+'),
+                    h('span', { style: { fontSize: '10.5px', fontWeight: 800, color: '#831843' } }, 'Brand Lainnya')
+                  )
                 )
-              ),
-            h('div', { className: 'pf-client-grid' },
-             [
-               'brand/momuung-brand-9',
-               'brand/aquapress-brand-11.jpg',
-               'brand/moel-brand-10.jpg',
-               'brand/scarlet-brand1.jpeg',
-               'brand/philia-brand2.jpeg',
-               'brand/implora-brand-3.jpeg',
-               'brand/whitebalance-brand4.jpeg',
-               'brand/hanasui-brand-6.jpeg',
-               'brand/giime-brand-7.jpeg',
-               'brand/canabasic-brand-8.jpeg',
-               'brand/brand-5.jpeg',
-               'brand/korper-besonders.jpeg'
-             ].map((srcPath, idx) => h('div', { key: idx, className: 'pf-client-tile' },
-               h('img', {
-                 src: srcPath,
-                 alt: `Brand Partner ${idx + 1}`,
-                 loading: 'lazy',
-                 onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
-               })
-             )),
-             h('div', {
-               className: 'pf-client-tile',
-               style: { background: 'linear-gradient(135deg, #FCE7F3, #FFF0F6)', borderStyle: 'dashed', borderColor: '#DB2777' }
-             },
-               h('span', { className: 'font-mono', style: { fontSize: '20px', fontWeight: 900, color: '#9D174D' } }, '50+'),
-               h('span', { style: { fontSize: '10.5px', fontWeight: 800, color: '#831843' } }, 'Brand Lainnya')
-             )
-           )
-         ),
+              );
+            })(),
 
             // 4. KARTU KONTAK MANAGER ZY & AKUN RESMI @CHOCOOVORA
             h('div', {
