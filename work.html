@@ -829,10 +829,10 @@
     ];
 
     const INITIAL_SCHEDULES = [
-      { id: 's1', date: '2026-10-26', start_time: '14:00', end_time: '18:00', title: 'Shift 3 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#B6D7A8', notes: 'Target GMV 20 Juta' },
-      { id: 's2', date: '2026-10-26', start_time: '10:00', end_time: '12:00', title: 'Meet Aya', brand_id: 'b_pribadi', status: 'Meeting', color: '#00FFFF', notes: 'Briefing Outfit' },
-      { id: 's3', date: '2026-10-27', start_time: '11:00', end_time: '19:00', title: 'Shift 2 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#B6D7A8', notes: 'Sesi Siang-Sore' }
-    ];
+   { id: 's1', date: '2026-10-26', start_time: '18:00', end_time: '00:00', title: 'Shift 3 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#86EFAC', notes: 'Target GMV 20 Juta' },
+   { id: 's2', date: '2026-10-26', start_time: '10:00', end_time: '12:00', title: 'Meet Aya', brand_id: 'b_pribadi', status: 'Meeting', color: '#00FFFF', notes: 'Briefing Outfit' },
+   { id: 's3', date: '2026-10-27', start_time: '12:00', end_time: '18:00', title: 'Shift 2 Mom Uung', brand_id: 'b_momuung', status: 'LIVE', color: '#BBF7D0', notes: 'Sesi Siang-Sore' }
+ ];
 
     const TIME_SLOTS = [
       { label: "00:00 - 02:00", start: "00:00", end: "02:00" },
@@ -1107,6 +1107,12 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
       const [filterStatus, setFilterStatus] = useState('ALL');
 
       const [modalOpen, setModalOpen] = useState(false);
+      const TRAVEL_STEP_OPTIONS = [0, 30, 60, 90, 120, 150, 180];
+      const TRAVEL_COLOR = '#FDBA74';
+      const [travelMinutes, setTravelMinutes] = useState(() => {
+        try { return Number(localStorage.getItem('alisya_default_travel_min')) || 0; } catch (e) { return 0; }
+      });
+      const [travelDirection, setTravelDirection] = useState('rt'); // 'go' | 'back' | 'rt'
       const [selectedSchedule, setSelectedSchedule] = useState(null);
       const [repeatDays, setRepeatDays] = useState(1);
       const [cloneModalOpen, setCloneModalOpen] = useState(false);
@@ -1118,12 +1124,26 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
       const [bulkPatternText, setBulkPatternText] = useState('');
       const [bulkReplaceExisting, setBulkReplaceExisting] = useState(true);
       const [bulkMarkOffAsDayOff, setBulkMarkOffAsDayOff] = useState(false);
+      const [bulkTravelMinutes, setBulkTravelMinutes] = useState(() => {
+        try { return Number(localStorage.getItem('alisya_default_travel_min')) || 0; } catch (e) { return 0; }
+      });
+      const [bulkTravelDirection, setBulkTravelDirection] = useState('rt');
 
       const MOMUUNG_SHIFT_PRESETS = {
-        '1': { label: 'Shift 1 Mom Uung', start: '05:00', end: '13:00', bg: '#DCFCE7', col: '#14532D' },
-        '2': { label: 'Shift 2 Mom Uung', start: '11:00', end: '19:00', bg: '#BBF7D0', col: '#14532D' },
-        '3': { label: 'Shift 3 Mom Uung', start: '17:00', end: '00:00', bg: '#86EFAC', col: '#14532D' },
-        '4': { label: 'Shift 4 Mom Uung', start: '23:00', end: '06:50', bg: '#4ADE80', col: '#052E16' }
+        '1': { label: 'Shift 1 Mom Uung', start: '06:00', end: '12:00', bg: '#DCFCE7', col: '#14532D' },
+        '2': { label: 'Shift 2 Mom Uung', start: '12:00', end: '18:00', bg: '#BBF7D0', col: '#14532D' },
+        '3': { label: 'Shift 3 Mom Uung', start: '18:00', end: '00:00', bg: '#86EFAC', col: '#14532D' },
+        '4': { label: 'Shift 4 Mom Uung', start: '00:00', end: '06:00', bg: '#4ADE80', col: '#052E16' }
+      };
+      const getPresetShiftStyle = (item) => {
+        if (!item) return null;
+        const tLow = String(item.title || '').toLowerCase();
+        const isMom = item.brand_id === 'b_momuung' || tLow.includes('mom uung');
+        if (!isMom) return null;
+        const matched = Object.values(MOMUUNG_SHIFT_PRESETS).find(p =>
+          item.start_time === p.start && item.end_time === p.end
+        );
+        return matched ? { bg: matched.bg, col: matched.col } : null;
       };
 
       const parseBulkShiftTokens = (rawText, maxDays) => {
@@ -1167,6 +1187,11 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         const offBrand = brands.find(b => b.id === 'b_pribadi');
         const offColor = offBrand ? offBrand.color : '#EF4444';
         const monthPrefix = `${bulkYear}-${String(bulkMonth + 1).padStart(2, '0')}-`;
+        const trMin = Number(bulkTravelMinutes) || 0;
+        const hasGo = trMin > 0 && (bulkTravelDirection === 'go' || bulkTravelDirection === 'rt');
+        const hasBack = trMin > 0 && (bulkTravelDirection === 'back' || bulkTravelDirection === 'rt');
+
+        try { localStorage.setItem('alisya_default_travel_min', String(trMin)); } catch (err) {}
 
         const isMomUungItem = (s) => {
           const tLow = String(s.title || '').toLowerCase();
@@ -1225,8 +1250,9 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
               continue;
             }
             shiftCount++;
+            const mainId = `sch_bulk_${ts}_${d}`;
             newItems.push({
-              id: `sch_bulk_${ts}_${d}`,
+              id: mainId,
               date: dateStr,
               start_time: p.start,
               end_time: p.end,
@@ -1238,6 +1264,51 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
               gmv: '',
               checklist: { shoot: false, edit: false, upload: false }
             });
+
+            const sMin = timeToMinutes(p.start);
+            const rawEnd = timeToMinutes(p.end);
+
+            if (hasGo) {
+              const goStart = formatMinutesWrap(sMin - trMin);
+              const goEnd = formatMinutesWrap(sMin);
+              const goDate = (sMin - trMin) < 0 ? addDaysToDateStr(dateStr, -1) : dateStr;
+              if (!checkBulkCollision(goDate, goStart, goEnd, newItems)) {
+                newItems.push({
+                  id: `tr_go_${mainId}`,
+                  date: goDate,
+                  start_time: goStart,
+                  end_time: goEnd,
+                  title: `🛵 Perjalanan Pergi (${p.label})`,
+                  brand_id: 'b_momuung',
+                  status: 'Perjalanan',
+                  color: TRAVEL_COLOR,
+                  is_travel_block: true,
+                  parent_travel_for: mainId,
+                  notes: `Estimasi OTW ${trMin} mnt`
+                });
+              }
+            }
+
+            if (hasBack) {
+              const backStart = formatMinutesWrap(rawEnd);
+              const backEnd = formatMinutesWrap(rawEnd + trMin);
+              const backDate = p.end === '00:00' ? addDaysToDateStr(dateStr, 1) : dateStr;
+              if (!checkBulkCollision(backDate, backStart, backEnd, newItems)) {
+                newItems.push({
+                  id: `tr_back_${mainId}`,
+                  date: backDate,
+                  start_time: backStart,
+                  end_time: backEnd,
+                  title: `🛵 Perjalanan Pulang (${p.label})`,
+                  brand_id: 'b_momuung',
+                  status: 'Perjalanan',
+                  color: TRAVEL_COLOR,
+                  is_travel_block: true,
+                  parent_travel_for: mainId,
+                  notes: `Estimasi pulang ${trMin} mnt`
+                });
+              }
+            }
           } else if (code === 'L' && bulkMarkOffAsDayOff) {
             const conflictOff = checkBulkCollision(dateStr, '00:00', '23:59', newItems);
             if (conflictOff) {
@@ -1279,7 +1350,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         if (skippedCollisions.length > 0) {
           notify(`⚡ ${shiftCount} Shift tersimpan! 🔒 ${skippedCollisions.length} tanggal dilewati karena jam sudah terisi.`);
         } else {
-          notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} tersimpan aman tanpa tabrakan!`);
+          notify(`⚡ Sukses! ${shiftCount} Shift Mom Uung${trMin > 0 ? ` + Perjalanan ${trMin} mnt` : ''}${offCount > 0 ? ` + ${offCount} Hari OFF` : ''} tersimpan!`);
         }
       };
 // 🚨 V2.7: State Ceklis Persiapan Studio (15 Menit Sebelum Mulai) & Slot Jam Aktif
@@ -1477,11 +1548,11 @@ const resolvePortfolioImageUrl = (rawUrl) => {
         else if (/Linux/i.test(ua)) osName = 'Linux';
 
         let browserName = 'Browser';
-        if (/Edg\//i.test(ua)) browserName = 'Edge';
-        else if (/OPR\//i.test(ua) || /Opera/i.test(ua)) browserName = 'Opera';
-        else if (/Chrome\//i.test(ua)) browserName = 'Chrome';
-        else if (/Safari\//i.test(ua)) browserName = 'Safari';
-        else if (/Firefox\//i.test(ua)) browserName = 'Firefox';
+       if (ua.includes('Edg/')) browserName = 'Edge';
+        else if (ua.includes('OPR/') || ua.includes('Opera')) browserName = 'Opera';
+        else if (ua.includes('Chrome/')) browserName = 'Chrome';
+        else if (ua.includes('Safari/')) browserName = 'Safari';
+        else if (ua.includes('Firefox/')) browserName = 'Firefox';
 
         return {
           deviceType: isMobile ? 'HP / Mobile' : 'PC / Desktop',
@@ -2599,43 +2670,37 @@ const togglePortfolioVisibility = () => {
       };
 
       // 🎨 V2.9: 1-Klik Rapikan Warna Jadwal Booking WA Lama (Tanpa Menimpa Warna Custom)
-      const handleAutoFixBookingColors = () => {
-        if (!isAdmin) { setPinInputModal(true); return; }
-        let fixedCount = 0;
-        const updated = schedules.map(s => {
-          if (s.has_custom_color || s.status === 'PENDING' || s.status === 'OFF' || s.status === 'Tidur' || s.brand_id === 'b_sleep' || s.brand_id === 'b_sakit') return s;
+     const handleSyncMomUungShiftTimes = () => {
+     if (!isAdmin) { setPinInputModal(true); return; }
+     let updatedCount = 0;
+     const updated = schedules.map(s => {
+       const tLow = String(s.title || '').toLowerCase();
+       const isMom = s.brand_id === 'b_momuung' || tLow.includes('mom uung');
+       if (!isMom || s.is_travel_block) return s;
 
-          const isWaLike = !!s.is_wa_booking ||
-            (s.notes || '').includes('Pengajuan WA') ||
-            (s.title || '').includes('Live Streaming Session') ||
-            (s.title || '').includes('Take Video Affiliate') ||
-            (s.title || '').includes('Briefing / Meeting Online') ||
-            (s.title || '').includes('Event / Brand Campaign');
+       let shiftKey = null;
+       if (tLow.includes('shift 1') || s.start_time === '05:00') shiftKey = '1';
+       else if (tLow.includes('shift 2') || s.start_time === '11:00') shiftKey = '2';
+       else if (tLow.includes('shift 3') || s.start_time === '17:00') shiftKey = '3';
+       else if (tLow.includes('shift 4') || s.start_time === '23:00') shiftKey = '4';
 
-          const resolved = resolveBookingBrandAndColor(s.title, s.collab_type || s.title, 'AUTO', s.custom_color || null);
-          const isMatchedPartnerMismatch = !resolved.isExternalWA && (s.brand_id !== resolved.brand_id || s.color !== resolved.color);
-          const isExternalWaMismatch = isWaLike && resolved.isExternalWA && (s.brand_id !== resolved.brand_id || s.color !== resolved.color);
+       if (shiftKey && MOMUUNG_SHIFT_PRESETS[shiftKey]) {
+         const p = MOMUUNG_SHIFT_PRESETS[shiftKey];
+         if (s.start_time !== p.start || s.end_time !== p.end || s.color !== p.bg || s.title !== p.label) {
+           updatedCount++;
+           return { ...s, title: p.label, start_time: p.start, end_time: p.end, color: p.bg };
+         }
+       }
+       return s;
+     });
 
-          if (isMatchedPartnerMismatch || isExternalWaMismatch) {
-            fixedCount++;
-            return {
-              ...s,
-              brand_id: resolved.brand_id,
-              color: resolved.color,
-              is_wa_booking: isWaLike ? true : s.is_wa_booking
-            };
-          }
-          return s;
-        });
-
-        if (fixedCount === 0) {
-          notify('✨ Semua warna jadwal & booking WA sudah rapi sesuai brand masing-masing!');
-        } else {
-          saveSchedulesToCloud(updated);
-          notify(`🎨 Berhasil merapikan warna ${fixedCount} jadwal sesuai brand & kategori WA!`);
-        }
-      };
-
+     if (updatedCount === 0) {
+       notify('✨ Semua jadwal Mom Uung sudah sesuai jam & warna terbaru!');
+     } else {
+       saveSchedulesToCloud(updated);
+       notify(`🍼 Berhasil memperbarui ${updatedCount} jadwal Mom Uung ke jam & warna yang benar!`);
+     }
+   };
       // ❌ V2.13: Buka Modal Alasan Penolakan (Otomatis Isi Nomor PIC AquaPress/Moell; Kosong untuk Mom Uung)
       const handleRejectPending = (e, item) => {
         e.stopPropagation();
@@ -2950,6 +3015,11 @@ const togglePortfolioVisibility = () => {
         }));
       };
 
+const formatMinutesWrap = (mins) => {
+        const mod = ((mins % 1440) + 1440) % 1440;
+        return `${String(Math.floor(mod / 60)).padStart(2, '0')}:${String(mod % 60).padStart(2, '0')}`;
+      };
+
       const handleSave = (e) => {
         e.preventDefault();
         if (formData.start_time === formData.end_time) { notify('⛔ Jam Mulai dan Jam Selesai tidak boleh sama!'); return; }
@@ -2960,11 +3030,48 @@ const togglePortfolioVisibility = () => {
         const brandObj = brands.find(b => b.id === formData.brand_id);
         const { effStartMin, effEndMin, isOvernightCarry, ...cleanForm } = formData;
         const basePayload = { ...cleanForm, color: brandObj?.color || cleanForm.color };
+        const trMin = Number(travelMinutes) || 0;
+        const hasGo = trMin > 0 && (travelDirection === 'go' || travelDirection === 'rt');
+        const hasBack = trMin > 0 && (travelDirection === 'back' || travelDirection === 'rt');
+
+        try { localStorage.setItem('alisya_default_travel_min', String(trMin)); } catch (err) {}
 
         if (selectedSchedule) {
           if (currentFormConflict) { notify(`⛔ Bentrok dengan "${currentFormConflict.title}"!`); return; }
-          saveSchedulesToCloud(schedules.map(s => s.id === selectedSchedule.id ? basePayload : s));
-          notify('✨ Jadwal berhasil diperbarui!');
+          const withoutOldTravel = schedules.filter(s => s.parent_travel_for !== selectedSchedule.id);
+          const extraTravel = [];
+          if (hasGo) {
+            extraTravel.push({
+              id: 'tr_go_' + selectedSchedule.id,
+              date: basePayload.date,
+              start_time: formatMinutesWrap(sMin - trMin),
+              end_time: formatMinutesWrap(sMin),
+              title: `🛵 Perjalanan Pergi (${basePayload.title})`,
+              brand_id: basePayload.brand_id,
+              status: 'Perjalanan',
+              color: TRAVEL_COLOR,
+              is_travel_block: true,
+              parent_travel_for: selectedSchedule.id,
+              notes: `Estimasi OTW ${trMin} mnt ke lokasi`
+            });
+          }
+          if (hasBack) {
+            extraTravel.push({
+              id: 'tr_back_' + selectedSchedule.id,
+              date: basePayload.date,
+              start_time: formatMinutesWrap(rawEnd),
+              end_time: formatMinutesWrap(rawEnd + trMin),
+              title: `🛵 Perjalanan Pulang (${basePayload.title})`,
+              brand_id: basePayload.brand_id,
+              status: 'Perjalanan',
+              color: TRAVEL_COLOR,
+              is_travel_block: true,
+              parent_travel_for: selectedSchedule.id,
+              notes: `Estimasi perjalanan pulang ${trMin} mnt`
+            });
+          }
+          saveSchedulesToCloud([...withoutOldTravel.map(s => s.id === selectedSchedule.id ? basePayload : s), ...extraTravel]);
+          notify('✨ Jadwal & estimasi perjalanan berhasil diperbarui!');
         } else {
           const newItems = [];
           const count = Number(repeatDays) || 1;
@@ -2978,23 +3085,54 @@ const togglePortfolioVisibility = () => {
               conflictNext = nextDaySchedules.some(ex => 0 < ex.effEndMin && rawEnd > ex.effStartMin);
             }
             if (!conflictToday && !conflictNext) {
-              newItems.push({ ...basePayload, id: 'sch_' + Date.now() + '_' + i, date: targetDate });
+              const mainId = 'sch_' + Date.now() + '_' + i;
+              newItems.push({ ...basePayload, id: mainId, date: targetDate });
+              if (hasGo) {
+                newItems.push({
+                  id: 'tr_go_' + mainId,
+                  date: targetDate,
+                  start_time: formatMinutesWrap(sMin - trMin),
+                  end_time: formatMinutesWrap(sMin),
+                  title: `🛵 Perjalanan Pergi (${basePayload.title})`,
+                  brand_id: basePayload.brand_id,
+                  status: 'Perjalanan',
+                  color: TRAVEL_COLOR,
+                  is_travel_block: true,
+                  parent_travel_for: mainId,
+                  notes: `Estimasi OTW ${trMin} mnt`
+                });
+              }
+              if (hasBack) {
+                newItems.push({
+                  id: 'tr_back_' + mainId,
+                  date: targetDate,
+                  start_time: formatMinutesWrap(rawEnd),
+                  end_time: formatMinutesWrap(rawEnd + trMin),
+                  title: `🛵 Perjalanan Pulang (${basePayload.title})`,
+                  brand_id: basePayload.brand_id,
+                  status: 'Perjalanan',
+                  color: TRAVEL_COLOR,
+                  is_travel_block: true,
+                  parent_travel_for: mainId,
+                  notes: `Estimasi pulang ${trMin} mnt`
+                });
+              }
             }
           }
           if (newItems.length === 0) { notify('⛔ Jam tersebut sudah terisi!'); return; }
           saveSchedulesToCloud([...schedules, ...newItems]);
-          notify(`✅ ${newItems.length} sesi jadwal berhasil disimpan!`);
+          notify(`✅ ${newItems.length} item jadwal & perjalanan berhasil disimpan!`);
         }
         setModalOpen(false);
       };
 
-      const handleDelete = (id) => {
-        if (confirm('Hapus jadwal ini?')) {
-          saveSchedulesToCloud(schedules.filter(s => s.id !== id));
-          setModalOpen(false);
-          notify('🗑️ Jadwal dihapus.');
-        }
-      };
+     const handleDelete = (id) => {
+     if (confirm('Hapus jadwal ini beserta blok perjalanan terkait?')) {
+       saveSchedulesToCloud(schedules.filter(s => s.id !== id && s.parent_travel_for !== id));
+       setModalOpen(false);
+       notify('🗑️ Jadwal dihapus.');
+     }
+   };
 
       const handleCloneFullDay = (e) => {
         e.preventDefault();
@@ -4402,14 +4540,17 @@ h('button', {
                                   }
                                 }
                               },
-                                slotItems.length > 0 && h('div', { style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1px' } },
-                                  slotItems.map(item => h('div', {
-                                    key: item.id,
-                                    style: {
-                                      width: '100%', flex: 1, minHeight: '16px', borderRadius: '3px',
-                                      background: item.color, border: '1px solid rgba(0,0,0,0.25)'
-                                    }
-                                  }))
+                                   slotItems.length > 0 && h('div', { style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1px' } },
+                                  slotItems.map(item => {
+                                    const presetSt = getPresetShiftStyle(item);
+                                    return h('div', {
+                                      key: item.id,
+                                      style: {
+                                        width: '100%', flex: 1, minHeight: '16px', borderRadius: '3px',
+                                        background: presetSt ? presetSt.bg : item.color, border: '1px solid rgba(0,0,0,0.25)'
+                                      }
+                                    });
+                                  })
                                 )
                               );
                             })
@@ -4469,12 +4610,14 @@ h('button', {
                                   : handleOpenCreate(dateStr, slot.start, slot.end),
                                 style: { cursor: 'pointer' }
                               },
-                               slotItems.map(item => {
-                                  const txtCol = getContrastColor(item.color);
+                              slotItems.map(item => {
+                                  const presetSt = getPresetShiftStyle(item);
+                                  const bgCol = presetSt ? presetSt.bg : item.color;
+                                  const txtCol = presetSt ? presetSt.col : getContrastColor(item.color);
                                   return h('div', {
                                     key: item.id,
                                     style: {
-                                      background: item.color, color: txtCol, padding: '4px 6px',
+                                      background: bgCol, color: txtCol, padding: '4px 6px',
                                       borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px',
                                       border: '1px solid rgba(0,0,0,0.2)'
                                     }
@@ -4829,10 +4972,15 @@ h('button', {
             )
           ),
 
-         // TAB 5: WARNA BRAND
+       // TAB 5: WARNA BRAND
           activeTab === 'colors' && h('div', { className: 'exec-card', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
            h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
             h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#831843' } }, `🎨 ${t.tabColors}`),
+            isAdmin && h('button', {
+              type: 'button',
+              className: 'btn btn-emerald',
+              onClick: handleSyncMomUungShiftTimes
+            }, '🍼 Update Jam Shift Mom Uung'),
             isAdmin && h('button', {
               type: 'button',
               className: 'btn btn-pink',
@@ -5919,7 +6067,36 @@ h('button', {
                   'Tandai kode "L" sebagai DAY OFF penuh (biarkan tidak dicentang jika hari libur Mom Uung boleh di-booking brand lain)'
                 )
               ),
-
+h('div', {
+                style: {
+                  background: '#FFF7ED', border: '1.5px solid #FDBA74', borderRadius: '11px',
+                  padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '6px'
+                }
+              },
+                h('div', { className: 'flex items-center justify-between', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
+                  h('span', null, '🛵 Estimasi Perjalanan Kos (Otomatis Semua Shift)'),
+                  bulkTravelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
+                    `${bulkTravelMinutes} mnt (${bulkTravelDirection === 'rt' ? 'PP' : bulkTravelDirection === 'go' ? 'Pergi' : 'Pulang'})`
+                  )
+                ),
+                h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                  h('select', {
+                    className: 'font-mono',
+                    value: bulkTravelMinutes,
+                    onChange: e => setBulkTravelMinutes(Number(e.target.value))
+                  },
+                    TRAVEL_STEP_OPTIONS.map(m => h('option', { key: m, value: m }, m === 0 ? 'Tanpa Perjalanan (0 mnt)' : `🛵 ${m} Menit (${m / 60} jam)`))
+                  ),
+                  h('select', {
+                    value: bulkTravelDirection,
+                    onChange: e => setBulkTravelDirection(e.target.value)
+                  },
+                    h('option', { value: 'rt' }, '🔄 PP (Pergi & Pulang)'),
+                    h('option', { value: 'go' }, '➡️ Pergi Saja (OTW)'),
+                    h('option', { value: 'back' }, '⬅️ Pulang Saja')
+                  )
+                )
+              ),
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '8px', marginTop: '2px' } },
                 h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setBulkPatternText('') }, '🗑️ Bersihkan'),
                 h('button', {
@@ -5959,10 +6136,10 @@ h('button', {
                 h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#166534', marginBottom: '5px', textTransform: 'uppercase' } }, '🍼 Preset Shift Mom Uung'),
                 h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
                   [
-                    { n: 1, st: '05:00', en: '13:00' },
-                    { n: 2, st: '11:00', en: '19:00' },
-                    { n: 3, st: '17:00', en: '00:00' },
-                    { n: 4, st: '23:00', en: '06:50' }
+                   { n: 1, st: '06:00', en: '12:00' },
+                  { n: 2, st: '12:00', en: '18:00' },
+                  { n: 3, st: '18:00', en: '00:00' },
+                  { n: 4, st: '00:00', en: '06:00' }
                   ].map(p => h('button', {
                     key: 'mu_' + p.n, type: 'button', className: 'btn',
                     style: { background: '#DCFCE7', color: '#14532D', borderColor: '#4ADE80', fontSize: '10.5px', padding: '6px 8px' },
@@ -6033,6 +6210,36 @@ h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' 
                         ? (conflict.isOrderError ? `⛔ ${tm}` : `🔒 ${tm} (${conflict.title})`)
                         : (isOvernightOpt ? `🌙 ${tm} (+1 Hari)` : `🟢 ${tm}`));
                     })
+                  )
+                )
+              ),
+              h('div', {
+                style: {
+                  background: '#FFF7ED', border: '1.5px solid #FDBA74', borderRadius: '12px',
+                  padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '6px'
+                }
+              },
+                h('div', { className: 'flex items-center justify-between', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
+                  h('span', null, '🛵 Estimasi Perjalanan Kos (Kelipatan 30 Menit)'),
+                  travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
+                    `${travelMinutes} mnt (${travelDirection === 'rt' ? 'PP' : travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
+                  )
+                ),
+                h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                  h('select', {
+                    className: 'font-mono',
+                    value: travelMinutes,
+                    onChange: e => setTravelMinutes(Number(e.target.value))
+                  },
+                    TRAVEL_STEP_OPTIONS.map(m => h('option', { key: m, value: m }, m === 0 ? 'Tanpa Perjalanan (0 mnt)' : `🛵 ${m} Menit (${m / 60} jam)`))
+                  ),
+                  h('select', {
+                    value: travelDirection,
+                    onChange: e => setTravelDirection(e.target.value)
+                  },
+                    h('option', { value: 'rt' }, '🔄 PP (Pergi & Pulang)'),
+                    h('option', { value: 'go' }, '➡️ Pergi Saja (OTW)'),
+                    h('option', { value: 'back' }, '⬅️ Pulang Saja')
                   )
                 )
               ),
