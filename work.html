@@ -1487,22 +1487,65 @@ const resolvePortfolioImageUrl = (rawUrl) => {
         };
       };
 
-      const fetchApproxGeo = async () => {
+      const [isMyDevice, setIsMyDevice] = useState(() => {
+        try { return localStorage.getItem('alisya_my_device_tag') === '1'; } catch (e) { return false; }
+      });
+
+      const toggleMyDeviceTag = () => {
+        const nextVal = !isMyDevice;
+        setIsMyDevice(nextVal);
         try {
-          const ctrl = new AbortController();
-          const tid = setTimeout(() => ctrl.abort(), 2200);
-          const resp = await fetch('https://ipapi.co/json/', { signal: ctrl.signal });
+          if (nextVal) localStorage.setItem('alisya_my_device_tag', '1');
+          else localStorage.removeItem('alisya_my_device_tag');
+        } catch (e) {}
+        notify(nextVal ? '🏷️ Perangkat ini ditandai sebagai PERANGKAT SAYA!' : '🏷️ Penanda PERANGKAT SAYA dilepas.');
+      };
+
+      const fetchWithTimeout = async (url, ms = 2000) => {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), ms);
+        try {
+          const resp = await fetch(url, { signal: ctrl.signal });
           clearTimeout(tid);
-          if (!resp.ok) throw new Error('geo');
-          const d = await resp.json();
-          const city = d.city || '';
-          const region = d.region || '';
-          const country = d.country_name || '';
-          const locText = [city, region, country].filter(Boolean).join(', ') || 'Lokasi tidak terdeteksi';
-          return { location: locText, ip: d.ip || '-' };
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          return await resp.json();
         } catch (err) {
-          return { location: 'Lokasi terbatas / terblokir', ip: '-' };
+          clearTimeout(tid);
+          throw err;
         }
+      };
+
+      const fetchApproxGeo = async () => {
+        // Provider 1: ipapi.co
+        try {
+          const d1 = await fetchWithTimeout('https://ipapi.co/json/', 2000);
+          if (d1 && (d1.city || d1.region || d1.country_name)) {
+            const loc1 = [d1.city, d1.region, d1.country_name].filter(Boolean).join(', ');
+            const isp1 = d1.org ? ` (${d1.org})` : '';
+            return { location: loc1 + isp1, ip: d1.ip || '-', provider: 'ipapi' };
+          }
+        } catch (e) {}
+
+        // Provider 2: ipwho.is (Cadangan 1)
+        try {
+          const d2 = await fetchWithTimeout('https://ipwho.is/', 2000);
+          if (d2 && d2.success !== false && (d2.city || d2.region || d2.country)) {
+            const loc2 = [d2.city, d2.region, d2.country].filter(Boolean).join(', ');
+            const isp2 = d2.connection && d2.connection.isp ? ` (${d2.connection.isp})` : '';
+            return { location: loc2 + isp2, ip: d2.ip || '-', provider: 'ipwhois' };
+          }
+        } catch (e) {}
+
+        // Provider 3: freeipapi.com (Cadangan 2)
+        try {
+          const d3 = await fetchWithTimeout('https://freeipapi.com/api/json', 2000);
+          if (d3 && (d3.cityName || d3.regionName || d3.countryName)) {
+            const loc3 = [d3.cityName, d3.regionName, d3.countryName].filter(Boolean).join(', ');
+            return { location: loc3, ip: d3.ipAddress || '-', provider: 'freeipapi' };
+          }
+        } catch (e) {}
+
+        return { location: 'Lokasi terbatas / terblokir', ip: '-', provider: 'none' };
       };
 
       const recordAccessLog = async (eventType, detailText = '', forceOncePerSession = false) => {
@@ -1515,6 +1558,9 @@ const resolvePortfolioImageUrl = (rawUrl) => {
           }
           const dev = detectDeviceSummary();
           const geo = await fetchApproxGeo();
+          let taggedOwn = false;
+          try { taggedOwn = localStorage.getItem('alisya_my_device_tag') === '1'; } catch (e) {}
+
           const entry = {
             id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
             timeWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
@@ -1526,7 +1572,8 @@ const resolvePortfolioImageUrl = (rawUrl) => {
             screenSize: dev.screenSize,
             tz: dev.tz,
             location: geo.location,
-            ip: geo.ip
+            ip: geo.ip,
+            isOwnerDevice: taggedOwn
           };
 
           const refLogs = firebaseDb.ref('alisya_access_logs');
@@ -2879,6 +2926,8 @@ const togglePortfolioVisibility = () => {
         if (enteredPin === adminPin) {
           setIsAdmin(true); setPinInputModal(false); setEnteredPin(''); setPinError(false);
           if (activeTab === 'portfolio') setActiveTab('agenda');
+          setIsMyDevice(true);
+          try { localStorage.setItem('alisya_my_device_tag', '1'); } catch (e) {}
           recordAccessLog('ADMIN_LOGIN_OK', 'Login Admin berhasil');
           notify('🔓 Admin Access Unlocked!');
         } else {
@@ -5661,15 +5710,21 @@ h('button', {
             )
           )
         ),
-               // 🕵️ V6.3-PRO: MODAL RIWAYAT LOG AKSES & PERANGKAT (KHUSUS ADMIN)
+              // 🕵️ V6.4-PRO: MODAL RIWAYAT LOG AKSES (MULTI-PROVIDER IP + PENANDA PERANGKAT SAYA)
         accessLogModalOpen && isAdmin && h('div', { className: 'modal-overlay' },
-          h('div', { className: 'modal-box', style: { maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: '10px' } },
-            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
+          h('div', { className: 'modal-box', style: { maxWidth: '660px', display: 'flex', flexDirection: 'column', gap: '10px' } },
+            h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
               h('div', null,
-                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '👑 ADMIN ONLY • AUTO-TRIM MAKS 200 LOG'),
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '👑 ADMIN ONLY • MULTI-PROVIDER IP • AUTO-TRIM 200'),
                 h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, `🕵️ Riwayat Kunjungan & Login (${accessLogs.length}/200)`)
               ),
-              h('div', { className: 'flex items-center gap-1-5' },
+              h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
+                h('button', {
+                  type: 'button',
+                  className: `btn ${isMyDevice ? 'btn-emerald' : 'btn-soft'}`,
+                  onClick: toggleMyDeviceTag,
+                  title: 'Tandai browser HP/PC ini agar log berikutnya berlabel PERANGKAT SAYA'
+                }, isMyDevice ? '🏷️ Perangkat Saya: AKTIF' : '🏷️ Tandai Perangkat Ini'),
                 accessLogs.length > 0 && h('button', {
                   type: 'button',
                   className: 'btn btn-soft',
@@ -5695,12 +5750,22 @@ h('button', {
                     return h('div', {
                       key: lg.id,
                       style: {
-                        background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '12px',
-                        padding: '9px 12px', display: 'flex', flexDirection: 'column', gap: '4px'
+                        background: '#FFFFFF',
+                        border: lg.isOwnerDevice ? '1.5px solid #6EE7B7' : '1.5px solid #F9A8D4',
+                        borderRadius: '12px',
+                        padding: '9px 12px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px'
                       }
                     },
                       h('div', { className: 'flex items-center justify-between flex-wrap gap-1' },
-                        h('span', { style: { background: badgeBg, color: badgeCol, fontSize: '9.5px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, badgeLbl),
+                        h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
+                          h('span', { style: { background: badgeBg, color: badgeCol, fontSize: '9.5px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, badgeLbl),
+                          lg.isOwnerDevice
+                            ? h('span', { style: { background: '#ECFDF5', color: '#065F46', border: '1px solid #6EE7B7', fontSize: '9.5px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, '🏷️ PERANGKAT SAYA')
+                            : h('span', { style: { background: '#FEF3C7', color: '#92400E', border: '1px solid #FCD34D', fontSize: '9.5px', fontWeight: 900, padding: '2px 8px', borderRadius: '999px' } }, '🌐 PENGUNJUNG / LAINNYA')
+                        ),
                         h('span', { className: 'font-mono', style: { fontSize: '10.5px', color: '#701A46', fontWeight: 800 } }, lg.timeWIB)
                       ),
                       h('div', { style: { fontSize: '11.5px', fontWeight: 800, color: '#4A0424' } },
