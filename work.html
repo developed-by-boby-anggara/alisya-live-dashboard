@@ -515,7 +515,7 @@
     .st-free { background: #FCE7F3; color: #9D174D; border: 1px solid #F472B6; }
     .st-off { background: #FFE4E6; color: #9F1239; border: 1px solid #FDA4AF; }
 
-    .matrix-table-pc { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .matrix-table-pc { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; }
     .matrix-table-pc th {
       background: #9D174D; color: #FFFFFF;
       border: 1px solid #BE185D;
@@ -524,6 +524,7 @@
     .matrix-table-pc td {
       border: 1px solid #F9A8D4;
       padding: 5px; vertical-align: top; height: 54px; background: #FFFFFF;
+      overflow: hidden; max-width: 0;
     }
     .matrix-table-pc tr:nth-child(even) td { background: #FFF5F9; }
     .matrix-table-pc td.sticky-col-pc {
@@ -4623,7 +4624,11 @@ h('button', {
                                       border: '1px solid rgba(0,0,0,0.2)'
                                     }
                                   },
-                                    h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`),
+                                   h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+                                    item.is_travel_block
+                                      ? (String(item.title || '').toLowerCase().includes('pergi') ? '🛵 OTW Pergi' : '🛵 OTW Pulang')
+                                      : `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`
+                                  ),
                                     h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.9 } }, `${item.start_time}-${item.end_time}`)
                                   );
                                 })
