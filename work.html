@@ -1168,6 +1168,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         try { return Number(localStorage.getItem('alisya_default_travel_min')) || 0; } catch (e) { return 0; }
       });
       const [bulkTravelDirection, setBulkTravelDirection] = useState('rt');
+      const [showTravelInMatrix, setShowTravelInMatrix] = useState(false);
 
       const MOMUUNG_SHIFT_PRESETS = {
         '1': { label: 'Shift 1 Mom Uung', start: '06:00', end: '12:00', bg: '#DCFCE7', col: '#14532D' },
@@ -4617,7 +4618,14 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                           setCurrentMonth(now.getMonth());
                           setSelectedDate(realTodayStr);
                         }
-                      }, '📍')
+                      }, '📍'),
+                      h('button', {
+                        type: 'button',
+                        className: `btn ${showTravelInMatrix ? 'btn-pink' : 'btn-soft'}`,
+                        style: { padding: '8px 12px', fontSize: '11px', background: showTravelInMatrix ? undefined : '#FFFFFF' },
+                        onClick: () => setShowTravelInMatrix(v => !v),
+                        title: 'Tampilkan atau sembunyikan blok OTW di dalam tabel agar tidak menumpuk'
+                      }, showTravelInMatrix ? '🛵 OTW Tabel: Tampil' : '🛵 OTW Tabel: Ringkas')
                     ),
 
                     // Tombol Aksi Rapi di Kanan Atas (Tidak Melebar Berlebihan)
@@ -4799,30 +4807,43 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                             TIME_SLOTS.map(slot => {
                               const isCurrentSlot = slot.label === currentActiveSlotLabel;
                               const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                              const slotItems = getSchedulesCoveringDate(dateStr).filter(s => s.effStartMin < eM && s.effEndMin > sM);
+                              const rawSlotItems = getSchedulesCoveringDate(dateStr).filter(s => s.effStartMin < eM && s.effEndMin > sM);
+                              const workItems = rawSlotItems.filter(s => !s.is_travel_block && s.status !== 'Perjalanan');
+                              const travelItems = rawSlotItems.filter(s => s.is_travel_block || s.status === 'Perjalanan');
+                              const slotItems = showTravelInMatrix
+                                ? [...workItems, ...travelItems]
+                                : (workItems.length > 0 ? workItems : travelItems);
+                              const primaryItem = slotItems[0];
+                              const hasOtwBadge = !showTravelInMatrix && workItems.length > 0 && travelItems.length > 0;
                               return h('td', {
                                 key: slot.label,
                                 className: isCurrentSlot ? 'active-time-col-cell' : '',
                                 onClick: () => {
-                                  if (slotItems.length > 0) {
-                                    const it = slotItems[0];
-                                    if (isAdmin) handleOpenEdit(it);
-                                    else notify(`${it.is_wa_booking || it.brand_id === 'b_booking_wa' ? '📲' : '🔒'} Slot ${it.start_time}-${it.end_time} sudah terisi: ${it.title} [${it.status}]. Pilih kotak putih yang kosong!`);
+                                  if (primaryItem) {
+                                    if (isAdmin) handleOpenEdit(primaryItem);
+                                    else notify(`${primaryItem.is_wa_booking || primaryItem.brand_id === 'b_booking_wa' ? '📲' : '🔒'} Slot ${primaryItem.start_time}-${primaryItem.end_time} sudah terisi: ${primaryItem.title} [${primaryItem.status}]. Pilih kotak putih yang kosong!`);
                                   } else {
                                     handleOpenCreate(dateStr, slot.start, slot.end);
                                   }
                                 }
                               },
-                                   slotItems.length > 0 && h('div', { style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1px' } },
+                                slotItems.length > 0 && h('div', { style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1px', position: 'relative' } },
                                   slotItems.map(item => {
                                     const presetSt = getPresetShiftStyle(item);
                                     return h('div', {
                                       key: item.id,
                                       style: {
-                                        width: '100%', flex: 1, minHeight: '16px', borderRadius: '3px',
+                                        width: '100%', flex: 1, minHeight: slotItems.length > 1 ? '8px' : '18px', borderRadius: '3px',
                                         background: presetSt ? presetSt.bg : item.color, border: '1px solid rgba(0,0,0,0.25)'
                                       }
                                     });
+                                  }),
+                                  hasOtwBadge && h('span', {
+                                    style: {
+                                      position: 'absolute', right: '1px', bottom: '1px',
+                                      width: '6px', height: '6px', borderRadius: '999px',
+                                      background: travelColor, border: '1px solid #FFFFFF'
+                                    }
                                   })
                                 )
                               );
@@ -4880,32 +4901,49 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                             ),
                             TIME_SLOTS.map(slot => {
                               const sM = timeToMinutes(slot.start), eM = timeToMinutes(slot.end);
-                              const slotItems = getSchedulesCoveringDate(dateStr).filter(s => s.effStartMin < eM && s.effEndMin > sM);
+                              const rawSlotItems = getSchedulesCoveringDate(dateStr).filter(s => s.effStartMin < eM && s.effEndMin > sM);
+                              const workItems = rawSlotItems.filter(s => !s.is_travel_block && s.status !== 'Perjalanan');
+                              const travelItems = rawSlotItems.filter(s => s.is_travel_block || s.status === 'Perjalanan');
+                              const slotItems = showTravelInMatrix
+                                ? [...workItems, ...travelItems]
+                                : (workItems.length > 0 ? workItems : travelItems);
+                              const primaryItem = slotItems[0];
+                              const attachedOtw = !showTravelInMatrix && workItems.length > 0 ? travelItems : [];
+
                               return h('td', {
                                 key: slot.label,
-                                onClick: () => slotItems.length > 0
-                                  ? (isAdmin ? handleOpenEdit(slotItems[0]) : notify(`${slotItems[0].is_wa_booking || slotItems[0].brand_id === 'b_booking_wa' ? '📲' : '🔒'} Slot ${slotItems[0].start_time}-${slotItems[0].end_time} sudah terisi: ${slotItems[0].title}. Pilih kotak kosong!`))
+                                onClick: () => primaryItem
+                                  ? (isAdmin ? handleOpenEdit(primaryItem) : notify(`${primaryItem.is_wa_booking || primaryItem.brand_id === 'b_booking_wa' ? '📲' : '🔒'} Slot ${primaryItem.start_time}-${primaryItem.end_time} sudah terisi: ${primaryItem.title}. Pilih kotak kosong!`))
                                   : handleOpenCreate(dateStr, slot.start, slot.end),
-                                style: { cursor: 'pointer' }
+                                style: { cursor: 'pointer', verticalAlign: 'middle' }
                               },
-                              slotItems.map(item => {
+                              slotItems.map((item, idxItem) => {
                                   const presetSt = getPresetShiftStyle(item);
                                   const bgCol = presetSt ? presetSt.bg : item.color;
                                   const txtCol = presetSt ? presetSt.col : getContrastColor(item.color);
+                                  const otwChip = idxItem === 0 && attachedOtw.length > 0
+                                    ? attachedOtw.map(ot => `${String(ot.title || '').toLowerCase().includes('pergi') ? 'Pergi' : 'Pulang'} ${ot.start_time}-${ot.end_time}`).join(' • ')
+                                    : '';
                                   return h('div', {
                                     key: item.id,
+                                    onClick: e => {
+                                      if (isAdmin) { e.stopPropagation(); handleOpenEdit(item); }
+                                    },
                                     style: {
                                       background: bgCol, color: txtCol, padding: '4px 6px',
-                                      borderRadius: '8px', fontSize: '10px', fontWeight: 900, marginBottom: '3px',
+                                      borderRadius: '8px', fontSize: '10px', fontWeight: 900,
+                                      marginBottom: idxItem < slotItems.length - 1 ? '3px' : '0',
                                       border: '1px solid rgba(0,0,0,0.2)'
                                     }
                                   },
-                                   h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
-                                    item.is_travel_block
-                                      ? (String(item.title || '').toLowerCase().includes('pergi') ? '🛵 OTW Pergi' : '🛵 OTW Pulang')
-                                      : `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`
-                                  ),
-                                    h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.9 } }, `${item.start_time}-${item.end_time}`)
+                                    h('div', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+                                      item.is_travel_block
+                                        ? (String(item.title || '').toLowerCase().includes('pergi') ? '🛵 OTW Pergi' : '🛵 OTW Pulang')
+                                        : `${item.is_wa_booking || item.brand_id === 'b_booking_wa' ? '📲' : '🔒'} ${item.title}`
+                                    ),
+                                    h('div', { className: 'font-mono', style: { fontSize: '8.5px', opacity: 0.9, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+                                      otwChip ? `${item.start_time}-${item.end_time} • 🛵` : `${item.start_time}-${item.end_time}`
+                                    )
                                   );
                                 })
                               );
@@ -6404,41 +6442,6 @@ h('div', {
                     onClick: () => applyPresetShift('b_momuung', 'Mom Uung', p.n, p.st, p.en)
                   }, `⚡ Shift ${p.n} (${p.st}-${p.en})`))
                 )
-              ),
-      // Grup 3: Preset Jadwal Moel (Standar Minimal 4 Jam)
-              h('div', { style: { background: '#FEFCE8', border: '1.5px solid #FDE047', borderRadius: '12px', padding: '8px' } },
-                h('div', { className: 'flex items-center justify-between', style: { fontSize: '10px', fontWeight: 900, color: '#854D0E', marginBottom: '5px', textTransform: 'uppercase' } },
-                  h('span', null, '✨ Preset Moel (Min. 4 Jam)'),
-                  h('span', { className: 'font-mono' }, `Durasi: ${calculateDurationHours(formData.start_time, formData.end_time)}j`)
-                ),
-                h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
-                  [
-                    { st: '11:00', en: '15:00' },
-                    { st: '13:00', en: '17:00' },
-                    { st: '15:00', en: '19:00' },
-                    { st: '17:00', en: '21:00' }
-                  ].map((mSlot, idx) => h('button', {
-                    key: 'moel_' + idx, type: 'button', className: 'btn',
-                    style: { background: '#FEF9C3', color: '#713F12', borderColor: '#FACC15', fontSize: '10px', padding: '6px 8px' },
-                    onClick: () => {
-                      const conflict = checkConflictRange(mSlot.st, mSlot.en);
-                      if (conflict) { notify(`⛔ Jam ${mSlot.st}-${mSlot.en} sudah terisi oleh "${conflict.title}"!`); return; }
-                      const bObj = brands.find(b => b.id === 'b_moell');
-                      setFormData(prev => ({
-                        ...prev,
-                        title: prev.title && !prev.title.toLowerCase().includes('shift') ? prev.title : `Live Moel (${mSlot.st}-${mSlot.en})`,
-                        brand_id: 'b_moell',
-                        status: 'LIVE',
-                        color: bObj?.color || '#FACC15',
-                        start_time: mSlot.st,
-                        end_time: mSlot.en
-                      }));
-                    }
-                  }, `⚡ ${mSlot.st}-${mSlot.en} (4j)`))
-                ),
-                formData.brand_id === 'b_moell' && calculateDurationHours(formData.start_time, formData.end_time) < 4 && h('div', {
-                  style: { marginTop: '6px', fontSize: '10px', fontWeight: 800, color: '#9A3412', background: '#FFEDD5', padding: '4px 8px', borderRadius: '8px' }
-                }, `⚠️ Durasi saat ini ${calculateDurationHours(formData.start_time, formData.end_time)} jam (standar minimal Moel 4 jam).`)
               )
             ),
             
