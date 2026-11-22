@@ -857,7 +857,7 @@
    const REQUIRED_CATEGORIES = [
       { id: 'b_momuung', name: 'Mom Uung', emoji: '🍼', color: '#B6D7A8' },
       { id: 'b_aquapress', name: 'AquaPress', emoji: '💧', color: '#00FFFF' },
-      { id: 'b_moell', name: 'Moell / Back Up', emoji: '✨', color: '#FACC15' },
+      { id: 'b_moell', name: 'Moell', emoji: '✨', color: '#FACC15' },
       { id: 'b_booking_wa', name: 'Partner / Booking WA', emoji: '📲', color: '#93C5FD' },
       { id: 'b_konten', name: 'Take Konten Video Affiliate', emoji: '🎬', color: '#8B5CF6' },
       { id: 'b_sleep', name: 'Jam Tidur / Istirahat', emoji: '😴', color: '#6366F1' },
@@ -1193,7 +1193,41 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         }
         return tokens;
       };
+const normalizeHourToHHMM = (rawVal) => {
+        const clean = String(rawVal || '').trim();
+        if (!clean) return '00:00';
+        if (clean.includes(':')) {
+          const [hStr, mStr] = clean.split(':');
+          const hh = ((Number(hStr) || 0) % 24 + 24) % 24;
+          const mm = ((Number(mStr) || 0) % 60 + 60) % 60;
+          return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+        }
+        const hh = ((Number(clean) || 0) % 24 + 24) % 24;
+        return `${String(hh).padStart(2, '0')}:00`;
+      };
 
+      const parseCustomDateRangeMap = (rawText, maxDays) => {
+        const mapByDay = {};
+        const lines = String(rawText || '').split(/\r?\n/);
+        lines.forEach(line => {
+          const m = line.match(/^\s*(?:tgl|tanggal|date|d)?\s*(\d{1,2})\s*[:=\-]\s*(.+?)\s*$/i);
+          if (!m) return;
+          const dNum = Number(m[1]);
+          if (dNum < 1 || dNum > maxDays) return;
+          const rhs = m[2].trim();
+          if (/^(off|libur|l|cuti|x)$/i.test(rhs)) {
+            mapByDay[dNum] = { type: 'OFF' };
+            return;
+          }
+          const tm = rhs.match(/^(\d{1,2}(?::\d{2})?)\s*(?:-|–|—|s\/d|sampai|to)\s*(\d{1,2}(?::\d{2})?)$/i);
+          if (tm) {
+            const st = normalizeHourToHHMM(tm[1]);
+            const en = normalizeHourToHHMM(tm[2]);
+            mapByDay[dNum] = { type: 'SHIFT', start: st, end: en };
+          }
+        });
+        return mapByDay;
+      };
       const handleOpenBulkModal = () => {
         setBulkYear(currentYear);
         setBulkMonth(currentMonth);
@@ -1482,11 +1516,16 @@ const handleApplyBulkMonth = () => {
             let needsSync = false;
             const merged = val.map(b => {
               const reqMatch = REQUIRED_CATEGORIES.find(r => r.id === b.id);
-              if (!b.emoji) {
+              let nextB = { ...b };
+              if (!nextB.emoji) {
                 needsSync = true;
-                return { ...b, emoji: reqMatch ? reqMatch.emoji : '🏷️' };
+                nextB.emoji = reqMatch ? reqMatch.emoji : '🏷️';
               }
-              return b;
+              if (nextB.id === 'b_moell' && nextB.name !== 'Moell') {
+                needsSync = true;
+                nextB.name = 'Moell';
+              }
+              return nextB;
             });
             REQUIRED_CATEGORIES.forEach(req => {
               if (!merged.some(b => b.id === req.id)) {
@@ -6366,22 +6405,43 @@ h('div', {
                   }, `⚡ Shift ${p.n} (${p.st}-${p.en})`))
                 )
               ),
-              // Grup 2: Preset Shift AquaPress (Shift 1 - 3)
-              h('div', { style: { background: '#ECFEFF', border: '1.5px solid #67E8F9', borderRadius: '12px', padding: '8px' } },
-                h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#155E75', marginBottom: '5px', textTransform: 'uppercase' } }, '💧 Preset Shift AquaPress'),
-                h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' } },
+      // Grup 3: Preset Jadwal Moel (Standar Minimal 4 Jam)
+              h('div', { style: { background: '#FEFCE8', border: '1.5px solid #FDE047', borderRadius: '12px', padding: '8px' } },
+                h('div', { className: 'flex items-center justify-between', style: { fontSize: '10px', fontWeight: 900, color: '#854D0E', marginBottom: '5px', textTransform: 'uppercase' } },
+                  h('span', null, '✨ Preset Moel (Min. 4 Jam)'),
+                  h('span', { className: 'font-mono' }, `Durasi: ${calculateDurationHours(formData.start_time, formData.end_time)}j`)
+                ),
+                h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' } },
                   [
-                    { n: 1, st: '07:00', en: '11:00' },
-                    { n: 2, st: '11:00', en: '16:00' },
-                    { n: 3, st: '15:00', en: '21:00' }
-                  ].map(p => h('button', {
-                    key: 'ap_' + p.n, type: 'button', className: 'btn',
-                    style: { background: '#CFFAFE', color: '#164E63', borderColor: '#22D3EE', fontSize: '10px', padding: '6px 6px' },
-                    onClick: () => applyPresetShift('b_aquapress', 'AquaPress', p.n, p.st, p.en)
-                  }, `⚡ Shift ${p.n} (${p.st}-${p.en})`))
-                )
+                    { st: '11:00', en: '15:00' },
+                    { st: '13:00', en: '17:00' },
+                    { st: '15:00', en: '19:00' },
+                    { st: '17:00', en: '21:00' }
+                  ].map((mSlot, idx) => h('button', {
+                    key: 'moel_' + idx, type: 'button', className: 'btn',
+                    style: { background: '#FEF9C3', color: '#713F12', borderColor: '#FACC15', fontSize: '10px', padding: '6px 8px' },
+                    onClick: () => {
+                      const conflict = checkConflictRange(mSlot.st, mSlot.en);
+                      if (conflict) { notify(`⛔ Jam ${mSlot.st}-${mSlot.en} sudah terisi oleh "${conflict.title}"!`); return; }
+                      const bObj = brands.find(b => b.id === 'b_moell');
+                      setFormData(prev => ({
+                        ...prev,
+                        title: prev.title && !prev.title.toLowerCase().includes('shift') ? prev.title : `Live Moel (${mSlot.st}-${mSlot.en})`,
+                        brand_id: 'b_moell',
+                        status: 'LIVE',
+                        color: bObj?.color || '#FACC15',
+                        start_time: mSlot.st,
+                        end_time: mSlot.en
+                      }));
+                    }
+                  }, `⚡ ${mSlot.st}-${mSlot.en} (4j)`))
+                ),
+                formData.brand_id === 'b_moell' && calculateDurationHours(formData.start_time, formData.end_time) < 4 && h('div', {
+                  style: { marginTop: '6px', fontSize: '10px', fontWeight: 800, color: '#9A3412', background: '#FFEDD5', padding: '4px 8px', borderRadius: '8px' }
+                }, `⚠️ Durasi saat ini ${calculateDurationHours(formData.start_time, formData.end_time)} jam (standar minimal Moel 4 jam).`)
               )
             ),
+            
             h('form', { onSubmit: handleSave, style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
               h('input', {
                 type: 'text', required: true, placeholder: 'Judul Shift / Aktivitas...', value: formData.title,
@@ -6438,14 +6498,39 @@ h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' 
                   padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '6px'
                 }
               },
-                h('div', { className: 'flex items-center justify-between', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
-                  h('span', null, '🛵 Estimasi Perjalanan Kos (Kelipatan 30 Menit)'),
-                 travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
-                    travelDirection === 'rt'
-                      ? `PP ${travelMinutes} mnt (${Math.floor(travelMinutes / 2)}m pergi + ${Math.floor(travelMinutes / 2)}m pulang)`
-                      : `${travelMinutes} mnt (${travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
-                  )
-                ),
+                (() => {
+                  const trM = Number(travelMinutes) || 0;
+                  const legM = travelDirection === 'rt' ? Math.floor(trM / 2) : trM;
+                  const sM = timeToMinutes(formData.start_time);
+                  const rE = timeToMinutes(formData.end_time);
+                  const showGo = legM > 0 && (travelDirection === 'go' || travelDirection === 'rt');
+                  const showBack = legM > 0 && (travelDirection === 'back' || travelDirection === 'rt');
+
+                  return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px' } },
+                    h('div', { className: 'flex items-center justify-between flex-wrap gap-1', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
+                      h('span', null, '🛵 Estimasi Perjalanan Kos'),
+                      trM > 0 && h('span', {
+                        className: 'font-mono',
+                        style: { background: '#FDBA74', color: '#431407', padding: '2px 8px', borderRadius: '999px', fontSize: '9.5px' }
+                      },
+                        travelDirection === 'rt'
+                          ? `PP ${trM}m (${legM}m pergi • ${legM}m pulang)`
+                          : `${trM}m (${travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
+                      )
+                    ),
+                    trM > 0 && h('div', {
+                      className: 'font-mono',
+                      style: {
+                        background: '#FFFFFF', border: '1px dashed #FB923C', borderRadius: '8px',
+                        padding: '5px 8px', fontSize: '10px', fontWeight: 800, color: '#7C2D12',
+                        display: 'flex', flexWrap: 'wrap', gap: '8px'
+                      }
+                    },
+                      showGo && h('span', null, `➡️ Pergi: ${formatMinutesWrap(sM - legM)}–${formatMinutesWrap(sM)} (${legM}m)`),
+                      showBack && h('span', null, `⬅️ Pulang: ${formatMinutesWrap(rE)}–${formatMinutesWrap(rE + legM)} (${legM}m)`)
+                    )
+                  );
+                })(),
                 h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                   h('select', {
                     className: 'font-mono',
