@@ -1456,6 +1456,15 @@ const handleApplyBulkMonth = () => {
       // 🤖 V2.12: KONFIGURASI BOT ADMIN NOTIFIKASI ALISYA (GOOGLE APPS SCRIPT + FONNTE)
       const ADMIN_WA_NUMBER = "6285159440579";
       const BOT_WEBAPP_URL  = "https://script.google.com/macros/s/AKfycbxPWCLvRKs8fuMPbCZ0BgIRpGMxNV2BPWf10HCTMl0_O7pPMOrEOipucnsb5BCSsrbz/exec";
+      // ⏰ V6.5: PENGINGAT OTOMATIS BOT WA SEBELUM BERANGKAT (H-30 / H-60 MENIT)
+      const [departureReminderCfg, setDepartureReminderCfg] = useState({
+        enabled: true,
+        leadMinutes: 30,
+        targetPhone: '6285159440579',
+        remindAllSessions: false
+      });
+      const [reminderLogModalOpen, setReminderLogModalOpen] = useState(false);
+      const [reminderHistory, setReminderHistory] = useState([]);
       const BOT_SECRET_KEY  = "ALISYA_BOT_2026";
       // 📞 V2.13: ATURAN NOMOR WA OTOMATIS PER BRAND PARTNER
       // AquaPress & Moell otomatis pakai nomor PIC terdaftar | Mom Uung tanpa WA | Brand lain WAJIB isi WA
@@ -1576,7 +1585,24 @@ const handleApplyBulkMonth = () => {
          try { localStorage.setItem('alisya_travel_color', val); } catch (e) {}
        }
      });
+const refRemCfg = firebaseDb.ref('alisya_departure_reminder_cfg');
+     refRemCfg.on('value', snap => {
+       const val = snap.val();
+       if (val && typeof val === 'object') {
+         setDepartureReminderCfg(prev => ({ ...prev, ...val }));
+       }
+     });
 
+     const refRemLogs = firebaseDb.ref('alisya_departure_reminder_logs');
+     refRemLogs.on('value', snap => {
+       const val = snap.val();
+       if (val && typeof val === 'object') {
+         const arr = Object.entries(val).map(([k, v]) => ({ key: k, ...v })).sort((a, b) => (b.sentAtTs || 0) - (a.sentAtTs || 0));
+         setReminderHistory(arr.slice(0, 30));
+       } else {
+         setReminderHistory([]);
+       }
+     });
      const refLogs = firebaseDb.ref('alisya_access_logs');
         refLogs.on('value', snap => {
           const val = snap.val();
@@ -1587,7 +1613,7 @@ const handleApplyBulkMonth = () => {
           recordAccessLog('VISIT_PORTAL', 'Membuka halaman portal', true);
         }
 
-        return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); refTravelCol.off(); refLogs.off(); };
+        return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); refTravelCol.off(); refRemCfg.off(); refRemLogs.off(); refLogs.off(); };
       }, [isAdmin]);
       const saveSchedulesToCloud = (newList) => {
         setSchedules(newList);
@@ -2558,7 +2584,95 @@ const togglePortfolioVisibility = () => {
         });
         setModalOpen(true);
       };
+// ⏰ V6.5: SIMPAN PENGATURAN & PEMANTAU REAL-TIME PENGINGAT BERANGKAT
+      const saveDepartureReminderCfg = (patch) => {
+        const nextCfg = { ...departureReminderCfg, ...patch };
+        setDepartureReminderCfg(nextCfg);
+        if (firebaseDb) firebaseDb.ref('alisya_departure_reminder_cfg').set(nextCfg);
+      };
 
+      const sendTestDepartureReminder = async () => {
+        const target = formatWaPhone(departureReminderCfg.targetPhone || ADMIN_WA_NUMBER);
+        if (!target) { notify('⚠️ Isi nomor WhatsApp tujuan terlebih dahulu!'); return; }
+        setBotSending(true);
+        notify('🤖 Mengirim tes pengingat berangkat ke WhatsApp...');
+        const msg =
+          `*⏰ TES PENGINGAT BERANGKAT — ALISYA*\n` +
+          `────────────────────────\n` +
+          `Halo! Ini adalah pesan uji coba *Pengingat Otomatis Sebelum Berangkat (H-${departureReminderCfg.leadMinutes} Menit)*.\n` +
+          `• *Status Sistem :* AKTIF ✅\n` +
+          `• *Waktu Pengingat :* ${departureReminderCfg.leadMinutes} menit sebelum jam OTW / sesi\n` +
+          `• *Cakupan :* ${departureReminderCfg.remindAllSessions ? 'Semua Sesi & Perjalanan' : 'Khusus Jadwal OTW / Perjalanan'}\n` +
+          `────────────────────────\n` +
+          `BOT Notifikasi Alisya siap mengingatkan jadwal keberangkatanmu tepat waktu!`;
+        const res = await sendViaBotWA(target, msg);
+        setBotSending(false);
+        if (res.ok) notify('✅ Pesan tes pengingat berhasil terkirim ke WhatsApp!');
+        else notify(`⚠️ Gagal mengirim tes: ${res.reason}`);
+      };
+
+      useEffect(() => {
+        if (!departureReminderCfg.enabled || !firebaseDb) return;
+        const leadMin = Number(departureReminderCfg.leadMinutes) || 30;
+        const targetPhone = formatWaPhone(departureReminderCfg.targetPhone || ADMIN_WA_NUMBER);
+        if (!targetPhone) return;
+
+        const nowMin = nowTime.getHours() * 60 + nowTime.getMinutes();
+        const candidates = schedules.filter(s => {
+          if (s.date !== realTodayStr) return false;
+          if (s.status === 'OFF' || s.status === 'PENDING' || s.status === 'Tidur' || s.brand_id === 'b_sleep') return false;
+          const isOtw = s.is_travel_block || s.status === 'Perjalanan' || String(s.title || '').toLowerCase().includes('perjalanan');
+          if (!departureReminderCfg.remindAllSessions && !isOtw) return false;
+          const startMin = timeToMinutes(s.start_time);
+          const diff = startMin - nowMin;
+          return diff > 0 && diff <= leadMin;
+        });
+
+        candidates.forEach(async (item) => {
+          const logKey = `${item.date}_${item.id}_H${leadMin}`;
+          const localGuard = `alisya_rem_sent_${logKey}`;
+          try { if (localStorage.getItem(localGuard)) return; } catch (e) {}
+
+          const logRef = firebaseDb.ref(`alisya_departure_reminder_logs/${logKey}`);
+          const snap = await logRef.once('value');
+          if (snap.exists()) {
+            try { localStorage.setItem(localGuard, '1'); } catch (e) {}
+            return;
+          }
+
+          try { localStorage.setItem(localGuard, '1'); } catch (e) {}
+          const startMin = timeToMinutes(item.start_time);
+          const sisaMenit = Math.max(1, startMin - nowMin);
+          const parentSch = item.parent_travel_for ? schedules.find(p => p.id === item.parent_travel_for) : null;
+          const brandObj = brands.find(b => b.id === item.brand_id);
+
+          const reminderMsg =
+            `*🛵 PENGINGAT BERANGKAT (H-${sisaMenit} MENIT) — ALISYA*\n` +
+            `────────────────────────\n` +
+            `Halo! Sebentar lagi waktunya bersiap berangkat:\n\n` +
+            `• *Agenda :* ${item.title}\n` +
+            `• *Brand :* ${brandObj ? `${brandObj.emoji} ${brandObj.name}` : '-'}\n` +
+            `• *Jam Berangkat / Mulai :* *${item.start_time} WIB* (${sisaMenit} menit lagi)\n` +
+            (parentSch ? `• *Sesi Utama :* ${parentSch.title} (${parentSch.start_time}–${parentSch.end_time} WIB)\n` : '') +
+            (item.notes ? `• *Catatan :* ${item.notes}\n` : '') +
+            `────────────────────────\n` +
+            `Jangan lupa cek barang bawaan, charger, & perlengkapan sebelum berangkat. Hati-hati di jalan! 🌸`;
+
+          const res = await sendViaBotWA(targetPhone, reminderMsg);
+          if (res.ok) {
+            await logRef.set({
+              title: item.title,
+              date: item.date,
+              start_time: item.start_time,
+              leadMinutes: leadMin,
+              sentAtWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+              sentAtTs: Date.now()
+            });
+          } else {
+            try { localStorage.removeItem(localGuard); } catch (e) {}
+          }
+        });
+      }, [nowTime, realTodayStr, schedules, departureReminderCfg, brands]);
       // ⏳ V2.13: Klien Submit Booking -> Aturan WA per Brand (AquaPress/Moell Otomatis, Mom Uung Tanpa WA, Brand Lain Wajib)
       const handleSendBookingWA = async (e) => {
         e.preventDefault();
@@ -3741,6 +3855,12 @@ h('button', {
             title: 'Tampilkan atau sembunyikan tab Portofolio untuk mode Partner/View'
           }, showPortfolioPublic ? '🙈 Portofolio:Sembunyikan' : '👁️ Portofolio: Tampilkan'),
           isAdmin && h('button', { className: 'btn btn-gold', onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan'),
+          isAdmin && h('button', {
+                type: 'button',
+                className: `btn ${departureReminderCfg.enabled ? 'btn-emerald' : 'btn-soft'}`,
+                onClick: () => setReminderLogModalOpen(true),
+                title: 'Atur Pengingat Otomatis BOT WA Sebelum Berangkat (H-30 / H-60 Menit)'
+              }, departureReminderCfg.enabled ? `⏰ Pengingat WA (H-${departureReminderCfg.leadMinutes}m)` : '⏰ Pengingat WA: OFF'),
           isAdmin && h('button', {
                 type: 'button',
                 className: 'btn btn-soft',
@@ -6246,6 +6366,97 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                     );
                   })
                 )
+          )
+        ),
+               // ⏰ V6.5: MODAL PENGATURAN PENGINGAT OTOMATIS BOT WA SEBELUM BERANGKAT
+        reminderLogModalOpen && isAdmin && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { maxWidth: '520px', display: 'flex', flexDirection: 'column', gap: '12px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#059669', textTransform: 'uppercase' } }, '🤖 BOT WA OTOMATIS • ANTI-TELAT BERANGKAT'),
+                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '⏰ Pengingat Sebelum Berangkat (H-30 / H-60)')
+              ),
+              h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setReminderLogModalOpen(false) }, '✕')
+            ),
+
+            h('div', {
+              style: {
+                background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '14px',
+                padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px'
+              }
+            },
+              h('label', { className: 'flex items-center justify-between', style: { fontSize: '12px', fontWeight: 900, color: '#4A0424', cursor: 'pointer' } },
+                h('span', null, 'Aktifkan Pengingat Otomatis ke WhatsApp'),
+                h('input', {
+                  type: 'checkbox',
+                  checked: !!departureReminderCfg.enabled,
+                  onChange: e => saveDepartureReminderCfg({ enabled: e.target.checked })
+                })
+              ),
+
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Waktu Pengingat:'),
+                  h('select', {
+                    value: Number(departureReminderCfg.leadMinutes) || 30,
+                    onChange: e => saveDepartureReminderCfg({ leadMinutes: Number(e.target.value) }),
+                    style: { width: '100%' }
+                  },
+                    h('option', { value: 15 }, 'H-15 Menit Sebelum'),
+                    h('option', { value: 30 }, 'H-30 Menit Sebelum'),
+                    h('option', { value: 45 }, 'H-45 Menit Sebelum'),
+                    h('option', { value: 60 }, 'H-60 Menit (1 Jam)'),
+                    h('option', { value: 90 }, 'H-90 Menit (1,5 Jam)')
+                  )
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nomor WA Penerima:'),
+                  h('input', {
+                    type: 'tel',
+                    placeholder: '6285159440579',
+                    value: departureReminderCfg.targetPhone || '',
+                    onChange: e => saveDepartureReminderCfg({ targetPhone: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              ),
+
+              h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#701A46', cursor: 'pointer' } },
+                h('input', {
+                  type: 'checkbox',
+                  checked: !!departureReminderCfg.remindAllSessions,
+                  onChange: e => saveDepartureReminderCfg({ remindAllSessions: e.target.checked })
+                }),
+                'Ingatkan juga semua sesi jadwal (tidak hanya blok 🛵 OTW / Perjalanan)'
+              ),
+
+              h('button', {
+                type: 'button',
+                disabled: botSending,
+                className: 'btn btn-emerald',
+                style: { width: '100%', padding: '9px' },
+                onClick: sendTestDepartureReminder
+              }, botSending ? '⏳ Mengirim Pesan Tes...' : '📲 Kirim Tes Pengingat ke WhatsApp Sekarang')
+            ),
+
+            h('div', { style: { background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: '12px', padding: '8px 10px', fontSize: '10.5px', color: '#78350F', fontWeight: 700 } },
+              '💡 Tips: Supaya pengingat tetap terkirim 24 jam penuh walaupun tab browser di HP/PC ditutup, pasang juga pemicu otomatis (Time-driven Trigger) di Google Apps Script.'
+            ),
+
+            h('div', null,
+              h('div', { style: { fontSize: '11px', fontWeight: 900, color: '#831843', marginBottom: '6px' } }, `📜 Riwayat Pengingat Terkirim (${reminderHistory.length})`),
+              reminderHistory.length === 0
+                ? h('div', { style: { fontSize: '11px', color: '#701A46', background: '#FFFFFF', padding: '12px', borderRadius: '10px', border: '1px dashed #F9A8D4', textAlign: 'center' } }, 'Belum ada pengingat yang terkirim.')
+                : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '160px', overflowY: 'auto' } },
+                    reminderHistory.map(rh => h('div', {
+                      key: rh.key,
+                      style: { background: '#FFFFFF', border: '1px solid #F9A8D4', borderRadius: '9px', padding: '6px 10px', fontSize: '10.5px' }
+                    },
+                      h('div', { style: { fontWeight: 900, color: '#4A0424' } }, `✅ ${rh.title} (${rh.start_time} WIB)`),
+                      h('div', { className: 'font-mono', style: { fontSize: '9.5px', color: '#059669' } }, `Terkirim H-${rh.leadMinutes}m • ${rh.sentAtWIB}`)
+                    ))
+                  )
+            )
           )
         ),
         // MODAL PIN ADMIN
