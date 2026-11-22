@@ -1175,17 +1175,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         '3': { label: 'Shift 3 Mom Uung', start: '18:00', end: '00:00', bg: '#86EFAC', col: '#14532D' },
         '4': { label: 'Shift 4 Mom Uung', start: '00:00', end: '06:00', bg: '#4ADE80', col: '#052E16' }
       };
-      const getPresetShiftStyle = (item) => {
-        if (!item) return null;
-        const tLow = String(item.title || '').toLowerCase();
-        const isMom = item.brand_id === 'b_momuung' || tLow.includes('mom uung');
-        if (!isMom) return null;
-        const matched = Object.values(MOMUUNG_SHIFT_PRESETS).find(p =>
-          item.start_time === p.start && item.end_time === p.end
-        );
-        return matched ? { bg: matched.bg, col: matched.col } : null;
-      };
-
+     const getPresetShiftStyle = () => null;
       const parseBulkShiftTokens = (rawText, maxDays) => {
         const rawNoNl = String(rawText || '').replace(/\r/g, '').replace(/\n/g, ' ');
         if (!rawNoNl.trim()) return Array(maxDays).fill('');
@@ -2737,7 +2727,8 @@ const togglePortfolioVisibility = () => {
          const p = MOMUUNG_SHIFT_PRESETS[shiftKey];
          if (s.start_time !== p.start || s.end_time !== p.end || s.color !== p.bg || s.title !== p.label) {
            updatedCount++;
-           return { ...s, title: p.label, start_time: p.start, end_time: p.end, color: p.bg };
+           const momCol = (brands.find(b => b.id === 'b_momuung') || {}).color || '#B6D7A8';
+           return { ...s, title: p.label, start_time: p.start, end_time: p.end, color: momCol };
          }
        }
        return s;
