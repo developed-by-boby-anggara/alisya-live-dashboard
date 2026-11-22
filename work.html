@@ -155,6 +155,43 @@
       color: #FFFFFF;
     }
 /* 🚨 V2.7: Animasi Banner Siaga 15 Menit & Kolom Jam Aktif Spreadsheet */
+    /* ✨ LIVE ACTIVE LEGEND BEACON (CAHAYA MEMUTAR + SHIMMER BERKILAU) */
+    @property --beam-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes legendBeamSpin {
+      0% { --beam-angle: 0deg; }
+      100% { --beam-angle: 360deg; }
+    }
+    @keyframes legendShimmerSweep {
+      0% { transform: translateX(-140%) skewX(-20deg); }
+      55%, 100% { transform: translateX(240%) skewX(-20deg); }
+    }
+    @keyframes legendGlowPulse {
+      0%, 100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.35), 0 4px 14px rgba(219, 39, 119, 0.28); }
+      50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.15), 0 6px 22px rgba(16, 185, 129, 0.45); }
+    }
+    .legend-item-active {
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent !important;
+      background:
+        linear-gradient(#FFFFFF, #FFF0F6) padding-box,
+        conic-gradient(from var(--beam-angle), #10B981, #FDE047, #EC4899, #38BDF8, #10B981) border-box !important;
+      animation: legendBeamSpin 2.4s linear infinite, legendGlowPulse 1.8s ease-in-out infinite;
+      transform: scale(1.03);
+      z-index: 2;
+    }
+    .legend-item-active::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.78), transparent);
+      animation: legendShimmerSweep 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
     @keyframes standbyPulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55), 0 10px 25px rgba(180, 83, 9, 0.35); }
       50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0), 0 10px 30px rgba(180, 83, 9, 0.55); }
@@ -4469,28 +4506,222 @@ h('button', {
 
         // =================================================================
           // TAB 2: KALENDER SPREADSHEET (HP = 1 LAYAR PENUH TANPA GESER + HEADER JAM STICKY | PC = TABEL LENGKAP)
-          activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
-  h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
-              isAdmin && h('button', { className: 'btn btn-gold', style: { flex: 1, padding: '10px' }, onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan (Mom Uung)'),
-              h('button', { className: 'btn btn-emerald', style: { flex: 1, padding: '9px' }, onClick: shareSpreadsheetToWA }, `📲 ${t.btnShareRekapWA}`),
-              h('button', { className: 'btn btn-pink', style: { flex: 1, padding: '9px' }, onClick: () => exportElementAsPNG('work-matrix-capture', `${monthName}_${currentYear}`) }, `📸 ${t.btnDownloadTablePNG}`)
-            ),
+activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+            h('div', { id: 'work-matrix-capture', className: 'matrix-shell', style: { boxShadow: '0 14px 34px rgba(157, 23, 77, 0.14)' } },
+              (() => {
+                const monthPrefixStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`;
+                const monthSchList = schedules.filter(s => s.date && s.date.startsWith(monthPrefixStr) && !s.is_travel_block);
+                const liveSessionsCount = monthSchList.filter(s => s.status === 'LIVE').length;
+                const offDaysCount = monthSchList.filter(s => s.status === 'OFF').length;
+                const busyDatesSet = new Set(monthSchList.filter(s => s.status !== 'OFF' && s.status !== 'Tidur' && s.brand_id !== 'b_sleep').map(s => s.date));
+                const freeDaysCount = Math.max(0, daysInMonth - busyDatesSet.size - offDaysCount);
 
-            h('div', { id: 'work-matrix-capture', className: 'matrix-shell' },
-              h('div', { className: 'matrix-legend' },
-                h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#831843', textTransform: 'uppercase' } }, `🗓️ ${monthName} ${currentYear}`),
-                h('div', { className: 'flex flex-wrap items-center gap-1-5' },
-                  brands.map(b => h('span', {
-                    key: b.id,
-                    className: 'flex items-center gap-1',
-                    style: { fontSize: '8.5px', fontWeight: 800, background: '#FFFFFF', color: '#4A0424', padding: '2px 6px', borderRadius: '6px', border: '1px solid #F472B6' }
+                const allLegendItems = [
+                  ...brands.map(b => ({
+                    id: b.id,
+                    label: `${b.emoji || ''} ${b.name}`.trim(),
+                    color: b.color,
+                    isTravel: false
+                  })),
+                  {
+                    id: 'travel_otw',
+                    label: '🛵 OTW / Perjalanan',
+                    color: travelColor,
+                    isTravel: true
+                  }
+                ];
+
+                return h('div', {
+                  style: {
+                    background: 'linear-gradient(135deg, #FFF0F6 0%, #FCE7F3 100%)',
+                    borderBottom: '2px solid #F472B6',
+                    padding: displayMode === 'mobile' ? '12px' : '16px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px'
+                  }
+                },
+                  // Baris 1: Navigasi Bulan, Judul Besar & Tombol Aksi Utama (Menyatu Rapi!)
+                  h('div', { className: 'flex items-center justify-between flex-wrap gap-3' },
+                    h('div', { className: 'flex items-center gap-2 flex-wrap' },
+                      h('div', {
+                        className: 'flex items-center gap-1',
+                        style: {
+                          background: '#FFFFFF',
+                          padding: '4px',
+                          borderRadius: '14px',
+                          border: '1.5px solid #F472B6',
+                          boxShadow: '0 3px 10px rgba(157, 23, 77, 0.08)'
+                        }
+                      },
+                        h('button', {
+                          type: 'button',
+                          className: 'btn btn-soft',
+                          style: { width: '32px', height: '32px', padding: 0, borderRadius: '10px', fontSize: '12px' },
+                          onClick: () => currentMonth === 0 ? (setCurrentMonth(11), setCurrentYear(y => y - 1)) : setCurrentMonth(m => m - 1),
+                          title: 'Bulan Sebelumnya'
+                        }, '◀'),
+                        h('div', {
+                          style: { padding: '0 12px', textAlign: 'center' }
+                        },
+                          h('div', { style: { fontSize: '9px', fontWeight: 900, color: '#DB2777', letterSpacing: '0.08em', textTransform: 'uppercase' } }, 'MASTER JADWAL BULANAN'),
+                          h('div', {
+                            style: { fontSize: displayMode === 'mobile' ? '15px' : '19px', fontWeight: 900, color: '#4A0424', letterSpacing: '0.01em', lineHeight: 1.15 }
+                          }, `${monthName} ${currentYear}`)
+                        ),
+                        h('button', {
+                          type: 'button',
+                          className: 'btn btn-soft',
+                          style: { width: '32px', height: '32px', padding: 0, borderRadius: '10px', fontSize: '12px' },
+                          onClick: () => currentMonth === 11 ? (setCurrentMonth(0), setCurrentYear(y => y + 1)) : setCurrentMonth(m => m + 1),
+                          title: 'Bulan Berikutnya'
+                        }, '▶')
+                      ),
+                      h('button', {
+                        type: 'button',
+                        className: 'btn btn-soft',
+                        style: { padding: '8px 12px', fontSize: '11px', background: '#FFFFFF' },
+                        onClick: () => {
+                          const now = new Date();
+                          setCurrentYear(now.getFullYear());
+                          setCurrentMonth(now.getMonth());
+                          setSelectedDate(realTodayStr);
+                        }
+                      }, '📍 Bulan Ini')
+                    ),
+
+                    // Tombol Aksi Rapi di Kanan Atas (Tidak Melebar Berlebihan)
+                    h('div', { className: 'flex items-center gap-2 flex-wrap' },
+                      isAdmin && h('button', {
+                        type: 'button',
+                        className: 'btn btn-gold',
+                        style: { padding: '9px 14px', fontSize: '11.5px' },
+                        onClick: handleOpenBulkModal
+                      }, '⚡ Input 1 Bulan'),
+                      h('button', {
+                        type: 'button',
+                        className: 'btn btn-emerald',
+                        style: { padding: '9px 14px', fontSize: '11.5px' },
+                        onClick: shareSpreadsheetToWA
+                      }, `📲 ${t.btnShareRekapWA}`),
+                      h('button', {
+                        type: 'button',
+                        className: 'btn btn-pink',
+                        style: { padding: '9px 14px', fontSize: '11.5px' },
+                        onClick: () => exportElementAsPNG('work-matrix-capture', `${monthName}_${currentYear}`)
+                      }, `📸 ${t.btnDownloadTablePNG}`)
+                    )
+                  ),
+
+                  // Baris 2: Strip Statistik Ringkas Bulan Ini
+                  h('div', {
+                    style: {
+                      display: 'grid',
+                      gridTemplateColumns: displayMode === 'mobile' ? 'repeat(3, 1fr)' : 'repeat(3, minmax(160px, 220px))',
+                      gap: '8px'
+                    }
                   },
-                    h('span', { style: { width: '8px', height: '8px', borderRadius: '2px', background: b.color, border: '1px solid rgba(0,0,0,0.2)' } }),
-                    b.name
-                  ))
-                )
-              ),
+                    [
+                      { icon: '🟢', label: 'Sesi Live', val: `${liveSessionsCount} Sesi`, bg: '#ECFDF5', border: '#6EE7B7', col: '#065F46' },
+                      { icon: '✨', label: 'Hari Kosong', val: `${freeDaysCount} Hari`, bg: '#FFFFFF', border: '#F472B6', col: '#9D174D' },
+                      { icon: '☕', label: 'Jadwal OFF', val: `${offDaysCount} Hari`, bg: '#FFF1F2', border: '#FDA4AF', col: '#9F1239' }
+                    ].map((st, idx) => h('div', {
+                      key: idx,
+                      style: {
+                        background: st.bg,
+                        border: `1.5px solid ${st.border}`,
+                        borderRadius: '12px',
+                        padding: '7px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '6px'
+                      }
+                    },
+                      h('span', { style: { fontSize: displayMode === 'mobile' ? '10px' : '11.5px', fontWeight: 800, color: st.col } }, `${st.icon} ${st.label}`),
+                      h('span', { className: 'font-mono', style: { fontSize: displayMode === 'mobile' ? '11px' : '13px', fontWeight: 900, color: st.col } }, st.val)
+                    ))
+                  ),
 
+                  // Baris 3: Grid Legenda Warna Brand & Perjalanan (5 Kolom di PC / 2 Kolom di HP — Rata & Simetris!)
+                  h('div', {
+                    style: {
+                      background: 'rgba(255, 255, 255, 0.72)',
+                      border: '1.5px solid #F9A8D4',
+                      borderRadius: '14px',
+                      padding: displayMode === 'mobile' ? '8px' : '10px 12px',
+                      display: 'grid',
+                      gridTemplateColumns: displayMode === 'mobile' ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)',
+                      gap: '7px'
+                    }
+                  },
+                    allLegendItems.map(item => {
+                      const activeNow = liveTracker.activeItem;
+                      const isActiveTravel = activeNow && (activeNow.is_travel_block || activeNow.status === 'Perjalanan');
+                      const isThisActive = !!activeNow && (
+                        item.isTravel
+                          ? isActiveTravel
+                          : (!isActiveTravel && activeNow.brand_id === item.id)
+                      );
+
+                      return h('div', {
+                        key: item.id,
+                        className: isThisActive ? 'legend-item-active' : '',
+                        style: {
+                          background: item.isTravel ? '#FFF7ED' : '#FFFFFF',
+                          border: `1.5px solid ${item.isTravel ? '#FDBA74' : '#FBCFE8'}`,
+                          borderRadius: '10px',
+                          padding: '6px 9px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '6px',
+                          minWidth: 0,
+                          opacity: activeNow && !isThisActive ? 0.76 : 1,
+                          transition: 'all 0.25s ease'
+                        }
+                      },
+                        h('div', { style: { display: 'flex', alignItems: 'center', gap: '7px', minWidth: 0 } },
+                          h('span', {
+                            style: {
+                              width: '13px',
+                              height: '13px',
+                              borderRadius: '4px',
+                              background: item.color,
+                              border: '1px solid rgba(0,0,0,0.25)',
+                              flexShrink: 0,
+                              boxShadow: isThisActive ? '0 0 8px rgba(16,185,129,0.7)' : 'none'
+                            }
+                          }),
+                          h('span', {
+                            style: {
+                              fontSize: displayMode === 'mobile' ? '10px' : '11.5px',
+                              fontWeight: isThisActive ? 900 : 800,
+                              color: item.isTravel ? '#9A3412' : '#4A0424',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }
+                          }, item.label)
+                        ),
+                        isThisActive && h('span', {
+                          className: 'font-mono',
+                          style: {
+                            background: '#10B981',
+                            color: '#FFFFFF',
+                            fontSize: '8.5px',
+                            fontWeight: 900,
+                            padding: '2px 6px',
+                            borderRadius: '999px',
+                            flexShrink: 0,
+                            letterSpacing: '0.03em'
+                          }
+                       }, item.isTravel ? '● OTW' : '● LIVE')
+                      );
+                    })
+                  )
+                );
+              })(),
               displayMode === 'mobile'
                 ? h('div', { style: { width: '100%', maxHeight: '72vh', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' } },
                     h('table', { className: 'matrix-table-hp' },
