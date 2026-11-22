@@ -4564,7 +4564,7 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                         h('div', {
                           style: { padding: '0 12px', textAlign: 'center' }
                         },
-                          h('div', { style: { fontSize: '9px', fontWeight: 900, color: '#DB2777', letterSpacing: '0.08em', textTransform: 'uppercase' } }, 'MASTER JADWAL BULANAN'),
+                          h('div', { style: { fontSize: '9px', fontWeight: 900, color: '#DB2777', letterSpacing: '0.08em', textTransform: 'uppercase' } }, ''),
                           h('div', {
                             style: { fontSize: displayMode === 'mobile' ? '15px' : '19px', fontWeight: 900, color: '#4A0424', letterSpacing: '0.01em', lineHeight: 1.15 }
                           }, `${monthName} ${currentYear}`)
@@ -4587,7 +4587,7 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                           setCurrentMonth(now.getMonth());
                           setSelectedDate(realTodayStr);
                         }
-                      }, '📍 Bulan Ini')
+                      }, '📍')
                     ),
 
                     // Tombol Aksi Rapi di Kanan Atas (Tidak Melebar Berlebihan)
