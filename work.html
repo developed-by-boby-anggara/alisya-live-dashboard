@@ -515,7 +515,7 @@
     .st-free { background: #FCE7F3; color: #9D174D; border: 1px solid #F472B6; }
     .st-off { background: #FFE4E6; color: #9F1239; border: 1px solid #FDA4AF; }
 
-    .matrix-table-pc { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; }
+    .matrix-table-pc { width: max-content; min-width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; }
     .matrix-table-pc th {
       background: #9D174D; color: #FFFFFF;
       border: 1px solid #BE185D;
@@ -524,7 +524,7 @@
     .matrix-table-pc td {
       border: 1px solid #F9A8D4;
       padding: 5px; vertical-align: top; height: 54px; background: #FFFFFF;
-      overflow: hidden; max-width: 0;
+      overflow: hidden;
     }
     .matrix-table-pc tr:nth-child(even) td { background: #FFF5F9; }
     .matrix-table-pc td.sticky-col-pc {
@@ -1109,7 +1109,9 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
 
       const [modalOpen, setModalOpen] = useState(false);
       const TRAVEL_STEP_OPTIONS = [0, 30, 60, 90, 120, 150, 180];
-      const TRAVEL_COLOR = '#FDBA74';
+      const [travelColor, setTravelColor] = useState(() => {
+        try { return localStorage.getItem('alisya_travel_color') || '#FDBA74'; } catch (e) { return '#FDBA74'; }
+      });
       const [travelMinutes, setTravelMinutes] = useState(() => {
         try { return Number(localStorage.getItem('alisya_default_travel_min')) || 0; } catch (e) { return 0; }
       });
@@ -1282,7 +1284,7 @@ const handleApplyBulkMonth = () => {
                   title: `🛵 Perjalanan Pergi (${p.label})`,
                   brand_id: 'b_momuung',
                   status: 'Perjalanan',
-                  color: TRAVEL_COLOR,
+                  color: travelColor,
                   is_travel_block: true,
                   parent_travel_for: mainId,
                   notes: `Estimasi OTW ${legMin} mnt`
@@ -1303,7 +1305,7 @@ const handleApplyBulkMonth = () => {
                   title: `🛵 Perjalanan Pulang (${p.label})`,
                   brand_id: 'b_momuung',
                   status: 'Perjalanan',
-                  color: TRAVEL_COLOR,
+                  color: travelColor,
                   is_travel_block: true,
                   parent_travel_for: mainId,
                   notes: `Estimasi pulang ${legMin} mnt`
@@ -1499,6 +1501,15 @@ const handleApplyBulkMonth = () => {
        }
      });
 
+     const refTravelCol = firebaseDb.ref('alisya_travel_color');
+     refTravelCol.on('value', snap => {
+       const val = snap.val();
+       if (val) {
+         setTravelColor(val);
+         try { localStorage.setItem('alisya_travel_color', val); } catch (e) {}
+       }
+     });
+
      const refLogs = firebaseDb.ref('alisya_access_logs');
         refLogs.on('value', snap => {
           const val = snap.val();
@@ -1509,7 +1520,7 @@ const handleApplyBulkMonth = () => {
           recordAccessLog('VISIT_PORTAL', 'Membuka halaman portal', true);
         }
 
-        return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); refLogs.off(); };
+        return () => { refSch.off(); refBrands.off(); refNote.off(); refPortfolio.off(); refShowPf.off(); refTravelCol.off(); refLogs.off(); };
       }, [isAdmin]);
       const saveSchedulesToCloud = (newList) => {
         setSchedules(newList);
@@ -3031,10 +3042,10 @@ const formatMinutesWrap = (mins) => {
         const brandObj = brands.find(b => b.id === formData.brand_id);
         const { effStartMin, effEndMin, isOvernightCarry, ...cleanForm } = formData;
         const basePayload = { ...cleanForm, color: brandObj?.color || cleanForm.color };
-       const trMin = Number(travelMinutes) || 0;
-     const legMin = travelDirection === 'rt' ? Math.floor(trMin / 2) : trMin;
-     const hasGo = legMin > 0 && (travelDirection === 'go' || travelDirection === 'rt');
-     const hasBack = legMin > 0 && (travelDirection === 'back' || travelDirection === 'rt');
+        const trMin = Number(travelMinutes) || 0;
+        const legMin = travelDirection === 'rt' ? Math.floor(trMin / 2) : trMin;
+        const hasGo = legMin > 0 && (travelDirection === 'go' || travelDirection === 'rt');
+        const hasBack = legMin > 0 && (travelDirection === 'back' || travelDirection === 'rt');
 
         try { localStorage.setItem('alisya_default_travel_min', String(trMin)); } catch (err) {}
 
@@ -3046,15 +3057,15 @@ const formatMinutesWrap = (mins) => {
             extraTravel.push({
               id: 'tr_go_' + selectedSchedule.id,
               date: basePayload.date,
-              start_time: formatMinutesWrap(sMin - trMin),
+              start_time: formatMinutesWrap(sMin - legMin),
               end_time: formatMinutesWrap(sMin),
               title: `🛵 Perjalanan Pergi (${basePayload.title})`,
               brand_id: basePayload.brand_id,
               status: 'Perjalanan',
-              color: TRAVEL_COLOR,
+              color: travelColor,
               is_travel_block: true,
               parent_travel_for: selectedSchedule.id,
-              notes: `Estimasi OTW ${trMin} mnt ke lokasi`
+              notes: `Estimasi OTW ${legMin} mnt ke lokasi`
             });
           }
           if (hasBack) {
@@ -3062,14 +3073,14 @@ const formatMinutesWrap = (mins) => {
               id: 'tr_back_' + selectedSchedule.id,
               date: basePayload.date,
               start_time: formatMinutesWrap(rawEnd),
-              end_time: formatMinutesWrap(rawEnd + trMin),
+              end_time: formatMinutesWrap(rawEnd + legMin),
               title: `🛵 Perjalanan Pulang (${basePayload.title})`,
               brand_id: basePayload.brand_id,
               status: 'Perjalanan',
-              color: TRAVEL_COLOR,
+              color: travelColor,
               is_travel_block: true,
               parent_travel_for: selectedSchedule.id,
-              notes: `Estimasi perjalanan pulang ${trMin} mnt`
+              notes: `Estimasi perjalanan pulang ${legMin} mnt`
             });
           }
           saveSchedulesToCloud([...withoutOldTravel.map(s => s.id === selectedSchedule.id ? basePayload : s), ...extraTravel]);
@@ -3093,15 +3104,15 @@ const formatMinutesWrap = (mins) => {
                 newItems.push({
                   id: 'tr_go_' + mainId,
                   date: targetDate,
-                  start_time: formatMinutesWrap(sMin - trMin),
+                  start_time: formatMinutesWrap(sMin - legMin),
                   end_time: formatMinutesWrap(sMin),
                   title: `🛵 Perjalanan Pergi (${basePayload.title})`,
                   brand_id: basePayload.brand_id,
                   status: 'Perjalanan',
-                  color: TRAVEL_COLOR,
+                  color: travelColor,
                   is_travel_block: true,
                   parent_travel_for: mainId,
-                  notes: `Estimasi OTW ${trMin} mnt`
+                  notes: `Estimasi OTW ${legMin} mnt`
                 });
               }
               if (hasBack) {
@@ -3109,14 +3120,14 @@ const formatMinutesWrap = (mins) => {
                   id: 'tr_back_' + mainId,
                   date: targetDate,
                   start_time: formatMinutesWrap(rawEnd),
-                  end_time: formatMinutesWrap(rawEnd + trMin),
+                  end_time: formatMinutesWrap(rawEnd + legMin),
                   title: `🛵 Perjalanan Pulang (${basePayload.title})`,
                   brand_id: basePayload.brand_id,
                   status: 'Perjalanan',
-                  color: TRAVEL_COLOR,
+                  color: travelColor,
                   is_travel_block: true,
                   parent_travel_for: mainId,
-                  notes: `Estimasi pulang ${trMin} mnt`
+                  notes: `Estimasi pulang ${legMin} mnt`
                 });
               }
             }
@@ -3629,7 +3640,6 @@ const formatMinutesWrap = (mins) => {
             { id: 'calendar', icon: '📊', label: t.tabSpreadsheet },
             { id: 'simulator', icon: '🔍', label: lang === 'en' ? 'Slot & Rest Checker' : 'Cek Slot & Istirahat' },
             { id: 'kpi', icon: '📈', label: t.tabKPI },
-            { id: 'list', icon: '📋', label: t.tabList },
             { id: 'colors', icon: '🎨', label: t.tabColors },
             ...(isAdmin ? [{
               id: 'pending',
@@ -4562,18 +4572,23 @@ h('button', {
                     )
                   )
                 : h('div', { style: { overflowX: 'auto', maxHeight: '75vh', WebkitOverflowScrolling: 'touch' } },
-                    h('table', { className: 'matrix-table-pc' },
+                   h('table', { className: 'matrix-table-pc' },
+                      h('colgroup', null,
+                        h('col', { style: { width: '175px' } }),
+                        h('col', { style: { width: '130px' } }),
+                        TIME_SLOTS.map(slot => h('col', { key: 'col_' + slot.label, style: { width: '115px' } }))
+                      ),
                       h('thead', null,
                         h('tr', null,
-                          h('th', { className: 'sticky-col-pc', style: { minWidth: '170px', textAlign: 'left', background: '#9D174D' } }, `🌸 ${t.colDateTime}`),
-                          h('th', { style: { minWidth: '125px' } }, t.colDayStatus),
+                          h('th', { className: 'sticky-col-pc', style: { width: '175px', textAlign: 'left', background: '#9D174D' } }, `🌸 ${t.colDateTime}`),
+                          h('th', { style: { width: '130px' } }, t.colDayStatus),
                           TIME_SLOTS.map(slot => {
                             const isCurrentSlot = slot.label === currentActiveSlotLabel;
                             return h('th', {
                               key: slot.label,
                               id: `matrix-col-${slot.label}`,
                               className: `font-mono ${isCurrentSlot ? 'active-time-col-header' : ''}`,
-                              style: { minWidth: '105px' }
+                              style: { width: '115px' }
                             }, isCurrentSlot ? `🟢 ${slot.label}` : slot.label);
                           })
                         )
@@ -4933,51 +4948,6 @@ h('button', {
             )
           ),
 
-          // TAB 4: DAFTAR SEMUA JADWAL
-          activeTab === 'list' && h('div', { className: 'exec-card', style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
-            h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
-              h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#831843' } }, `📋 ${t.allRegistered} (${filteredSchedules.length})`),
-              isAdmin && h('button', { className: 'btn btn-soft', onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan'),
-              isAdmin && h('button', { className: 'btn btn-pink', onClick: () => handleOpenCreate(selectedDate) }, t.btnAddSch)
-            ),
-            h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'mobile' ? '1fr' : 'repeat(3, 1fr)', gap: '8px' } },
-              h('input', { type: 'text', placeholder: t.searchPlaceholder, value: searchQuery, onChange: e => setSearchQuery(e.target.value) }),
-              h('select', { value: filterBrand, onChange: e => setFilterBrand(e.target.value) },
-                h('option', { value: 'ALL' }, t.allCategories),
-                brands.map(b => h('option', { key: b.id, value: b.id }, `${b.emoji} ${b.name}`))
-              ),
-              h('select', { value: filterStatus, onChange: e => setFilterStatus(e.target.value) },
-                h('option', { value: 'ALL' }, t.allStatuses),
-                ['LIVE', 'Konten', 'Meeting', 'Tidur', 'Me Time', 'OFF'].map(st => h('option', { key: st, value: st }, st))
-              )
-            ),
-            h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' } },
-              filteredSchedules.map(s => {
-                const brand = brands.find(b => b.id === s.brand_id);
-                return h('div', {
-                  key: s.id,
-                  style: {
-                    background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '14px',
-                    padding: '10px 14px', borderLeft: `6px solid ${s.color}`
-                  }
-                },
-                  h('div', { className: 'flex items-center justify-between' },
-                    h('span', { style: { fontSize: '11.5px', fontWeight: 900, color: '#9D174D' } }, `${getHariNama(s.date)}, ${s.date}`),
-                    h('span', { className: 'font-mono', style: { fontSize: '11.5px', fontWeight: 900, color: '#4A0424', background: '#FCE7F3', padding: '2px 8px', borderRadius: '6px' } }, `🔒 ${s.start_time} - ${s.end_time}`)
-                  ),
-                  h('div', { style: { fontSize: '14px', fontWeight: 900, color: '#4A0424', marginTop: '4px' } }, s.title),
-                  h('div', { className: 'flex items-center justify-between', style: { marginTop: '4px', fontSize: '11px', color: '#701A46', fontWeight: 700 } },
-                    h('span', null, `${brand?.emoji || ''} ${brand?.name || ''} • [${s.status}]`),
-                    isAdmin && h('div', { className: 'flex gap-2' },
-                      h('button', { className: 'btn btn-soft', style: { padding: '3px 8px', fontSize: '10px' }, onClick: () => handleOpenEdit(s) }, t.editBtn),
-                      h('button', { className: 'btn btn-soft', style: { padding: '3px 8px', fontSize: '10px', color: '#E11D48' }, onClick: () => handleDelete(s.id) }, t.deleteBtn)
-                    )
-                  )
-                );
-              })
-            )
-          ),
-
        // TAB 5: WARNA BRAND
           activeTab === 'colors' && h('div', { className: 'exec-card', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
            h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
@@ -4986,12 +4956,7 @@ h('button', {
               type: 'button',
               className: 'btn btn-emerald',
               onClick: handleSyncMomUungShiftTimes
-            }, '🍼 Update Jam Shift Mom Uung'),
-            isAdmin && h('button', {
-              type: 'button',
-              className: 'btn btn-pink',
-              onClick: handleAutoFixBookingColors
-            }, '🔄 Rapikan Warna Booking WA')
+            }, '🍼 Update Jam Shift Mom Uung')
           ),
             brands.map(b => h('div', {
               key: b.id, className: 'flex items-center justify-between',
@@ -5010,7 +4975,31 @@ h('button', {
                 h('span', { style: { fontSize: '12.5px', fontWeight: 900, color: '#4A0424' } }, `${b.emoji} ${b.name}`)
               ),
               h('span', { className: 'font-mono', style: { fontSize: '11.5px', color: '#9D174D', fontWeight: 800 } }, b.color)
-            ))
+            )),
+            h('div', {
+              className: 'flex items-center justify-between',
+              style: { background: '#FFFFFF', padding: '10px 14px', borderRadius: '14px', border: '1.5px dashed #F472B6' }
+            },
+              h('div', { className: 'flex items-center gap-2' },
+                h('input', {
+                  type: 'color',
+                  disabled: !isAdmin,
+                  value: travelColor,
+                  onChange: e => {
+                    const nextCol = e.target.value;
+                    setTravelColor(nextCol);
+                    try { localStorage.setItem('alisya_travel_color', nextCol); } catch (err) {}
+                    if (firebaseDb) firebaseDb.ref('alisya_travel_color').set(nextCol);
+                    saveSchedulesToCloud(schedules.map(s =>
+                      (s.is_travel_block || s.status === 'Perjalanan') ? { ...s, color: nextCol } : s
+                    ));
+                  },
+                  style: { width: '36px', height: '36px', padding: '2px', cursor: 'pointer' }
+                }),
+                h('span', { style: { fontSize: '12.5px', fontWeight: 900, color: '#4A0424' } }, '🛵 OTW / Perjalanan')
+              ),
+              h('span', { className: 'font-mono', style: { fontSize: '11.5px', color: '#9D174D', fontWeight: 800 } }, travelColor)
+            )
           ),
 
           // =================================================================
@@ -5170,7 +5159,6 @@ h('button', {
                 { id: 'calendar', icon: '📊', label: 'Tabel' },
                 { id: 'simulator', icon: '🔍', label: 'Cek Slot' },
                 { id: 'kpi', icon: '📈', label: 'KPI' },
-                { id: 'list', icon: '📋', label: 'Daftar' }
               ]
           ).map(tb => h('button', {
             key: tb.id,
@@ -6230,12 +6218,10 @@ h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' 
               },
                 h('div', { className: 'flex items-center justify-between', style: { fontSize: '10.5px', fontWeight: 900, color: '#9A3412' } },
                   h('span', null, '🛵 Estimasi Perjalanan Kos (Kelipatan 30 Menit)'),
-                  travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
-                   travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
-                 travelDirection === 'rt'
-                   ? `PP ${travelMinutes} mnt (${Math.floor(travelMinutes / 2)}m pergi + ${Math.floor(travelMinutes / 2)}m pulang)`
-                   : `${travelMinutes} mnt (${travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
-               )
+                 travelMinutes > 0 && h('span', { className: 'font-mono', style: { background: '#FDBA74', color: '#431407', padding: '1px 7px', borderRadius: '999px' } },
+                    travelDirection === 'rt'
+                      ? `PP ${travelMinutes} mnt (${Math.floor(travelMinutes / 2)}m pergi + ${Math.floor(travelMinutes / 2)}m pulang)`
+                      : `${travelMinutes} mnt (${travelDirection === 'go' ? 'Pergi' : 'Pulang'})`
                   )
                 ),
                 h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
