@@ -694,17 +694,17 @@
       border-color: #DB2777;
       box-shadow: 0 6px 14px rgba(219, 39, 119, 0.22);
     }
+    .brand-logo-box {
+      cursor: pointer;
+    }
     .brand-logo-box img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       border-radius: 9px;
     }
-    .brand-logo-box {
-      cursor: pointer;
-    }
     @keyframes brandZoomIn {
-      0% { opacity: 0; transform: scale(0.78); }
+      0% { opacity: 0; transform: scale(0.8); }
       100% { opacity: 1; transform: scale(1); }
     }
     .brand-zoom-card {
@@ -1102,7 +1102,7 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
       const DEFAULT_PORTFOLIO_DATA = {
         displayName: 'Lisy',
         roleTagline: 'Host Marketing • Content Creator • Live Selling Specialist',
-        bio: 'Berpengalaman memandu sesi live streaming interaktif dan produksi konten kreator dengan konversi tinggi. Spesialis kategori Mom & Baby, Skincare & Beauty, Home Living, Fashion Apparels, Jewelry, hingga Gadget & Tech.',
+        bio: 'Host Live Streaming & Content Creator yang berpengalaman memandu sesi live selling interaktif serta produksi video review produk dengan konversi tinggi across berbagai kategori: Mom & Baby, Beauty & Skincare, Fashion & Daily Wear, Home Care & Kebersihan, hingga Otomotif & Lifestyle.',
         photoUrl: 'img/lisy-profile.jpg',
         tiktokFollowers: '44,5K+',
         brandCount: '50+',
@@ -1151,17 +1151,114 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
 
       const [portfolioBrandCat, setPortfolioBrandCat] = useState('ALL');
       const COLLAB_BRAND_SHOWCASE = [
-        { src: 'brand/scarlet-brand1.jpeg', name: 'Scarlett Whitening', category: 'Beauty & Skincare', role: 'Live Host & Product Review' },
-        { src: 'brand/philia-brand2.jpeg', name: 'Philia', category: 'Beauty & Personal Care', role: 'Live Selling Session' },
-        { src: 'brand/implora-brand-3.jpeg', name: 'Implora Cosmetics', category: 'Beauty & Makeup', role: 'Live Host & Affiliate Content' },
-        { src: 'brand/whitebalance-brand4.jpeg', name: 'WhiteBalance', category: 'Skincare & Wellness', role: 'Brand Collaboration' },
-        { src: 'brand/brand-5.jpeg', name: 'Official Brand Partner', category: 'Lifestyle & Fashion', role: 'Live Selling & Content' },
-        { src: 'brand/hanasui-brand-6.jpeg', name: 'Hanasui', category: 'Beauty & Skincare', role: 'Live Selling & Product Showcase' },
-        { src: 'brand/giime-brand-7.jpeg', name: 'Giime', category: 'Beauty & Haircare', role: 'Live Streaming Partner' },
-        { src: 'brand/canabasic-brand-8.jpeg', name: 'CanaBasic', category: 'Fashion & Daily Wear', role: 'Lookbook & Live Selling' },
-        { src: 'brand/momuung-brand-9', name: 'Mom Uung', category: 'Mom & Baby Nutrition', role: 'Official Regular Live Host' },
-        { src: 'brand/moel-brand-10.jpg', name: 'Moell Indonesia', category: 'Mom & Baby Skincare', role: 'Official Live Host Partner' },
-        { src: 'brand/aquapress-brand-11.jpg', name: 'AquaPress', category: 'Mom, Baby & Home', role: 'Official Live Host Partner' }
+        {
+          src: 'brand/momuung-brand-9',
+          name: 'Mom Uung',
+          cat: 'mom_baby',
+          categoryLabel: 'Mom & Baby Nutrition',
+          roleBadge: '🎙️ LIVE HOST',
+          isLiveHost: true,
+          desc: 'Brand nutrisi ibu menyusui & ASI booster (pelancar ASI herbal & susu menyusui). Bertugas sebagai Host Live Streaming reguler.'
+        },
+        {
+          src: 'brand/moel-brand-10.jpg',
+          name: 'Moell',
+          cat: 'mom_baby',
+          categoryLabel: 'Mom & Baby Skincare',
+          roleBadge: '🎙️ LIVE HOST',
+          isLiveHost: true,
+          desc: 'Brand perawatan kulit bayi & anak berbahan lembut dan aman untuk kulit sensitif. Bertugas sebagai Host Live Streaming.'
+        },
+        {
+          src: 'brand/aquapress-brand-11.jpg',
+          name: 'AquaPress',
+          cat: 'home_auto',
+          categoryLabel: 'Water Disinfection & Purifier',
+          roleBadge: '🎙️ LIVE HOST',
+          isLiveHost: true,
+          desc: 'Merek tablet disinfeksi dan penjernih air untuk sanitasi serta kejernihan air bersih. Bertugas sebagai Host Live Streaming.'
+        },
+        {
+          src: 'brand/canabasic-brand-8.jpeg',
+          name: 'CanaBasic',
+          cat: 'fashion',
+          categoryLabel: 'Fashion & Daily Wear',
+          roleBadge: '🎙️ LIVE HOST',
+          isLiveHost: true,
+          desc: 'Brand fashion & pakaian harian modern (daily wear & basic outfits). Bertugas sebagai Host Live Streaming.'
+        },
+        {
+          src: 'brand/korper-besonders.jpeg',
+          name: 'Korper Besonder',
+          cat: 'home_auto',
+          categoryLabel: 'Home Care & Automotive Cleaner',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Pembersih busa serbaguna (multi-purpose foam cleaner) untuk interior mobil (jok kain/kulit, dashboard, plafon) serta perabotan rumah tangga seperti sofa, sepatu, dan dinding.'
+        },
+        {
+          src: 'brand/scarlet-brand1.jpeg',
+          name: 'Scarlett',
+          cat: 'beauty',
+          categoryLabel: 'Body Care & Skincare',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Brand perawatan tubuh & kulit (body lotion, shower scrub, dan skincare). Produksi konten video review & affiliate.'
+        },
+        {
+          src: 'brand/philia-brand2.jpeg',
+          name: 'Philia',
+          cat: 'beauty',
+          categoryLabel: 'Beauty & Personal Care',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Brand kecantikan dan perawatan diri harian. Produksi konten video kreatif & ulasan produk.'
+        },
+        {
+          src: 'brand/implora-brand-3.jpeg',
+          name: 'Implora',
+          cat: 'beauty',
+          categoryLabel: 'Cosmetics & Skincare',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Brand kosmetik dan skincare lokal populer (lip cream, serum, sunscreen). Konten review & tutorial pemakaian.'
+        },
+        {
+          src: 'brand/whitebalance-brand4.jpeg',
+          name: 'WhiteBalance',
+          cat: 'beauty',
+          categoryLabel: 'Skincare & Brightening',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Brand perawatan kulit wajah. Produksi konten video review produk.'
+        },
+        {
+          src: 'brand/hanasui-brand-6.jpeg',
+          name: 'Hanasui',
+          cat: 'beauty',
+          categoryLabel: 'Beauty & Cosmetics',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Brand kecantikan & kosmetik harian (serum, lip tint, makeup). Produksi konten video review & showcase produk.'
+        },
+        {
+          src: 'brand/giime-brand-7.jpeg',
+          name: 'Giime',
+          cat: 'beauty',
+          categoryLabel: 'Hair Styling & Beauty Tools',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Brand alat styling rambut & kecantikan (catokan, hair dryer). Konten video review & demonstrasi hasil.'
+        },
+        {
+          src: 'brand/brand-5.jpeg',
+          name: 'Brand Partner',
+          cat: 'fashion',
+          categoryLabel: 'Fashion & Lifestyle',
+          roleBadge: '🎬 CONTENT CREATOR',
+          isLiveHost: false,
+          desc: 'Kolaborasi produksi konten video review produk fashion & lifestyle.'
+        }
       ];
       const [zoomedBrandIdx, setZoomedBrandIdx] = useState(null);
       const [searchQuery, setSearchQuery] = useState('');
@@ -4080,15 +4177,15 @@ h('button', {
           ),
           h('div', { className: 'brand-marquee-viewport' },
             [1, 2].map(loop => h('div', { key: loop, className: 'brand-logo-group', 'aria-hidden': loop === 2 ? 'true' : undefined },
-             COLLAB_BRAND_SHOWCASE.map((brandItem, idx) => h('div', {
+              COLLAB_BRAND_SHOWCASE.map((bItem, idx) => h('div', {
                 key: `${loop}_${idx}`,
                 className: 'brand-logo-box',
-                title: `Klik untuk memperbesar logo ${brandItem.name}`,
+                title: `Klik untuk perbesar: ${bItem.name} (${bItem.roleBadge})`,
                 onClick: () => setZoomedBrandIdx(idx)
               },
                 h('img', {
-                  src: brandItem.src,
-                  alt: brandItem.name,
+                  src: bItem.src,
+                  alt: bItem.name,
                   loading: 'lazy',
                   onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
                 })
@@ -4370,36 +4467,29 @@ h('button', {
               )
             ),
 
-        // 3. WALL OF CLIENTS — DENGAN FILTER KATEGORI UNTUK PARTNER
+        // 3. WALL OF CLIENTS — DENGAN FILTER KATEGORI & ZOOM DETAIL PRODUK/PERAN
             (() => {
-              const clientLogos = [
-                { src: 'brand/momuung-brand-9', name: 'Mom Uung', cat: 'mom_baby' },
-                { src: 'brand/aquapress-brand-11.jpg', name: 'AquaPress', cat: 'mom_baby' },
-                { src: 'brand/moel-brand-10.jpg', name: 'Moel', cat: 'mom_baby' },
-                { src: 'brand/scarlet-brand1.jpeg', name: 'Scarlett', cat: 'beauty' },
-                { src: 'brand/philia-brand2.jpeg', name: 'Philia', cat: 'beauty' },
-                { src: 'brand/implora-brand-3.jpeg', name: 'Implora', cat: 'beauty' },
-                { src: 'brand/whitebalance-brand4.jpeg', name: 'WhiteBalance', cat: 'beauty' },
-                { src: 'brand/hanasui-brand-6.jpeg', name: 'Hanasui', cat: 'beauty' },
-                { src: 'brand/giime-brand-7.jpeg', name: 'Giime', cat: 'beauty' },
-                { src: 'brand/canabasic-brand-8.jpeg', name: 'CanaBasic', cat: 'lifestyle' },
-                { src: 'brand/brand-5.jpeg', name: 'Brand Partner', cat: 'lifestyle' },
-                { src: 'brand/korper-besonders.jpeg', name: 'Korper Besonder', cat: 'lifestyle' }
-              ];
               const filterCats = [
                 { id: 'ALL', label: 'Semua' },
+                { id: 'LIVE_ONLY', label: '🎙️ Live Host' },
+                { id: 'CONTENT_ONLY', label: '🎬 Content Creator' },
                 { id: 'mom_baby', label: 'Mom & Baby' },
-                { id: 'beauty', label: 'Beauty & Skincare' },
-                { id: 'lifestyle', label: 'Fashion & Lifestyle' }
+                { id: 'beauty', label: 'Beauty & Hair' },
+                { id: 'fashion', label: 'Fashion' },
+                { id: 'home_auto', label: 'Home & Auto Care' }
               ];
-              const shownLogos = portfolioBrandCat === 'ALL'
-                ? clientLogos
-                : clientLogos.filter(item => item.cat === portfolioBrandCat);
+              const indexedLogos = COLLAB_BRAND_SHOWCASE.map((item, masterIdx) => ({ ...item, masterIdx }));
+              const shownLogos = indexedLogos.filter(item => {
+                if (portfolioBrandCat === 'ALL') return true;
+                if (portfolioBrandCat === 'LIVE_ONLY') return item.isLiveHost;
+                if (portfolioBrandCat === 'CONTENT_ONLY') return !item.isLiveHost;
+                return item.cat === portfolioBrandCat;
+              });
 
               return h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
                 h('div', { className: 'flex items-center justify-between flex-wrap gap-2', style: { marginBottom: '12px' } },
                   h('div', null,
-                    h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '🤝 TRUSTED BY 50+ BRANDS'),
+                    h('span', { style: { fontSize: '10.5px', fontWeight: 900, color: '#9D174D', textTransform: 'uppercase' } }, '🤝 TRUSTED BY 50+ BRANDS • KLIK LOGO UNTUK ZOOM'),
                     h('h3', { style: { fontSize: '17px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Brand Collaborations & Clients')
                   ),
                   h('div', { className: 'flex items-center gap-1 flex-wrap' },
@@ -4413,10 +4503,12 @@ h('button', {
                   )
                 ),
                 h('div', { className: 'pf-client-grid' },
-                  shownLogos.map((brItem, idx) => h('div', {
-                    key: `${brItem.src}_${idx}`,
+                  shownLogos.map((brItem) => h('div', {
+                    key: `${brItem.src}_${brItem.masterIdx}`,
                     className: 'pf-client-tile',
-                    title: brItem.name
+                    style: { cursor: 'pointer' },
+                    title: `Klik untuk perbesar: ${brItem.name}`,
+                    onClick: () => setZoomedBrandIdx(brItem.masterIdx)
                   },
                     h('img', {
                       src: brItem.src,
@@ -4424,7 +4516,17 @@ h('button', {
                       loading: 'lazy',
                       onError: e => { e.currentTarget.parentElement.style.display = 'none'; }
                     }),
-                    h('span', { style: { fontSize: '9.5px', fontWeight: 800, color: '#701A46', lineHeight: 1.1 } }, brItem.name)
+                    h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#4A0424', lineHeight: 1.15 } }, brItem.name),
+                    h('span', {
+                      style: {
+                        fontSize: '8px',
+                        fontWeight: 900,
+                        padding: '2px 6px',
+                        borderRadius: '999px',
+                        background: brItem.isLiveHost ? '#D1FAE5' : '#FCE7F3',
+                        color: brItem.isLiveHost ? '#065F46' : '#9D174D'
+                      }
+                    }, brItem.isLiveHost ? '🎙️ Live Host' : '🎬 Content')
                   )),
                   h('div', {
                     className: 'pf-client-tile',
@@ -6717,7 +6819,7 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
           )
         ),
 
-      // 🔍 MODAL ZOOM PREVIEW LOGO BRAND COLLABORATION
+        // 🔍 MODAL ZOOM PREVIEW LOGO & DETAIL BRAND COLLABORATION
         zoomedBrandIdx !== null && COLLAB_BRAND_SHOWCASE[zoomedBrandIdx] && (() => {
           const item = COLLAB_BRAND_SHOWCASE[zoomedBrandIdx];
           const total = COLLAB_BRAND_SHOWCASE.length;
@@ -6728,19 +6830,25 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
           },
             h('div', {
               className: 'modal-box brand-zoom-card',
-              style: { maxWidth: '400px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' },
+              style: { maxWidth: '430px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' },
               onClick: e => e.stopPropagation()
             },
-              h('div', { className: 'flex items-center justify-between' },
-                h('span', { style: { fontSize: '10px', fontWeight: 900, background: '#FCE7F3', color: '#9D174D', padding: '3px 10px', borderRadius: '999px', border: '1px solid #F472B6' } },
-                  `🤝 PARTNER #${zoomedBrandIdx + 1} DARI ${total}`
-                ),
+              h('div', { className: 'flex items-center justify-between gap-2' },
+                h('span', {
+                  style: {
+                    fontSize: '10px', fontWeight: 900,
+                    background: item.isLiveHost ? '#D1FAE5' : '#FCE7F3',
+                    color: item.isLiveHost ? '#065F46' : '#9D174D',
+                    padding: '4px 10px', borderRadius: '999px',
+                    border: `1px solid ${item.isLiveHost ? '#6EE7B7' : '#F472B6'}`
+                  }
+                }, `${item.roleBadge} • #${zoomedBrandIdx + 1}/${total}`),
                 h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setZoomedBrandIdx(null) }, '✕ Tutup')
               ),
               h('div', {
                 style: {
                   background: '#FFFFFF', border: '2.5px solid #F472B6', borderRadius: '20px',
-                  padding: '20px', height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '20px', height: '230px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 10px 25px rgba(157, 23, 77, 0.14)'
                 }
               },
@@ -6751,25 +6859,33 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                 })
               ),
               h('div', null,
-                h('div', { style: { fontSize: '18px', fontWeight: 900, color: '#4A0424' } }, item.name),
-                h('div', { style: { fontSize: '11.5px', fontWeight: 800, color: '#DB2777', marginTop: '2px' } }, `${item.category} • ${item.role}`)
+                h('div', { style: { fontSize: '20px', fontWeight: 900, color: '#4A0424' } }, item.name),
+                h('div', { style: { fontSize: '11.5px', fontWeight: 800, color: '#DB2777', marginTop: '2px' } }, item.categoryLabel),
+                h('p', {
+                  style: {
+                    marginTop: '8px', background: '#FFFFFF', border: '1px solid #F9A8D4',
+                    borderRadius: '12px', padding: '9px 12px', fontSize: '11.5px',
+                    color: '#4A0424', lineHeight: 1.45, fontWeight: 600
+                  }
+                }, item.desc)
               ),
               h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                 h('button', {
                   type: 'button',
                   className: 'btn btn-soft',
                   onClick: () => setZoomedBrandIdx((zoomedBrandIdx - 1 + total) % total)
-                }, '◀ Sebelumnya'),
+                }, '◀ Brand Sebelumnya'),
                 h('button', {
                   type: 'button',
                   className: 'btn btn-soft',
                   onClick: () => setZoomedBrandIdx((zoomedBrandIdx + 1) % total)
-                }, 'Berikutnya ▶')
+                }, 'Brand Berikutnya ▶')
               )
             )
           );
         })(),
-               // MODAL PIN ADMIN
+
+        // MODAL PIN ADMIN
         pinInputModal && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '320px', textAlign: 'center' } },
             h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#831843', marginBottom: '12px' } }, '🔑 Admin Access'),
