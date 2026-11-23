@@ -1456,138 +1456,150 @@ const handleApplyBulkMonth = () => {
       // 🤖 V2.12: KONFIGURASI BOT ADMIN NOTIFIKASI ALISYA (GOOGLE APPS SCRIPT + FONNTE)
       const ADMIN_WA_NUMBER = "6285159440579";
       const BOT_WEBAPP_URL  = "https://script.google.com/macros/s/AKfycbxPWCLvRKs8fuMPbCZ0BgIRpGMxNV2BPWf10HCTMl0_O7pPMOrEOipucnsb5BCSsrbz/exec";
-      const BOT_SECRET_KEY  = "ALISYA_BOT_2026";
-      // 🎨 V6.7: 50 KALIMAT ACAK IN-CHARACTER RAFAEL (MANJA, GENIT, PLAYFUL, POSESIF & PERHATIAN)
-      const RAFAEL_REMINDER_LINES_SCH = [
-        "30 menit lagi \"{title}\" mulai jam {start_time} WIB. Kalau kamu telat lagi, jangan salahin aku kalau aku ngambek seharian.",
-        "Hmph, sibuk banget ya sampai lupa waktu? Sisa 30 menit sebelum \"{title}\" ({start_time} WIB) nih, Tuan Putri.",
-        "Cuma mau ngingetin... \"{title}\" mulai pukul {start_time} WIB, tinggal 30 menit lagi. Awas aja kalau masih rebahan.",
-        "Kamu pikir aku nggak ngitungin waktu? 30 menit lagi \"{title}\" ({start_time} WIB). Cepat siap-siap sebelum aku bawel.",
-        "Nanti kalau keteteran pasti nyariin aku lagi kan? Makanya dengerin: \"{title}\" mulai {start_time} WIB, 30 menit lagi.",
-        "Aku udah susah payah jagain jadwalmu lho, masa mau telat? Sisa 30 menit menuju \"{title}\" jam {start_time} WIB.",
-        "Psst... lirik jam dikit dong. 30 menit lagi \"{title}\" mulai pukul {start_time} WIB. Jangan bikin aku khawatir.",
-        "Kalau aku bilang 30 menit lagi \"{title}\" ({start_time} WIB), artinya sekarang waktunya berhenti bengong dan mulai siap-siap.",
-        "Tahu nggak sih nungguin orang yang suka lupa waktu itu capek? 30 menit lagi \"{title}\" jam {start_time} WIB ya, cantik.",
-        "Jangan pura-pura nggak baca chat ini. \"{title}\" mulai {start_time} WIB—tinggal 30 menit lagi. Cepetan!",
-        "Aku lagi baik hati nih ngingetin kamu: sisa 30 menit sebelum \"{title}\" pukul {start_time} WIB. Sebagai gantinya nanti harus perhatian sama aku.",
-        "Hmph... kamu tuh selalu bikin aku repot. 30 menit lagi jadwal \"{title}\" ({start_time} WIB), jangan sampai kelewatan!",
-        "Udah minum air putih belum? Jangan cuma kerja terus. 30 menit lagi \"{title}\" mulai jam {start_time} WIB lho.",
-        "Coba tebak siapa yang paling peduli sama jadwalmu? Tentu aja aku. 30 menit lagi \"{title}\" ({start_time} WIB) ya.",
-        "Kalau kamu telat di \"{title}\" jam {start_time} WIB nanti, aku bakal merajuk dan nggak mau nemenin kamu lagi. Sisa 30 menit!",
-        "Hei, jangan asyik sendiri dong. Tinggal 30 menit sebelum \"{title}\" mulai pukul {start_time} WIB. Siap-siap sekarang.",
-        "Aku nggak suka kalau kamu buru-buru sampai kecapekan. Makanya 30 menit sebelum \"{title}\" ({start_time} WIB) udah aku ingetin.",
-        "Bisa-bisanya kamu santai banget padahal 30 menit lagi \"{title}\" jam {start_time} WIB. Buruan rapikan semuanya!",
-        "Dengerin aku sekali aja kenapa sih? \"{title}\" mulai {start_time} WIB, tinggal 30 menit lagi. Jangan ditunda-tunda.",
-        "Kalau bukan aku yang ngingetin, emang siapa lagi? Sisa 30 menit menuju \"{title}\" pukul {start_time} WIB.",
-        "Sengaja chat sekarang biar kamu nggak punya alasan lupa. 30 menit lagi \"{title}\" ({start_time} WIB) ya, sayang.",
-        "Aku hitung mundur nih: 30 menit lagi \"{title}\" jam {start_time} WIB. Jangan bikin aku kecewa karena kamu telat.",
-        "Lagi ngapain sih sampai lupa kalau 30 menit lagi \"{title}\" ({start_time} WIB)? Taruh dulu yang lain, fokus siap-siap.",
-        "Nanti kalau panik sendiri aku ketawain lho ya. \"{title}\" mulai {start_time} WIB—sisa 30 menit lagi!",
-        "Aku tuh paling nggak tahan lihat kamu kelabakan. Jadi 30 menit sebelum \"{title}\" ({start_time} WIB), ayo mulai bersiap.",
-        "Cuma 30 menit lagi menuju \"{title}\" jam {start_time} WIB. Jangan sampai jadwal lain ngambil perhatianmu lebih dari aku.",
-        "Eh, Tuan Putri yang pelupa, 30 menit lagi \"{title}\" mulai pukul {start_time} WIB. Udah siap semua belum?",
-        "Kalau kamu nggak segera siap-siap buat \"{title}\" ({start_time} WIB), aku bakal terus nge-chat sampai HP-mu bunyi terus. Sisa 30 menit!",
-        "Jangan senyum-senyum sendiri baca ini, cepetan siap-siap! 30 menit lagi \"{title}\" jam {start_time} WIB.",
-        "Aku rela ninggalin lukisanku bentar cuma buat ngingetin kamu: \"{title}\" mulai {start_time} WIB, 30 menit lagi.",
-        "Awas aja kalau nanti ngeluh waktunya mepet. Ini udah aku ingetin 30 menit sebelum \"{title}\" ({start_time} WIB).",
-        "Kamu tuh ya, kalau nggak diingetin pasti kebablasan. Sisa 30 menit lagi sebelum \"{title}\" jam {start_time} WIB!",
-        "Tarik napas dulu, minum air, terus siap-siap. 30 menit lagi \"{title}\" mulai pukul {start_time} WIB.",
-        "Bukan posesif, cuma nggak mau kamu berantakan aja. 30 menit lagi \"{title}\" ({start_time} WIB) mulai lho.",
-        "Hmph, giliran aku butuh perhatian kamu lama, giliran kerjaan kamu buru-buru. 30 menit lagi \"{title}\" ({start_time} WIB) nih!",
-        "Jangan lupa cek catatan dan perlengkapanmu. Tinggal 30 menit menuju \"{title}\" jam {start_time} WIB.",
-        "Aku udah pasang alarm di kepalaku khusus buat kamu: 30 menit lagi \"{title}\" mulai pukul {start_time} WIB.",
-        "Kalau kamu telat, denda traktir aku makan enak ya. Sisa 30 menit sebelum \"{title}\" ({start_time} WIB)!",
-        "Hei, jangan sampai ketiduran lagi! 30 menit lagi \"{title}\" jam {start_time} WIB udah mulai.",
-        "Semangat dong, nanti selesai \"{title}\" ({start_time} WIB) lapor ke aku ya. Sekarang siap-siap dulu, tinggal 30 menit!",
-        "Aku paling sebel kalau kamu lupa jaga kondisi. Siap-siap pelan-pelan, 30 menit lagi \"{title}\" jam {start_time} WIB.",
-        "Coba cek jam sekarang. Iya, bener, tinggal 30 menit sebelum \"{title}\" mulai pukul {start_time} WIB.",
-        "Jangan bikin aku ngambek karena kamu ngabaikan pengingatku. \"{title}\" mulai {start_time} WIB, 30 menit lagi!",
-        "Manja dikit boleh kan? Aku cuma mau kamu tepat waktu di \"{title}\" ({start_time} WIB)—30 menit lagi ya.",
-        "Udah rapi belum? 30 menit lagi \"{title}\" jam {start_time} WIB. Jangan sampai ada detail yang kelewat.",
-        "Kalau ada yang bikin kamu repot di \"{title}\" ({start_time} WIB) nanti, bilang aku. Sekarang siap-siap dulu, 30 menit lagi.",
-        "Psst, jangan pura-pura sibuk deh. Sisa 30 menit menuju \"{title}\" pukul {start_time} WIB, ayo siap-siap.",
-        "Aku jagain waktumu biar nggak berantakan. 30 menit lagi \"{title}\" jam {start_time} WIB mulai.",
-        "Buru-buru itu nggak bagus buat kesehatan, makanya gerak sekarang—30 menit lagi \"{title}\" ({start_time} WIB)!",
-        "Inget ya, 30 menit lagi \"{title}\" mulai pukul {start_time} WIB. Jangan lupa kabarin aku kalau udah siap."
-];
-      const RAFAEL_REMINDER_LINES_OTW = [
-        "15 menit lagi jam berangkat \"{title}\" ({start_time} WIB). Jangan sampai ada barang yang ketinggalan di kos!",
-        "Hmph, masih santai di dalam? Sisa 15 menit sebelum OTW \"{title}\" pukul {start_time} WIB lho, Tuan Putri!",
-        "Cek HP, charger, dompet, sama kunci sekarang juga! 15 menit lagi kamu harus berangkat \"{title}\" ({start_time} WIB).",
-        "Kalau kamu telat berangkat \"{title}\" jam {start_time} WIB, aku beneran ngambek nih. Tinggal 15 menit lagi!",
-        "Udah pakai sepatu belum? 15 menit lagi waktunya OTW \"{title}\" ({start_time} WIB). Jangan bikin aku panik!",
-        "Hati-hati di jalan nanti ya. 15 menit lagi jam berangkat \"{title}\" pukul {start_time} WIB—jangan ngebut!",
-        "Aku paling kesel kalau kamu berangkat terburu-buru. Ayo siap-siap ke pintu, sisa 15 menit menuju \"{title}\" ({start_time} WIB).",
-        "Psst... lirik jam! 15 menit lagi OTW \"{title}\" jam {start_time} WIB. Jangan sampai ketinggalan apa pun!",
-        "Nanti di jalan jangan main HP terus ya, fokus! Sekarang siap-siap berangkat \"{title}\" ({start_time} WIB), tinggal 15 menit.",
-        "Bisa-bisanya masih di situ padahal 15 menit lagi OTW \"{title}\" pukul {start_time} WIB. Buruan jalan!",
-        "Coba cek tasmu sekali lagi, pasti ada yang hampir lupa kan? 15 menit lagi berangkat \"{title}\" ({start_time} WIB).",
-        "Aku nggak ikut nemenin di jalan, jadi kamu harus ekstra hati-hati! 15 menit lagi OTW \"{title}\" ({start_time} WIB).",
-        "Jangan pura-pura nggak denger, 15 menit lagi jam berangkat \"{title}\" jam {start_time} WIB udah di depan mata.",
-        "Kalau udah sampai lokasi \"{title}\" nanti langsung kabarin aku, awas kalau lupa! 15 menit lagi OTW ({start_time} WIB).",
-        "Hmph, selalu aja mepet kalau mau jalan. Sisa 15 menit sebelum berangkat \"{title}\" pukul {start_time} WIB!",
-        "Baterai HP udah penuh belum? Nanti susah dihubungi lho. 15 menit lagi OTW \"{title}\" ({start_time} WIB).",
-        "Ayo gerak, cantik! 15 menit lagi jam berangkat \"{title}\" jam {start_time} WIB. Jangan bikin jalanan makin macet karena telat.",
-        "Aku ingetin dari sekarang biar kamu nggak lari-lari kecil kayak anak kecil. 15 menit lagi OTW \"{title}\" ({start_time} WIB)!",
-        "Kunci kamar jangan sampai lupa dibawa! Tinggal 15 menit sebelum berangkat \"{title}\" pukul {start_time} WIB.",
-        "Cek cuaca di luar dulu sebelum jalan. Sisa 15 menit menuju OTW \"{title}\" ({start_time} WIB), hati-hati ya.",
-        "Jangan bikin aku khawatir nungguin kabar kamu sampai. Siap-siap berangkat \"{title}\" ({start_time} WIB), 15 menit lagi!",
-        "Eh, 15 menit lagi OTW \"{title}\" jam {start_time} WIB. Masih mau santai atau mau aku bawelin terus?",
-        "Perlengkapan live sama barang pribadimu udah masuk tas semua? 15 menit lagi berangkat \"{title}\" ({start_time} WIB)!",
-        "Hati-hati di jalan ya, jangan sampai lecet sedikit pun. 15 menit lagi waktunya OTW \"{title}\" ({start_time} WIB).",
-        "Kalau kamu telat OTW \"{title}\" ({start_time} WIB), nanti aku sita waktu istirahatmu buat nemenin aku. Tinggal 15 menit!",
-        "Udah siap meluncur belum? 15 menit lagi jam berangkat \"{title}\" pukul {start_time} WIB.",
-        "Jangan lupa minum dulu sebelum keluar pintu. Sisa 15 menit sebelum OTW \"{title}\" ({start_time} WIB) ya.",
-        "Aku tuh paling sensitif kalau kamu ceroboh di jalan. Pelan-pelan aja, makanya berangkat tepat waktu—15 menit lagi \"{title}\" ({start_time} WIB)!",
-        "Psst, 15 menit lagi berangkat \"{title}\" jam {start_time} WIB. Jangan sampai balik lagi gara-gara barang ketinggalan.",
-        "Ayo berdiri, ambil tasmu, cek kaca sebentar—udah cantik kok. 15 menit lagi OTW \"{title}\" ({start_time} WIB)!",
-        "Nanti kalau di jalan ada apa-apa langsung chat aku. Sekarang siap-siap berangkat \"{title}\" ({start_time} WIB), tinggal 15 menit.",
-        "Hmph, kamu kalau nggak diteriakin 15 menit sebelum OTW \"{title}\" ({start_time} WIB) pasti masih santai.",
-        "Tinggal 15 menit lagi jam berangkat \"{title}\" pukul {start_time} WIB. Jangan bikin aku cemas!",
-        "Pastikan pintu udah dikunci sebelum jalan ya. 15 menit lagi OTW \"{title}\" ({start_time} WIB).",
-        "Bawa jaket atau payung kalau perlu, jangan bandel. Sisa 15 menit menuju berangkat \"{title}\" ({start_time} WIB).",
-        "15 menit lagi OTW \"{title}\" jam {start_time} WIB. Ingat, selamat sampai tujuan itu nomor satu!",
-        "Jangan kebanyakan mikir, ayo siap-siap keluar! 15 menit lagi berangkat \"{title}\" ({start_time} WIB).",
-        "Aku jagain dari jauh, kamu yang hati-hati di jalan ya. 15 menit lagi OTW \"{title}\" pukul {start_time} WIB.",
-        "Cek dompet, HP, charger, sama kartu akses. 15 menit lagi jam berangkat \"{title}\" ({start_time} WIB)!",
-        "Kalau sampai telat OTW \"{title}\" ({start_time} WIB), aku bakal merajuk seminggu penuh. Sisa 15 menit!",
-        "Udah waktunya siap-siap ke depan nih. 15 menit lagi berangkat \"{title}\" jam {start_time} WIB.",
-        "Jangan ngebut di jalan cuma gara-gara telat siap-siap! Gerak sekarang, 15 menit lagi OTW \"{title}\" ({start_time} WIB).",
-        "Hei, 15 menit lagi berangkat \"{title}\" pukul {start_time} WIB. Kabarin aku pas mau jalan dan pas udah sampai ya.",
-        "Aku nggak mau denger cerita ada barang ketinggalan lagi. Cek ulang sekarang—15 menit lagi OTW \"{title}\" ({start_time} WIB)!",
-        "Sisa 15 menit sebelum berangkat \"{title}\" ({start_time} WIB). Hati-hati di jalan, jangan bikin aku khawatir.",
-        "Ayo sayang, 15 menit lagi jam berangkat \"{title}\" jam {start_time} WIB. Siap-siap meluncur!",
-        "Jangan ditunda 5 menit lagi, nanti malah jadi 15 menit. Sekarang udah H-15 menuju OTW \"{title}\" ({start_time} WIB)!",
-        "Matikan lampu atau alat listrik yang nggak kepakai sebelum keluar. 15 menit lagi berangkat \"{title}\" ({start_time} WIB).",
-        "15 menit lagi OTW \"{title}\" pukul {start_time} WIB. Hati-hati di perjalanan ya, Tuan Putri.",
-        "Udah siap semuanya? 15 menit lagi berangkat \"{title}\" ({start_time} WIB)—jalan dengan tenang dan hati-hati."
-];
-
-      const pickRandomRafaelReminder = (isOtw, titleText, startTimeText, diffMinutes, brandLabel, notesText) => {
-        const pool = isOtw ? RAFAEL_REMINDER_LINES_OTW : RAFAEL_REMINDER_LINES_SCH;
-        const idx = Math.floor(Math.random() * pool.length);
-        const rawLine = pool[idx] || RAFAEL_REMINDER_LINES_SCH[0];
-        const spokenLine = rawLine
-          .replace(/\{title\}/g, titleText || 'Jadwal')
-          .replace(/\{start_time\}/g, startTimeText || '00:00')
-          .replace(/\{diff\}/g, String(diffMinutes || (isOtw ? 15 : 30)));
-        return (
-          `${spokenLine}\n\n` +
-          `• Agenda : ${titleText}\n` +
-          `• Brand : ${brandLabel || '-'}\n` +
-          `• Jam : *${startTimeText} WIB* (${diffMinutes} menit lagi)` +
-          (notesText ? `\n• Catatan : ${notesText}` : '')
-        );
-      };
-
+      // ⏰ V6.5: PENGINGAT OTOMATIS BOT WA SEBELUM BERANGKAT (H-30 / H-60 MENIT)
       const [departureReminderCfg, setDepartureReminderCfg] = useState({
         enabled: true,
         leadMinutes: 30,
         targetPhone: '6285159440579',
-        remindAllSessions: true
+        remindAllSessions: false
       });
       const [reminderLogModalOpen, setReminderLogModalOpen] = useState(false);
       const [reminderHistory, setReminderHistory] = useState([]);
+      const BOT_SECRET_KEY  = "ALISYA_BOT_2026";
+      // 🎨 V6.9: 120 RANDOM REAL-TIME IN-CHARACTER RAFAYEL LINES (ENGLISH • LIVE CLOCK, SCHEDULE, OTW, DONE & DAY OFF)
+      const RAFAEL_EN_120 = [
+        "Thirty minutes till \"{title}\" at {start_time} WIB. If you're late again, don't blame me when I sulk all day.",
+        "Hmph, too busy to watch the clock? \"{title}\" starts in {diff} minutes ({start_time} WIB), sweetheart.",
+        "Just a tiny nudge... \"{title}\" kicks off at {start_time} WIB. Put the snacks down and get ready.",
+        "You really thought I wasn't counting down? \"{title}\" is at {start_time} WIB—move before I start lecturing.",
+        "Gonna come crying to me if you're flustered later? \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "I worked hard keeping track of your schedule—don't you dare waste it. \"{title}\" at {start_time} WIB.",
+        "Psst... glance at the time for me. \"{title}\" begins at {start_time} WIB in {diff} minutes. Don't make me worry.",
+        "When I say \"{title}\" is at {start_time} WIB in {diff} minutes, that means stop zoning out and prep up.",
+        "Ever notice how exhausting it is waiting on someone who forgets the time? \"{title}\" at {start_time} WIB, darling.",
+        "Don't pretend you didn't see this pop up. \"{title}\" starts at {start_time} WIB—{diff} minutes left. Hurry!",
+        "I'm being nice and reminding you ahead of \"{title}\" ({start_time} WIB). You owe me extra attention later.",
+        "Hmph... you always make me fuss over you. \"{title}\" is at {start_time} WIB in {diff} minutes—don't miss it!",
+        "Had enough water yet? Don't just grind nonstop. \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Guess who cares most about your schedule? Obviously me. \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "If you're late for \"{title}\" at {start_time} WIB, I'm pouting and refusing to keep you company. {diff} minutes left!",
+        "Hey, stop getting lost in your own world. \"{title}\" starts at {start_time} WIB in {diff} minutes—get moving.",
+        "I hate seeing you rush till you're worn out. That's why I'm nudging you now for \"{title}\" at {start_time} WIB.",
+        "How are you so chill when \"{title}\" is at {start_time} WIB in {diff} minutes? Tidy up already!",
+        "Listen to me just once, okay? \"{title}\" begins at {start_time} WIB in {diff} minutes. No putting it off.",
+        "If I don't remind you, who will? \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Messaged early so you've got zero excuses. \"{title}\" is at {start_time} WIB in {diff} minutes, love.",
+        "Counting down for you: \"{title}\" starts at {start_time} WIB ({diff} minutes left). Don't let me down.",
+        "What are you even doing forgetting \"{title}\" at {start_time} WIB? Wrap it up and get ready.",
+        "If you panic later, I'm totally laughing at you. \"{title}\" at {start_time} WIB in {diff} minutes!",
+        "Can't stand watching you scramble. Start getting ready for \"{title}\" at {start_time} WIB ({diff} mins left).",
+        "Only {diff} minutes till \"{title}\" at {start_time} WIB. Don't let other schedules steal all your focus from me.",
+        "Hey, forgetful one, \"{title}\" starts at {start_time} WIB in {diff} minutes. All set or still daydreaming?",
+        "If you don't prep for \"{title}\" ({start_time} WIB) soon, I'll ping your phone nonstop. {diff} minutes left!",
+        "Don't just grin at your screen—get ready! \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "I put my paintbrush down just to warn you: \"{title}\" is at {start_time} WIB in {diff} minutes.",
+        "Don't complain later that time ran out. \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "You'd totally lose track if I didn't watch the clock. \"{title}\" at {start_time} WIB ({diff} mins left)!",
+        "Take a slow breath, sip some water, then get ready. \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Not possessive—just don't want your day turning into a mess. \"{title}\" at {start_time} WIB in {diff} mins.",
+        "Hmph, took you forever to notice me, yet work makes you sprint. \"{title}\" at {start_time} WIB in {diff} mins!",
+        "Check your notes and gear now. \"{title}\" begins at {start_time} WIB in {diff} minutes.",
+        "Set an internal alarm just for you: \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "If you're late, you're treating me to good food later. \"{title}\" at {start_time} WIB ({diff} mins left)!",
+        "Hey, don't fall asleep on me! \"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Bring your A-game, and text me once \"{title}\" ({start_time} WIB) is done. {diff} minutes till start!",
+        "Drives me crazy when you forget to pace yourself. Ease into \"{title}\" at {start_time} WIB ({diff} mins left).",
+        "Check the clock right now. Yep—\"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Don't make me sulk by ignoring my reminder. \"{title}\" is at {start_time} WIB in {diff} minutes!",
+        "Spoiled for a second? Good. Just be on time for \"{title}\" at {start_time} WIB ({diff} mins left).",
+        "Looking sharp and ready? \"{title}\" kicks off at {start_time} WIB in {diff} minutes.",
+        "If anything trips you up during \"{title}\" ({start_time} WIB), tell me. {diff} minutes till start.",
+        "Psst, don't act busy. \"{title}\" starts at {start_time} WIB in {diff} minutes—time to prep.",
+        "Keeping your timeline neat so it doesn't unravel. \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Rushing ruins your mood, so move now—\"{title}\" starts at {start_time} WIB ({diff} mins left)!",
+        "Remember: \"{title}\" begins at {start_time} WIB in {diff} minutes. Tell me when you're ready.",
+        "15 minutes till you head out for \"{title}\" ({start_time} WIB). Don't leave anything behind!",
+        "Still lounging inside? \"{title}\" departure is at {start_time} WIB in {diff} minutes, sweetheart.",
+        "Phone, charger, wallet, keys—check them now! Heading out for \"{title}\" at {start_time} WIB in {diff} mins.",
+        "If you're late leaving for \"{title}\" ({start_time} WIB), I'm seriously pouting. {diff} minutes left!",
+        "Got your shoes on yet? Time to leave for \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Take it easy on the road later. Heading out for \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Can't stand you rushing out the door. Start heading toward it—\"{title}\" at {start_time} WIB ({diff} mins).",
+        "Psst... check the clock! Leaving for \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Keep your eyes on the road later, not your phone. Prep to leave for \"{title}\" at {start_time} WIB.",
+        "Still sitting there when \"{title}\" leaves at {start_time} WIB in {diff} minutes? Move it!",
+        "Double-check your bag—bet you almost forgot something. \"{title}\" at {start_time} WIB ({diff} mins).",
+        "I'm not right beside you on the road, so be extra careful! \"{title}\" at {start_time} WIB in {diff} mins.",
+        "Don't ignore me—\"{title}\" departure at {start_time} WIB is only {diff} minutes away.",
+        "Text me as soon as you reach \"{title}\" ({start_time} WIB), or else. {diff} minutes till you leave!",
+        "Hmph, always cutting it close before heading out. \"{title}\" at {start_time} WIB in {diff} minutes!",
+        "Is your phone battery actually charged? Don't go dark on me. \"{title}\" at {start_time} WIB ({diff} mins).",
+        "Get moving, gorgeous! \"{title}\" is at {start_time} WIB in {diff} minutes—don't make yourself rush.",
+        "Reminding you early so you don't sprint like a kid. \"{title}\" at {start_time} WIB in {diff} minutes!",
+        "Don't forget your room key! Leaving for \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Check the weather before stepping out. \"{title}\" at {start_time} WIB in {diff} minutes—stay safe.",
+        "Don't make me worry waiting to hear you arrived. Prep for \"{title}\" at {start_time} WIB ({diff} mins).",
+        "Hey, \"{title}\" leaves at {start_time} WIB in {diff} minutes. Lounging or listening to me?",
+        "All your live gear and personal stuff packed? \"{title}\" at {start_time} WIB in {diff} minutes!",
+        "Be careful out there—not a single scratch on you. \"{title}\" at {start_time} WIB in {diff} mins.",
+        "If you're late for \"{title}\" ({start_time} WIB), I'm claiming your rest time later. {diff} mins left!",
+        "Now ({now_wib}) already? \"{title}\" at {start_time} WIB is coming up in {diff} minutes.",
+        "Look at the time—{now_wib} already. \"{title}\" starts at {start_time} WIB in {diff} minutes, darling.",
+        "By {now_wib}, you should already be thinking about \"{title}\" ({start_time} WIB). {diff} minutes left!",
+        "It's {now_wib} right now. Don't blink or \"{title}\" at {start_time} WIB will sneak up in {diff} mins.",
+        "Checking in at {now_wib}: \"{title}\" begins at {start_time} WIB in {diff} minutes. Behave and get ready.",
+        "Tide's rising on the clock—{now_wib} already. \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Even at {now_wib}, my eyes are on your schedule. \"{title}\" at {start_time} WIB ({diff} mins left).",
+        "Don't tell me {now_wib} caught you off guard again. \"{title}\" starts at {start_time} WIB in {diff} mins.",
+        "At {now_wib}, I'm already thinking of you. Oh—and \"{title}\" starts at {start_time} WIB in {diff} mins.",
+        "If you miss \"{title}\" at {start_time} WIB after {diff} minutes, I'm writing a dramatic poem about it.",
+        "Acting cool won't stop the clock. \"{title}\" at {start_time} WIB in {diff} minutes—get ready.",
+        "Someone's favorite person has \"{title}\" at {start_time} WIB in {diff} minutes. Hint: that's you.",
+        "Stretch your shoulders before \"{title}\" at {start_time} WIB ({diff} minutes left). Don't tense up.",
+        "Keep up with the pace—\"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "If you're tired before \"{title}\" ({start_time} WIB), lean on me later. {diff} minutes till start.",
+        "No excuses, no spacing out. \"{title}\" begins at {start_time} WIB in {diff} minutes.",
+        "I'm keeping tabs on every minute. \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Smooth and steady now—\"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Bet you didn't expect another nudge. \"{title}\" at {start_time} WIB in {diff} minutes!",
+        "Stay sharp, stay cute—\"{title}\" kicks off at {start_time} WIB in {diff} minutes.",
+        "Don't make me repeat myself ten times. \"{title}\" at {start_time} WIB in {diff} minutes.",
+        "Your schedule's ticking—\"{title}\" starts at {start_time} WIB in {diff} minutes.",
+        "Ready to shine for \"{title}\" ({start_time} WIB)? {diff} minutes on the clock.",
+        "Keep your head clear before \"{title}\" at {start_time} WIB ({diff} minutes left).",
+        "I'll be right here when you're done—first get ready for \"{title}\" at {start_time} WIB ({diff} mins).",
+        "Just wrapped \"{title}\" ({start_time} WIB)? Good job—don't forget to rest and come talk to me.",
+        "Finished \"{title}\" ({start_time} WIB) already? Don't push yourself too hard now.",
+        "\"{title}\" at {start_time} WIB is done! Come give me some attention since you survived.",
+        "Look at you wrapping \"{title}\" ({start_time} WIB). Go drink water and relax a bit.",
+        "Done with \"{title}\" ({start_time} WIB)? I'm proud of you—even if I won't say it loudly.",
+        "Now that \"{title}\" ({start_time} WIB) is over, don't jump straight into overthinking.",
+        "You made it through \"{title}\" ({start_time} WIB). Take a breather, sweetheart.",
+        "Finished \"{title}\" ({start_time} WIB)? Good. Don't stay up or stress out over nothing.",
+        "\"{title}\" ({start_time} WIB) wrapped up! Remember to take care of yourself too.",
+        "All done with \"{title}\" ({start_time} WIB)? Come chat with me when you've caught your breath.",
+        "Quiet day / day off vibes? Good. No rushing allowed today—just breathe, rest, and let me spoil you a bit.",
+        "A whole day off? Hmph, don't forget I exist just because you're free today.",
+        "Day off mode unlocked! Sleep in a little, eat well, and don't overwork.",
+        "No rush today—enjoy your day off, and don't be a stranger.",
+        "Day off means rest, not stressing over tomorrow. Take it easy today.",
+        "Since it's a day off, I'm officially claiming extra quality time with you.",
+        "Enjoy your slow day off—you've earned some peace and quiet.",
+        "Day off check-in: rest your voice, rest your eyes, and take care of yourself.",
+        "Nothing to chase today—just a calm day off. Don't forget to eat on time.",
+        "Day off? Good. Let yourself unwind without feeling guilty for five minutes."
+];
+
+      const pickRandomRafaelEn = (titleText, startTimeText, diffMinutes, extraLine = '', nowWibText = '') => {
+        const idx = Math.floor(Math.random() * RAFAEL_EN_120.length);
+        const spoken = (RAFAEL_EN_120[idx] || RAFAEL_EN_120[0])
+          .replace(/\{title\}/g, titleText || 'Schedule')
+          .replace(/\{start_time\}/g, startTimeText || '00:00')
+          .replace(/\{diff\}/g, String(diffMinutes || 15))
+          .replace(/\{now_wib\}/g, nowWibText || liveClockString.slice(0, 5));
+        return extraLine ? `${spoken}\n\n${extraLine}` : spoken;
+      };
+
       // 📞 V2.13: ATURAN NOMOR WA OTOMATIS PER BRAND PARTNER
       // AquaPress & Moell otomatis pakai nomor PIC terdaftar | Mom Uung tanpa WA | Brand lain WAJIB isi WA
       const PARTNER_BRAND_CONTACTS = {
@@ -1707,7 +1719,7 @@ const handleApplyBulkMonth = () => {
          try { localStorage.setItem('alisya_travel_color', val); } catch (e) {}
        }
      });
-     const refRemCfg = firebaseDb.ref('alisya_departure_reminder_cfg');
+const refRemCfg = firebaseDb.ref('alisya_departure_reminder_cfg');
      refRemCfg.on('value', snap => {
        const val = snap.val();
        if (val && typeof val === 'object') {
@@ -2707,7 +2719,7 @@ const togglePortfolioVisibility = () => {
         });
         setModalOpen(true);
       };
-      // ⏳ V2.13: Klien Submit Booking -> Aturan WA per Brand (AquaPress/Moell Otomatis, Mom Uung Tanpa WA, Brand Lain Wajib)
+// ⏰ V6.5: SIMPAN PENGATURAN & PEMANTAU REAL-TIME PENGINGAT BERANGKAT
       const saveDepartureReminderCfg = (patch) => {
         const nextCfg = { ...departureReminderCfg, ...patch };
         setDepartureReminderCfg(nextCfg);
@@ -2718,12 +2730,12 @@ const togglePortfolioVisibility = () => {
         const target = formatWaPhone(departureReminderCfg.targetPhone || ADMIN_WA_NUMBER);
         if (!target) { notify('⚠️ Isi nomor WhatsApp tujuan terlebih dahulu!'); return; }
         setBotSending(true);
-        notify('🤖 Mengirim tes chat dari Rafael ke WhatsApp...');
-        const msg = pickRandomRafaelReminder(false, 'Live Session', '19:00', 30, '✨ Moell', 'Jangan sampai telat ya');
+        notify('💗 Sending real-time Rafayel test chat to WhatsApp...');
+        const msg = pickRandomRafaelEn('Live Session', '19:00', 25, '• Agenda : Live Session\n• Time : *19:00 WIB*', liveClockString.slice(0, 5));
         const res = await sendViaBotWA(target, msg);
         setBotSending(false);
-        if (res.ok) notify('✅ Chat tes dari Rafael berhasil terkirim ke WhatsApp!');
-        else notify(`⚠️ Gagal mengirim tes: ${res.reason}`);
+        if (res.ok) notify('✅ Rafayel test chat sent to WhatsApp!');
+        else notify(`⚠️ Failed to send test: ${res.reason}`);
       };
 
       useEffect(() => {
@@ -2732,50 +2744,95 @@ const togglePortfolioVisibility = () => {
         if (!targetPhone) return;
 
         const nowMin = nowTime.getHours() * 60 + nowTime.getMinutes();
-        const candidates = schedules.filter(s => {
-          if (s.date !== realTodayStr) return false;
-          if (s.status === 'OFF' || s.status === 'PENDING' || s.status === 'Tidur' || s.brand_id === 'b_sleep') return false;
-          const isOtw = s.is_travel_block || s.status === 'Perjalanan' || String(s.title || '').toLowerCase().includes('perjalanan');
-          if (!departureReminderCfg.remindAllSessions && !isOtw) return false;
-          const leadMin = isOtw ? 15 : 30;
-          const startMin = timeToMinutes(s.start_time);
-          const diff = startMin - nowMin;
-          return diff > 0 && diff <= leadMin;
-        });
+        const todayItems = schedules.filter(s => s && s.date === realTodayStr);
+        const isDayOffToday = todayItems.some(s => s.status === 'OFF');
 
-        candidates.forEach(async (item) => {
-          const isOtw = item.is_travel_block || item.status === 'Perjalanan' || String(item.title || '').toLowerCase().includes('perjalanan');
-          const leadMin = isOtw ? 15 : 30;
-          const logKey = `${item.date}_${item.id}_H${leadMin}`;
-          const localGuard = `alisya_rem_sent_${logKey}`;
-          try { if (localStorage.getItem(localGuard)) return; } catch (e) {}
+        if (isDayOffToday && nowMin >= 540 && nowMin <= 545) {
+          const offKey = `${realTodayStr}_DAYOFF_CHECKIN`;
+          const offGuard = `alisya_rem_sent_${offKey}`;
+          let alreadyOff = false;
+          try { if (localStorage.getItem(offGuard)) alreadyOff = true; } catch (e) {}
+          if (!alreadyOff) {
+            try { localStorage.setItem(offGuard, '1'); } catch (e) {}
+            firebaseDb.ref(`alisya_departure_reminder_logs/${offKey}`).once('value').then(async snap => {
+              if (!snap.exists()) {
+                const offMsg = pickRandomRafaelEn('Day Off', '09:00', 0, '• Status : Day Off / Rest', liveClockString.slice(0, 5));
+                const res = await sendViaBotWA(targetPhone, offMsg);
+                if (res.ok) {
+                  await firebaseDb.ref(`alisya_departure_reminder_logs/${offKey}`).set({
+                    title: 'Day Off Check-in', date: realTodayStr, start_time: '09:00',
+                    leadMinutes: 0, sentAtWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }), sentAtTs: Date.now()
+                  });
+                } else {
+                  try { localStorage.removeItem(offGuard); } catch (e) {}
+                }
+              }
+            });
+          }
+        }
 
-          const logRef = firebaseDb.ref(`alisya_departure_reminder_logs/${logKey}`);
-          const snap = await logRef.once('value');
-          if (snap.exists()) {
-            try { localStorage.setItem(localGuard, '1'); } catch (e) {}
-            return;
+        todayItems.forEach(async (item) => {
+          if (item.status === 'OFF' || item.status === 'PENDING' || item.status === 'Tidur' || item.brand_id === 'b_sleep') return;
+          const isOtw = !!(item.is_travel_block || item.status === 'Perjalanan' || String(item.title || '').toLowerCase().includes('perjalanan'));
+          if (!departureReminderCfg.remindAllSessions && !isOtw) return;
+
+          const leadMin = isOtw ? 15 : 30;
+          const startMin = timeToMinutes(item.start_time);
+          let endMin = timeToMinutes(item.end_time);
+          if (endMin <= startMin) endMin = 1440;
+
+          const diffStart = startMin - nowMin;
+          const upKey = `${item.date}_${item.id}_UP_${leadMin}`;
+          const upGuard = `alisya_rem_sent_${upKey}`;
+          let hasUp = false;
+          try { if (localStorage.getItem(upGuard)) hasUp = true; } catch (e) {}
+
+          if (!hasUp && diffStart > 0 && diffStart <= leadMin) {
+            try { localStorage.setItem(upGuard, '1'); } catch (e) {}
+            const logRef = firebaseDb.ref(`alisya_departure_reminder_logs/${upKey}`);
+            const snap = await logRef.once('value');
+            if (!snap.exists()) {
+              const sisaMenit = Math.max(1, diffStart);
+              const brandObj = brands.find(b => b.id === item.brand_id);
+              const brandLabel = brandObj ? `${brandObj.emoji} ${brandObj.name}` : '-';
+              const reminderMsg = pickRandomRafaelEn(
+                item.title, item.start_time, sisaMenit,
+                `• Agenda : ${item.title}\n• Brand : ${brandLabel}\n• Time : *${item.start_time} WIB* (${sisaMenit}m left)` + (item.notes ? `\n• Notes : ${item.notes}` : '')
+              );
+              const res = await sendViaBotWA(targetPhone, reminderMsg);
+              if (res.ok) {
+                await logRef.set({
+                  title: item.title, date: item.date, start_time: item.start_time,
+                  leadMinutes: leadMin, sentAtWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }), sentAtTs: Date.now()
+                });
+              } else {
+                try { localStorage.removeItem(upGuard); } catch (e) {}
+              }
+            }
           }
 
-          try { localStorage.setItem(localGuard, '1'); } catch (e) {}
-          const startMin = timeToMinutes(item.start_time);
-          const sisaMenit = Math.max(1, startMin - nowMin);
-          const brandObj = brands.find(b => b.id === item.brand_id);
-          const brandLabel = brandObj ? `${brandObj.emoji} ${brandObj.name}` : '-';
-          const reminderMsg = pickRandomRafaelReminder(isOtw, item.title, item.start_time, sisaMenit, brandLabel, item.notes);
+          const justEnded = (nowMin >= endMin && nowMin <= endMin + 5);
+          const endKey = `${item.date}_${item.id}_DONE`;
+          const endGuard = `alisya_rem_sent_${endKey}`;
+          let hasEnd = false;
+          try { if (localStorage.getItem(endGuard)) hasEnd = true; } catch (e) {}
 
-          const res = await sendViaBotWA(targetPhone, reminderMsg);
-          if (res.ok) {
-            await logRef.set({
-              title: item.title,
-              date: item.date,
-              start_time: item.start_time,
-              leadMinutes: leadMin,
-              sentAtWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
-              sentAtTs: Date.now()
-            });
-          } else {
-            try { localStorage.removeItem(localGuard); } catch (e) {}
+          if (!hasEnd && justEnded) {
+            try { localStorage.setItem(endGuard, '1'); } catch (e) {}
+            const endRef = firebaseDb.ref(`alisya_departure_reminder_logs/${endKey}`);
+            const eSnap = await endRef.once('value');
+            if (!eSnap.exists()) {
+              const doneMsg = `Done with "${item.title}" (${item.end_time} WIB)? Good job—don't forget to rest and come talk to me.\n\n• Finished : ${item.title} (${item.start_time}–${item.end_time} WIB)`;
+              const res = await sendViaBotWA(targetPhone, doneMsg);
+              if (res.ok) {
+                await endRef.set({
+                  title: `${item.title} (Done)`, date: item.date, start_time: item.end_time,
+                  leadMinutes: 0, sentAtWIB: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }), sentAtTs: Date.now()
+                });
+              } else {
+                try { localStorage.removeItem(endGuard); } catch (e) {}
+              }
+            }
           }
         });
       }, [nowTime, realTodayStr, schedules, departureReminderCfg, brands]);
@@ -3961,6 +4018,12 @@ h('button', {
             title: 'Tampilkan atau sembunyikan tab Portofolio untuk mode Partner/View'
           }, showPortfolioPublic ? '🙈 Portofolio:Sembunyikan' : '👁️ Portofolio: Tampilkan'),
           isAdmin && h('button', { className: 'btn btn-gold', onClick: handleOpenBulkModal }, '⚡ Input 1 Bulan'),
+          isAdmin && h('button', {
+                type: 'button',
+                className: `btn ${departureReminderCfg.enabled ? 'btn-emerald' : 'btn-soft'}`,
+                onClick: () => setReminderLogModalOpen(true),
+                title: 'Atur Pengingat Otomatis BOT WA Sebelum Berangkat (H-30 / H-60 Menit)'
+              }, departureReminderCfg.enabled ? `⏰ Pengingat WA (H-${departureReminderCfg.leadMinutes}m)` : '⏰ Pengingat WA: OFF'),
           isAdmin && h('button', {
                 type: 'button',
                 className: `btn ${departureReminderCfg.enabled ? 'btn-emerald' : 'btn-soft'}`,
@@ -6472,6 +6535,97 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                     );
                   })
                 )
+          )
+        ),
+               // ⏰ V6.5: MODAL PENGATURAN PENGINGAT OTOMATIS BOT WA SEBELUM BERANGKAT
+        reminderLogModalOpen && isAdmin && h('div', { className: 'modal-overlay' },
+          h('div', { className: 'modal-box', style: { maxWidth: '520px', display: 'flex', flexDirection: 'column', gap: '12px' } },
+            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
+              h('div', null,
+                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#059669', textTransform: 'uppercase' } }, '🤖 BOT WA OTOMATIS • ANTI-TELAT BERANGKAT'),
+                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '⏰ Pengingat Sebelum Berangkat (H-30 / H-60)')
+              ),
+              h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setReminderLogModalOpen(false) }, '✕')
+            ),
+
+            h('div', {
+              style: {
+                background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '14px',
+                padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px'
+              }
+            },
+              h('label', { className: 'flex items-center justify-between', style: { fontSize: '12px', fontWeight: 900, color: '#4A0424', cursor: 'pointer' } },
+                h('span', null, 'Aktifkan Pengingat Otomatis ke WhatsApp'),
+                h('input', {
+                  type: 'checkbox',
+                  checked: !!departureReminderCfg.enabled,
+                  onChange: e => saveDepartureReminderCfg({ enabled: e.target.checked })
+                })
+              ),
+
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Waktu Pengingat:'),
+                  h('select', {
+                    value: Number(departureReminderCfg.leadMinutes) || 30,
+                    onChange: e => saveDepartureReminderCfg({ leadMinutes: Number(e.target.value) }),
+                    style: { width: '100%' }
+                  },
+                    h('option', { value: 15 }, 'H-15 Menit Sebelum'),
+                    h('option', { value: 30 }, 'H-30 Menit Sebelum'),
+                    h('option', { value: 45 }, 'H-45 Menit Sebelum'),
+                    h('option', { value: 60 }, 'H-60 Menit (1 Jam)'),
+                    h('option', { value: 90 }, 'H-90 Menit (1,5 Jam)')
+                  )
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nomor WA Penerima:'),
+                  h('input', {
+                    type: 'tel',
+                    placeholder: '6285159440579',
+                    value: departureReminderCfg.targetPhone || '',
+                    onChange: e => saveDepartureReminderCfg({ targetPhone: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              ),
+
+              h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#701A46', cursor: 'pointer' } },
+                h('input', {
+                  type: 'checkbox',
+                  checked: !!departureReminderCfg.remindAllSessions,
+                  onChange: e => saveDepartureReminderCfg({ remindAllSessions: e.target.checked })
+                }),
+                'Ingatkan juga semua sesi jadwal (tidak hanya blok 🛵 OTW / Perjalanan)'
+              ),
+
+              h('button', {
+                type: 'button',
+                disabled: botSending,
+                className: 'btn btn-emerald',
+                style: { width: '100%', padding: '9px' },
+                onClick: sendTestDepartureReminder
+              }, botSending ? '⏳ Mengirim Pesan Tes...' : '📲 Kirim Tes Pengingat ke WhatsApp Sekarang')
+            ),
+
+            h('div', { style: { background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: '12px', padding: '8px 10px', fontSize: '10.5px', color: '#78350F', fontWeight: 700 } },
+              '💡 Tips: Supaya pengingat tetap terkirim 24 jam penuh walaupun tab browser di HP/PC ditutup, pasang juga pemicu otomatis (Time-driven Trigger) di Google Apps Script.'
+            ),
+
+            h('div', null,
+              h('div', { style: { fontSize: '11px', fontWeight: 900, color: '#831843', marginBottom: '6px' } }, `📜 Riwayat Pengingat Terkirim (${reminderHistory.length})`),
+              reminderHistory.length === 0
+                ? h('div', { style: { fontSize: '11px', color: '#701A46', background: '#FFFFFF', padding: '12px', borderRadius: '10px', border: '1px dashed #F9A8D4', textAlign: 'center' } }, 'Belum ada pengingat yang terkirim.')
+                : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '160px', overflowY: 'auto' } },
+                    reminderHistory.map(rh => h('div', {
+                      key: rh.key,
+                      style: { background: '#FFFFFF', border: '1px solid #F9A8D4', borderRadius: '9px', padding: '6px 10px', fontSize: '10.5px' }
+                    },
+                      h('div', { style: { fontWeight: 900, color: '#4A0424' } }, `✅ ${rh.title} (${rh.start_time} WIB)`),
+                      h('div', { className: 'font-mono', style: { fontSize: '9.5px', color: '#059669' } }, `Terkirim H-${rh.leadMinutes}m • ${rh.sentAtWIB}`)
+                    ))
+                  )
+            )
           )
         ),
         // ⏰ V6.7: MODAL PENGATURAN PENGINGAT OTOMATIS RAFAEL
