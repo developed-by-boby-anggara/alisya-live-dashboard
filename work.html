@@ -3369,32 +3369,90 @@ const togglePortfolioVisibility = () => {
         });
       }, [schedules, statPeriod, customStatDate, customStatMonth, customStatYear]);
 
-      const stats = useMemo(() => {
-        let totalLive = 0, totalOff = 0, totalMeeting = 0, totalSleep = 0, totalMeTime = 0, totalKonten = 0, totalGMV = 0;
-        let totalLiveHours = 0, totalSleepHours = 0, totalKontenHours = 0;
+     const stats = useMemo(() => {
+        let totalLive = 0, totalOff = 0, totalMeeting = 0, totalSleep = 0, totalMeTime = 0, totalKonten = 0, totalTravel = 0, totalGMV = 0;
+        let totalLiveHours = 0, totalSleepHours = 0, totalKontenHours = 0, totalTravelHours = 0;
+        const byDateWork = {};
 
         filteredByStatPeriod.forEach(s => {
           const dur = calculateDurationHours(s.start_time, s.end_time);
+          const isOtw = !!(s.is_travel_block || s.status === 'Perjalanan');
+          if (isOtw) {
+            totalTravel++;
+            totalTravelHours += dur;
+            return;
+          }
           if (s.status === 'LIVE') {
             totalLive++; totalLiveHours += dur;
             if (s.gmv) totalGMV += Number(s.gmv) || 0;
           } else if (s.status === 'OFF') totalOff++;
           else if (s.status === 'Meeting') totalMeeting++;
-          else if (s.status === 'Tidur') { totalSleep++; totalSleepHours += (dur || 7); }
+          else if (s.status === 'Tidur' || s.brand_id === 'b_sleep') { totalSleep++; totalSleepHours += (dur || 7); }
           else if (s.status === 'Konten' || s.brand_id === 'b_konten') { totalKonten++; totalKontenHours += dur; }
           else if (s.status === 'Me Time' || s.brand_id === 'b_lainlain') totalMeTime++;
+
+         const isActualWork = ['LIVE', 'Konten', 'Meeting'].includes(s.status) || ['b_momuung', 'b_aquapress', 'b_moell', 'b_konten', 'b_booking_wa'].includes(s.brand_id);
+          if (isActualWork) {
+            if (!byDateWork[s.date]) byDateWork[s.date] = [];
+            byDateWork[s.date].push(s);
+          }
+        });
+
+        const tightBreakDates = [];
+        let maxDailyWorkHours = 0;
+        Object.keys(byDateWork).sort().forEach(dStr => {
+          const list = byDateWork[dStr].sort((a, b) => a.start_time.localeCompare(b.start_time));
+          let dayWorkSum = 0;
+          list.forEach(it => {
+            const sM = timeToMinutes(it.start_time);
+            let eM = timeToMinutes(it.end_time);
+            if (eM <= sM) eM = 1440;
+            dayWorkSum += Math.max(0, (eM - sM) / 60);
+          });
+          if (dayWorkSum > maxDailyWorkHours) maxDailyWorkHours = Math.round(dayWorkSum * 10) / 10;
+          for (let i = 0; i < list.length - 1; i++) {
+            const gapMin = timeToMinutes(list[i + 1].start_time) - timeToMinutes(list[i].end_time);
+            if (gapMin > 0 && gapMin < 300) {
+              tightBreakDates.push({ date: dStr, gapHours: Math.round((gapMin / 60) * 10) / 10, between: `${list[i].title} → ${list[i + 1].title}` });
+              break;
+            }
+          }
         });
 
         totalLiveHours = Math.round(totalLiveHours * 10) / 10;
         totalSleepHours = Math.round(totalSleepHours * 10) / 10;
         totalKontenHours = Math.round(totalKontenHours * 10) / 10;
+        totalTravelHours = Math.round(totalTravelHours * 10) / 10;
+        const avgSleepPerLog = totalSleep > 0 ? Math.round((totalSleepHours / totalSleep) * 10) / 10 : 0;
 
+        let healthBadge = '🟢 JADWAL IDEAL & SEIMBANG';
+        let healthColor = '#059669';
+        if (tightBreakDates.length >= 4 || maxDailyWorkHours >= 13) {
+          healthBadge = '🔴 PADAT / BUTUH RECOVERY';
+          healthColor = '#E11D48';
+        } else if (tightBreakDates.length > 0 || maxDailyWorkHours >= 10) {
+          healthBadge = '🟡 CUKUP PADAT (JEDA SINGKAT)';
+          healthColor = '#D97706';
+        }
+
+        const shortBrandNames = {
+          b_konten: 'Konten Video',
+          b_sleep: 'Istirahat',
+          b_pribadi: 'Pribadi/OFF',
+          b_sakit: 'Izin Medis',
+          b_booking_wa: 'Partner WA'
+        };
         const perBrand = brands.map(b => {
-          const list = filteredByStatPeriod.filter(s => s.brand_id === b.id);
-          return { name: b.name, emoji: b.emoji, totalShift: list.length, color: b.color };
-        });
+          const list = filteredByStatPeriod.filter(s => s.brand_id === b.id && !s.is_travel_block && s.status !== 'Perjalanan');
+          const hours = Math.round(list.reduce((acc, it) => acc + calculateDurationHours(it.start_time, it.end_time), 0) * 10) / 10;
+          return { name: shortBrandNames[b.id] || b.name, emoji: b.emoji, totalShift: list.length, totalHours: hours, color: b.color };
+        }).filter(b => b.totalShift > 0);
 
-        return { totalLive, totalOff, totalMeeting, totalSleep, totalMeTime, totalKonten, totalLiveHours, totalSleepHours, totalKontenHours, totalGMV, perBrand };
+        return {
+          totalLive, totalOff, totalMeeting, totalSleep, totalMeTime, totalKonten, totalTravel,
+          totalLiveHours, totalSleepHours, totalKontenHours, totalTravelHours,
+          avgSleepPerLog, maxDailyWorkHours, tightBreakDates, healthBadge, healthColor, totalGMV, perBrand
+        };
       }, [filteredByStatPeriod, brands]);
 // ⏳ V2.3+: Daftar Khusus Semua Pengajuan Booking WA yang Menunggu ACC Admin
       const pendingBookingsList = useMemo(() => {
@@ -3448,31 +3506,53 @@ const togglePortfolioVisibility = () => {
           donutInst.current = new Chart(donutCanvas.current, {
             type: 'doughnut',
             data: {
-              labels: ['LIVE', 'Konten', 'Rest', 'Me Time', 'OFF', 'Meeting'],
+              labels: ['LIVE', 'Konten', 'Rest', 'OTW', 'Me Time', 'OFF', 'Meeting'],
               datasets: [{
-                data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
-                backgroundColor: ['#10B981', '#8B5CF6', '#3B82F6', '#EC4899', '#EF4444', '#06B6D4'],
+                data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalTravel, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
+                backgroundColor: ['#10B981', '#8B5CF6', '#3B82F6', '#F97316', '#EC4899', '#EF4444', '#06B6D4'],
                 borderWidth: 2, borderColor: '#FFF0F6'
               }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#4A0424', font: { weight: 'bold' } } } } }
           });
         }
-        if (barCanvas.current) {
+      if (barCanvas.current) {
           if (barInst.current) barInst.current.destroy();
           barInst.current = new Chart(barCanvas.current, {
             type: 'bar',
             data: {
-              labels: stats.perBrand.map(b => b.name),
-              datasets: [{ label: 'Total Shift / Sesi', data: stats.perBrand.map(b => b.totalShift), backgroundColor: '#DB2777', borderRadius: 6 }]
+              labels: stats.perBrand.map(b => `${b.emoji} ${b.name}`),
+              datasets: [
+                {
+                  label: 'Total Jam',
+                  data: stats.perBrand.map(b => b.totalHours),
+                  backgroundColor: stats.perBrand.map(b => b.color || '#DB2777'),
+                  borderColor: '#831843',
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  xAxisID: 'x'
+                },
+                {
+                  label: 'Total Sesi',
+                  data: stats.perBrand.map(b => b.totalShift),
+                  backgroundColor: 'rgba(157, 23, 77, 0.22)',
+                  borderColor: '#9D174D',
+                  borderWidth: 1.5,
+                  borderRadius: 6,
+                  xAxisID: 'x1'
+                }
+              ]
             },
             options: {
-              responsive: true, maintainAspectRatio: false,
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
               scales: {
-                x: { ticks: { color: '#701A46' }, grid: { color: 'rgba(244,114,182,0.2)' } },
-                y: { beginAtZero: true, ticks: { color: '#701A46' }, grid: { color: 'rgba(244,114,182,0.2)' } }
+                x: { position: 'bottom', beginAtZero: true, title: { display: true, text: 'Jam', color: '#9D174D', font: { size: 10, weight: 'bold' } }, ticks: { color: '#701A46' }, grid: { color: 'rgba(244,114,182,0.18)' } },
+                x1: { position: 'top', beginAtZero: true, title: { display: true, text: 'Sesi', color: '#831843', font: { size: 10, weight: 'bold' } }, ticks: { color: '#831843' }, grid: { drawOnChartArea: false } },
+                y: { ticks: { color: '#4A0424', font: { weight: 'bold', size: 11 } }, grid: { display: false } }
               },
-              plugins: { legend: { labels: { color: '#4A0424', font: { weight: 'bold' } } } }
+              plugins: { legend: { position: 'bottom', labels: { color: '#4A0424', font: { weight: 'bold', size: 11 } } } }
             }
           });
         }
@@ -5623,8 +5703,9 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                   })
                 )
           ),
-          // TAB 3: KPI & GRAFIK
+         // TAB 3: KPI & GRAFIK (UPDATE #3 RADAR KESEHATAN KERJA + #4 FILTER LENGKAP & GRID 2 KOLOM)
           activeTab === 'kpi' && h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+            // Bar Filter Periode Lengkap (Daily / Weekly / Monthly / Yearly)
             h('div', { className: 'exec-card flex flex-wrap items-center justify-between gap-2' },
               h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
                 ['daily', 'weekly', 'monthly', 'yearly'].map(p => h('button', {
@@ -5633,11 +5714,30 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                   style: { textTransform: 'capitalize' }
                 }, p))
               ),
-              (statPeriod === 'daily' || statPeriod === 'weekly') && h('input', {
-                type: 'date', value: customStatDate, onChange: e => setCustomStatDate(e.target.value)
-              })
+              h('div', { className: 'flex items-center gap-1-5 flex-wrap' },
+                (statPeriod === 'daily' || statPeriod === 'weekly') && h('input', {
+                  type: 'date', value: customStatDate, onChange: e => setCustomStatDate(e.target.value)
+                }),
+                statPeriod === 'monthly' && h('select', {
+                  value: customStatMonth,
+                  onChange: e => setCustomStatMonth(Number(e.target.value))
+                },
+                  Array.from({ length: 12 }).map((_, idx) =>
+                    h('option', { key: idx, value: idx }, new Intl.DateTimeFormat(t.locale, { month: 'long' }).format(new Date(2026, idx, 1)))
+                  )
+                ),
+                (statPeriod === 'monthly' || statPeriod === 'yearly') && h('select', {
+                  className: 'font-mono',
+                  value: customStatYear,
+                  onChange: e => setCustomStatYear(Number(e.target.value))
+                },
+                  [2025, 2026, 2027, 2028, 2029, 2030].map(yr => h('option', { key: yr, value: yr }, yr))
+                )
+              )
             ),
-            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' } },
+
+            // 4 Kartu KPI Utama (4 Kolom di PC, 2 Kolom di HP)
+            h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)', gap: '10px' } },
               [
                 { label: t.totalLive, val: stats.totalLive, sub: `≈ ${stats.totalLiveHours} ${t.hoursLive}`, color: '#059669' },
                 { label: t.takeKonten, val: stats.totalKonten, sub: `≈ ${stats.totalKontenHours} ${t.hoursProd}`, color: '#7C3AED' },
@@ -5649,16 +5749,68 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                 h('div', { style: { fontSize: '11.5px', color: '#701A46', marginTop: '4px', fontWeight: 700 } }, k.sub)
               ))
             ),
-            h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
-              h('h3', { style: { fontSize: '12.5px', fontWeight: 900, color: '#831843', marginBottom: '10px' } }, `🍩 ${t.propTitle}`),
-              h('div', { style: { height: '230px', position: 'relative' } }, h('canvas', { ref: donutCanvas }))
-            ),
-            h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
-              h('h3', { style: { fontSize: '12.5px', fontWeight: 900, color: '#831843', marginBottom: '10px' } }, `📊 ${t.barTitle}`),
-              h('div', { style: { height: '230px', position: 'relative' } }, h('canvas', { ref: barCanvas }))
-            )
-          ),
 
+            // Update #3: Radar Kesehatan Kerja & Analisis Jeda Istirahat
+            h('div', { className: 'exec-card', style: { background: '#FFFFFF', border: '2px solid #F472B6', display: 'flex', flexDirection: 'column', gap: '10px' } },
+              h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
+                h('div', null,
+                  h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#DB2777', textTransform: 'uppercase' } }, '🩺 WORK-LIFE BALANCE MONITOR'),
+                  h('h3', { style: { fontSize: '14px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, 'Radar Kesehatan Kerja & Jeda Istirahat')
+                ),
+                h('span', {
+                  style: { background: '#FDF2F8', color: stats.healthColor, border: `1.5px solid ${stats.healthColor}`, fontSize: '10.5px', fontWeight: 900, padding: '4px 11px', borderRadius: '999px' }
+                }, stats.healthBadge)
+              ),
+              h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(3, 1fr)' : '1fr', gap: '8px' } },
+                h('div', { style: { background: '#FFF7ED', border: '1px solid #FDBA74', borderRadius: '12px', padding: '10px 12px' } },
+                  h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#9A3412' } }, '🛵 TOTAL PERJALANAN (OTW)'),
+                  h('div', { className: 'font-mono', style: { fontSize: '18px', fontWeight: 900, color: '#C2410C', marginTop: '2px' } }, `${stats.totalTravelHours} Jam`),
+                  h('div', { style: { fontSize: '10.5px', color: '#7C2D12', fontWeight: 700 } }, `${stats.totalTravel} blok perjalanan tercatat`)
+                ),
+                h('div', { style: { background: '#EFF6FF', border: '1px solid #93C5FD', borderRadius: '12px', padding: '10px 12px' } },
+                  h('div', { style: { fontSize: '10px', fontWeight: 900, color: '#1E40AF' } }, '😴 RATA-RATA DURASI ISTIRAHAT'),
+                  h('div', { className: 'font-mono', style: { fontSize: '18px', fontWeight: 900, color: '#1D4ED8', marginTop: '2px' } },
+                    stats.totalSleep > 0 ? `${stats.avgSleepPerLog} Jam / Sesi` : `${stats.maxDailyWorkHours} Jam Max/Hari`
+                  ),
+                  h('div', { style: { fontSize: '10.5px', color: '#1E3A8A', fontWeight: 700 } }, `Beban kerja puncak: ${stats.maxDailyWorkHours} jam/hari`)
+                ),
+                h('div', { style: { background: stats.tightBreakDates.length > 0 ? '#FFF1F2' : '#ECFDF5', border: `1px solid ${stats.tightBreakDates.length > 0 ? '#FDA4AF' : '#6EE7B7'}`, borderRadius: '12px', padding: '10px 12px' } },
+                  h('div', { style: { fontSize: '10px', fontWeight: 900, color: stats.tightBreakDates.length > 0 ? '#9F1239' : '#065F46' } }, '⚠️ DETEKSI JEDA MEPET (< 5 JAM)'),
+                  h('div', { className: 'font-mono', style: { fontSize: '18px', fontWeight: 900, color: stats.tightBreakDates.length > 0 ? '#BE123C' : '#059669', marginTop: '2px' } }, `${stats.tightBreakDates.length} Hari`),
+                  h('div', { style: { fontSize: '10.5px', color: '#4A0424', fontWeight: 700 } },
+                    stats.tightBreakDates.length > 0 ? 'Perlu perhatian jeda antar-shift' : 'Semua jeda antar-shift aman'
+                  )
+                )
+              ),
+             stats.tightBreakDates.length > 0 && h('div', { style: { background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: '12px', padding: '10px 12px', fontSize: '11px', color: '#78350F' } },
+                   h('div', { style: { fontWeight: 900, marginBottom: '8px' } }, '📌 Tanggal dengan Jeda Kerja Singkat (< 5 Jam):'),
+                   h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? 'repeat(3, 1fr)' : '1fr', gap: '6px' } },
+                     stats.tightBreakDates.map(tb => h('div', {
+                       key: tb.date,
+                       style: { background: '#FFFFFF', border: '1px solid #FCD34D', borderRadius: '9px', padding: '6px 9px' }
+                     },
+                       h('div', { className: 'flex items-center justify-between', style: { fontWeight: 900, color: '#92400E', fontSize: '10.5px' } },
+                         h('span', null, `${getHariNama(tb.date)}, ${tb.date}`),
+                         h('span', { style: { background: '#FEF3C7', padding: '1px 6px', borderRadius: '6px' } }, `Jeda ${tb.gapHours}j`)
+                       ),
+                       h('div', { style: { fontSize: '10px', color: '#78350F', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, tb.between)
+                     ))
+                   )
+                 )
+               ),
+
+               // Update #4: Layout Dashboard 2 Kolom Berdampingan di PC (1 Kolom di HP)
+               h('div', { style: { display: 'grid', gridTemplateColumns: displayMode === 'pc' ? '1fr 1.35fr' : '1fr', gap: '14px' } },
+                 h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
+                   h('h3', { style: { fontSize: '12.5px', fontWeight: 900, color: '#831843', marginBottom: '10px' } }, `🍩 ${t.propTitle}`),
+                   h('div', { style: { height: '295px', position: 'relative' } }, h('canvas', { ref: donutCanvas }))
+                 ),
+                 h('div', { className: 'exec-card', style: { background: '#FFFFFF' } },
+                   h('h3', { style: { fontSize: '12.5px', fontWeight: 900, color: '#831843', marginBottom: '10px' } }, `📊 ${t.barTitle} (Sesi & Total Jam)`),
+                   h('div', { style: { height: '295px', position: 'relative' } }, h('canvas', { ref: barCanvas }))
+                 )
+               )
+          ),
        // TAB 5: WARNA BRAND
           activeTab === 'colors' && h('div', { className: 'exec-card', style: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
            h('div', { className: 'flex items-center justify-between flex-wrap gap-2' },
