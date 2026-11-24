@@ -867,7 +867,7 @@
    const REQUIRED_CATEGORIES = [
       { id: 'b_momuung', name: 'Mom Uung', emoji: '🍼', color: '#B6D7A8' },
       { id: 'b_aquapress', name: 'AquaPress', emoji: '💧', color: '#00FFFF' },
-      { id: 'b_moell', name: 'Moell', emoji: '✨', color: '#FACC15' },
+      { id: 'b_moell', name: 'Moell', emoji: '✨', color: '#6F4221' },
       { id: 'b_booking_wa', name: 'Partner / Booking WA', emoji: '📲', color: '#93C5FD' },
       { id: 'b_konten', name: 'Take Konten Video Affiliate', emoji: '🎬', color: '#8B5CF6' },
       { id: 'b_sleep', name: 'Jam Tidur / Istirahat', emoji: '😴', color: '#6366F1' },
@@ -1261,6 +1261,16 @@ const [showPortfolioPublic, setShowPortfolioPublic] = useState(false);
         }
       ];
       const [zoomedBrandIdx, setZoomedBrandIdx] = useState(null);
+      useEffect(() => {
+        if (zoomedBrandIdx === null) return;
+        const onKey = (e) => {
+          if (e.key === 'Escape') setZoomedBrandIdx(null);
+          else if (e.key === 'ArrowRight') setZoomedBrandIdx(prev => (prev + 1) % COLLAB_BRAND_SHOWCASE.length);
+          else if (e.key === 'ArrowLeft') setZoomedBrandIdx(prev => (prev - 1 + COLLAB_BRAND_SHOWCASE.length) % COLLAB_BRAND_SHOWCASE.length);
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, [zoomedBrandIdx]);
       const [searchQuery, setSearchQuery] = useState('');
       const [filterBrand, setFilterBrand] = useState('ALL');
       const [filterStatus, setFilterStatus] = useState('ALL');
@@ -3993,7 +4003,7 @@ const formatMinutesWrap = (mins) => {
                   h('span', {
                     className: 'font-mono',
                     style: { background: 'rgba(255,255,255,0.2)', color: '#FCE7F3', border: '1px solid rgba(255,255,255,0.4)', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 800 }
-                  }, 'WORK MODE V5.7-PRO'),
+                  }, 'WORK MODE V7.0-PRO'),
                   isAdmin
                     ? h('span', { style: { background: '#FDE047', color: '#831843', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 900 } }, '👑 ADMIN')
                     : h('span', { style: { background: 'rgba(0,0,0,0.25)', color: '#FCE7F3', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 700 } }, '👀 PARTNER')
@@ -4143,13 +4153,7 @@ h('button', {
                 type: 'button',
                 className: `btn ${departureReminderCfg.enabled ? 'btn-emerald' : 'btn-soft'}`,
                 onClick: () => setReminderLogModalOpen(true),
-                title: 'Atur Pengingat Otomatis BOT WA Sebelum Berangkat (H-30 / H-60 Menit)'
-              }, departureReminderCfg.enabled ? `⏰ Pengingat WA (H-${departureReminderCfg.leadMinutes}m)` : '⏰ Pengingat WA: OFF'),
-          isAdmin && h('button', {
-                type: 'button',
-                className: `btn ${departureReminderCfg.enabled ? 'btn-emerald' : 'btn-soft'}`,
-                onClick: () => setReminderLogModalOpen(true),
-                title: 'Atur Pengingat Otomatis Rafael (H-30m Jadwal & H-15m OTW)'
+                title: 'Atur Pengingat Otomatis BOT WA Rafael (H-30m Jadwal & H-15m OTW)'
               }, departureReminderCfg.enabled ? '💗 Rafael WA (30m/15m)' : '💗 Rafael WA: OFF'),
           isAdmin && h('button', {
                 type: 'button',
@@ -5852,7 +5856,10 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
           )
         ),
 // 📱 NAVIGASI BAWAH INTERAKTIF KHUSUS LAYAR HP (OTOMATIS MUNCUL DI HP)
-       displayMode === 'mobile' && h('div', { className: 'mobile-bottom-dock' },
+       displayMode === 'mobile' && h('div', {
+          className: 'mobile-bottom-dock',
+          style: { gridTemplateColumns: showPortfolioPublic ? 'repeat(5, 1fr)' : 'repeat(4, 1fr)' }
+        },
           (showPortfolioPublic
             ? [
                 { id: 'portfolio', icon: '✨', label: 'Portofolio' },
@@ -5865,7 +5872,7 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                 { id: 'agenda', icon: '📅', label: 'Agenda' },
                 { id: 'calendar', icon: '📊', label: 'Tabel' },
                 { id: 'simulator', icon: '🔍', label: 'Cek Slot' },
-                { id: 'kpi', icon: '📈', label: 'KPI' },
+                { id: 'kpi', icon: '📈', label: 'KPI' }
               ]
           ).map(tb => h('button', {
             key: tb.id,
@@ -6656,98 +6663,7 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                 )
           )
         ),
-               // ⏰ V6.5: MODAL PENGATURAN PENGINGAT OTOMATIS BOT WA SEBELUM BERANGKAT
-        reminderLogModalOpen && isAdmin && h('div', { className: 'modal-overlay' },
-          h('div', { className: 'modal-box', style: { maxWidth: '520px', display: 'flex', flexDirection: 'column', gap: '12px' } },
-            h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
-              h('div', null,
-                h('span', { style: { fontSize: '10px', fontWeight: 900, color: '#059669', textTransform: 'uppercase' } }, '🤖 BOT WA OTOMATIS • ANTI-TELAT BERANGKAT'),
-                h('h3', { style: { fontSize: '15px', fontWeight: 900, color: '#4A0424', marginTop: '2px' } }, '⏰ Pengingat Sebelum Berangkat (H-30 / H-60)')
-              ),
-              h('button', { type: 'button', className: 'btn btn-soft', onClick: () => setReminderLogModalOpen(false) }, '✕')
-            ),
-
-            h('div', {
-              style: {
-                background: '#FFFFFF', border: '1.5px solid #F9A8D4', borderRadius: '14px',
-                padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px'
-              }
-            },
-              h('label', { className: 'flex items-center justify-between', style: { fontSize: '12px', fontWeight: 900, color: '#4A0424', cursor: 'pointer' } },
-                h('span', null, 'Aktifkan Pengingat Otomatis ke WhatsApp'),
-                h('input', {
-                  type: 'checkbox',
-                  checked: !!departureReminderCfg.enabled,
-                  onChange: e => saveDepartureReminderCfg({ enabled: e.target.checked })
-                })
-              ),
-
-              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '8px' } },
-                h('div', null,
-                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Waktu Pengingat:'),
-                  h('select', {
-                    value: Number(departureReminderCfg.leadMinutes) || 30,
-                    onChange: e => saveDepartureReminderCfg({ leadMinutes: Number(e.target.value) }),
-                    style: { width: '100%' }
-                  },
-                    h('option', { value: 15 }, 'H-15 Menit Sebelum'),
-                    h('option', { value: 30 }, 'H-30 Menit Sebelum'),
-                    h('option', { value: 45 }, 'H-45 Menit Sebelum'),
-                    h('option', { value: 60 }, 'H-60 Menit (1 Jam)'),
-                    h('option', { value: 90 }, 'H-90 Menit (1,5 Jam)')
-                  )
-                ),
-                h('div', null,
-                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nomor WA Penerima:'),
-                  h('input', {
-                    type: 'tel',
-                    placeholder: '6285159440579',
-                    value: departureReminderCfg.targetPhone || '',
-                    onChange: e => saveDepartureReminderCfg({ targetPhone: e.target.value }),
-                    style: { width: '100%' }
-                  })
-                )
-              ),
-
-              h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#701A46', cursor: 'pointer' } },
-                h('input', {
-                  type: 'checkbox',
-                  checked: !!departureReminderCfg.remindAllSessions,
-                  onChange: e => saveDepartureReminderCfg({ remindAllSessions: e.target.checked })
-                }),
-                'Ingatkan juga semua sesi jadwal (tidak hanya blok 🛵 OTW / Perjalanan)'
-              ),
-
-              h('button', {
-                type: 'button',
-                disabled: botSending,
-                className: 'btn btn-emerald',
-                style: { width: '100%', padding: '9px' },
-                onClick: sendTestDepartureReminder
-              }, botSending ? '⏳ Mengirim Pesan Tes...' : '📲 Kirim Tes Pengingat ke WhatsApp Sekarang')
-            ),
-
-            h('div', { style: { background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: '12px', padding: '8px 10px', fontSize: '10.5px', color: '#78350F', fontWeight: 700 } },
-              '💡 Tips: Supaya pengingat tetap terkirim 24 jam penuh walaupun tab browser di HP/PC ditutup, pasang juga pemicu otomatis (Time-driven Trigger) di Google Apps Script.'
-            ),
-
-            h('div', null,
-              h('div', { style: { fontSize: '11px', fontWeight: 900, color: '#831843', marginBottom: '6px' } }, `📜 Riwayat Pengingat Terkirim (${reminderHistory.length})`),
-              reminderHistory.length === 0
-                ? h('div', { style: { fontSize: '11px', color: '#701A46', background: '#FFFFFF', padding: '12px', borderRadius: '10px', border: '1px dashed #F9A8D4', textAlign: 'center' } }, 'Belum ada pengingat yang terkirim.')
-                : h('div', { style: { display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '160px', overflowY: 'auto' } },
-                    reminderHistory.map(rh => h('div', {
-                      key: rh.key,
-                      style: { background: '#FFFFFF', border: '1px solid #F9A8D4', borderRadius: '9px', padding: '6px 10px', fontSize: '10.5px' }
-                    },
-                      h('div', { style: { fontWeight: 900, color: '#4A0424' } }, `✅ ${rh.title} (${rh.start_time} WIB)`),
-                      h('div', { className: 'font-mono', style: { fontSize: '9.5px', color: '#059669' } }, `Terkirim H-${rh.leadMinutes}m • ${rh.sentAtWIB}`)
-                    ))
-                  )
-            )
-          )
-        ),
-        // ⏰ V6.7: MODAL PENGATURAN PENGINGAT OTOMATIS RAFAEL
+        // ⏰ V6.9: MODAL PENGATURAN PENGINGAT OTOMATIS RAFAEL (TUNGGAL & BERSIH)
         reminderLogModalOpen && isAdmin && h('div', { className: 'modal-overlay' },
           h('div', { className: 'modal-box', style: { maxWidth: '520px', display: 'flex', flexDirection: 'column', gap: '12px' } },
             h('div', { className: 'flex items-center justify-between', style: { borderBottom: '1.5px solid #F9A8D4', paddingBottom: '8px' } },
