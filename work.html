@@ -3010,8 +3010,8 @@ const togglePortfolioVisibility = () => {
           ? ''
           : (formatWaPhone(bookingData.clientPhone) || contactPolicy.phone);
 
-        if (!contactPolicy.skipPhone && !phoneClean) {
-          notify('⚠️ Wajib memasukkan Nomor WhatsApp PIC / Brand terlebih dahulu!');
+       if (!contactPolicy.skipPhone && (!phoneClean || phoneClean.length < 10 || phoneClean.length > 15)) {
+          notify('⚠️ Nomor WhatsApp tidak valid! Masukkan nomor WA aktif minimal 10 digit (contoh: 081234567890).');
           return;
         }
 
@@ -3267,15 +3267,11 @@ const togglePortfolioVisibility = () => {
           notify(`🤖 Slot dibuka kembali! Mengirim alasan penolakan otomatis ke ${policy.pic || brandNameGuess}...`);
           const resBot = await sendViaBotWA(targetPhone, rejectMsg);
           setBotSending(false);
-          if (resBot.ok) {
+         if (resBot.ok) {
             notify(`✅ Pesan Penolakan + Alasan Otomatis Terkirim ke ${policy.pic || brandNameGuess}!`);
           } else {
-            notify(`🔓 Slot dibuka! (Bot gagal: ${resBot.reason} — membuka WA manual)`);
-            openManualWaFallback(targetPhone, rejectMsg);
+            notify(`🔓 Slot dibuka! (Bot tidak terkirim karena nomor tujuan tidak valid/offline: ${resBot.reason})`);
           }
-        } else {
-          notify('🔓 Pengajuan ditolak & slot dibuka (Membuka WA manual karena nomor kosong).');
-          openManualWaFallback('', rejectMsg);
         }
       };
       const handleOpenEdit = (sch) => {
@@ -5201,7 +5197,7 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                         style: { padding: '8px 12px', fontSize: '11px', background: showTravelInMatrix ? undefined : '#FFFFFF' },
                         onClick: () => setShowTravelInMatrix(v => !v),
                         title: 'Tampilkan atau sembunyikan blok OTW di dalam tabel agar tidak menumpuk'
-                      }, showTravelInMatrix ? '🛵 OTW Tabel: Tampil' : '🛵 OTW Tabel: Ringkas')
+                      }, showTravelInMatrix ? '🛵 OTW Tabel: Ringkas' : '🛵 OTW Tabel: Tampil')
                     ),
 
                     // Tombol Aksi Rapi di Kanan Atas (Tidak Melebar Berlebihan)
