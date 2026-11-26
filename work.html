@@ -1584,14 +1584,17 @@ const handleApplyBulkMonth = () => {
         }, 250);
         return () => clearTimeout(timer);
       }, [activeTab, displayMode, realTodayStr, currentActiveSlotLabel]);
-      // 🤖 V2.12: KONFIGURASI BOT ADMIN NOTIFIKASI ALISYA (GOOGLE APPS SCRIPT + FONNTE)
-      const ADMIN_WA_NUMBER = "6285159440579";
-      const BOT_WEBAPP_URL  = "https://script.google.com/macros/s/AKfycbxPWCLvRKs8fuMPbCZ0BgIRpGMxNV2BPWf10HCTMl0_O7pPMOrEOipucnsb5BCSsrbz/exec";
-      // ⏰ V6.5: PENGINGAT OTOMATIS BOT WA SEBELUM BERANGKAT (H-30 / H-60 MENIT)
+      // 🤖 V2.12 + V7.1: KONFIGURASI BOT ADMIN NOTIFIKASI ALISYA (2 PENERIMA: ALISYA UTAMA + MANAGER/NO.2)
+      const ADMIN_WA_NUMBER   = "6285159440579";
+      const MANAGER_WA_NUMBER = "6285159810102";
+      const BOT_WEBAPP_URL    = "https://script.google.com/macros/s/AKfycbxPWCLvRKs8fuMPbCZ0BgIRpGMxNV2BPWf10HCTMl0_O7pPMOrEOipucnsb5BCSsrbz/exec";
+      // ⏰ V6.5 + V7.1: PENGINGAT OTOMATIS BOT WA KE 2 NOMOR PENERIMA
       const [departureReminderCfg, setDepartureReminderCfg] = useState({
         enabled: true,
         leadMinutes: 30,
         targetPhone: '6285159440579',
+       targetPhone2: '6285159810102',
+        sendToSecondPhone: true,
         remindAllSessions: false
       });
       const [reminderLogModalOpen, setReminderLogModalOpen] = useState(false);
@@ -2806,6 +2809,26 @@ const togglePortfolioVisibility = () => {
         }
       };
 
+      const broadcastToAdminRecipients = async (messageText) => {
+        const rawList = [
+          departureReminderCfg.targetPhone || ADMIN_WA_NUMBER,
+          (departureReminderCfg.sendToSecondPhone !== false) ? (departureReminderCfg.targetPhone2 || MANAGER_WA_NUMBER) : ''
+        ];
+        const uniqueTargets = [];
+        rawList.forEach(num => {
+          const fmt = formatWaPhone(num);
+          if (fmt && !uniqueTargets.includes(fmt)) uniqueTargets.push(fmt);
+        });
+        if (uniqueTargets.length === 0) uniqueTargets.push(ADMIN_WA_NUMBER);
+        const results = await Promise.all(uniqueTargets.map(num => sendViaBotWA(num, messageText)));
+        return {
+          ok: results.some(r => r.ok),
+          sentCount: results.filter(r => r.ok).length,
+          totalTargets: uniqueTargets.length,
+          reason: (results.find(r => !r.ok) || {}).reason || ''
+        };
+      };
+
       const openManualWaFallback = (rawPhone, messageText) => {
         const phone = formatWaPhone(rawPhone);
         const url = phone
@@ -2858,14 +2881,15 @@ const togglePortfolioVisibility = () => {
       };
 
       const sendTestDepartureReminder = async () => {
-        const target = formatWaPhone(departureReminderCfg.targetPhone || ADMIN_WA_NUMBER);
-        if (!target) { notify('⚠️ Isi nomor WhatsApp tujuan terlebih dahulu!'); return; }
+        const target1 = formatWaPhone(departureReminderCfg.targetPhone || ADMIN_WA_NUMBER);
+        const target2 = (departureReminderCfg.sendToSecondPhone !== false) ? formatWaPhone(departureReminderCfg.targetPhone2 || MANAGER_WA_NUMBER) : '';
+        if (!target1 && !target2) { notify('⚠️ Isi minimal 1 nomor WhatsApp penerima!'); return; }
         setBotSending(true);
-        notify('💗 Sending real-time Rafayel test chat to WhatsApp...');
+        notify('💗 Sending real-time Rafayel test chat to 2 WhatsApp numbers...');
         const msg = pickRandomRafaelEn('Live Session', '19:00', 25, '• Agenda : Live Session\n• Time : *19:00 WIB*', liveClockString.slice(0, 5));
-        const res = await sendViaBotWA(target, msg);
+        const res = await broadcastToAdminRecipients(msg);
         setBotSending(false);
-        if (res.ok) notify('✅ Rafayel test chat sent to WhatsApp!');
+        if (res.ok) notify(`✅ Rafayel test chat sent to ${res.sentCount}/${res.totalTargets} WhatsApp numbers!`);
         else notify(`⚠️ Failed to send test: ${res.reason}`);
       };
 
@@ -2888,7 +2912,7 @@ const togglePortfolioVisibility = () => {
             firebaseDb.ref(`alisya_departure_reminder_logs/${offKey}`).once('value').then(async snap => {
               if (!snap.exists()) {
                 const offMsg = pickRandomRafaelEn('Day Off', '09:00', 0, '• Status : Day Off / Rest', liveClockString.slice(0, 5));
-                const res = await sendViaBotWA(targetPhone, offMsg);
+                const res = await broadcastToAdminRecipients(offMsg);
                 if (res.ok) {
                   await firebaseDb.ref(`alisya_departure_reminder_logs/${offKey}`).set({
                     title: 'Day Off Check-in', date: realTodayStr, start_time: '09:00',
@@ -2930,7 +2954,7 @@ const togglePortfolioVisibility = () => {
                 item.title, item.start_time, sisaMenit,
                 `• Agenda : ${item.title}\n• Brand : ${brandLabel}\n• Time : *${item.start_time} WIB* (${sisaMenit}m left)` + (item.notes ? `\n• Notes : ${item.notes}` : '')
               );
-              const res = await sendViaBotWA(targetPhone, reminderMsg);
+              const res = await broadcastToAdminRecipients(reminderMsg);
               if (res.ok) {
                 await logRef.set({
                   title: item.title, date: item.date, start_time: item.start_time,
@@ -2954,7 +2978,7 @@ const togglePortfolioVisibility = () => {
             const eSnap = await endRef.once('value');
             if (!eSnap.exists()) {
               const doneMsg = `Done with "${item.title}" (${item.end_time} WIB)? Good job—don't forget to rest and come talk to me.\n\n• Finished : ${item.title} (${item.start_time}–${item.end_time} WIB)`;
-              const res = await sendViaBotWA(targetPhone, doneMsg);
+              const res = await broadcastToAdminRecipients(doneMsg);
               if (res.ok) {
                 await endRef.set({
                   title: `${item.title} (Done)`, date: item.date, start_time: item.end_time,
@@ -3042,7 +3066,7 @@ const togglePortfolioVisibility = () => {
           `Pesan ini dikirim otomatis oleh BOT Notifikasi Alisya. Anda akan menerima pesan WA otomatis lagi setelah jadwal dikonfirmasi (ACC/Tolak).\n` +
           `Admin Utama: wa.me/${ADMIN_WA_NUMBER}`;
 
-        const resAdmin = await sendViaBotWA(ADMIN_WA_NUMBER, adminMsg);
+        const resAdmin = await broadcastToAdminRecipients(adminMsg);
         if (phoneClean && !contactPolicy.skipPhone) {
           await sendViaBotWA(phoneClean, clientReceiptMsg);
         }
@@ -3050,8 +3074,8 @@ const togglePortfolioVisibility = () => {
 
         if (resAdmin.ok) {
           notify(contactPolicy.skipPhone
-            ? '✅ Booking Mom Uung tersimpan & notifikasi otomatis terkirim ke Admin!'
-            : '✅ Booking tersimpan & BOT otomatis mengirim notifikasi ke Admin & WA Brand!');
+            ? `✅ Booking Mom Uung tersimpan & terkirim ke ${resAdmin.sentCount} nomor Admin/Manager!`
+            : `✅ Booking tersimpan & terkirim ke ${resAdmin.sentCount} nomor Admin/Manager + WA Brand!`);
         } else {
           notify('⚠️ Bot sedang offline, membuka WhatsApp manual...');
           openManualWaFallback(ADMIN_WA_NUMBER, adminMsg);
@@ -3501,20 +3525,79 @@ const togglePortfolioVisibility = () => {
 
       useEffect(() => {
         if (activeTab !== 'kpi' || typeof Chart === 'undefined') return;
+        let donutAnimId = null;
         if (donutCanvas.current) {
           if (donutInst.current) donutInst.current.destroy();
+          const donutDataVals = [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalTravel, stats.totalMeTime, stats.totalOff, stats.totalMeeting];
+          const donutSum = donutDataVals.reduce((a, b) => a + b, 0);
+          const centerInfoPlugin = {
+            id: 'donutCenterInfo',
+            afterDraw(chart) {
+              const { ctx, chartArea } = chart;
+              if (!chartArea) return;
+              const cx = (chartArea.left + chartArea.right) / 2;
+              const cy = (chartArea.top + chartArea.bottom) / 2;
+              ctx.save();
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.font = '800 9.5px "Plus Jakarta Sans", sans-serif';
+              ctx.fillStyle = '#9D174D';
+              ctx.fillText('TOTAL AGENDA', cx, cy - 12);
+              ctx.font = '900 22px "JetBrains Mono", monospace';
+              ctx.fillStyle = '#4A0424';
+              ctx.fillText(`${donutSum}`, cx, cy + 7);
+              ctx.font = '700 9.5px "Plus Jakarta Sans", sans-serif';
+              ctx.fillStyle = '#701A46';
+              ctx.fillText('Sesi Tercatat', cx, cy + 23);
+              ctx.restore();
+            }
+          };
           donutInst.current = new Chart(donutCanvas.current, {
             type: 'doughnut',
+            plugins: [centerInfoPlugin],
             data: {
               labels: ['LIVE', 'Konten', 'Rest', 'OTW', 'Me Time', 'OFF', 'Meeting'],
               datasets: [{
-                data: [stats.totalLive, stats.totalKonten, stats.totalSleep, stats.totalTravel, stats.totalMeTime, stats.totalOff, stats.totalMeeting],
+                data: donutDataVals,
                 backgroundColor: ['#10B981', '#8B5CF6', '#3B82F6', '#F97316', '#EC4899', '#EF4444', '#06B6D4'],
-                borderWidth: 2, borderColor: '#FFF0F6'
+                borderWidth: 2,
+                borderColor: '#FFFFFF',
+                hoverOffset: 7
               }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#4A0424', font: { weight: 'bold' } } } } }
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false,
+              cutout: '64%',
+              rotation: -90,
+              circumference: 360,
+              plugins: {
+                legend: { position: 'bottom', labels: { color: '#4A0424', font: { weight: 'bold', size: 11 } } },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) => {
+                      const v = Number(ctx.raw) || 0;
+                      const pct = donutSum > 0 ? Math.round((v / donutSum) * 100) : 0;
+                      return ` ${ctx.label}: ${v} sesi (${pct}%)`;
+                    }
+                  }
+                }
+              }
+            }
           });
+          // Smooth full 360-degree slow real-time sweep (24 seconds)
+          const totalSweepMs = 24000;
+          const t0 = performance.now();
+          const animateFullCircle = (nowTs) => {
+            if (!donutInst.current) return;
+            const ratio = Math.min(1, (nowTs - t0) / totalSweepMs);
+            const smooth = 1 - Math.pow(1 - ratio, 2.2);
+            donutInst.current.options.circumference = Math.max(1, smooth * 360);
+            donutInst.current.update('none');
+            if (ratio < 1) donutAnimId = requestAnimationFrame(animateFullCircle);
+          };
+          donutAnimId = requestAnimationFrame(animateFullCircle);
         }
       if (barCanvas.current) {
           if (barInst.current) barInst.current.destroy();
@@ -3556,6 +3639,7 @@ const togglePortfolioVisibility = () => {
             }
           });
         }
+        return () => { if (donutAnimId) cancelAnimationFrame(donutAnimId); };
       }, [activeTab, stats]);
 
    const handleVerifyPin = (e) => {
@@ -4083,7 +4167,7 @@ const formatMinutesWrap = (mins) => {
                   h('span', {
                     className: 'font-mono',
                     style: { background: 'rgba(255,255,255,0.2)', color: '#FCE7F3', border: '1px solid rgba(255,255,255,0.4)', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 800 }
-                  }, 'WORK MODE V7.0-PRO'),
+                  }, 'WORK MODE V7.1-PRO'),
                   isAdmin
                     ? h('span', { style: { background: '#FDE047', color: '#831843', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 900 } }, '👑 ADMIN')
                     : h('span', { style: { background: 'rgba(0,0,0,0.25)', color: '#FCE7F3', padding: '3px 9px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 700 } }, '👀 PARTNER')
@@ -6841,15 +6925,36 @@ activeTab === 'calendar' && h('div', { style: { display: 'flex', flexDirection: 
                 })
               ),
 
-              h('div', null,
-                h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, 'Nomor WA Penerima:'),
+              h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, '📱 Penerima 1 (Alisya Utama):'),
+                  h('input', {
+                    type: 'tel',
+                    placeholder: '6285159440579',
+                    value: departureReminderCfg.targetPhone || '',
+                    onChange: e => saveDepartureReminderCfg({ targetPhone: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                ),
+                h('div', null,
+                  h('label', { style: { display: 'block', fontSize: '10.5px', fontWeight: 800, color: '#831843', marginBottom: '3px' } }, '📱 Penerima 2 (Manager / Alisya 2):'),
+                  h('input', {
+                    type: 'tel',
+                   placeholder: '6285159810102',
+                    value: departureReminderCfg.targetPhone2 !== undefined ? departureReminderCfg.targetPhone2 : '62851598101012',
+                    onChange: e => saveDepartureReminderCfg({ targetPhone2: e.target.value }),
+                    style: { width: '100%' }
+                  })
+                )
+              ),
+
+              h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#065F46', cursor: 'pointer' } },
                 h('input', {
-                  type: 'tel',
-                  placeholder: '6285159440579',
-                  value: departureReminderCfg.targetPhone || '',
-                  onChange: e => saveDepartureReminderCfg({ targetPhone: e.target.value }),
-                  style: { width: '100%' }
-                })
+                  type: 'checkbox',
+                  checked: departureReminderCfg.sendToSecondPhone !== false,
+                  onChange: e => saveDepartureReminderCfg({ sendToSecondPhone: e.target.checked })
+                }),
+                'Kirim ganda otomatis ke Nomor Penerima 2 (Booking WA & Pengingat Rafael)'
               ),
 
               h('label', { className: 'flex items-center gap-1-5', style: { fontSize: '11px', fontWeight: 800, color: '#701A46', cursor: 'pointer' } },
